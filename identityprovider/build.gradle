@@ -35,7 +35,7 @@ dependencies {
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
 
     // https://mvnrepository.com/artifact/com.h2database/h2
-    testImplementation group: 'com.h2database', name: 'h2', version: '2.1.210'
+    testImplementation 'com.h2database:h2:2.1.210'
 
 }
 
