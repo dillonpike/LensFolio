@@ -4,6 +4,7 @@ import com.google.protobuf.Empty;
 import io.grpc.stub.StreamObserver;
 import net.devh.boot.grpc.server.service.GrpcService;
 
+import nz.ac.canterbury.seng302.identityprovider.User;
 import nz.ac.canterbury.seng302.identityprovider.authentication.AuthenticationServerInterceptor;
 import nz.ac.canterbury.seng302.identityprovider.authentication.JwtTokenUtil;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
@@ -30,8 +31,11 @@ public class AuthenticateServerService extends AuthenticationServiceImplBase{
     @Override
     public void authenticate(AuthenticateRequest request, StreamObserver<AuthenticateResponse> responseObserver) {
         AuthenticateResponse.Builder reply = AuthenticateResponse.newBuilder();
+
+        // Create new User object
+        User user = new User(request.getUsername(), request.getPassword());
         
-        if (request.getUsername().equals(VALID_USER) && request.getPassword().equals(VALID_PASSWORD)) {
+        if (user.inDatabase()) {
 
             String token = jwtTokenService.generateTokenForUser(VALID_USER, VALID_USER_ID, FULL_NAME_OF_USER, ROLE_OF_USER);
             reply
@@ -63,4 +67,5 @@ public class AuthenticateServerService extends AuthenticationServiceImplBase{
         responseObserver.onNext(AuthenticationServerInterceptor.AUTH_STATE.get());
         responseObserver.onCompleted();
     }
+    
 }
