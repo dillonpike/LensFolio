@@ -2,29 +2,31 @@
 <!--<html xmlns:th="http://www.thymeleaf.org" lang="">-->
 <head>
     <title>loginForm</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="text/html; charset=UTF-8">
     <link rel="stylesheet" href="login.css">
 </head>
 <body>
-<div class="control">
-    <div class="item">
-        <h2>Log in</h2>
-            <div class="content">
-                <label for="username" >username</label>
-                <input type="text" id="username" placeholder="username" required>
+    <div class="container">
+        <div class="login">
+            <h2>Log in</h2>
+            <div class="box">
+                <div class="form-group">
+                    <label for="username" >username</label>
+                    <input type="text" id="username" placeholder="username" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" placeholder="password" required>
+                </div>
+                <!-- ****** add forget password  -->
+                <div>
+                    <button id=login>Log in</button>
+                </div>
+                <div>
+                    <a href="registration">register</a>
+                </div>
             </div>
-            <div class="form-group">
-                <label for="password">Password</label>
-                <input type="password" id="password" placeholder="password" required>
-            </div>
-            <!-- ****** add forget password  -->
-            <div>
-                <button id=login>Log in</button>
-            </div>
-            <div>
-                Don't have an account? <a href="register.html">register</a>
-            </div>
+        </div>
     </div>
-</div>
 </body>
 </html>
