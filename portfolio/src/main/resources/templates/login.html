@@ -1,5 +1,5 @@
 <!DOCTYPE HTML>
-<!--<html xmlns:th="http://www.thymeleaf.org" lang="">-->
+<html xmlns:th="http://www.thymeleaf.org" lang="">
 <head>
     <title>loginForm</title>
     <meta name="viewport" content="text/html; charset=UTF-8">
@@ -24,6 +24,9 @@
                 </div>
                 <div>
                     <a href="registration">register</a>
+                </div>
+                <div>
+                    <p th:text="${loginMessage}"></p>
                 </div>
             </div>
         </div>
