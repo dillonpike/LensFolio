@@ -33,6 +33,10 @@ dependencies {
 
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
+
+    // https://mvnrepository.com/artifact/com.h2database/h2
+    testImplementation 'com.h2database:h2:2.1.210'
+
 }
 
 tasks.named('test') {
