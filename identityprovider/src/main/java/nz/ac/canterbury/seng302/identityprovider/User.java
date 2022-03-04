@@ -4,29 +4,7 @@ import java.util.ArrayList;
 
 public class User {
 
-    /* Hardcoded users */
-    public static ArrayList<ArrayList<String>> database = new ArrayList<>() {
-        {
-            add(new ArrayList<>() {
-                {
-                    add("admin");
-                    add("admin");
-                }
-            });
-            add(new ArrayList<>() {
-                {
-                    add("student");
-                    add("student");
-                }
-            });
-            add(new ArrayList<>() {
-                {
-                    add("teacher");
-                    add("teacher");
-                }
-            });
-        }
-    };
+    Database database = new Database();
 
     String username;
     String password;
@@ -54,13 +32,6 @@ public class User {
      * @return boolean of if the user is in the database
      */
     public boolean inDatabase() {
-        boolean isInDatabase = false;
-        for (ArrayList<String> users : database) {
-            if (username.equals(users.get(0)) && password.equals(users.get(1))) {
-                isInDatabase = true;
-                break;
-            }
-        }
-        return isInDatabase;
+        return database.inDatabase(username, password);
     }
 }
