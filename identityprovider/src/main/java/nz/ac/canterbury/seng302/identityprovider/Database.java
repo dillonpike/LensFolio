@@ -1,6 +1,10 @@
 package nz.ac.canterbury.seng302.identityprovider;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class Database {
 
@@ -28,7 +32,34 @@ public class Database {
         }
     };
 
-    /**
+    public Database() {
+        Connection conn = null;
+        try {
+            conn = DriverManager.getConnection("jdbc:h2:~/test", "sa", "");
+            // add application code here
+            System.out.println("Connected to database");
+            // Creates the table
+            //conn.prepareStatement("CREATE TABLE userTable (Id int NOT NULL, Username VARCHAR(30) NOT NULL, Password VARCHAR(30) NOT NULL);").execute();
+            // Hardcode a user
+            //conn.prepareStatement("INSERT INTO userTable VALUES (1, 'database', 'database');").execute();
+
+
+            //Currently running
+
+            String[] columns = {"Id", "Username", "Password"};
+            conn.prepareStatement("SELECT * FROM userTable", columns).execute();
+            System.out.println(Arrays.toString(columns));
+
+            System.out.println("Line Run");
+
+            conn.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+        /**
      * Checks if the user is in the database and has the right password.
      * @return boolean of if the user is in the database
      */

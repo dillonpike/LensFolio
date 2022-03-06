@@ -6,6 +6,8 @@ public class User {
 
     Database database = new Database();
 
+    static Integer id_count = 0;
+    Integer id;
     String username;
     String password;
 
@@ -15,6 +17,8 @@ public class User {
      * @param password User to login
      */
     public User(String username, String password) {
+        this.id = id_count;
+        id_count++;
         this.username = username;
         this.password = password;
     }
@@ -25,6 +29,27 @@ public class User {
 
     public String getPassword() {
         return password;
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    @Override
+    public String toString() {
+        return String.format("student [id=%s, username=%s]", id, username);
     }
 
     /**
