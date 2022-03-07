@@ -37,22 +37,32 @@
 
             <form action="#">
                 <div class="input-field">
-                    <input type="text" placeholder="Enter your full name" required>
+                    <label>
+                        <input type="text" placeholder="Enter your full name" pattern="[A-Za-z]+"
+                               onpaste="return false" required>
+                    </label>
                     <i class="uil uil-user"></i>
                 </div>
                 <div class="input-field">
-                    <input type="text" placeholder="Enter your username" required>
+                    <label for="username"></label><input type="text" id="username" placeholder="Enter your username" maxlength="25"
+                                                         onpaste="return false" required>
                     <i class="uil uil-user"></i>
                 </div>
                 <div class="input-field">
-                    <input type="email" placeholder="Enter your email" required>
+                    <label>
+                        <input type="email" placeholder="Enter your email" required>
+                    </label>
                     <i class="uil uil-envelope icon"></i>
                 </div>
                 <div class="input-field">
-                    <input type="password" class="password" placeholder="Create a password" required>
+                    <label for="password"></label><input type="password" id="password" placeholder="Enter your password" minlength="8"
+                                                         onpaste="return false" required>
                 </div>
                 <div class="input-field">
-                    <input type="password" class="password" placeholder="Confirm a password" required>
+                    <label>
+                        <input type="password" class="password" placeholder="Confirm password" minlength="8"
+                               onpaste="return false" required>
+                    </label>
                 </div>
                 <div class="input-field button">
                     <input type="submit" value="Login Now">
