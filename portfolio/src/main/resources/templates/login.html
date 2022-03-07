@@ -12,15 +12,16 @@
         <div class="form login">
             <span class="title">Login</span>
 
-            <form action="#">
+            <form th:action="@{/login}"
+                  method="post">
                 <div class="input-field">
-                    <input type="text" placeholder="Enter your username" required>
+                    <input id="usernameLogin" type="text" placeholder="Enter your username" name="usernameLogin"required>
                 </div>
                 <div class="input-field">
-                    <input type="password" class="password" placeholder="Enter your password" required>
+                    <input type="passwordLogin" class="password" placeholder="Enter your password" name="passwordLogin" required>
                 </div>
                 <div class="input-field button">
-                    <input type="submit" value="Login In">
+                    <input type="submit" value="Login">
                 </div>
             </form>
 
@@ -65,13 +66,13 @@
                     </label>
                 </div>
                 <div class="input-field button">
-                    <input type="submit" value="Login Now">
+                    <input type="submit" value="Register">
                 </div>
             </form>
             <div class="login-signup">
                     <span class="text">
                         Already sign up?
-                        <a href="#" class="text login-link">Register Now</a>
+                        <a href="#" class="text login-link">Login Now</a>
                     </span>
             </div>
         </div>

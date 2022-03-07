@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Account page</title>
+  <!--    <link th:href="@{/css/CSSAccountPage.css}" rel="stylesheet"/>-->
+  <link th:href="@{/css/account.css}" rel="stylesheet"/>
+  <script src="@{/js/account.js}"></script>
+</head>
+<body>
+<nav>
+  <div class="nav-left">
+    <img src="img.png" class="logo">
+  </div>
+  <div class="nav-right">
+    <div class="name">
+      <b>user 123</b>
+    </div>
+    <div class="nav-user-icon" onclick="settingsMenuToggle()">
+      <img src="profile.png">
+      <div class="setting-menu">
+        <div class="setting-menu-inner">
+          <div class="user-profile">
+            <div class="nav-user-icon">
+              <div>
+                <p>User 123</p>
+                <li><a href="#">Profile</a></li>
+                <li><a href="#">Log out</a></li>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</nav>
+<body class="profile-page">
+<div class="wrapper">
+  <h2>Profile</h2>
+  <form action="">
+    <img src="profile.png" width="150px" height="auto" alt="">
+    <div class="inputBox">
+      <label for="username">username</label>
+      <input type="text" id="username" name="username" value="" disabled>
+    </div>
+    <div class="inputBox">
+      <label for="full_name">full name</label>
+      <input type="text" id="full_name" name="full_name" placeholder="Full Name" value="" >
+    </div>
+    <div class="inputBox">
+      <label for="email">email</label>
+      <input type="email" id="email" name="email" placeholder="Email Address" value="" >
+    </div>
+    <!--            <div class="inputBox">-->
+    <!--                <input type="password" id="cpassword" name="cpassword" placeholder="Confirm Password" value="" required>-->
+    <!--            </div>-->
+    <div class="inputBox">
+      <label for="photo">Photo</label>
+      <input type="file" accept="image/*" id="photo" name="photo" >
+    </div>
+    <div>
+      <button type="submit" name="submit" class="btn">Update Profile</button>
+    </div>
+  </form>
+</div>
+</body>
+
+</form>
+</body>
+</html>
