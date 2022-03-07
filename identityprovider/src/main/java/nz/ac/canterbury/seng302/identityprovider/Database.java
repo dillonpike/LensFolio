@@ -1,8 +1,6 @@
 package nz.ac.canterbury.seng302.identityprovider;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -36,19 +34,32 @@ public class Database {
         Connection conn = null;
         try {
             conn = DriverManager.getConnection("jdbc:h2:~/test", "sa", "");
-            // add application code here
             System.out.println("Connected to database");
             // Creates the table
             //conn.prepareStatement("CREATE TABLE userTable (Id int NOT NULL, Username VARCHAR(30) NOT NULL, Password VARCHAR(30) NOT NULL);").execute();
             // Hardcode a user
-            //conn.prepareStatement("INSERT INTO userTable VALUES (1, 'database', 'database');").execute();
+            //conn.createStatement().execute("INSERT INTO userTable VALUES (1, 'database', 'database');");
+            //System.out.println("Inserted");
+
 
 
             //Currently running
+            conn.prepareStatement("DROP TABLE IF EXISTS userTable;").execute();
+            conn.prepareStatement("CREATE TABLE userTable (Id int NOT NULL, Username VARCHAR(30) NOT NULL, Password VARCHAR(30) NOT NULL);").execute();
 
-            String[] columns = {"Id", "Username", "Password"};
-            conn.prepareStatement("SELECT * FROM userTable", columns).execute();
-            System.out.println(Arrays.toString(columns));
+            //Insert some values
+            conn.createStatement().execute("INSERT INTO userTable VALUES (1, 'database1', 'database1');");
+            conn.createStatement().execute("INSERT INTO userTable VALUES (2, 'database2', 'database2');");
+            conn.createStatement().execute("INSERT INTO userTable VALUES (3, 'database3', 'database3');");
+
+            //Get data back
+            ResultSet allTable = conn.createStatement().executeQuery("SELECT * FROM userTable");
+            System.out.println(allTable);
+
+            //Iterate through ResultSet to get data
+            allTable.next();
+            System.out.println(allTable.getString("Username"));
+
 
             System.out.println("Line Run");
 
