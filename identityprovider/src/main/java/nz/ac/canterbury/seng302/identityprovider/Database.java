@@ -48,18 +48,18 @@ public class Database {
             conn.prepareStatement("CREATE TABLE userTable (Id int NOT NULL, Username VARCHAR(30) NOT NULL, Password VARCHAR(30) NOT NULL);").execute();
 
             //Insert some values
-            conn.createStatement().execute("INSERT INTO userTable VALUES (1, 'database1', 'database1');");
-            conn.createStatement().execute("INSERT INTO userTable VALUES (2, 'database2', 'database2');");
-            conn.createStatement().execute("INSERT INTO userTable VALUES (3, 'database3', 'database3');");
+            conn.createStatement().execute("INSERT INTO userTable VALUES (1, 'database1', 'database1p');");
+            conn.createStatement().execute("INSERT INTO userTable VALUES (2, 'database2', 'database2p');");
+            conn.createStatement().execute("INSERT INTO userTable VALUES (3, 'database3', 'database3p');");
 
             //Get data back
             ResultSet allTable = conn.createStatement().executeQuery("SELECT * FROM userTable");
             System.out.println(allTable);
 
             //Iterate through ResultSet to get data
-            allTable.next();
-            System.out.println(allTable.getString("Username"));
-
+            while (allTable.next()) {
+                System.out.println("ID: " + allTable.getString("ID") + " Username: " + allTable.getString("Username") + " Password: " + allTable.getString("password"));
+            }
 
             System.out.println("Line Run");
 
