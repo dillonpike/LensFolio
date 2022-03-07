@@ -41,8 +41,8 @@ public class LoginController {
     public String login(
             HttpServletRequest request,
             HttpServletResponse response,
-            @RequestParam(name="username", required=false, defaultValue="abc123") String username,
-            @RequestParam(name="password", required=false, defaultValue="Password123!") String password,
+            @RequestParam(name="username", required=false, defaultValue="admin") String username,
+            @RequestParam(name="password", required=false, defaultValue="admin") String password,
             Model model
     ) {
         AuthenticateResponse loginReply;
@@ -66,6 +66,38 @@ public class LoginController {
 
         model.addAttribute("loginMessage", loginReply.getMessage());
         return "login";
+    }
+
+    @PostMapping("/userLogin")
+    public String userLogin(
+            HttpServletRequest request,
+            HttpServletResponse response,
+            @RequestParam(name="username", required=true) String username,
+            @RequestParam(name="password", required=true) String password,
+            Model model
+    ) {
+        AuthenticateResponse loginReply;
+        try {
+            loginReply = authenticateClientService.authenticate(username, password);
+        } catch (StatusRuntimeException e){
+            model.addAttribute("loginMessage", "Error connecting to Identity Provider...");
+            return "Account";
+        }
+        if (loginReply.getSuccess()) {
+            var domain = request.getHeader("host");
+            CookieUtil.create(
+                    response,
+                    "lens-session-token",
+                    loginReply.getToken(),
+                    true,
+                    5 * 60 * 60, // Expires in 5 hours
+                    domain.startsWith("localhost") ? null : domain
+            );
+        }
+
+        model.addAttribute("loginMessage", loginReply.getMessage());
+        return "login";
+
     }
 
 }
