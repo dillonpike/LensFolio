@@ -3,48 +3,38 @@
 <head>
     <title>loginForm</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <link rel="stylesheet" href="login.css">
+    <link th:href="@{/css/CSSregister.css}" rel="stylesheet"/>
 </head>
 <body>
-<div class="control">
-    <div class="item">
-        <h2>Register</h2>
-    <div class="form-group">
-        <label for="firstName" >First Name</label>
-        <input type="text" id="firstName" placeholder="first name" required>
-    </div>
-    <br/>
-    <div class="form-group">
-        <label for="lastName" >Last Name</label>
-        <input type="text" id="lastName" placeholder="last name" required>
-    </div>
-    <br/>
-    <div class="form-group">
-        <label for="username" >Username</label>
-        <input type="text" id="username" placeholder="username" required>
-    </div>
-    <br/>
-    <div class="form-group">
-        <label for="password">Password</label>
-        <input type="password" id="password" placeholder="password" required>
-    </div>
-    <br/>
-    <div class="form-group">
-        <label for="confirmPassword">confirm Password</label>
-        <input type="password" id="confirmPassword" placeholder="confirm password" required>
-    </div>
-    <br/>
-    <div class="form-group">
-        <label for="email">confirm Password</label>
-        <input type="email" id="email" placeholder="123@email.com" required>
-    </div>
-    <br/>
-    <!-- **** add bio  -->
-    <div>
-        <button onclick="login.html" id=login>Register</button>
-    </div>
-
-</div>
-</div>
+    <form action="#">
+        <div class="container">
+            <div class="register">
+                <h2>Register</h2>
+                <div class="box">
+                    <div class="form-group">
+                        <label for="fullName" >Full Name</label>
+                        <input type="text" id="fullName" placeholder="" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="username" >Username</label>
+                        <input type="text" id="username" placeholder="" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="email" >Email</label>
+                        <input type="email" id="email" placeholder="" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <input type="password" id="password" placeholder="" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="confirmPassword">Confirm Password</label>
+                        <input type="password" id="confirmPassword" placeholder="" required>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <input type="submit" value="Register Now" id="register">
+    </form>
 </body>
 </html>
