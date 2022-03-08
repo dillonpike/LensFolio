@@ -1,5 +1,8 @@
 package nz.ac.canterbury.seng302.identityprovider;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -7,6 +10,8 @@ import java.util.Arrays;
 public class Database {
 
     private Connection conn;
+
+    private static int idCount = 0;
 
     public Database() {
         try {
@@ -19,11 +24,22 @@ public class Database {
 
                 // Check table is built
                 try {
-                    conn.prepareStatement("CREATE TABLE userTable (Id int NOT NULL UNIQUE PRIMARY KEY, Username VARCHAR(30) NOT NULL, Password VARCHAR(30) NOT NULL);").execute();
-                } catch (SQLException ignored) {}
+                    conn.prepareStatement("CREATE TABLE userTable (Id int NOT NULL UNIQUE PRIMARY KEY, Username VARCHAR(30) NOT NULL, Password VARCHAR(30) NOT NULL, Picture BLOB DEFAULT NULL);").execute();
+                } catch (SQLException e) {
+                    System.out.println("Table already exists. ");
+                }
+
+                ResultSet maxCount = conn.createStatement().executeQuery("SELECT MAX(id) as largestid FROM userTable");
+                maxCount.next();
+                idCount = maxCount.getInt("largestid") + 1;
 
                 // For testing
                 System.out.println(this);
+                System.out.println(idCount);
+                boolean yes = addUser("admin", "password");
+                System.out.println(yes);
+                System.out.println(this);
+                System.out.println(idCount);
 
                 conn.close();
             }
@@ -95,5 +111,64 @@ public class Database {
 
         }
         return isInDatabase;
+    }
+
+    /**
+     * Adds a user to the database with a new unique id number.
+     * @param username Username for user
+     * @param password Password for user
+     * @return Boolean of if the item was added to the database correctly.
+     */
+    public boolean addUser(String username, String password) {
+        boolean addedToDatabase = false;
+        conn = connectToDatabase();
+        if (conn != null) {
+            try {
+                String sqlStatement = "INSERT INTO userTable VALUES (" + idCount + ", '" + username + "', '" + password  + "', NULL);";
+                conn.prepareStatement(sqlStatement).execute();
+                idCount++;
+                addedToDatabase = true;
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return addedToDatabase;
+    }
+
+    /**
+     * Adds an image to an existing user in the database.
+     * @param image An image file
+     * @return Boolean of if the image was added to the user in the database correctly.
+     */
+    public boolean addUserImage(int userId, File image) {
+        boolean addedToDatabase = false;
+        conn = connectToDatabase();
+        if (conn != null) {
+            try {
+                String blob = createBlob(image);
+                String sqlStatement = "UPDATE userTable SET Picture=" + blob + " WHERE ID=" + userId + ";";
+                conn.prepareStatement(sqlStatement).execute();
+                addedToDatabase = true;
+            } catch (SQLException ignored) {}
+        }
+        return addedToDatabase;
+    }
+
+    private String createBlob(File file) {
+        int finalBlob = 0;
+        try {
+            byte[] fileData = new byte[(int) file.length()];
+            FileInputStream in = new FileInputStream(file);
+            finalBlob = in.read(fileData);
+            in.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        if (finalBlob != 0) {
+            return String.valueOf(finalBlob);
+        } else {
+            return "null";
+        }
+
     }
 }
