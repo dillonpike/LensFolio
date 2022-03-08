@@ -4,21 +4,18 @@ import java.util.ArrayList;
 
 public class User {
 
-    Database database = new Database();
+    private Database database;
 
-    static Integer id_count = 0;
-    Integer id;
-    String username;
-    String password;
+    private String username;
+    private String password;
 
     /**
      * Initialises the user with a username and password.
      * @param username Used to login
      * @param password User to login
      */
-    public User(String username, String password) {
-        this.id = id_count;
-        id_count++;
+    public User(Database database, String username, String password) {
+        this.database = database;
         this.username = username;
         this.password = password;
     }
@@ -32,15 +29,31 @@ public class User {
     }
 
     public Integer getId() {
-        return id;
+        return database.getIdFromDatabase(username);
+    }
+
+    public String getFullName() {
+        Integer id = this.getId();
+        if (id != null) {
+            return database.getStringFromDatabase(this.getId(), "fullname");
+        } else {
+            return "";
+        }
+
+    }
+
+    public String getEmail() {
+        Integer id = this.getId();
+        if (id != null) {
+            return database.getStringFromDatabase(this.getId(), "email");
+        } else {
+            return "";
+        }
+
     }
 
     public void setUsername(String username) {
         this.username = username;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
     }
 
     public void setPassword(String password) {
@@ -49,7 +62,12 @@ public class User {
 
     @Override
     public String toString() {
-        return String.format("student [id=%s, username=%s]", id, username);
+        Integer id = this.getId();
+        if (id != null) {
+            return String.format("User [id=%s, username=%s]", this.getId(), username);
+        } else {
+            return String.format("User [username=%s]", username);
+        }
     }
 
     /**

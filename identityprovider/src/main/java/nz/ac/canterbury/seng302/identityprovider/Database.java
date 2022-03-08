@@ -17,7 +17,7 @@ public class Database {
             if (conn != null) {
                 System.out.println("Connected to database");
 
-                conn.prepareStatement("DROP TABLE IF EXISTS userTable;").execute();
+                //conn.prepareStatement("DROP TABLE IF EXISTS userTable;").execute();
                 //conn.createStatement().execute("INSERT INTO userTable VALUES (1, 'admin', 'password', 'Administrator Account', 'test@gmail.com', NULL);");
 
                 // Check table is built
@@ -25,8 +25,8 @@ public class Database {
                     conn.prepareStatement("CREATE TABLE userTable (" +
                             "Id int NOT NULL UNIQUE PRIMARY KEY, " +
                             "Username VARCHAR(30) NOT NULL, " +
-                            "Password VARCHAR(30) NOT NULL, " +
-                            "FirstName VARCHAR(30) NOT NULL, " +
+                            "Password VARCHAR(50) NOT NULL, " +
+                            "FullName VARCHAR(50) NOT NULL, " +
                             "Email VARCHAR(30) NOT NULL, " +
                             "Picture BLOB DEFAULT NULL" +
                             ");").execute();
@@ -43,6 +43,7 @@ public class Database {
                 boolean yes = addUser("admin", "password", "Administrator Account", "test@gmail.com");
                 System.out.println(yes);
                 System.out.println(idCount);
+                //System.out.println(this);
 
 
                 conn.close();
@@ -82,7 +83,9 @@ public class Database {
                     databaseString
                             .append("ID: ").append(allTable.getString("ID"))
                             .append("  Username: ").append(allTable.getString("Username"))
-                            .append("  Password: ").append(allTable.getString("password"))
+                            .append("  Password: ").append(allTable.getString("Password"))
+                            .append("  Full Name: ").append(allTable.getBlob("FullName"))
+                            .append("  Email: ").append(allTable.getString("Email"))
                             .append("  Picture: ").append(allTable.getBlob("Picture"))
                             .append("\n");
                 }
@@ -110,9 +113,7 @@ public class Database {
                 if (resultingAccount.next()) {
                     isInDatabase = true;
                 }
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
+            } catch (SQLException ignored) {}
 
         }
         return isInDatabase;
@@ -190,5 +191,52 @@ public class Database {
             return "null";
         }
 
+    }
+
+    public String getStringFromDatabase(int id, String column) {
+        String result = null;
+        conn = connectToDatabase();
+        if (conn != null) {
+            try {
+                String sqlStatement = "SELECT " + column + " FROM userTable WHERE ID=" + id + ";";
+                ResultSet accountReceived = conn.createStatement().executeQuery(sqlStatement);
+                accountReceived.next();
+                result = accountReceived.getString(column);
+                conn.close();
+            } catch (SQLException ignored) {}
+        }
+        return result;
+    }
+
+    public Integer getIntFromDatabase(int id, String column) {
+        Integer result = null;
+        conn = connectToDatabase();
+        if (conn != null) {
+            try {
+                String sqlStatement = "SELECT " + column + " FROM userTable WHERE ID=" + id + ";";
+                ResultSet accountReceived = conn.createStatement().executeQuery(sqlStatement);
+                accountReceived.next();
+                result = accountReceived.getInt(column);
+                conn.close();
+            } catch (SQLException ignored) {}
+        }
+        return result;
+    }
+
+    public Integer getIdFromDatabase(String username) {
+        Integer result = null;
+        conn = connectToDatabase();
+        if (conn != null) {
+            try {
+                String sqlStatement = "SELECT id FROM userTable WHERE username='" + username + "';";
+                ResultSet accountReceived = conn.createStatement().executeQuery(sqlStatement);
+                accountReceived.next();
+                result = accountReceived.getInt("id");
+                conn.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return result;
     }
 }
