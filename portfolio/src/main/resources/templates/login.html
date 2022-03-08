@@ -15,10 +15,10 @@
             <form th:action="@{/login}"
                   method="post">
                 <div class="input-field">
-                    <input id="usernameLogin" type="text" placeholder="Enter your username" name="usernameLogin"required>
+                    <input id="usernameLogin" type="text" placeholder="Enter your username" th:name="usernameLogin" required>
                 </div>
                 <div class="input-field">
-                    <input type="passwordLogin" class="password" placeholder="Enter your password" name="passwordLogin" required>
+                    <input type="password" class="passwordLogin" placeholder="Enter your password" th:name="passwordLogin"  required>
                 </div>
                 <div class="input-field button">
                     <input type="submit" value="Login" >
@@ -27,7 +27,7 @@
 
             <div class="login-signup">
                     <span class="text">First time?
-                        <a href="" class="text signup-link">Signup now</a>
+                        <a href="#" class="text signup-link">Signup now</a>
                     </span>
             </div>
         </div>
@@ -36,34 +36,35 @@
         <div class="form signup">
             <span class="title">Registration</span>
 
-            <form action="#">
+            <form th:action="@{./register}"
+            method="post">
                 <div class="input-field">
                     <label>
                         <input type="text" placeholder="Enter your full name" pattern="^(\w\w+)\s(\w+)$"
-                               required>
+                              th:name="fullName" required>
                     </label>
                     <i class="uil uil-user"></i>
                 </div>
                 <div class="input-field">
-                    <label for="username"></label><input type="text" id="username" placeholder="Enter your username" maxlength="25"
-                                                          required>
+                    <label for="username"></label>
+                    <input type="text" id="username" th:name="username" placeholder="Enter your username" maxlength="25" required>
                     <i class="uil uil-user"></i>
                 </div>
                 <div class="input-field">
                     <label>
-                        <input type="email" placeholder="Enter your email" required>
+                        <input type="email" th:name="email" placeholder="Enter your email" required>
                     </label>
                     <i class="uil uil-envelope icon"></i>
                 </div>
                 <div class="input-field">
-                    <label for="password"></label><input type="password" id="password" placeholder="Enter your password" minlength="8" onpaste="return false" required>
+                    <label for="password"></label><input th:name="password" type="password" id="password" placeholder="Enter your password" minlength="8" onpaste="return false" required>
                 </div>
-<!--                <div class="input-field">-->
-<!--                    <label>-->
-<!--                        <input type="password" class="password" placeholder="Confirm password" minlength="8"-->
-<!--                               onpaste="return false" required>-->
-<!--                    </label>-->
-<!--                </div>-->
+                <div class="input-field">
+                    <label>
+                        <input type="password" class="password" th:name="confirmPassword" placeholder="Confirm password" minlength="8"
+                               onpaste="return false" required>
+                    </label>
+                </div>
                 <div class="input-field button">
                     <input type="submit" value="Register">
                 </div>
@@ -71,7 +72,7 @@
             <div class="login-signup">
                     <span class="text">
                         Already sign up?
-                        <a href="" class="text login-link">Login Now</a>
+                        <a href="#" class="text login-link">Login Now</a>
                     </span>
             </div>
         </div>
