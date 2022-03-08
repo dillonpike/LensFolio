@@ -1,5 +1,7 @@
 package nz.ac.canterbury.seng302.identityprovider;
 
+import com.sun.source.tree.ReturnTree;
+
 import java.util.ArrayList;
 
 public class User {
@@ -35,7 +37,7 @@ public class User {
     public String getFullName() {
         Integer id = this.getId();
         if (id != null) {
-            return database.getStringFromDatabase(this.getId(), "fullname");
+            return database.getStringFromDatabase(id, "fullname");
         } else {
             return "";
         }
@@ -45,19 +47,59 @@ public class User {
     public String getEmail() {
         Integer id = this.getId();
         if (id != null) {
-            return database.getStringFromDatabase(this.getId(), "email");
+            return database.getStringFromDatabase(id, "email");
         } else {
             return "";
         }
 
     }
 
-    public void setUsername(String username) {
-        this.username = username;
+    /**
+     * Set username in the user class and database.
+     * @param username New username
+     * @return Boolean of whether the username was set correctly. If false, then the old username is still set
+     */
+    public boolean setUsername(String username) {
+        Integer id = this.getId();
+        boolean wasSet = database.setStringFromDatabase(id, "username", username);
+        if (wasSet) {
+            this.username = username;
+        }
+        return wasSet;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
+    /**
+     * Set password in the user class and database.
+     * @param password New password
+     * @return Boolean of whether the password was set correctly. If false, then the old password is still set
+     */
+    public boolean setPassword(String password) {
+        Integer id = this.getId();
+        boolean wasSet = database.setStringFromDatabase(id, "password", password);
+        if (wasSet) {
+            this.password = password;
+        }
+        return wasSet;
+    }
+
+    /**
+     * Sets a new full name in the database.
+     * @param newName New name to change it to
+     * @return Boolean of whether the data was successfully changed
+     */
+    public boolean setFullName(String newName) {
+        Integer id = this.getId();
+        return database.setStringFromDatabase(id, "fullname", newName);
+    }
+
+    /**
+     * Sets a new email in the database.
+     * @param newEmail New email to change it to
+     * @return Boolean of whether the data was successfully changed
+     */
+    public boolean setEmail(String newEmail) {
+        Integer id = this.getId();
+        return database.setStringFromDatabase(id, "email", newEmail);
     }
 
     @Override
