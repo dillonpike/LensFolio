@@ -10,6 +10,7 @@ public class User {
 
     private String username;
     private String password;
+    private boolean hasBeenAddedToDatabase = false;
 
     /**
      * Initialises the user with a username and password.
@@ -22,18 +23,36 @@ public class User {
         this.password = password;
     }
 
+    /**
+     * Adds the user to the database and returns whether it was added correctly.
+     * @param fullName Full Name of user
+     * @param email Email of user
+     * @return Boolean of whether the user was added correctly.
+     */
+    public boolean addUser(String fullName, String email) {
+        boolean wasAdded = database.addUser(username, password, fullName, email);
+        if (wasAdded) {
+            hasBeenAddedToDatabase = true;
+        }
+        return wasAdded;
+    }
+
     public String getUsername() {
         return username;
     }
 
-    public String getPassword() {
-        return password;
-    }
+    //public String getPassword() {
+    //    return password;
+    //}
 
     public Integer getId() {
         return database.getIdFromDatabase(username);
     }
 
+    /**
+     * Gets full name from database using the user id.
+     * @return Full name of user
+     */
     public String getFullName() {
         Integer id = this.getId();
         if (id != null) {
@@ -44,6 +63,10 @@ public class User {
 
     }
 
+    /**
+     * Gets email from database using the user id.
+     * @return Email of user
+     */
     public String getEmail() {
         Integer id = this.getId();
         if (id != null) {
