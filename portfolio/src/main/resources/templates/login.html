@@ -1,48 +1,96 @@
 <!DOCTYPE HTML>
-<html xmlns:th="http://www.thymeleaf.org" lang="">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>loginForm</title>
-    <meta name="viewport" content="text/html; charset=UTF-8">
-    <link th:href="@{/css/CSSlogin.css}" rel="stylesheet"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <link th:href="@{/css/login.css}" rel="stylesheet"/>
 </head>
 <body>
-    <div class="container">
-        <div class="login">
-            <h2>Log in</h2>
-            <div class="box">
-                <div class="form-group">
-                    <label for="username" >username</label>
-                    <input type="text" id="username" placeholder="username" required>
+
+<div class="container">
+    <div class="forms">
+        <div class="form login">
+            <span class="title">Login</span>
+
+            <form th:action="@{/login}"
+                  method="post">
+                <div class="input-field">
+                    <input id="usernameLogin" type="text" placeholder="Enter your username" name="usernameLogin"required>
                 </div>
-                <div class="form-group">
-                    <label for="password">Password</label>
-                    <input type="password" id="password" placeholder="password" required>
+                <div class="input-field">
+                    <input type="passwordLogin" class="password" placeholder="Enter your password" name="passwordLogin" required>
                 </div>
-                <!-- ****** add forget password  -->
-                <div>
-                    <button id=login>Log in</button>
+                <div class="input-field button">
+                    <input type="submit" value="Login" >
                 </div>
-                <div>
-                    <a href="registration">register</a>
+            </form>
+
+            <div class="login-signup">
+                    <span class="text">First time?
+                        <a href="#" class="text signup-link">Signup now</a>
+                    </span>
+            </div>
+        </div>
+
+        <!-- Registration Form -->
+        <div class="form signup">
+            <span class="title">Registration</span>
+
+            <form action="#">
+                <div class="input-field">
+                    <label>
+                        <input type="text" placeholder="Enter your full name" pattern="^(\w\w+)\s(\w+)$"
+                               required>
+                    </label>
+                    <i class="uil uil-user"></i>
                 </div>
-                <div>
-                    <p th:text="${loginMessage}"></p>
+                <div class="input-field">
+                    <label for="username"></label><input type="text" id="username" placeholder="Enter your username" maxlength="25"
+                                                          required>
+                    <i class="uil uil-user"></i>
                 </div>
+                <div class="input-field">
+                    <label>
+                        <input type="email" placeholder="Enter your email" required>
+                    </label>
+                    <i class="uil uil-envelope icon"></i>
+                </div>
+                <div class="input-field">
+                    <label for="password"></label><input type="password" id="password" placeholder="Enter your password" minlength="8" onpaste="return false" required>
+                </div>
+                <div class="input-field">
+                    <label>
+                        <input type="password" class="password" placeholder="Confirm password" minlength="8"
+                               onpaste="return false" required>
+                    </label>
+                </div>
+                <div class="input-field button">
+                    <input type="submit" value="Register">
+                </div>
+            </form>
+            <div class="login-signup">
+                    <span class="text">
+                        Already sign up?
+                        <a href="#" class="text login-link">Login Now</a>
+                    </span>
             </div>
         </div>
     </div>
-    <script type="text/javascript">
-        document.getElementById("login").onclick = function () {
-            const username = getUsername();
-            const password = getPassword();
-            location.href = `http://localhost:9000/login?username=${username}&password=${password}`;
-        };
-        function getUsername(){
-            return document.getElementById('username').value;
-        }
-        function getPassword(){
-            return document.getElementById('password').value;
-        }
-    </script>
+</div>
+
+<script>
+    const container = document.querySelector(".container"),
+        signUp = document.querySelector(".signup-link"),
+        login = document.querySelector(".login-link");
+
+    // js code to appear signup and login form
+    signUp.addEventListener("click", ( )=>{
+        container.classList.add("active");
+    });
+    login.addEventListener("click", ( )=>{
+        container.classList.remove("active");
+    });
+
+</script>
 </body>
 </html>
