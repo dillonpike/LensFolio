@@ -17,12 +17,19 @@ public class Database {
             if (conn != null) {
                 System.out.println("Connected to database");
 
-                //conn.prepareStatement("DROP TABLE IF EXISTS userTable;").execute();
-                //conn.createStatement().execute("INSERT INTO userTable VALUES (1, 'database1', 'database1p');");
+                conn.prepareStatement("DROP TABLE IF EXISTS userTable;").execute();
+                //conn.createStatement().execute("INSERT INTO userTable VALUES (1, 'admin', 'password', 'Administrator Account', 'test@gmail.com', NULL);");
 
                 // Check table is built
                 try {
-                    conn.prepareStatement("CREATE TABLE userTable (Id int NOT NULL UNIQUE PRIMARY KEY, Username VARCHAR(30) NOT NULL, Password VARCHAR(30) NOT NULL, Picture BLOB DEFAULT NULL);").execute();
+                    conn.prepareStatement("CREATE TABLE userTable (" +
+                            "Id int NOT NULL UNIQUE PRIMARY KEY, " +
+                            "Username VARCHAR(30) NOT NULL, " +
+                            "Password VARCHAR(30) NOT NULL, " +
+                            "FirstName VARCHAR(30) NOT NULL, " +
+                            "Email VARCHAR(30) NOT NULL, " +
+                            "Picture BLOB DEFAULT NULL" +
+                            ");").execute();
                 } catch (SQLException e) {
                     System.out.println("Table already exists. ");
                 }
@@ -33,7 +40,10 @@ public class Database {
 
                 // For testing
                 System.out.println(this);
+                boolean yes = addUser("admin", "password", "Administrator Account", "test@gmail.com");
+                System.out.println(yes);
                 System.out.println(idCount);
+
 
                 conn.close();
             }
@@ -112,14 +122,23 @@ public class Database {
      * Adds a user to the database with a new unique id number.
      * @param username Username for user
      * @param password Password for user
+     * @param fullName The full name of the user
+     * @param email Email for user
      * @return Boolean of if the item was added to the database correctly.
      */
-    public boolean addUser(String username, String password) {
+    public boolean addUser(String username, String password, String fullName, String email) {
         boolean addedToDatabase = false;
         conn = connectToDatabase();
         if (conn != null) {
             try {
-                String sqlStatement = "INSERT INTO userTable VALUES (" + idCount + ", '" + username + "', '" + password  + "', NULL);";
+                String sqlStatement = "INSERT INTO userTable VALUES (" +
+                        idCount + ", '" +
+                        username + "', '" +
+                        password  + "', '" +
+                        fullName + "', '" +
+                        email + "', " +
+                        "NULL" +
+                        ");";
                 conn.prepareStatement(sqlStatement).execute();
                 idCount++;
                 addedToDatabase = true;
