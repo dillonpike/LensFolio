@@ -233,9 +233,7 @@ public class Database {
                 accountReceived.next();
                 result = accountReceived.getInt("id");
                 conn.close();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
+            } catch (SQLException ignored) {}
         }
         return result;
     }
