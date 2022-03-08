@@ -71,7 +71,7 @@ public class LoginController {
         }
 
         model.addAttribute("loginMessage", loginReply.getMessage());
-        return "account";
+        return "redirect:account";
     }
 
 }

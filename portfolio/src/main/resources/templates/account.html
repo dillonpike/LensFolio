@@ -24,7 +24,7 @@
               <div>
                 <p>User 123</p>
                 <li><a href="#">Profile</a></li>
-                <li><a href="#">Log out</a></li>
+                <li><a href="/login">Log out</a></li>
               </div>
             </div>
           </div>
@@ -60,12 +60,6 @@
     <div>
       <button type="submit" name="submit" class="btn">Update Profile</button>
     </div>
-  </form>
-  <div>
-    <form th:action="@{/logout}" method="post">
-      <input type="submit" value="Sign Out"/>
-    </form>
-  </div>
 </div>
 <script>
 
