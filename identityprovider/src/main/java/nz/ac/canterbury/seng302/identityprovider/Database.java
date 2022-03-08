@@ -1,8 +1,6 @@
 package nz.ac.canterbury.seng302.identityprovider;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
+import java.io.*;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -34,10 +32,6 @@ public class Database {
                 idCount = maxCount.getInt("largestid") + 1;
 
                 // For testing
-                System.out.println(this);
-                System.out.println(idCount);
-                boolean yes = addUser("admin", "password");
-                System.out.println(yes);
                 System.out.println(this);
                 System.out.println(idCount);
 
@@ -79,6 +73,7 @@ public class Database {
                             .append("ID: ").append(allTable.getString("ID"))
                             .append("  Username: ").append(allTable.getString("Username"))
                             .append("  Password: ").append(allTable.getString("password"))
+                            .append("  Picture: ").append(allTable.getBlob("Picture"))
                             .append("\n");
                 }
                 conn.close();
@@ -149,11 +144,17 @@ public class Database {
                 String sqlStatement = "UPDATE userTable SET Picture=" + blob + " WHERE ID=" + userId + ";";
                 conn.prepareStatement(sqlStatement).execute();
                 addedToDatabase = true;
+                conn.close();
             } catch (SQLException ignored) {}
         }
         return addedToDatabase;
     }
 
+    /**
+     * Makes blob from file given (Probably not correctly)
+     * @param file File to convert to Blob
+     * @return Blob as string
+     */
     private String createBlob(File file) {
         int finalBlob = 0;
         try {
