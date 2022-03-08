@@ -193,6 +193,12 @@ public class Database {
 
     }
 
+    /**
+     * Gets string variables from the database based on the given column.
+     * @param id Id of user that the data is coming from
+     * @param column Data description for column that holds strings
+     * @return Received data
+     */
     public String getStringFromDatabase(int id, String column) {
         String result = null;
         conn = connectToDatabase();
@@ -208,6 +214,12 @@ public class Database {
         return result;
     }
 
+    /**
+     * Gets integer variables from the database based on the given column.
+     * @param id Id of user that the data is coming from
+     * @param column Data description for column that holds integers
+     * @return Received data
+     */
     public Integer getIntFromDatabase(int id, String column) {
         Integer result = null;
         conn = connectToDatabase();
@@ -223,6 +235,11 @@ public class Database {
         return result;
     }
 
+    /**
+     * Gets the ID of the given username.
+     * @param username Username of wanted user
+     * @return ID of user
+     */
     public Integer getIdFromDatabase(String username) {
         Integer result = null;
         conn = connectToDatabase();
@@ -236,5 +253,49 @@ public class Database {
             } catch (SQLException ignored) {}
         }
         return result;
+    }
+
+    /**
+     * Updates a column in the database based on which column and id is given.
+     * @param id ID of the user that you want to change the data of
+     * @param column keyword of column you want to update
+     * @param data New data to be updated to
+     * @return Whether the data was updated successfully
+     */
+    public boolean setStringFromDatabase(int id, String column, String data) {
+        boolean wasUpdated = false;
+        conn = connectToDatabase();
+        if (conn != null) {
+            try {
+                String sqlStatement = "UPDATE userTable SET " + column + "='" + data + "' WHERE id=" + id + ";";
+                ResultSet accountReceived = conn.createStatement().executeQuery(sqlStatement);
+                accountReceived.next();
+                wasUpdated = true;
+                conn.close();
+            } catch (SQLException ignored) {}
+        }
+        return wasUpdated;
+    }
+
+    /**
+     * Updates a column in the database based on which column and id is given.
+     * @param id ID of the user that you want to change the data of
+     * @param column keyword of column you want to update
+     * @param data New data to be updated to
+     * @return Whether the data was updated successfully
+     */
+    public boolean setIntFromDatabase(int id, String column, int data) {
+        boolean wasUpdated = false;
+        conn = connectToDatabase();
+        if (conn != null) {
+            try {
+                String sqlStatement = "UPDATE userTable SET " + column + "=" + data + " WHERE id=" + id + ";";
+                ResultSet accountReceived = conn.createStatement().executeQuery(sqlStatement);
+                accountReceived.next();
+                wasUpdated = true;
+                conn.close();
+            } catch (SQLException ignored) {}
+        }
+        return wasUpdated;
     }
 }
