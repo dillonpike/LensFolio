@@ -17,7 +17,7 @@ public class Database {
             if (conn != null) {
                 System.out.println("Connected to database");
 
-                conn.prepareStatement("DROP TABLE IF EXISTS userTable;").execute();
+                //conn.prepareStatement("DROP TABLE IF EXISTS userTable;").execute();
                 //conn.createStatement().execute("INSERT INTO userTable VALUES (1, 'admin', 'password', 'Administrator Account', 'test@gmail.com', NULL);");
 
                 // Check table is built
@@ -25,8 +25,8 @@ public class Database {
                     conn.prepareStatement("CREATE TABLE userTable (" +
                             "Id int NOT NULL UNIQUE PRIMARY KEY, " +
                             "Username VARCHAR(30) NOT NULL, " +
-                            "Password VARCHAR(30) NOT NULL, " +
-                            "FirstName VARCHAR(30) NOT NULL, " +
+                            "Password VARCHAR(50) NOT NULL, " +
+                            "FullName VARCHAR(50) NOT NULL, " +
                             "Email VARCHAR(30) NOT NULL, " +
                             "Picture BLOB DEFAULT NULL" +
                             ");").execute();
@@ -43,6 +43,7 @@ public class Database {
                 boolean yes = addUser("admin", "password", "Administrator Account", "test@gmail.com");
                 System.out.println(yes);
                 System.out.println(idCount);
+                //System.out.println(this);
 
 
                 conn.close();
@@ -82,7 +83,9 @@ public class Database {
                     databaseString
                             .append("ID: ").append(allTable.getString("ID"))
                             .append("  Username: ").append(allTable.getString("Username"))
-                            .append("  Password: ").append(allTable.getString("password"))
+                            .append("  Password: ").append(allTable.getString("Password"))
+                            .append("  Full Name: ").append(allTable.getBlob("FullName"))
+                            .append("  Email: ").append(allTable.getString("Email"))
                             .append("  Picture: ").append(allTable.getBlob("Picture"))
                             .append("\n");
                 }
@@ -110,9 +113,7 @@ public class Database {
                 if (resultingAccount.next()) {
                     isInDatabase = true;
                 }
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
+            } catch (SQLException ignored) {}
 
         }
         return isInDatabase;
@@ -190,5 +191,111 @@ public class Database {
             return "null";
         }
 
+    }
+
+    /**
+     * Gets string variables from the database based on the given column.
+     * @param id Id of user that the data is coming from
+     * @param column Data description for column that holds strings
+     * @return Received data
+     */
+    public String getStringFromDatabase(int id, String column) {
+        String result = null;
+        conn = connectToDatabase();
+        if (conn != null) {
+            try {
+                String sqlStatement = "SELECT " + column + " FROM userTable WHERE ID=" + id + ";";
+                ResultSet accountReceived = conn.createStatement().executeQuery(sqlStatement);
+                accountReceived.next();
+                result = accountReceived.getString(column);
+                conn.close();
+            } catch (SQLException ignored) {}
+        }
+        return result;
+    }
+
+    /**
+     * Gets integer variables from the database based on the given column.
+     * @param id Id of user that the data is coming from
+     * @param column Data description for column that holds integers
+     * @return Received data
+     */
+    public Integer getIntFromDatabase(int id, String column) {
+        Integer result = null;
+        conn = connectToDatabase();
+        if (conn != null) {
+            try {
+                String sqlStatement = "SELECT " + column + " FROM userTable WHERE ID=" + id + ";";
+                ResultSet accountReceived = conn.createStatement().executeQuery(sqlStatement);
+                accountReceived.next();
+                result = accountReceived.getInt(column);
+                conn.close();
+            } catch (SQLException ignored) {}
+        }
+        return result;
+    }
+
+    /**
+     * Gets the ID of the given username.
+     * @param username Username of wanted user
+     * @return ID of user
+     */
+    public Integer getIdFromDatabase(String username) {
+        Integer result = null;
+        conn = connectToDatabase();
+        if (conn != null) {
+            try {
+                String sqlStatement = "SELECT id FROM userTable WHERE username='" + username + "';";
+                ResultSet accountReceived = conn.createStatement().executeQuery(sqlStatement);
+                accountReceived.next();
+                result = accountReceived.getInt("id");
+                conn.close();
+            } catch (SQLException ignored) {}
+        }
+        return result;
+    }
+
+    /**
+     * Updates a column in the database based on which column and id is given.
+     * @param id ID of the user that you want to change the data of
+     * @param column keyword of column you want to update
+     * @param data New data to be updated to
+     * @return Whether the data was updated successfully
+     */
+    public boolean setStringFromDatabase(int id, String column, String data) {
+        boolean wasUpdated = false;
+        conn = connectToDatabase();
+        if (conn != null) {
+            try {
+                String sqlStatement = "UPDATE userTable SET " + column + "='" + data + "' WHERE id=" + id + ";";
+                ResultSet accountReceived = conn.createStatement().executeQuery(sqlStatement);
+                accountReceived.next();
+                wasUpdated = true;
+                conn.close();
+            } catch (SQLException ignored) {}
+        }
+        return wasUpdated;
+    }
+
+    /**
+     * Updates a column in the database based on which column and id is given.
+     * @param id ID of the user that you want to change the data of
+     * @param column keyword of column you want to update
+     * @param data New data to be updated to
+     * @return Whether the data was updated successfully
+     */
+    public boolean setIntFromDatabase(int id, String column, int data) {
+        boolean wasUpdated = false;
+        conn = connectToDatabase();
+        if (conn != null) {
+            try {
+                String sqlStatement = "UPDATE userTable SET " + column + "=" + data + " WHERE id=" + id + ";";
+                ResultSet accountReceived = conn.createStatement().executeQuery(sqlStatement);
+                accountReceived.next();
+                wasUpdated = true;
+                conn.close();
+            } catch (SQLException ignored) {}
+        }
+        return wasUpdated;
     }
 }
