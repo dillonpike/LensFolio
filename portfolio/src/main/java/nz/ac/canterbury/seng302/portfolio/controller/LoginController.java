@@ -3,6 +3,7 @@ package nz.ac.canterbury.seng302.portfolio.controller;
 import io.grpc.StatusRuntimeException;
 import nz.ac.canterbury.seng302.portfolio.authentication.CookieUtil;
 import nz.ac.canterbury.seng302.portfolio.service.AuthenticateClientService;
+import nz.ac.canterbury.seng302.portfolio.service.RegisterClientService;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthenticateResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -18,6 +19,7 @@ public class LoginController {
 
     @Autowired
     private AuthenticateClientService authenticateClientService;
+
 
     @GetMapping("/login")
     public String login() {
@@ -73,42 +75,7 @@ public class LoginController {
         return "redirect:account";
     }
 
-
-    @PostMapping("/register")
-    public String registration(
-            HttpServletRequest request,
-            HttpServletResponse response,
-            @RequestParam(name = "fullName") String fullName,
-            @RequestParam(name = "username") String username,
-            @RequestParam(name = "email") String email,
-            @RequestParam(name = "password") String password,
-            @RequestParam(name = "confirmPassword") String confirmPassword,
-            Model model
-    ) {
-        AuthenticateResponse loginReply;
-
-        //TODO Pass the data to check if any duplicated username instead of <authenticate>
-
-        try {
-            loginReply = authenticateClientService.authenticate(username, password);
-        } catch (StatusRuntimeException e) {
-            model.addAttribute("loginMessage", "Error connecting to Identity Provider...");
-            return "login";
-        }
-        if (loginReply.getSuccess()) {
-            var domain = request.getHeader("host");
-            CookieUtil.create(
-                    response,
-                    "lens-session-token",
-                    loginReply.getToken(),
-                    true,
-                    5 * 60 * 60, // Expires in 5 hours
-                    domain.startsWith("localhost") ? null : domain
-            );
-        }
-        return "redirect:account";
-        }
-    }
+}
 
 
 

@@ -34,17 +34,10 @@ public class Database {
                     System.out.println("Table already exists. ");
                 }
 
-                ResultSet maxCount = conn.createStatement().executeQuery("SELECT MAX(id) as largestid FROM userTable");
-                maxCount.next();
-                idCount = maxCount.getInt("largestid") + 1;
+                updateMaxId();
 
                 // For testing
-                System.out.println(this);
                 boolean yes = addUser("admin", "password", "Administrator Account", "test@gmail.com");
-                System.out.println(yes);
-                System.out.println(idCount);
-                //System.out.println(this);
-
 
                 conn.close();
             }
@@ -65,6 +58,12 @@ public class Database {
             System.out.println("Failed to connect to database. ");
         }
         return conn;
+    }
+
+    private void updateMaxId() throws SQLException {
+        ResultSet maxCount = conn.createStatement().executeQuery("SELECT MAX(id) as largestid FROM userTable");
+        maxCount.next();
+        idCount = maxCount.getInt("largestid") + 1;
     }
 
     /**
@@ -132,13 +131,13 @@ public class Database {
         conn = connectToDatabase();
         if (conn != null) {
             try {
-                String sqlStatement = "INSERT INTO userTable VALUES (" +
+                updateMaxId();
+                String sqlStatement = "INSERT INTO userTable (id, username, password, fullname, email) VALUES (" +
                         idCount + ", '" +
                         username + "', '" +
                         password  + "', '" +
                         fullName + "', '" +
-                        email + "', " +
-                        "NULL" +
+                        email + "'" +
                         ");";
                 conn.prepareStatement(sqlStatement).execute();
                 idCount++;
