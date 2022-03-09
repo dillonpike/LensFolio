@@ -17,7 +17,7 @@ public class Database {
             if (conn != null) {
                 System.out.println("Connected to database");
 
-                //conn.prepareStatement("DROP TABLE IF EXISTS userTable;").execute();
+                conn.prepareStatement("DROP TABLE IF EXISTS userTable;").execute();
                 //conn.createStatement().execute("INSERT INTO userTable VALUES (1, 'admin', 'password', 'Administrator Account', 'test@gmail.com', NULL);");
 
                 // Check table is built
