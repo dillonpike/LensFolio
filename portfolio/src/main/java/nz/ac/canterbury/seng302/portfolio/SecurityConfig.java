@@ -22,7 +22,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         security
             .addFilterBefore(new JwtAuthenticationFilter(), BasicAuthenticationFilter.class)
                 .authorizeRequests()
-                    .antMatchers(HttpMethod.GET, "/login")
+                    .antMatchers(HttpMethod.GET, "/login", "/register", "/css/**")
                     .permitAll()
                     .and()
                 .authorizeRequests()
@@ -43,12 +43,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .formLogin().disable();
 
         // let the H2 console embed itself in a frame
-        security.headers().frameOptions().sameOrigin();
+        //security.headers().frameOptions().sameOrigin();
     }
 
     @Override
     public void configure(WebSecurity web) throws Exception
     {
-        web.ignoring().antMatchers("/login");
+        web.ignoring().antMatchers("/login", "/register", "/css/**");
     }
 }

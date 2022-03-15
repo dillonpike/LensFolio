@@ -4,6 +4,8 @@ import com.google.protobuf.Empty;
 import io.grpc.stub.StreamObserver;
 import net.devh.boot.grpc.server.service.GrpcService;
 
+import nz.ac.canterbury.seng302.identityprovider.Database;
+import nz.ac.canterbury.seng302.identityprovider.User;
 import nz.ac.canterbury.seng302.identityprovider.authentication.AuthenticationServerInterceptor;
 import nz.ac.canterbury.seng302.identityprovider.authentication.JwtTokenUtil;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
@@ -22,6 +24,8 @@ public class AuthenticateServerService extends AuthenticationServiceImplBase{
     private final String FULL_NAME_OF_USER = FIRST_NAME_OF_USER + " " + LAST_NAME_OF_USER;
     private final String ROLE_OF_USER = "student"; // Puce teams may want to change this to "teacher" to test some functionality
 
+    private Database database = new Database();
+
     private JwtTokenUtil jwtTokenService = JwtTokenUtil.getInstance();
 
     /**
@@ -30,10 +34,13 @@ public class AuthenticateServerService extends AuthenticationServiceImplBase{
     @Override
     public void authenticate(AuthenticateRequest request, StreamObserver<AuthenticateResponse> responseObserver) {
         AuthenticateResponse.Builder reply = AuthenticateResponse.newBuilder();
-        
-        if (request.getUsername().equals(VALID_USER) && request.getPassword().equals(VALID_PASSWORD)) {
 
-            String token = jwtTokenService.generateTokenForUser(VALID_USER, VALID_USER_ID, FULL_NAME_OF_USER, ROLE_OF_USER);
+        // Create new User object
+        User user = new User(database, request.getUsername(), request.getPassword());
+
+        if (user.inDatabase()) {
+
+            String token = jwtTokenService.generateTokenForUser(user.getUsername(), VALID_USER_ID, FULL_NAME_OF_USER, ROLE_OF_USER);
             reply
                 .setEmail("validuser@email.com")
                 .setFirstName(FIRST_NAME_OF_USER)
@@ -42,7 +49,7 @@ public class AuthenticateServerService extends AuthenticationServiceImplBase{
                 .setSuccess(true)
                 .setToken(token)
                 .setUserId(1)
-                .setUsername(VALID_USER);
+                .setUsername(user.getUsername());
         } else {
             reply
             .setMessage("Log in attempt failed: username or password incorrect")
@@ -63,4 +70,5 @@ public class AuthenticateServerService extends AuthenticationServiceImplBase{
         responseObserver.onNext(AuthenticationServerInterceptor.AUTH_STATE.get());
         responseObserver.onCompleted();
     }
+
 }
