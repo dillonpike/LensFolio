@@ -1,124 +1,148 @@
 package nz.ac.canterbury.seng302.portfolio.model;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import java.util.Date;
-import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import org.springframework.format.annotation.DateTimeFormat;
 
-@Entity // this is an entity, assumed to be in a table called Project
-public class Project {
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private int id;
-    private String projectName;
-    private String projectDescription;
-    private Date projectStartDate;
-    private Date projectEndDate;
+import java.io.Serializable;
 
-    protected Project() {}
-
-    public Project(String projectName, String projectDescription, Date projectStartDate, Date projectEndDate) {
-        this.projectName = projectName;
-        this.projectDescription = projectDescription;
-        this.projectStartDate = projectStartDate;
-        this.projectEndDate = projectEndDate;
-    }
-
-    public Project(String projectName, String projectDescription, String projectStartDate, String projectEndDate) {
-        this.projectName = projectName;
-        this.projectDescription = projectDescription;
-        this.projectStartDate = Project.stringToDate(projectStartDate);
-        this.projectEndDate = Project.stringToDate(projectEndDate);
-    }
-
-    @Override
-    public String toString() {
-        return String.format(
-                "Project[id=%d, projectName='%s', projectStartDate='%s', projectEndDate='%s', projectDescription='%s']",
-                id, projectName, projectStartDate, projectEndDate, projectDescription);
-    }
+/**
+ * Models a project, which contains a name, description, start date, and end date.
+ */
+public class Project implements Serializable {
 
     /**
-     * Gets the date form of the given date string
-     *
-     * @param dateString the string to read as a date in format 01/Jan/2000
-     * @return the given date, as a date object
+     * Error message for when the start date is invalid due to not being before the end date.
      */
-    static Date stringToDate(String dateString) {
-        Date date = null;
-        try {
-            date = new SimpleDateFormat("dd/MMM/yyyy").parse(dateString);
-        } catch (Exception e) {
-            System.err.println("Error parsing date: " + e.getMessage());
+    private static final String START_DATE_ERROR_MSG = "Start date must be before the end date.";
+
+    /**
+     * Error message for when the end date is invalid due to not being after the start date.
+     */
+    private static final String END_DATE_ERROR_MSG = "End date must be after the start date.";
+
+    /**
+     * Name of the project.
+     */
+    private String name;
+
+    /**
+     * Description of the project.
+     */
+    private String description;
+
+    /**
+     * Start date of the sprint.
+     */
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    private LocalDate startDate;
+
+    /**
+     * End date of the sprint. Must be after startDate.
+     */
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    private LocalDate endDate;
+
+    /**
+     * Constructor to make a new project.
+     * @param name name of the project
+     * @param description description of the project
+     * @param startDate start date of the project
+     * @param endDate end date of the project. Must be after startDate
+     */
+    public Project(String name, String description, LocalDate startDate, LocalDate endDate) throws Exception {
+        if (startDate.compareTo(endDate) >= 0) {
+            throw new Exception(END_DATE_ERROR_MSG);
         }
-        return date;
+        this.name = name;
+        this.description = description;
+        this.startDate = startDate;
+        this.endDate = endDate;
+    }
+
+    public Project(){};
+
+    /**
+     * Gets the name of the project.
+     * @return name of the project
+     */
+    public String getName() {
+        return name;
     }
 
     /**
-     * Gets the string form of the given date in
-     *
-     * @param date the date to convert
-     * @return the given date, as a string in format 01/Jan/2000
+     * Sets the name of the project.
+     * @param name name of the project
      */
-    static String dateToString(Date date) {
-        return new SimpleDateFormat("dd/MMM/yyyy").format(date);
+    public void setName(String name) {
+        this.name = name;
     }
 
-    /* Getters/Setters */
-
-    public int getId(){
-        return  id;
+    /**
+     * Gets the description of the project.
+     * @return description of the project
+     */
+    public String getDescription() {
+        return description;
     }
 
-    public String getName() {
-        return projectName;
+    /**
+     * Sets the description of the project.
+     * @param description description of the project
+     */
+    public void setDescription(String description) {
+        this.description = description;
     }
 
-    public void setName(String newName) {
-        this.projectName = newName;
+    /**
+     * Gets the start date of the sprint.
+     * @return start date of the sprint
+     */
+    public LocalDate getStartDate() {
+        if (startDate == null) {
+            return null;
+        } else {
+            return startDate;
+        }
+
     }
 
-    public String getDescription(){
-        return projectDescription;
+    /**
+     * Sets the start date of the sprint.
+     * @param startDate start date of the sprint
+     */
+    public void setStartDate(LocalDate startDate) throws Exception {
+        if (endDate != null) {
+            if (startDate.compareTo(endDate) >= 0) {
+                throw new Exception(START_DATE_ERROR_MSG);
+            }
+        }
+        this.startDate = startDate;
     }
 
-    public void setDescription(String newDescription) {
-        this.projectDescription = newDescription;
+    /**
+     * Sets the end date of the sprint.
+     * @return end date of the sprint
+     */
+    public LocalDate getEndDate() {
+        if (endDate == null) {
+            return null;
+        } else {
+            return endDate;
+        }
     }
 
-    /* Dates have string get/set methods to interact with view */
-
-    public Date getStartDate() {
-        return projectStartDate;
+    /**
+     * Gets the end date of the sprint.
+     * @param endDate end date of the sprint
+     */
+    public void setEndDate(LocalDate endDate) throws Exception {
+        if (startDate != null) {
+            if (startDate.compareTo(endDate) >= 0) {
+                throw new Exception(END_DATE_ERROR_MSG);
+            }
+        }
+        this.endDate = endDate;
     }
 
-    public String getStartDateString() {
-        return Project.dateToString(this.projectStartDate);
-    }
 
-    public void setStartDate(Date newStartDate) {
-        this.projectStartDate = newStartDate;
-    }
-
-    public void setStartDateString(String date) {
-        this.projectStartDate = Project.stringToDate(date);
-    }
-
-    public Date getEndDate() {
-        return projectEndDate;
-    }
-
-    public String getEndDateString() {
-        return Project.dateToString(this.projectEndDate);
-    }
-
-    public void setEndDate(Date newEndDate) {
-        this.projectEndDate = newEndDate;
-    }
-
-    public void setEndDateString(String date) {
-        this.projectStartDate = Project.stringToDate(date);
-    }
 }

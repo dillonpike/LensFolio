@@ -1,43 +1,39 @@
 <!DOCTYPE HTML>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Edit Sprint</title>
+    <title>Getting Started: Serving Web Content</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <link th:href="@{/styles/main.css}" rel="stylesheet" />
-    <link th:href="@{/styles/form.css}" rel="stylesheet" />
+    <link rel="stylesheet" th:href="@{/css/editSprintCSS.css}" />
 </head>
 <body>
-<div class="header">
-    <div class="title">
-        <div class="title-name">Edit Sprint</div>
+    <div class="container">
+        <form class="form-container" action="#" th:action="@{/submitEditedSprint}" method="post">
+            <h1>Edit Sprint</h1>
+
+            <label> Sprint Name:
+                <input type="text" id="namesprint" th:value="${sprint.name}" name="sprintNumber" disabled>
+            </label>
+
+
+            <div class="date">
+                <label> Start Date:
+                    <input type="date" placeholder="Enter Start Date" th:value="${sprint.startDate}" th:field="${sprint.startDate}" name="startDateField" id="startDate">
+                </label>
+                <label> Enter End Date:
+                    <input type="date" value="Enter End Date" th:value="${sprint.endDate}" th:field="${sprint.endDate}" name="endDateField" id="endDate" onchange="compareDates()">
+                </label>
+            </div>
+
+            <input type="hidden" name="labelNum" th:value="${sprint.labelNum}" th:field="${sprint.labelNum}">
+            <input type="hidden" name="projectName" th:value="${sprint.projectName}" th:field="${sprint.projectName}">
+            <label> Enter Sprint Description:
+                <input type="text" id="desc" th:value="${sprint.description}" th:field="${sprint.description}" name="sprintDescription">
+            </label>
+            <button style="margin-left: 10px" type="submit" id="submitBtn" class="btn">Edit</button>
+        </form>
+        <form class="form-container" action="#" th:action="@{/projectDetails}">
+            <button style="margin-left: 10px" type="submit" id="cancelBtn" class="btn cancel">Cancel</button>
+        </form>
     </div>
-</div>
-<div class="content">
-    <form th:action="@{/edit-sprint}"
-          method="post">
-        <label for="sprintName">Sprint Name</label> <br/>
-        <input id="sprintName" type="text" th:name="sprintName" th:value="*{sprintName}">
-        <br/>
-        <div class="horizontal-group">
-            <div class="horizontal-group-element" >
-                <label for="sprintStartDate">Sprint Start Date</label> <br/>
-                <input id="sprintStartDate" type="text" th:name="sprintStartDate" th:value="*{sprintStartDate}">
-            </div>
-            <div class="horizontal-group-element" >
-                <label for="sprintEndDate">Sprint End Date</label> <br/>
-                <input id="sprintEndDate" type="text" th:name="sprintEndDate" th:value="*{sprintEndDate}">
-            </div>
-        </div>
-        <div>
-            <label for="sprintDescription">Sprint Description</label> <br/>
-            <textarea class="description-input" id="sprintDescription" th:name="sprintDescription" th:text="*{sprintDescription}"></textarea>
-        </div>
-        <br/>
-        <button class="cancel" type="button">
-            <a th:href="@{'/details'}">Cancel</a>
-        </button>
-        <button class="save" type="submit">Save</button>
-    </form>
-</div>
 </body>
 </html>
