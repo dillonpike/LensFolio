@@ -1,5 +1,6 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
+import nz.ac.canterbury.seng302.portfolio.authentication.CookieUtil;
 import nz.ac.canterbury.seng302.portfolio.service.AuthenticateClientService;
 import nz.ac.canterbury.seng302.portfolio.service.GreeterClientService;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
@@ -29,4 +30,16 @@ public class AccountController {
     ) {
         return "account";
     }
+
+    /*
+    @PostMapping("/logout")
+    public String logout(
+    ) {
+        CookieUtil.clear(response,
+                "lens-session-token");
+        return "redirect:login";
+    }
+
+     */
+
 }
