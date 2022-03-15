@@ -1,9 +1,15 @@
 package nz.ac.canterbury.seng302.identityprovider;
 
+import nz.ac.canterbury.seng302.identityprovider.model.UserModel;
+import org.hibernate.HibernateException;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
+import org.hibernate.cfg.Configuration;
+import org.springframework.stereotype.Service;
+
 import java.io.*;
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.Arrays;
 
 public class Database {
 
@@ -11,39 +17,33 @@ public class Database {
 
     private static int idCount = 0;
 
+    private static SessionFactory sessionFactory;
+
     public Database() {
-        try {
-            conn = connectToDatabase();
-            if (conn != null) {
-                System.out.println("Connected to database");
+        Configuration configuration = new Configuration();
+        configuration.configure();
+        sessionFactory = configuration.buildSessionFactory();
+    }
 
-                conn.prepareStatement("DROP TABLE IF EXISTS userTable;").execute();
-                //conn.createStatement().execute("INSERT INTO userTable VALUES (1, 'admin', 'password', 'Administrator Account', 'test@gmail.com', NULL);");
-
-                // Check table is built
-                try {
-                    conn.prepareStatement("CREATE TABLE userTable (" +
-                            "Id int NOT NULL UNIQUE PRIMARY KEY, " +
-                            "Username VARCHAR(30) NOT NULL, " +
-                            "Password VARCHAR(50) NOT NULL, " +
-                            "FullName VARCHAR(50) NOT NULL, " +
-                            "Email VARCHAR(30) NOT NULL, " +
-                            "Picture BLOB DEFAULT NULL" +
-                            ");").execute();
-                } catch (SQLException e) {
-                    System.out.println("Table already exists. ");
-                }
-
-                updateMaxId();
-
-                // For testing
-                boolean yes = addUser("admin", "password", "Administrator Account", "test@gmail.com");
-
-                conn.close();
+    public Integer saveUserEntity(UserModel userModel) {
+        Transaction transaction = null;
+        Integer newUserId = -1;
+        try (Session session = sessionFactory.openSession()) {
+            System.out.println("Open transaction");
+            transaction = session.beginTransaction();
+            System.out.println("Save userModel");
+            session.save(userModel); //newUserId = (Integer)
+            System.out.println("Commit");
+            transaction.commit();
+        } catch (HibernateException e) {
+            System.err.println("Unable to open session or transaction");
+            e.printStackTrace(); // Current error
+            if (null != transaction) {
+                transaction.rollback();
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
         }
+        System.out.println(newUserId);
+        return newUserId;
     }
 
     /**
