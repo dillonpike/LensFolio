@@ -37,37 +37,56 @@
     </div>
   </header>
 
-<body class="profile-page">
-<div class="wrapper">
-  <h2>Profile</h2>
-  <form action="">
-    <img src="profile.png" width="150px" height="auto" alt="">
-    <div class="inputBox">
-      <label for="username">username</label>
-      <input type="text" id="username" name="username" value="" disabled>
-    </div>
-    <div class="inputBox">
-      <label for="full_name">full name</label>
-      <input type="text" id="full_name" name="full_name" placeholder="Full Name" value="" >
-    </div>
-    <div class="inputBox">
-      <label for="email">email</label>
-      <input type="email" id="email" name="email" placeholder="Email Address" value="" >
-    </div>
-    <!--            <div class="inputBox">-->
-    <!--                <input type="password" id="cpassword" name="cpassword" placeholder="Confirm Password" value="" required>-->
-    <!--            </div>-->
-    <div class="inputBox">
-      <label for="photo">Photo</label>
-      <input type="file" accept="image/*" id="photo" name="photo" >
-    </div>
-    <div>
-      <button type="submit" name="submit" class="btn">Update Profile</button>
-    </div>
-  </form>
-</div>
-<script>
 
+<body class="profile-page ">
+<div class="col-md-7 col-lg-4 mb-5 mb-lg-0 profile_side">
+  <div class="card border-0 shadow ">
+    <img th:src="@{img/img.png}" alt="" width="300" height="300" class="rounded-circle">
+    <div class="card-body p-1-9 p-xl-5">
+      <div class="mb-4">
+        <h3 class="h4 mb-0">User123</h3>
+<!--        <span class="text-primary">CEO &amp; Founder</span>-->
+      </div>
+<!--      <ul class="list-unstyled mb-4">-->
+<!--        <li class="mb-3"><a href="#!"><i class="far fa-envelope display-25 me-3 text-secondary"></i>dakota@gmail.com</a></li>-->
+<!--        <li class="mb-3"><a href="#!"><i class="fas fa-mobile-alt display-25 me-3 text-secondary"></i>+012 (345) 6789</a></li>-->
+<!--        <li><a href="#!"><i class="fas fa-map-marker-alt display-25 me-3 text-secondary"></i>205 Main Street, USA</a></li>-->
+<!--      </ul>-->
+    </div>
+  </div>
+</div>
+<!--<div class="wrapper">-->
+<!--  <h2>Profile</h2>-->
+<!--  <form action="">-->
+<!--    <img src="profile.png" width="150px" height="auto" alt="">-->
+<!--    <div class="inputBox">-->
+<!--      <label for="username">username</label>-->
+<!--      <input type="text" id="username" name="username" value="" disabled>-->
+<!--    </div>-->
+<!--    <div class="inputBox">-->
+<!--      <label for="full_name">full name</label>-->
+<!--      <input type="text" id="full_name" name="full_name" placeholder="Full Name" value="" >-->
+<!--    </div>-->
+<!--    <div class="inputBox">-->
+<!--      <label for="email">email</label>-->
+<!--      <input type="email" id="email" name="email" placeholder="Email Address" value="" >-->
+<!--    </div>-->
+<!--    &lt;!&ndash;            <div class="inputBox">&ndash;&gt;-->
+<!--    &lt;!&ndash;                <input type="password" id="cpassword" name="cpassword" placeholder="Confirm Password" value="" required>&ndash;&gt;-->
+<!--    &lt;!&ndash;            </div>&ndash;&gt;-->
+<!--    <div class="inputBox">-->
+<!--      <label for="photo">Photo</label>-->
+<!--      <input type="file" accept="image/*" id="photo" name="photo" >-->
+<!--    </div>-->
+<!--    <div>-->
+<!--      <button type="submit" name="submit" class="btn">Update Profile</button>-->
+<!--    </div>-->
+<!--  </form>-->
+<!--</div>-->
+
+</body>
+</body>
+<script>
   function settingsMenuToggle(){
     var settingmenu = document.querySelector(".setting-menu");
     settingmenu.classList.toggle('setting-menu-height');
@@ -76,6 +95,4 @@
 
 </script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
-</body>
-</body>
 </html>

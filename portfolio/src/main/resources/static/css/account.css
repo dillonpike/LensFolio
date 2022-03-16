@@ -74,3 +74,7 @@ form, h2{
     margin-bottom: 10px;
 }
 
+.profile_side{
+    height: 100% !important;
+}
+
