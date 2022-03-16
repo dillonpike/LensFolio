@@ -27,6 +27,6 @@ public class AccountController {
     @GetMapping
     public String showAccountPage(
     ) {
-        return "account";
+        return "editAccount";
     }
 }
