@@ -24,7 +24,9 @@
               <div>
                 <p>User 123</p>
                 <li><a href="#">Profile</a></li>
-                <li><a href="/login">Log out</a></li>
+                <form form-method="post" th:action="@{/logout}">
+                  <button type="submit">Logout</button>
+                </form>
               </div>
             </div>
           </div>
