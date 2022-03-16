@@ -3,9 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <title>Account page</title>
-  <link th:href="@{/css/account.css}" rel="stylesheet"/>
+<!--  <link th:href="@{/css/account.css}" rel="stylesheet"/>-->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
 </head>
+
 <body>
   <header class="p-3 mb-3 border-bottom">
     <div class="container">
@@ -37,54 +38,61 @@
     </div>
   </header>
 
-
-<body class="profile-page ">
-<div class="col-md-7 col-lg-4 mb-5 mb-lg-0 profile_side">
-  <div class="card border-0 shadow ">
-    <img th:src="@{img/img.png}" alt="" width="300" height="300" class="rounded-circle">
-    <div class="card-body p-1-9 p-xl-5">
-      <div class="mb-4">
-        <h3 class="h4 mb-0">User123</h3>
-<!--        <span class="text-primary">CEO &amp; Founder</span>-->
+  <div class="container">
+    <div class="row ">
+      <div class="col-md-7 col-lg-4 mb-5 mb-lg-0">
+        <div class="card border-4 shadow ">
+          <img th:src="@{img/img.png}" alt="mdo" width="300" height="300" class="rounded-circle">
+          <div class="card-body p-1-9 p-xl-5">
+            <div class="mb-4">
+              <h3 class="h4 mb-0">User 123</h3>
+              <span class="text-primary">use165</span>
+            </div>
+          </div>
+        </div>
       </div>
-<!--      <ul class="list-unstyled mb-4">-->
-<!--        <li class="mb-3"><a href="#!"><i class="far fa-envelope display-25 me-3 text-secondary"></i>dakota@gmail.com</a></li>-->
-<!--        <li class="mb-3"><a href="#!"><i class="fas fa-mobile-alt display-25 me-3 text-secondary"></i>+012 (345) 6789</a></li>-->
-<!--        <li><a href="#!"><i class="fas fa-map-marker-alt display-25 me-3 text-secondary"></i>205 Main Street, USA</a></li>-->
-<!--      </ul>-->
+      <div class="col-lg-8">
+        <div class="ps-lg-1-6 ps-xl-5">
+          <div class="mb-5">
+            <div class="text-start mb-1-6">
+              <h2 class="h1 mb-0 fs-1">Profile</h2>
+            </div>
+            <br>
+            <form action="#">
+              <div class="form-floating mb-3">
+                <input type="text" class="form-control" id="fullNameInput" placeholder="Full name" disabled>
+                <label for="fullNameInput">Full name</label>
+              </div>
+              <div class="form-floating mb-3">
+                <input type="text" class="form-control" id="nickNameInput" placeholder="Nickname/alias" disabled>
+                <label for="nickNameInput">Nickname/alias</label>
+              </div>
+              <div class="form-floating mb-3">
+                <input type="email" class="form-control" id="emailInput" placeholder="name@example.com" disabled>
+                <label for="emailInput">Email address</label>
+              </div>
+              <div class="form-floating mb-3">
+                <select class="form-select" id="pronounsSelect" aria-label="Floating label select example" disabled>
+                  <option selected>Open this select menu</option>
+                  <option value="1">She/Her</option>
+                  <option value="2">He/Him</option>
+                  <option value="3">They/Them</option>
+                </select>
+                <label for="pronounsSelect">Pronouns</label>
+              </div>
+              <div class="form-floating">
+                <textarea class="form-control" placeholder="bio" id="floatingTextarea2" style="height: 100px" disabled></textarea>
+                <label for="floatingTextarea2">Bio</label>
+              </div>
+            </form>
+            </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
-</div>
-<!--<div class="wrapper">-->
-<!--  <h2>Profile</h2>-->
-<!--  <form action="">-->
-<!--    <img src="profile.png" width="150px" height="auto" alt="">-->
-<!--    <div class="inputBox">-->
-<!--      <label for="username">username</label>-->
-<!--      <input type="text" id="username" name="username" value="" disabled>-->
-<!--    </div>-->
-<!--    <div class="inputBox">-->
-<!--      <label for="full_name">full name</label>-->
-<!--      <input type="text" id="full_name" name="full_name" placeholder="Full Name" value="" >-->
-<!--    </div>-->
-<!--    <div class="inputBox">-->
-<!--      <label for="email">email</label>-->
-<!--      <input type="email" id="email" name="email" placeholder="Email Address" value="" >-->
-<!--    </div>-->
-<!--    &lt;!&ndash;            <div class="inputBox">&ndash;&gt;-->
-<!--    &lt;!&ndash;                <input type="password" id="cpassword" name="cpassword" placeholder="Confirm Password" value="" required>&ndash;&gt;-->
-<!--    &lt;!&ndash;            </div>&ndash;&gt;-->
-<!--    <div class="inputBox">-->
-<!--      <label for="photo">Photo</label>-->
-<!--      <input type="file" accept="image/*" id="photo" name="photo" >-->
-<!--    </div>-->
-<!--    <div>-->
-<!--      <button type="submit" name="submit" class="btn">Update Profile</button>-->
-<!--    </div>-->
-<!--  </form>-->
-<!--</div>-->
 
-</body>
 </body>
 <script>
   function settingsMenuToggle(){
@@ -92,7 +100,6 @@
     settingmenu.classList.toggle('setting-menu-height');
     settingmenu.addEventListener('click',function(){event.stopPropagation()})
   }
-
 </script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
 </html>
