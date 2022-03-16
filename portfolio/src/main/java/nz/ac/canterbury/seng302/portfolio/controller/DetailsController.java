@@ -45,7 +45,7 @@ public class DetailsController {
 
         /* Return the name of the Thymeleaf template */
         // detects the role of the current user and returns appropriate page
-        if (role.equals("teacher")) {
+        if (!role.equals("teacher")) { //TODO Change this back to normal. (Remove !)
             return "teacherProjectDetails";
         } else {
             return "userProjectDetails";
