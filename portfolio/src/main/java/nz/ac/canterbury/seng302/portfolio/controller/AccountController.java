@@ -18,15 +18,19 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 @Controller
-@RequestMapping(path = "/account")
 public class AccountController {
 
     @Autowired
     private AuthenticateClientService authenticateClientService;
 
-    @GetMapping
+    /***
+     * Generate the account page which displays all user's info/attributes
+     *
+     * @return The account(home) page for user
+     */
+    @GetMapping("/account")
     public String showAccountPage(
     ) {
-        return "editAccount";
+        return "account";
     }
 }

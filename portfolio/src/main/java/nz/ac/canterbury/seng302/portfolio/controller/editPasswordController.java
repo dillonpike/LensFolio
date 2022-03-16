@@ -6,19 +6,19 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 
 @Controller
-public class EditAccountController {
+public class editPasswordController {
 
     @Autowired
     private AuthenticateClientService authenticateClientService;
 
     /***
-     * Generate the edit account page which let user edit info/attributes
+     * Generate the edit password page which let user change password
      *
-     * @return The edit account page
+     * @return The edit password page
      */
-    @GetMapping("/editAccount")
-    public String showEditAccountPage(
+    @GetMapping("/editPassword")
+    public String showEditPassword(
     ) {
-       return "editAccount";
+        return "editPassword";
     }
 }
