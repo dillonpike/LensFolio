@@ -25,14 +25,14 @@ public class Database {
         sessionFactory = configuration.buildSessionFactory();
     }
 
-    public Integer saveUserEntity(UserModel userModel) {
+    public Long saveUserEntity(UserModel userModel) {
         Transaction transaction = null;
-        Integer newUserId = -1;
+        Long newUserId = -1L;
         try (Session session = sessionFactory.openSession()) {
             System.out.println("Open transaction");
             transaction = session.beginTransaction();
             System.out.println("Save userModel");
-            session.save(userModel); //newUserId = (Integer)
+            newUserId = (Long) session.save(userModel);
             System.out.println("Commit");
             transaction.commit();
         } catch (HibernateException e) {

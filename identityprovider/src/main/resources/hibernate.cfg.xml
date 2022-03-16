@@ -14,5 +14,6 @@
         <property name="hibernate.hbm2ddl.auto">create</property>
         <!-- specify the classes that are mapped to database tables -->
         <mapping class="nz.ac.canterbury.seng302.identityprovider.model.UserModel"/>
+        <mapping class="nz.ac.canterbury.seng302.identityprovider.model.RoleModel"/>
     </session-factory>
 </hibernate-configuration>

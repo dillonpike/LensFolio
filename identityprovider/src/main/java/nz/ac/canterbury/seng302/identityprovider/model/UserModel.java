@@ -1,14 +1,19 @@
 package nz.ac.canterbury.seng302.identityprovider.model;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
-@Table(name = "users")
+@Table(name = "userModel")
 public class UserModel {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id_user")
-    private Integer userId;
+    private Long userId;
+
+    @ManyToMany
+    @JoinColumn(name = "id_user")
+    private List<RoleModel> roles;
 
     private String username;
     private String password;
@@ -18,12 +23,20 @@ public class UserModel {
 
     public UserModel() {}
 
-    public Integer getUserId() {
+    public Long getUserId() {
         return userId;
     }
 
-    public void setUserId(Integer userId) {
+    public void setUserId(Long userId) {
         this.userId = userId;
+    }
+
+    public List<RoleModel> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(List<RoleModel> roles) {
+        this.roles = roles;
     }
 
     public String getUsername() {
