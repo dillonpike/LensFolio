@@ -38,4 +38,32 @@ public class SprintService {
             throw new Exception("Project not found");
         }
     }
+
+    /**
+     *
+     * updates a sprint.
+     */
+    public Sprint updateSprint(Sprint sprint) {
+        Optional<Sprint> sOptional = repository.findById((Integer) sprint.getId());
+
+        if(sOptional != null) {
+            Sprint sprintUpdate = sOptional.get();
+            sprintUpdate.setDescription(sprint.getDescription());
+            sprintUpdate.setStartDate(sprint.getStartDate());
+            sprintUpdate.setEndDate(sprint.getEndDate());
+            sprintUpdate.setName(sprint.getName());
+
+            sprintUpdate = repository.save(sprintUpdate);
+            return sprintUpdate;
+        }
+        else {
+            sprint = repository.save(sprint);
+            return sprint;
+        }
+    }
+
+    public Sprint addSprint(Sprint sprint) {
+        sprint = repository.save(sprint);
+        return sprint;
+    }
 }
