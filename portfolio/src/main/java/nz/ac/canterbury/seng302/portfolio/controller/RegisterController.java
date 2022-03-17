@@ -12,6 +12,7 @@ import nz.ac.canterbury.seng302.shared.identityprovider.ClaimDTO;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserRegisterResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.crypto.password.Pbkdf2PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -46,7 +47,9 @@ public class RegisterController {
             Model model
     ) {
         UserRegisterResponse registrationReply;
-
+//        Pbkdf2PasswordEncoder pbkdf2PasswordEncoder = new Pbkdf2PasswordEncoder();
+//        String pbkdf2CryptedPassword = pbkdf2PasswordEncoder.encode("password");
+//        boolean passwordIsValid = pbkdf2PasswordEncoder.matches("password", pbkdf2CryptedPassword);
         //TODO Pass the data to check if any duplicated username instead of <authenticate>
 
         try {
