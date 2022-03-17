@@ -69,22 +69,22 @@
 <!--            start form-->
             <form action="#">
               <div class="form-floating mb-3">
-                <input type="text" class="form-control" id="fullNameInput" placeholder="Full name">
+                <input type="text" class="form-control" id="fullNameInput" placeholder="Full name" th:name="newFullName">
                 <label for="fullNameInput">Full name</label>
               </div>
 
               <div class="form-floating mb-3">
-                <input type="text" class="form-control" id="nickNameInput" placeholder="Nickname/alias">
+                <input type="text" class="form-control" id="nickNameInput" placeholder="Nickname/alias" th:name="newNickName">
                 <label for="nickNameInput">Nickname/alias</label>
               </div>
 
               <div class="form-floating mb-3">
-                <input type="email" class="form-control" id="emailInput" placeholder="name@example.com">
+                <input type="email" class="form-control" id="emailInput" placeholder="name@example.com" th:name="newEmail">
                 <label for="emailInput">Email address</label>
               </div>
 
               <div class="form-floating mb-3">
-                <select class="form-select" id="pronounsSelect" aria-label="Floating label select example">
+                <select class="form-select" id="pronounsSelect" aria-label="Floating label select example" th:name="newGender">
                   <option selected>Open this select menu</option>
                   <option value="1">She/Her</option>
                   <option value="2">He/Him</option>
@@ -94,7 +94,7 @@
               </div>
 
               <div class="form-floating mb-3">
-                <textarea class="form-control" placeholder="bio" id="floatingTextarea2" style="height: 100px"></textarea>
+                <textarea class="form-control" placeholder="bio" id="floatingTextarea2" th:name="newBio" style="height: 100px"></textarea>
                 <label for="floatingTextarea2">Bio</label>
               </div>
               <div>
