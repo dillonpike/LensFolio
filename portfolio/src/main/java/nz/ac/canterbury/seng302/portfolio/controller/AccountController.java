@@ -32,6 +32,7 @@ public class AccountController {
     public String showAccountPage(
 
     ) {
+        System.out.println("enter account controller");
         return "account";
     }
 }

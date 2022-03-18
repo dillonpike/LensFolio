@@ -13,16 +13,16 @@ public class EditAccountClientService {
     @GrpcClient(value = "identity-provider-grpc-server")
     private UserAccountServiceGrpc.UserAccountServiceBlockingStub UserAccountStub;
 
-    public EditUserResponse receiveConformation(final int userId, final String newFullName, final String newNickName, final String newEmail, final String newGender, final String newBio)
-    {
-        EditUserRequest response = EditUserRequest.newBuilder()
-                .setUserId(userId)
-                .setFirstName(newFullName)
-                .setLastName("")
-                .setEmail(newEmail)
-                .setPersonalPronouns(newGender)
-                .setBio(newBio)
-                .setNickname(newNickName)
-                .build();
-    }
+//    public EditUserResponse receiveConformation(final int userId, final String newFullName, final String newNickName, final String newEmail, final String newGender, final String newBio)
+//    {
+////        EditUserRequest response = EditUserRequest.newBuilder()
+////                .setUserId(userId)
+////                .setFirstName(newFullName)
+////                .setLastName("")
+////                .setEmail(newEmail)
+////                .setPersonalPronouns(newGender)
+////                .setBio(newBio)
+////                .setNickname(newNickName)
+////                .build();
+//    }
 }
