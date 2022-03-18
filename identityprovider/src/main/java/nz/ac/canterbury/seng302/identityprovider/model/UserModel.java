@@ -1,12 +1,14 @@
 package nz.ac.canterbury.seng302.identityprovider.model;
 
+import org.hibernate.annotations.GenericGenerator;
+
 import javax.persistence.*;
 import java.util.List;
 
 @Entity
 public class UserModel {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    //@GeneratedValue(strategy = GenerationType.IDENTITY)
     private int userId;
 
     private String username;
@@ -21,6 +23,18 @@ public class UserModel {
     public UserModel() {}
 
     public UserModel(String username, String password, String firstName, String middleName, String lastName, String email, String bio, String personalPronouns) {
+        this.username = username;
+        this.password = password;
+        this.firstName = firstName;
+        this.middleName = middleName;
+        this.lastName = lastName;
+        this.email = email;
+        this.bio = bio;
+        this.personalPronouns = personalPronouns;
+    }
+
+    public UserModel(int userId, String username, String password, String firstName, String middleName, String lastName, String email, String bio, String personalPronouns) {
+        this.userId = userId;
         this.username = username;
         this.password = password;
         this.firstName = firstName;

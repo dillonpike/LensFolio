@@ -13,8 +13,10 @@ import nz.ac.canterbury.seng302.shared.identityprovider.AuthenticateResponse;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthenticationServiceGrpc.AuthenticationServiceImplBase;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.sql.*;
+
 @GrpcService
-public class AuthenticateServerService extends AuthenticationServiceImplBase{
+public class AuthenticateServerService extends AuthenticationServiceImplBase {
 
     private final int VALID_USER_ID = 1;
     private final String VALID_USER = "abc123";
@@ -36,10 +38,14 @@ public class AuthenticateServerService extends AuthenticationServiceImplBase{
     public void authenticate(AuthenticateRequest request, StreamObserver<AuthenticateResponse> responseObserver) {
         AuthenticateResponse.Builder reply = AuthenticateResponse.newBuilder();
 
-        UserModel user = userModelService.getUserById(1);
+        UserModel user = userModelService.getUserById(2);
+        if (user == null) {
+            // Create failed user to compare to
+            user = new UserModel("fail", "fail", "fail", "fail", "fail", "fail", "fail", "fail");
+        }
         System.out.println(user);
 
-        if (true) {
+        if (user.getUsername().equals(request.getUsername()) && user.getPassword().equals(request.getPassword()) && !user.getUsername().equals("fail")) {
 
             String token = jwtTokenService.generateTokenForUser(user.getUsername(), VALID_USER_ID, FULL_NAME_OF_USER, ROLE_OF_USER);
             reply
