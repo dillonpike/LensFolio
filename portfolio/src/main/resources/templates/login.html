@@ -40,8 +40,15 @@
             method="post">
                 <div class="input-field">
                     <label>
-                        <input type="text" placeholder="Enter your full name" pattern="^(\w\w+)\s(\w+)$"
-                              th:name="fullName" required>
+                        <input type="text" placeholder="Enter your first name"
+                              th:name="firstName" required>
+                    </label>
+                    <i class="uil uil-user"></i>
+                </div>
+                <div class="input-field">
+                    <label>
+                        <input type="text" placeholder="Enter your last name"
+                               th:name="lastName" required>
                     </label>
                     <i class="uil uil-user"></i>
                 </div>
