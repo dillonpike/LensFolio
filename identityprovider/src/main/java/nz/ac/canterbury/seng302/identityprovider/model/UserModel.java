@@ -8,35 +8,37 @@ import java.util.List;
 public class UserModel {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "id_user")
-    private Long userId;
-
-    @ManyToMany
-    @JoinColumn(name = "id_user")
-    private List<RoleModel> roles;
+    @Column(name = "userId")
+    private int userId;
 
     private String username;
     private String password;
     private String firstName;
+    private String middleName;
     private String lastName;
     private String email;
+    private String bio;
+    private String personalPronouns;
 
     public UserModel() {}
 
-    public Long getUserId() {
+    public UserModel(String username, String password, String firstName, String middleName, String lastName, String email, String bio, String personalPronouns) {
+        this.username = username;
+        this.password = password;
+        this.firstName = firstName;
+        this.middleName = middleName;
+        this.lastName = lastName;
+        this.email = email;
+        this.bio = bio;
+        this.personalPronouns = personalPronouns;
+    }
+
+    public int getUserId() {
         return userId;
     }
 
-    public void setUserId(Long userId) {
+    public void setUserId(int userId) {
         this.userId = userId;
-    }
-
-    public List<RoleModel> getRoles() {
-        return roles;
-    }
-
-    public void setRoles(List<RoleModel> roles) {
-        this.roles = roles;
     }
 
     public String getUsername() {
@@ -63,6 +65,14 @@ public class UserModel {
         this.firstName = firstName;
     }
 
+    public String getMiddleName() {
+        return middleName;
+    }
+
+    public void setMiddleName(String middleName) {
+        this.middleName = middleName;
+    }
+
     public String getLastName() {
         return lastName;
     }
@@ -77,5 +87,26 @@ public class UserModel {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public String getBio() {
+        return bio;
+    }
+
+    public void setBio(String bio) {
+        this.bio = bio;
+    }
+
+    public String getPersonalPronouns() {
+        return personalPronouns;
+    }
+
+    public void setPersonalPronouns(String personalPronouns) {
+        this.personalPronouns = personalPronouns;
+    }
+
+    @Override
+    public String toString() {
+        return "User -> id: " + userId + "  username: " + username;
     }
 }

@@ -34,8 +34,10 @@ dependencies {
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
 
-    // For JPA implementation
-    implementation 'org.hibernate:hibernate-core:5.6.5.Final'
+    implementation 'org.springframework.data:spring-data-commons:2.6.1'
+
+    // Java Persistence API
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa:2.6.4'
 
     // https://mvnrepository.com/artifact/com.h2database/h2
     implementation 'com.h2database:h2:2.1.210'

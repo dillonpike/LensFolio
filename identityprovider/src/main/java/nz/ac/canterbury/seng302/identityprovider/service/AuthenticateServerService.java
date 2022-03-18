@@ -4,8 +4,6 @@ import com.google.protobuf.Empty;
 import io.grpc.stub.StreamObserver;
 import net.devh.boot.grpc.server.service.GrpcService;
 
-import nz.ac.canterbury.seng302.identityprovider.Database;
-import nz.ac.canterbury.seng302.identityprovider.User;
 import nz.ac.canterbury.seng302.identityprovider.authentication.AuthenticationServerInterceptor;
 import nz.ac.canterbury.seng302.identityprovider.authentication.JwtTokenUtil;
 import nz.ac.canterbury.seng302.identityprovider.model.UserModel;
@@ -13,6 +11,7 @@ import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthenticateRequest;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthenticateResponse;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthenticationServiceGrpc.AuthenticationServiceImplBase;
+import org.springframework.beans.factory.annotation.Autowired;
 
 @GrpcService
 public class AuthenticateServerService extends AuthenticationServiceImplBase{
@@ -25,9 +24,10 @@ public class AuthenticateServerService extends AuthenticationServiceImplBase{
     private final String FULL_NAME_OF_USER = FIRST_NAME_OF_USER + " " + LAST_NAME_OF_USER;
     private final String ROLE_OF_USER = "student"; // Puce teams may want to change this to "teacher" to test some functionality
 
-    private Database database;
-
     private JwtTokenUtil jwtTokenService = JwtTokenUtil.getInstance();
+
+    @Autowired
+    private UserModelService userModelService;
 
     /**
      * Attempts to authenticate a user with a given username and password. 
@@ -36,18 +36,10 @@ public class AuthenticateServerService extends AuthenticationServiceImplBase{
     public void authenticate(AuthenticateRequest request, StreamObserver<AuthenticateResponse> responseObserver) {
         AuthenticateResponse.Builder reply = AuthenticateResponse.newBuilder();
 
-        database = new Database();
+        UserModel user = userModelService.getUserById(1);
+        System.out.println(user);
 
-        // Create new User object
-        User user = new User(database, request.getUsername(), request.getPassword());
-        UserModel newUser = new UserModel();
-        newUser.setUsername(request.getUsername());
-        newUser.setPassword(request.getPassword());
-        database.saveUserEntity(newUser);
-
-
-
-        if (user.inDatabase()) {
+        if (true) {
 
             String token = jwtTokenService.generateTokenForUser(user.getUsername(), VALID_USER_ID, FULL_NAME_OF_USER, ROLE_OF_USER);
             reply
