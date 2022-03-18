@@ -70,17 +70,22 @@
 <!--            start form-->
             <form action="#">
               <div class="form-floating mb-3">
-                <input type="text" class="form-control" id="fullNameInput" placeholder="Full name" disabled>
-                <label for="fullNameInput">Full name</label>
+                <input type="text" class="form-control" id="firstNameInput" placeholder="First name" disabled th:value="firstName">
+                <label for="firstNameInput">First name</label>
               </div>
 
               <div class="form-floating mb-3">
-                <input type="text" class="form-control" id="nickNameInput" placeholder="Nickname/alias" disabled>
+                <input type="text" class="form-control" id="lastNameInput" placeholder="Last name" disabled th:value="lastName">
+                <label for="lastNameInput">Last name</label>
+              </div>
+
+              <div class="form-floating mb-3">
+                <input type="text" class="form-control" id="nickNameInput" placeholder="Nickname/alias" disabled th:value="nickname">
                 <label for="nickNameInput">Nickname/alias</label>
               </div>
 
               <div class="form-floating mb-3">
-                <input type="email" class="form-control" id="emailInput" placeholder="name@example.com" disabled>
+                <input type="email" class="form-control" id="emailInput" placeholder="name@example.com" disabled th:value="nickname">
                 <label for="emailInput">Email address</label>
               </div>
 
