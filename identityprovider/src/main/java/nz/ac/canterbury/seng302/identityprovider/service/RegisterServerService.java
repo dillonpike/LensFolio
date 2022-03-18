@@ -32,6 +32,7 @@ public class RegisterServerService extends UserAccountServiceGrpc.UserAccountSer
                     request.getBio(),
                     request.getPersonalPronouns()
             );
+            userModelService.addUser(newUser);
             wasAdded = true;
         } catch (Exception e) {
             System.err.println("Failed to create and add new user to database");

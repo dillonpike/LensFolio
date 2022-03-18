@@ -14,4 +14,9 @@ public class UserModelService {
         UserModel user = (UserModel) repository.findByUserId(userId);
         return user;
     }
+
+    public UserModel addUser(UserModel user) {
+        user = repository.save(user);
+        return user;
+    }
 }
