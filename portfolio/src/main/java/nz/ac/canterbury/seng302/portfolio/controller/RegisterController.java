@@ -47,11 +47,6 @@ public class RegisterController {
             Model model
     ) {
         UserRegisterResponse registrationReply;
-        Pbkdf2PasswordEncoder pbkdf2PasswordEncoder = new Pbkdf2PasswordEncoder();
-        String pbkdf2CryptedPassword = pbkdf2PasswordEncoder.encode(password);
-        boolean passwordIsValid = pbkdf2PasswordEncoder.matches("lhp20010308", pbkdf2CryptedPassword);
-        //TODO Pass the data to check if any duplicated username instead of <authenticate>
-
         try {
             registrationReply = registerClientService.receiveConformation(username, password, fullName, email);
         } catch (StatusRuntimeException e) {
