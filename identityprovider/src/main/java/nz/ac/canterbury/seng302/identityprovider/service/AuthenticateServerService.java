@@ -48,7 +48,7 @@ public class AuthenticateServerService extends AuthenticationServiceImplBase{
                 .setMessage("Logged in successfully!")
                 .setSuccess(true)
                 .setToken(token)
-                .setUserId(1)
+                .setUserId(user.getId())
                 .setUsername(user.getUsername());
         } else {
             reply

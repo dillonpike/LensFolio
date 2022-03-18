@@ -25,6 +25,7 @@ public class RegisterServerService extends UserAccountServiceGrpc.UserAccountSer
         boolean wasAdded = user.addUser(request.getFirstName() + " " + request.getLastName(), request.getEmail());
 
         if (wasAdded) {
+            reply.setNewUserId(user.getId());
             responseObserver.onNext(reply.setIsSuccess(true).build());
         } else {
             responseObserver.onNext(reply.setIsSuccess(false).build());
