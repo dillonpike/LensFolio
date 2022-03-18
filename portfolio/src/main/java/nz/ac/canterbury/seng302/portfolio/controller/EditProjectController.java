@@ -38,7 +38,7 @@ public class EditProjectController {
         return "editProject";
     }
 
-    @PostMapping("/edit-project")
+    @PostMapping("/details")
     public String projectSave(
             @AuthenticationPrincipal AuthState principal,
             @RequestParam(value="projectName") String projectName,
@@ -54,7 +54,7 @@ public class EditProjectController {
         newProject.setEndDateString(projectEndDate);
         newProject.setDescription(projectDescription);
         projectService.updateProject(newProject);
-        return "redirect:/edit-project";
+        return "redirect:/details";
     }
 
 }
