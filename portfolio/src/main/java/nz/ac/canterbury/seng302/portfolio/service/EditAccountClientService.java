@@ -15,14 +15,16 @@ public class EditAccountClientService {
 
     public EditUserResponse receiveConformation(final int userId, final String newFullName, final String newNickName, final String newEmail, final String newGender, final String newBio)
     {
-        EditUserRequest response = EditUserRequest.newBuilder()
-                .setUserId(userId)
-                .setFirstName(newFullName)
-                .setLastName("")
-                .setEmail(newEmail)
-                .setPersonalPronouns(newGender)
-                .setBio(newBio)
-                .setNickname(newNickName)
-                .build();
+//        EditUserRequest response = EditUserRequest.newBuilder()
+//                .setUserId(userId)
+//                .setFirstName(newFullName)
+//                .setLastName("")
+//                .setEmail(newEmail)
+//                .setPersonalPronouns(newGender)
+//                .setBio(newBio)
+//                .setNickname(newNickName)
+//                .build();
+//        return UserAccountStub.register(response);
+    return null;
     }
 }

@@ -2,6 +2,7 @@ package nz.ac.canterbury.seng302.portfolio.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -31,11 +32,13 @@ public class EditAccountController {
     public String editAccount(
             HttpServletRequest request,
             HttpServletResponse response,
+            @RequestParam(name = "userId") String userId,
             @RequestParam(name = "newFullName") String newFullName,
             @RequestParam(name = "newNickName") String newNickName,
             @RequestParam(name = "newEmail") String newEmail,
             @RequestParam(name = "newGender") String newGender,
-            @RequestParam(name = "newBio") String newBio
+            @RequestParam(name = "newBio") String newBio,
+            Model model
     ) {
         return "editAccount";
     }

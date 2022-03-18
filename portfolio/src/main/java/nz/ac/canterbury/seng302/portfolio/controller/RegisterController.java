@@ -5,11 +5,8 @@ import nz.ac.canterbury.seng302.portfolio.authentication.CookieUtil;
 import nz.ac.canterbury.seng302.portfolio.service.AuthenticateClientService;
 import nz.ac.canterbury.seng302.portfolio.service.GreeterClientService;
 import nz.ac.canterbury.seng302.portfolio.service.RegisterClientService;
-import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
-import nz.ac.canterbury.seng302.shared.identityprovider.AuthenticateResponse;
-import nz.ac.canterbury.seng302.shared.identityprovider.ClaimDTO;
+import nz.ac.canterbury.seng302.shared.identityprovider.*;
 
-import nz.ac.canterbury.seng302.shared.identityprovider.UserRegisterResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
@@ -38,7 +35,8 @@ public class RegisterController {
     public String registration(
             HttpServletRequest request,
             HttpServletResponse response,
-            @RequestParam(name = "fullName") String fullName,
+            @RequestParam(name = "firstName") String firstName,
+            @RequestParam(name = "lastName") String lastName,
             @RequestParam(name = "username") String username,
             @RequestParam(name = "email") String email,
             @RequestParam(name = "password") String password,
@@ -50,15 +48,15 @@ public class RegisterController {
         //TODO Pass the data to check if any duplicated username instead of <authenticate>
 
         try {
-            registrationReply = registerClientService.receiveConformation(username, password, fullName, email);
+            registrationReply = registerClientService.receiveConformation(username, password, firstName, lastName, email);
         } catch (StatusRuntimeException e) {
             model.addAttribute("loginMessage", "Error connecting to Identity Provider...");
-            return "register";
-        }
-        if (registrationReply.getIsSuccess()) {
             return "login";
+        }
+        if (!registrationReply.getIsSuccess()) {
+            return "account";
         } else {
-            return "register";
+            return "login";
         }
     }
 }

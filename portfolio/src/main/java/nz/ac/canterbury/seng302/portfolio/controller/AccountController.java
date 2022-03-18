@@ -1,27 +1,18 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
-import nz.ac.canterbury.seng302.portfolio.service.AuthenticateClientService;
-import nz.ac.canterbury.seng302.portfolio.service.GreeterClientService;
-import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
-import nz.ac.canterbury.seng302.shared.identityprovider.ClaimDTO;
-
+import io.grpc.StatusRuntimeException;
+import nz.ac.canterbury.seng302.portfolio.service.RegisterClientService;
+import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 @Controller
 public class AccountController {
 
     @Autowired
-    private AuthenticateClientService authenticateClientService;
+    private RegisterClientService registerClientService;
 
     /***
      * Generate the account page which displays all user's info/attributes
@@ -30,8 +21,33 @@ public class AccountController {
      */
     @GetMapping("/account")
     public String showAccountPage(
-
+            Model model
     ) {
+        //For testing only
+        model.addAttribute("firstName", "Testing");
+        model.addAttribute("lastName", "Testing");
+        model.addAttribute("nickname", "Testing");
+        int userId;
+        try {
+            userId = (int) model.getAttribute("userId");
+        } catch (Exception e) {
+            userId = 2;
+        }
+
+        UserResponse getUserByIdReply;
+
+        try {
+            getUserByIdReply = registerClientService.getUserData(userId);
+        } catch (StatusRuntimeException e) {
+            model.addAttribute("loginMessage", "Error connecting to Identity Provider...");
+            e.printStackTrace();
+        }
+
+        // Giving the model the new variables
+        //model.addAttribute("firstName", getUserByIdReply.getFirstName());
+        //model.addAttribute("lastName", getUserByIdReply.getLastName());
+        //model.addAttribute("nickname", getUserByIdReply.getNickname());
+
         return "account";
     }
 }
