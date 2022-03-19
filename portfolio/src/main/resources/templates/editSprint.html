@@ -22,12 +22,14 @@
             <div class="horizontal-group-element" >
                 <label for="sprintStartDate">Sprint Start Date</label> <br/>
                 <input id="sprintStartDate" type="text" th:name="sprintStartDate" th:value="*{sprintStartDate}">
+                <label id="sprintStartDateError" style="color:red" th:text="${@dateValidationService.validateSprintStartDate(sprintStartDate, sprintEndDate)}"></label>
             </div>
             <div class="horizontal-group-element" >
                 <label for="sprintEndDate">Sprint End Date</label> <br/>
                 <input id="sprintEndDate" type="text" th:name="sprintEndDate" th:value="*{sprintEndDate}">
             </div>
         </div>
+        <span id="sprintDateError" style="color:red" th:text="${@dateValidationService.validateSprintDateRange(sprintStartDate, sprintEndDate, id)}"></span>
         <div>
             <label for="sprintDescription">Sprint Description</label> <br/>
             <textarea class="description-input" id="sprintDescription" th:name="sprintDescription" th:text="*{sprintDescription}"></textarea>

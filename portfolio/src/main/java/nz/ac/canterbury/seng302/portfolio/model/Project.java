@@ -47,7 +47,7 @@ public class Project {
      * @param dateString the string to read as a date in format 01/Jan/2000
      * @return the given date, as a date object
      */
-    static Date stringToDate(String dateString) {
+    public static Date stringToDate(String dateString) {
         Date date = null;
         try {
             date = new SimpleDateFormat("dd/MMM/yyyy").parse(dateString);
