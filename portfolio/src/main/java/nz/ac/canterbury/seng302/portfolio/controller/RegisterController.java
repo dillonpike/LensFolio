@@ -7,6 +7,7 @@ import nz.ac.canterbury.seng302.portfolio.service.GreeterClientService;
 import nz.ac.canterbury.seng302.portfolio.service.RegisterClientService;
 import nz.ac.canterbury.seng302.shared.identityprovider.*;
 
+import nz.ac.canterbury.seng302.shared.identityprovider.UserRegisterResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
