@@ -1258,3 +1258,6 @@ call next value for hibernate_sequence [90036-210]
 	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1136)
 	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:635)
 	at java.base/java.lang.Thread.run(Thread.java:833)
+2022-03-19 13:36:43 jdbc[13]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "USER_MODEL" already exists; SQL statement:
+CREATE TABLE User_Model (User_Id int NOT NULL UNIQUE PRIMARY KEY, Username VARCHAR(30) NOT NULL, Password VARCHAR(50) NOT NULL, First_Name VARCHAR(50) NOT NULL, Middle_Name VARCHAR(50) NOT NULL, Last_Name VARCHAR(50) NOT NULL, Email VARCHAR(30) NOT NULL, Bio VARCHAR(100) DEFAULT NULL,Personal_Pronouns VARCHAR(30) DEFAULT NULL) [42101-210]

@@ -33,18 +33,6 @@ public class UserModel {
         this.personalPronouns = personalPronouns;
     }
 
-    public UserModel(int userId, String username, String password, String firstName, String middleName, String lastName, String email, String bio, String personalPronouns) {
-        this.userId = userId;
-        this.username = username;
-        this.password = password;
-        this.firstName = firstName;
-        this.middleName = middleName;
-        this.lastName = lastName;
-        this.email = email;
-        this.bio = bio;
-        this.personalPronouns = personalPronouns;
-    }
-
     public int getUserId() {
         return userId;
     }

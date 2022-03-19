@@ -38,7 +38,7 @@ public class AuthenticateServerService extends AuthenticationServiceImplBase {
     public void authenticate(AuthenticateRequest request, StreamObserver<AuthenticateResponse> responseObserver) {
         AuthenticateResponse.Builder reply = AuthenticateResponse.newBuilder();
 
-        UserModel user = userModelService.getUserById(2);
+        UserModel user = userModelService.getUserByUsername(request.getUsername());
         if (user == null) {
             // Create failed user to compare to
             user = new UserModel("fail", "fail", "fail", "fail", "fail", "fail", "fail", "fail");
@@ -50,7 +50,7 @@ public class AuthenticateServerService extends AuthenticationServiceImplBase {
             String token = jwtTokenService.generateTokenForUser(user.getUsername(), VALID_USER_ID, FULL_NAME_OF_USER, ROLE_OF_USER);
             reply
                 .setEmail("validuser@email.com")
-                .setFirstName(FIRST_NAME_OF_USER)
+                .setFirstName(user.getFirstName())
                 .setLastName(LAST_NAME_OF_USER)
                 .setMessage("Logged in successfully!")
                 .setSuccess(true)
