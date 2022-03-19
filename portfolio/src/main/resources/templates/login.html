@@ -17,12 +17,18 @@
                         <h3 class="mb-5">Sign in </h3>
                         <form th:action="@{/login}" class="row g-3 needs-validation" novalidate method="post">
                             <div class="form-floating mb-3">
-                                <input type="text" class="form-control" id="usernameLogin" required placeholder="username" th:name="usernameLogin" >
+                                <input type="text" class="form-control" id="usernameLogin" placeholder="username" th:name="usernameLogin" required>
                                 <label for="usernameLogin">username</label>
+                                <div class="invalid-feedback">
+                                    Please enter your username.
+                                </div>
                             </div>
                             <div class="form-floating mb-3">
-                                <input type="password" class="form-control" id="passwordLogin" placeholder="password" th:name="passwordLogin" >
+                                <input type="password" class="form-control" id="passwordLogin" placeholder="password" th:name="passwordLogin" required>
                                 <label for="passwordLogin">Password</label>
+                                <div class="invalid-feedback">
+                                    Please enter your password.
+                                </div>
                             </div>
                             <div class="d-grid gap-2 col-6 mx-auto">
                                 <button class="btn btn-primary" type="submit">Sign in</button>
@@ -39,5 +45,27 @@
         </div>
     </div>
 </section>
+<SCRIPT>
+    // Example starter JavaScript for disabling form submissions if there are invalid fields
+    (function () {
+        'use strict'
+
+        // Fetch all the forms we want to apply custom Bootstrap validation styles to
+        var forms = document.querySelectorAll('.needs-validation')
+
+        // Loop over them and prevent submission
+        Array.prototype.slice.call(forms)
+            .forEach(function (form) {
+                form.addEventListener('submit', function (event) {
+                    if (!form.checkValidity()) {
+                        event.preventDefault()
+                        event.stopPropagation()
+                    }
+
+                    form.classList.add('was-validated')
+                }, false)
+            })
+    })()
+</SCRIPT>
 </body>
 </html>
