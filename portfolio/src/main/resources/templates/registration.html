@@ -15,36 +15,56 @@
                         <h3 class="mb-5">Registration</h3>
                         <form class="row g-3 needs-validation" novalidate th:action="@{/register}">
                             <div class="form-floating mb-3">
-                                <input type="text" class="form-control" id="username" required placeholder="username" th:name="username" >
+                                <input type="text" class="form-control" id="username" placeholder="username" th:name="username" required>
                                 <label for="username">Username</label>
+                                <div class="invalid-feedback">
+                                    Please enter a username.
+                                </div>
                             </div>
+
                             <div class="form-floating mb-3">
-                                <input type="text" class="form-control" id="firstName" required placeholder="first name" th:name="firstName" >
+                                <input type="text" class="form-control" id="firstName" placeholder="first name" th:name="firstName" required>
                                 <label for="firstName">First name</label>
+                                <div class="invalid-feedback">
+                                    Please enter your first name.
+                                </div>
                             </div>
                             <div class="form-floating mb-3">
                                 <input type="text" class="form-control" id="middleName" placeholder="middle name" th:name="middleName" >
                                 <label for="middleName">Middle name(Not required)</label>
                             </div>
                             <div class="form-floating mb-3">
-                                <input type="text" class="form-control" id="lastName" required placeholder="last name" th:name="lastName" >
+                                <input type="text" class="form-control" id="lastName"  placeholder="last name" th:name="lastName" required>
                                 <label for="lastName">Last name</label>
+                                <div class="invalid-feedback">
+                                    Please enter your last name.
+                                </div>
                             </div>
                             <div class="form-floating mb-3">
-                                <input type="email" class="form-control" id="email" required placeholder="email" th:name="email" >
+                                <input type="email" class="form-control" id="email"  placeholder="email" th:name="email" required>
                                 <label for="lastName">Email</label>
+                                <div class="invalid-feedback">
+                                    Please enter your email.
+                                </div>
                             </div>
                             <div class="form-floating mb-3">
-                                <input type="password" class="form-control" id="passwordLogin" required placeholder="password" th:name="password" >
+                                <input type="password" class="form-control" id="passwordLogin"  placeholder="password" th:name="password" required>
                                 <label for="passwordLogin">Password</label>
+                                <div class="invalid-feedback">
+                                    Please enter your password.
+                                </div>
                             </div>
                             <div class="form-floating mb-3">
-                                <input type="password" class="form-control" id="confirmPassword" required placeholder="confirmPassword" th:name="confirmPassword" >
+                                <input type="password" class="form-control" id="confirmPassword"  placeholder="confirmPassword" th:name="confirmPassword" required>
                                 <label for="confirmPassword">Confirm Password</label>
+                                <div class="invalid-feedback">
+                                    Please enter your confirm password.
+                                </div>
                             </div>
                             <div class="d-grid gap-2 col-6 mx-auto">
                                 <button class="btn btn-primary" type="submit">Sign in</button>
                             </div>
+<!--                            Error message TODO when login fail. display error message -->
                             <div style="display: none;" id="errorMessage">
                                 <p style="color:red;">Invalid login, please try again</p>
                             </div>
@@ -56,5 +76,27 @@
             </div>
         </div>
     </div>
+    <SCRIPT>
+        // Example starter JavaScript for disabling form submissions if there are invalid fields
+        (function () {
+            'use strict'
+
+            // Fetch all the forms we want to apply custom Bootstrap validation styles to
+            var forms = document.querySelectorAll('.needs-validation')
+
+            // Loop over them and prevent submission
+            Array.prototype.slice.call(forms)
+                .forEach(function (form) {
+                    form.addEventListener('submit', function (event) {
+                        if (!form.checkValidity()) {
+                            event.preventDefault()
+                            event.stopPropagation()
+                        }
+
+                        form.classList.add('was-validated')
+                    }, false)
+                })
+        })()
+    </SCRIPT>
 </section>
 </body>
