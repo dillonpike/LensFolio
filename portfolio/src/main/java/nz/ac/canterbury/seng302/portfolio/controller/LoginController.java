@@ -11,6 +11,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -50,7 +52,8 @@ public class LoginController {
             HttpServletResponse response,
             @RequestParam(name = "usernameLogin") String username,
             @RequestParam(name = "passwordLogin") String password,
-            Model model
+            Model model,
+            RedirectAttributes rm
     ) {
         AuthenticateResponse loginReply;
         try {
@@ -69,7 +72,8 @@ public class LoginController {
                 5 * 60 * 60, // Expires in 5 hours
                 domain.startsWith("localhost") ? null : domain
             );
-            model.addAttribute("loginMessage", loginReply.getMessage());
+            System.out.println("logged in "+loginReply.getUserId());
+            rm.addFlashAttribute("userId", (int)loginReply.getUserId());
             return "redirect:account";
         } else {
             model.addAttribute("loginMessage", loginReply.getMessage());

@@ -31,6 +31,7 @@ public class UserModelService {
         }
     }
 
+
     public UserModel addUser(UserModel user) {
         findMaxUserId();
         user.setUserId(userIdCount);

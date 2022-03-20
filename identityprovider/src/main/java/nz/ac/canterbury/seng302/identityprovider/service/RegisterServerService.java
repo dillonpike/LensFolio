@@ -9,15 +9,8 @@ import nz.ac.canterbury.seng302.shared.identityprovider.UserRegisterRequest;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserRegisterResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.sql.Statement;
-import nz.ac.canterbury.seng302.identityprovider.Database;
-import nz.ac.canterbury.seng302.identityprovider.User;
 import nz.ac.canterbury.seng302.shared.identityprovider.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
 
 @GrpcService
 public class RegisterServerService extends UserAccountServiceGrpc.UserAccountServiceImplBase {
@@ -54,7 +47,6 @@ public class RegisterServerService extends UserAccountServiceGrpc.UserAccountSer
 
         if (wasAdded) {
             responseObserver.onNext(reply.setNewUserId(newUser.getUserId()).build());
-            responseObserver.onNext(reply.setNewUserId(user.getId()).build());
             responseObserver.onNext(reply.setIsSuccess(true).build());
         } else {
             responseObserver.onNext(reply.setIsSuccess(false).build());
@@ -68,15 +60,24 @@ public class RegisterServerService extends UserAccountServiceGrpc.UserAccountSer
 
         UserResponse.Builder reply = UserResponse.newBuilder();
 
-        System.out.println("Got id number: " + request.getId());
+        try {
+            UserModel user = userModelService.getUserById(request.getId());
+            reply
+                    .setEmail(user.getEmail())
+                    .setFirstName(user.getFirstName())
+                    .setLastName(user.getLastName())
+                    .setMiddleName(user.getMiddleName())
+                    .setUsername(user.getUsername())
+                    .setNickname(user.getNickName())
+                    .setBio(user.getBio())
+                    .setPersonalPronouns(user.getPersonalPronouns())
+                    .setNickname(user.getNickName());
 
-        responseObserver.onNext(reply.setUsername("TestUsername123").build());
-        responseObserver.onNext(reply.setFirstName("FirstNameTest").build());
-        responseObserver.onNext(reply.setLastName("LastNameTest").build());
-        responseObserver.onNext(reply.setEmail("test@gmail.com").build());
-        responseObserver.onNext(reply.setBio("This is a test bio coming from the IDP").build());
-        responseObserver.onNext(reply.setPersonalPronouns("They/Them").build());
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
 
+        responseObserver.onNext(reply.build());
         responseObserver.onCompleted();
     }
 
