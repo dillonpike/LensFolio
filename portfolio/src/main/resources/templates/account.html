@@ -24,9 +24,10 @@
         </ul>
 
 
-        <div class="dropdown text-end">
-          <a href="#" class="d-block link-dark text-decoration-none dropdown-toggle" id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false">
-            User 123  <img th:src="@{img/img.png}" alt="mdo" width="32" height="32" class="rounded-circle">
+        <div class="dropdown text-end" style="display: flex; flex-direction: row; align-items: center;">
+          <h6 th:text="${fullName}" style="margin-right: 5px;padding-top: 5px"></h6>
+          <a href="#" class="d-block link-dark text-decoration-none dropdown-toggle" id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false" >
+            <img th:src="@{img/img.png}" alt="mdo" width="32" height="32" class="rounded-circle">
           </a>
           <ul class="dropdown-menu text-small" aria-labelledby="dropdownUser1">
             <li><a class="dropdown-item" href="#">Profile</a></li>
@@ -47,8 +48,8 @@
           <img th:src="@{img/img.png}" alt="mdo" width="300" height="300" class="rounded-circle" style ="margin-left: 60px; margin-top:20px">
           <div class="card-body p-1-9 p-xl-5">
             <div class="mb-4">
-              <h3 class="h4 mb-0">User 123</h3>
-              <span class="text-primary mb-3">use165</span>
+              <h3 class="h4 mb-0" th:text="${fullName}"></h3>
+              <span class="text-primary mb-3" th:text="${username}"></span>
               <p> Register time: </p>
             </div>
           </div>
@@ -90,22 +91,17 @@
               </div>
 
               <div class="form-floating mb-3">
-                <input type="email" class="form-control" id="emailInput" placeholder="name@example.com" disabled th:value="email">
+                <input type="email" class="form-control" id="emailInput" placeholder="name@example.com" disabled th:value="${email}">
                 <label for="emailInput">Email address</label>
               </div>
 
               <div class="form-floating mb-3">
-                <select class="form-select" id="pronounsSelect" aria-label="Floating label select example" disabled>
-                  <option selected>Open this select menu</option>
-                  <option value="1">She/Her</option>
-                  <option value="2">He/Him</option>
-                  <option value="3">They/Them</option>
-                </select>
-                <label for="pronounsSelect">Pronouns</label>
+                <input type="text" class="form-control" id="pronounInput" placeholder="name@example.com" disabled th:value="${personalPronouns}">
+                <label for="pronounInput">Personal Pronouns</label>
               </div>
 
               <div class="form-floating">
-                <textarea class="form-control" placeholder="bio" id="floatingTextarea2" style="height: 100px" disabled></textarea>
+                <textarea class="form-control" placeholder="bio" id="floatingTextarea2" style="height: 100px" th:value="${bio}" disabled></textarea>
                 <label for="floatingTextarea2">Bio</label>
               </div>
             </form>

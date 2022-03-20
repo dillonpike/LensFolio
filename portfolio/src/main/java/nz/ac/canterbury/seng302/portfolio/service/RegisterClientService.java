@@ -23,11 +23,7 @@ public class RegisterClientService {
 
     public UserResponse getUserData(final int userId) {
         GetUserByIdRequest response = GetUserByIdRequest.newBuilder().setId(userId).build();
-        System.out.println("helloo"+response.getId());
-        System.out.println("Before");
-        UserResponse thing = userAccountStub.getUserAccountById(response); //This like throws an error
-        System.out.println("This worked");
-        return thing;
+        return userAccountStub.getUserAccountById(response);
     }
 
 }

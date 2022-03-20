@@ -17,7 +17,6 @@ public class UserModel {
     private String middleName;
     private String lastName;
     private String email;
-    private String nickName;
     private String bio;
     private String personalPronouns;
 
@@ -82,13 +81,13 @@ public class UserModel {
         this.lastName = lastName;
     }
 
-    public String getNickName() {
-        return nickName;
-    }
-
-    public void setNickName(String nickName) {
-        this.nickName = nickName;
-    }
+//    public String getNickName() {
+//        return nickName;
+//    }
+//
+//    public void setNickName(String nickName) {
+//        this.nickName = nickName;
+//    }
 
     public String getEmail() {
         return email;

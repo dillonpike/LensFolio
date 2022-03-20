@@ -31,10 +31,10 @@ public class RegisterServerService extends UserAccountServiceGrpc.UserAccountSer
                     request.getUsername(),
                     request.getPassword(),
                     request.getFirstName(),
-                    "DEFAULTmiddlename", //request.getMiddleName(),
-                    "DEFAULTlastname", //request.getLastName(),
+                    request.getMiddleName(), //request.getMiddleName(),
+                    request.getLastName(), //request.getLastName(),
                     request.getEmail(),
-                    "Default Bio", //request.getBio(),
+                    request.getBio(), //request.getBio(),
                     "Unknown Pronouns" //request.getPersonalPronouns()
             );
             UserModel user = userModelService.addUser(newUser);
@@ -62,18 +62,18 @@ public class RegisterServerService extends UserAccountServiceGrpc.UserAccountSer
 
         try {
             UserModel user = userModelService.getUserById(request.getId());
+            System.out.println(user);
             reply
                     .setEmail(user.getEmail())
                     .setFirstName(user.getFirstName())
                     .setLastName(user.getLastName())
                     .setMiddleName(user.getMiddleName())
                     .setUsername(user.getUsername())
-                    .setNickname(user.getNickName())
                     .setBio(user.getBio())
-                    .setPersonalPronouns(user.getPersonalPronouns())
-                    .setNickname(user.getNickName());
+                    .setPersonalPronouns(user.getPersonalPronouns());
 
         } catch(Exception e) {
+            System.out.println("AAaaarrrrrggghhh");
             e.printStackTrace();
         }
 
