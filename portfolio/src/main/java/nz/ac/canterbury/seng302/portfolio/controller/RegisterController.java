@@ -29,7 +29,7 @@ public class RegisterController {
 
     @GetMapping("/register")
     public String registration() {
-        return "register";
+        return "registration";
     }
 
     @PostMapping("/register")
@@ -52,12 +52,12 @@ public class RegisterController {
             registrationReply = registerClientService.receiveConformation(username, password, firstName, lastName, email);
         } catch (StatusRuntimeException e) {
             model.addAttribute("loginMessage", "Error connecting to Identity Provider...");
-            return "login";
+            return "registration";
         }
-        if (!registrationReply.getIsSuccess()) {
-            return "account";
-        } else {
+        if (registrationReply.getIsSuccess()) {
             return "login";
+        } else {
+            return "registration";
         }
     }
 }

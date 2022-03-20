@@ -39,4 +39,43 @@ public class ProjectService {
             throw new Exception("Project not found");
         }
     }
+
+    /**
+     * Get project by id
+     */
+    public Project UpdateProjectById(Integer id) throws Exception {
+
+        Optional<Project> project = repository.findById(id);
+        if(project!=null) {
+            return project.get();
+        }
+        else
+        {
+            throw new Exception("Project not found");
+        }
+    }
+
+    /**
+     *
+     * updates a project.
+     */
+    public Project updateProject(Project project) {
+        Optional<Project> pOptional = repository.findById((Integer) project.getId());
+
+        if(pOptional != null) {
+            Project projectUpdate = pOptional.get();
+            projectUpdate.setDescription(project.getDescription());
+            projectUpdate.setStartDate(project.getStartDate());
+            projectUpdate.setEndDate(project.getEndDate());
+            projectUpdate.setName(project.getName());
+
+            projectUpdate = repository.save(projectUpdate);
+            return projectUpdate;
+        }
+        else {
+            project = repository.save(project);
+            return project;
+        }
+    }
+
 }

@@ -5,6 +5,10 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Calendar;
 import java.util.Date;
 
 @Entity // this is an entity, assumed to be in a table called Sprint
@@ -19,7 +23,7 @@ public class Sprint {
     private Date sprintStartDate;
     private Date sprintEndDate;
 
-    protected Sprint() {}
+    public Sprint() {}
 
     public Sprint(int parentProjectId, String sprintName, String sprintLabel, String sprintDescription, Date sprintStartDate, Date sprintEndDate) {
         this.parentProjectId = parentProjectId;
@@ -39,7 +43,7 @@ public class Sprint {
 
 
     public int getId(){
-        return  id;
+        return id;
     }
     public int getParentProjectId() {
         return parentProjectId;
@@ -52,6 +56,10 @@ public class Sprint {
     }
     public String getDescription(){
         return sprintDescription;
+    }
+
+    public String getDates() {
+        return (getStartDateString() + " - " + getEndDateString());
     }
 
     public Date getStartDate() {
@@ -83,6 +91,18 @@ public class Sprint {
     }
 
     public void setEndDateString(String date) {
-        this.sprintStartDate = Project.stringToDate(date);
+        this.sprintEndDate = Project.stringToDate(date);
+    }
+
+    public void setDescription(String sprintDescription) {
+        this.sprintDescription = sprintDescription;
+    }
+
+    public void setLabel(String sprintLabel) {
+        this.sprintLabel = sprintLabel;
+    }
+
+    public void setName(String sprintName) {
+        this.sprintName = sprintName;
     }
 }
