@@ -20,7 +20,7 @@ public class RegisterServerService extends UserAccountServiceGrpc.UserAccountSer
 
     @Override
     public void register(UserRegisterRequest request, StreamObserver<UserRegisterResponse> responseObserver) {
-
+        System.out.println("start server regis");
         UserRegisterResponse.Builder reply = UserRegisterResponse.newBuilder();
 
         boolean wasAdded = false;
@@ -73,7 +73,6 @@ public class RegisterServerService extends UserAccountServiceGrpc.UserAccountSer
                     .setPersonalPronouns(user.getPersonalPronouns());
 
         } catch(Exception e) {
-            System.out.println("AAaaarrrrrggghhh");
             e.printStackTrace();
         }
 

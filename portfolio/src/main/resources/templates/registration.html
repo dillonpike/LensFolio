@@ -13,7 +13,7 @@
                 <div class="card shadow-2-strong" style="border-radius: 1rem;">
                     <div class="card-body p-5 text-center">
                         <h3 class="mb-5">Registration</h3>
-                        <form class="row g-3 needs-validation" novalidate th:action="@{/register}">
+                        <form class="row g-3 needs-validation" novalidate th:action="@{/register}" method="post">
                             <div class="form-floating mb-3">
                                 <input type="text" class="form-control" id="username" placeholder="username" th:name="username" required>
                                 <label for="username">Username</label>
@@ -44,7 +44,7 @@
                                 <input type="email" class="form-control" id="email"  placeholder="email" th:name="email" required>
                                 <label for="lastName">Email</label>
                                 <div class="invalid-feedback">
-                                    Please enter your email.
+                                    Please enter your email correctly.
                                 </div>
                             </div>
                             <div class="form-floating mb-3">

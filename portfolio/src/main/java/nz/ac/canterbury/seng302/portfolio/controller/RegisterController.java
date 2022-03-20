@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+
 @Controller
 public class RegisterController {
 
@@ -47,16 +48,20 @@ public class RegisterController {
         UserRegisterResponse registrationReply;
 
         //TODO Pass the data to check if any duplicated username instead of <authenticate>
-
+//        registrationReply = registerClientService.receiveConformation(username, password, firstName, lastName, email);
         try {
             registrationReply = registerClientService.receiveConformation(username, password, firstName, lastName, email);
-        } catch (StatusRuntimeException e) {
-            model.addAttribute("loginMessage", "Error connecting to Identity Provider...");
-            return "registration";
+        } catch (Exception e) {
+            model.addAttribute("err", "Error connecting to Identity Provider...");
+            System.out.println("regis failed 1");
+            e.printStackTrace();
+            return "login";
         }
         if (registrationReply.getIsSuccess()) {
             return "login";
         } else {
+            model.addAttribute("err", "Something went wrong");
+            System.out.println("regis failed");
             return "registration";
         }
     }

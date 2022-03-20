@@ -28,7 +28,6 @@ public class AccountController {
             Model model,
             @RequestParam(value = "userId") int userId
     ) {
-        System.out.println("The user id is"+ model.getAttribute("userId"));
 
         UserResponse getUserByIdReply;
 
