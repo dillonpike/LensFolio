@@ -26,14 +26,16 @@ public class DateValidationService {
         String message = "";
         Date startDate = Project.stringToDate(startDateString);
         Date endDate = Project.stringToDate(endDateString);
-        for (Sprint sprint : sprintService.getAllSprints()) {
-            if (sprint.getId() != sprintId && !(
-                    startDate.before(sprint.getStartDate()) && endDate.before(sprint.getStartDate()) ||
-                    startDate.after(sprint.getEndDate()) && endDate.after(sprint.getEndDate())
-            )) {
-                message = "Dates must not overlap with " + sprint.getName() + "'s dates\n(" +
-                        sprint.getStartDateString() + " - " + sprint.getEndDateString() + ").";
-                break;
+        if (startDate != null && endDate != null) {
+            for (Sprint sprint : sprintService.getAllSprints()) {
+                if (sprint.getId() != sprintId && !(
+                        startDate.before(sprint.getStartDate()) && endDate.before(sprint.getStartDate()) ||
+                                startDate.after(sprint.getEndDate()) && endDate.after(sprint.getEndDate())
+                )) {
+                    message = "Dates must not overlap with " + sprint.getName() + "'s dates\n(" +
+                            sprint.getStartDateString() + " - " + sprint.getEndDateString() + ").";
+                    break;
+                }
             }
         }
         return message;
