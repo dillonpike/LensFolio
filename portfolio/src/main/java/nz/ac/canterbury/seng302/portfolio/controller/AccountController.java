@@ -1,5 +1,6 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
+import com.google.protobuf.Timestamp;
 import io.grpc.StatusRuntimeException;
 import nz.ac.canterbury.seng302.portfolio.service.RegisterClientService;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
@@ -14,6 +15,8 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.sql.Date;
+import java.text.SimpleDateFormat;
 import java.util.Map;
 
 @Controller
@@ -47,11 +50,22 @@ public class AccountController {
             String fullName = getUserByIdReply.getFirstName() + " " + getUserByIdReply.getMiddleName() + " " + getUserByIdReply.getLastName();
             model.addAttribute("fullName", fullName);
             model.addAttribute("userId", userId);
+            model.addAttribute("dateAdded", getDateAddedString(getUserByIdReply.getCreated()));
         } catch (StatusRuntimeException e) {
             model.addAttribute("loginMessage", "Error connecting to Identity Provider...");
             e.printStackTrace();
         }
         return "account";
+    }
+
+    private String getDateAddedString(Timestamp dateAdded) {
+        if (dateAdded != null) {
+            Date date = new Date(dateAdded.getSeconds() * 1000);
+            SimpleDateFormat dateFormat = new SimpleDateFormat("dd MMMM yyyy");
+            return dateFormat.format(date);
+        } else {
+            return null;
+        }
     }
 
     @PostMapping("/backToAccountPage")

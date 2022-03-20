@@ -41,7 +41,7 @@ public class AuthenticateServerService extends AuthenticationServiceImplBase {
         UserModel user = userModelService.getUserByUsername(request.getUsername());
         if (user == null) {
             // Create failed user to compare to
-            user = new UserModel("fail", "fail", "fail", "fail", "fail", "fail", "fail", "fail");
+            user = new UserModel("fail", "fail", "fail", "fail", "fail", "fail", "fail", "fail", "fail");
         }
         System.out.println(user);
 

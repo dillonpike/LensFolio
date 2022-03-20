@@ -1,8 +1,13 @@
 package nz.ac.canterbury.seng302.identityprovider.model;
 
+import com.google.protobuf.Timestamp;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
+import java.sql.Date;
+import java.sql.Time;
+import java.text.SimpleDateFormat;
+import java.time.Instant;
 import java.util.List;
 
 @Entity
@@ -16,21 +21,26 @@ public class UserModel {
     private String firstName;
     private String middleName;
     private String lastName;
+    private String nickname;
     private String email;
     private String bio;
     private String personalPronouns;
+    private Timestamp dateAdded;
 
     public UserModel() {}
 
-    public UserModel(String username, String password, String firstName, String middleName, String lastName, String email, String bio, String personalPronouns) {
+    public UserModel(String username, String password, String firstName, String middleName, String lastName, String nickname, String email, String bio, String personalPronouns) {
         this.username = username;
         this.password = password;
         this.firstName = firstName;
         this.middleName = middleName;
         this.lastName = lastName;
+        this.nickname = nickname;
         this.email = email;
         this.bio = bio;
         this.personalPronouns = personalPronouns;
+        Instant time = Instant.now();
+        this.dateAdded = Timestamp.newBuilder().setSeconds(time.getEpochSecond()).build();
     }
 
     public int getUserId() {
@@ -81,13 +91,13 @@ public class UserModel {
         this.lastName = lastName;
     }
 
-//    public String getNickName() {
-//        return nickName;
-//    }
-//
-//    public void setNickName(String nickName) {
-//        this.nickName = nickName;
-//    }
+    public String getNickname() {
+        return nickname;
+    }
+
+    public void setNickname(String nickname) {
+        this.nickname = nickname;
+    }
 
     public String getEmail() {
         return email;
@@ -111,6 +121,24 @@ public class UserModel {
 
     public void setPersonalPronouns(String personalPronouns) {
         this.personalPronouns = personalPronouns;
+    }
+
+    public Timestamp getDateAdded() {
+        return dateAdded;
+    }
+
+    public void setDateAdded(Timestamp dateAdded) {
+        this.dateAdded = dateAdded;
+    }
+
+    public String getDateAddedString() {
+        if (dateAdded != null) {
+            Date date = new Date(dateAdded.getSeconds() * 1000);
+            SimpleDateFormat dateFormat = new SimpleDateFormat("dd MMMM yyyy");
+            return dateFormat.format(date);
+        } else {
+            return null;
+        }
     }
 
     @Override
