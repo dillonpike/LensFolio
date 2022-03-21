@@ -26,4 +26,18 @@ public class RegisterClientService {
         return userAccountStub.getUserAccountById(response);
     }
 
+    public EditUserResponse setUserData(final int userId, final String firstName, final String middleName, final String lastName, final String email, final String bio, final String nickname, final String personalPronouns) {
+        EditUserRequest response = EditUserRequest.newBuilder()
+                .setUserId(userId)
+                .setFirstName(firstName)
+                .setMiddleName(middleName)
+                .setLastName(lastName)
+                .setEmail(email)
+                .setBio(bio)
+                .setNickname(nickname)
+                .setPersonalPronouns(personalPronouns)
+                .build();
+        return userAccountStub.editUser(response);
+    }
+
 }

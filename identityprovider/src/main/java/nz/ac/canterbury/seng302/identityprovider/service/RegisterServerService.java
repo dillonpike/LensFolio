@@ -70,7 +70,6 @@ public class RegisterServerService extends UserAccountServiceGrpc.UserAccountSer
 
         try {
             UserModel user = userModelService.getUserById(request.getId());
-            System.out.println(user);
             reply
                     .setEmail(user.getEmail())
                     .setFirstName(user.getFirstName())
@@ -80,7 +79,6 @@ public class RegisterServerService extends UserAccountServiceGrpc.UserAccountSer
                     .setBio(user.getBio())
                     .setPersonalPronouns(user.getPersonalPronouns())
                     .setCreated(user.getDateAdded());
-            System.out.println(user.getDateAddedString() + "<- date register class");
         } catch(Exception e) {
             e.printStackTrace();
         }
@@ -89,6 +87,31 @@ public class RegisterServerService extends UserAccountServiceGrpc.UserAccountSer
         responseObserver.onCompleted();
     }
 
+    @Override
+    public void editUser(EditUserRequest request, StreamObserver<EditUserResponse> responseObserver) {
+
+        EditUserResponse.Builder reply = EditUserResponse.newBuilder();
+
+        boolean wasSaved = false;
+
+        try {
+            UserModel user = userModelService.getUserById(request.getUserId());
+            user.setBio(request.getBio());
+            user.setEmail(request.getEmail());
+            user.setNickname(request.getNickname());
+            user.setFirstName(request.getFirstName());
+            user.setMiddleName(request.getMiddleName());
+            user.setLastName(request.getLastName());
+            userModelService.addUser(user);
+            wasSaved = true;
+        } catch(Exception e) {
+            System.err.println("User failed to be changed to new values");
+        }
+
+        responseObserver.onNext(reply.setIsSuccess(wasSaved).build());
+        responseObserver.onCompleted();
+
+    }
 }
 
 // Code for if queries need to be made to the database directly.

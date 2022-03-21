@@ -3,6 +3,8 @@ package nz.ac.canterbury.seng302.portfolio.controller;
 import io.grpc.StatusRuntimeException;
 import nz.ac.canterbury.seng302.portfolio.model.Sprint;
 import nz.ac.canterbury.seng302.portfolio.service.RegisterClientService;
+import nz.ac.canterbury.seng302.shared.identityprovider.EditUserRequest;
+import nz.ac.canterbury.seng302.shared.identityprovider.EditUserResponse;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserRegisterRequestOrBuilder;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -64,6 +66,7 @@ public class EditAccountController {
             RedirectAttributes rm
     ) {
         System.out.println("enter load edit account");
+        //EditUserResponse saveUserdata = registerClientService.setUserData()
         rm.addAttribute("userId",userId);
         return "redirect:editAccount";
     }
