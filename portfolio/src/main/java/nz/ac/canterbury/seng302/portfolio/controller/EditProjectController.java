@@ -1,5 +1,6 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
+import nz.ac.canterbury.seng302.portfolio.service.DateValidationService;
 import nz.ac.canterbury.seng302.portfolio.service.ProjectService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -9,6 +10,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import nz.ac.canterbury.seng302.portfolio.model.Project;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 
@@ -19,8 +22,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 public class EditProjectController {
     @Autowired
     private ProjectService projectService;
-
-
+    @Autowired
+    private DateValidationService dateValidationService;
 
     @GetMapping("/edit-project")
     public String projectForm(Model model) throws Exception {
@@ -31,8 +34,8 @@ public class EditProjectController {
         model.addAttribute("projectStartDate", project.getStartDateString());
         model.addAttribute("projectEndDate", project.getEndDateString());
         model.addAttribute("projectDescription", project.getDescription());
-
-
+        model.addAttribute("projectStartDateError", "");
+        model.addAttribute("projectDateError", "");
 
         /* Return the name of the Thymeleaf template */
         return "editProject";
@@ -55,6 +58,15 @@ public class EditProjectController {
         newProject.setDescription(projectDescription);
         projectService.updateProject(newProject);
         return "redirect:/edit-project";
+    }
+
+    @RequestMapping(value="/edit-project/error", method= RequestMethod.POST)
+    public String updateProjectRangeErrors(@RequestParam(value="projectStartDate") String projectStartDate,
+        @RequestParam(value="projectEndDate") String projectEndDate,
+        Model model) {
+        model.addAttribute("projectDateError",
+                dateValidationService.validateProjectStartDate(projectStartDate, projectEndDate));
+        return "editProject :: #projectDateError";
     }
 
 }

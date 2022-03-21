@@ -18,6 +18,7 @@ public class Project {
     private Date projectStartDate;
     private Date projectEndDate;
 
+
     protected Project() {}
 
     public Project(String projectName, String projectDescription, Date projectStartDate, Date projectEndDate) {

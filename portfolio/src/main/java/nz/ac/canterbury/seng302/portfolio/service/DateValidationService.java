@@ -11,6 +11,8 @@ import java.util.Date;
 public class DateValidationService {
     @Autowired
     private SprintService sprintService;
+    @Autowired
+    private ProjectService projectService;
 
     public String validateSprintStartDate(String startDateString, String endDateString) {
         String message = "";
@@ -37,6 +39,16 @@ public class DateValidationService {
                     break;
                 }
             }
+        }
+        return message;
+    }
+
+    public String validateProjectStartDate(String startDateString, String endDateString) {
+        String message = "";
+        Date startDate = Project.stringToDate(startDateString);
+        Date endDate = Project.stringToDate(endDateString);
+        if (startDate.after(endDate)) {
+            message =  "Start date must be on or before the end date.";
         }
         return message;
     }

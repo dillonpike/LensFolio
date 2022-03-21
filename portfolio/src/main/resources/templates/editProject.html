@@ -28,6 +28,7 @@
         <input id="projectEndDate" type="text" th:name="projectEndDate" th:value="*{projectEndDate}">
     </div>
     </div>
+    <span id="projectStartDateError" style="color:red" th:text="*{projectStartDateError}"></span>
     <div>
         <label for="projectDescription">Project Description</label> <br/>
         <textarea class="description-input" id="projectDescription" th:name="projectDescription" th:text="*{projectDescription}"></textarea>
@@ -36,8 +37,26 @@
     <button class="cancel" type="button">
         <a th:href="@{'/details'}">Cancel</a>
     </button>
-    <button class="save" type="submit">Save</button>
+    <button id="saveButton" class="save" type="submit">Save</button>
 </form>
 </div>
 </body>
+
+<script>
+    function updateProjectDateError() {
+        const data = {
+            projectStartDate: document.getElementById("projectStartDate").value,
+            projectEndDate: document.getElementById("projectEndDate").value
+        }
+        $.post("error?" + new URLSearchParams(data)).done(function (fragment) {
+            console.log(fragment);
+            $("#projectStartDateError").replaceWith(fragment);
+            document.getElementById("saveButton").disabled = document.getElementById("projectStartDateError").textContent.length > 0;
+        });
+    }
+
+    document.getElementById("projectStartDate").onkeyup = updateProjectDateError;
+    document.getElementById("projectEndDate").onkeyup = updateProjectDateError;
+</script>
+
 </html>
