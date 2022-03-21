@@ -38,6 +38,7 @@ public class RegisterController {
             HttpServletRequest request,
             HttpServletResponse response,
             @RequestParam(name = "firstName") String firstName,
+            @RequestParam(name = "middleName") String middleName,
             @RequestParam(name = "lastName") String lastName,
             @RequestParam(name = "username") String username,
             @RequestParam(name = "email") String email,
@@ -50,10 +51,10 @@ public class RegisterController {
         //TODO Pass the data to check if any duplicated username instead of <authenticate>
 //        registrationReply = registerClientService.receiveConformation(username, password, firstName, lastName, email);
         try {
-            registrationReply = registerClientService.receiveConformation(username, password, firstName, lastName, email);
+            registrationReply = registerClientService.receiveConformation(username, password, firstName, middleName, lastName, email);
         } catch (Exception e) {
             model.addAttribute("err", "Error connecting to Identity Provider...");
-            System.out.println("regis failed 1");
+            System.out.println("registerController; Failed connecting to Identity Provider");
             e.printStackTrace();
             return "login";
         }
@@ -61,7 +62,7 @@ public class RegisterController {
             return "login";
         } else {
             model.addAttribute("err", "Something went wrong");
-            System.out.println("regis failed");
+            System.out.println("registerController; Failed to register user");
             return "registration";
         }
     }

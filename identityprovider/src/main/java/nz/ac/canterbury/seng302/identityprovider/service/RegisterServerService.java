@@ -28,6 +28,7 @@ public class RegisterServerService extends UserAccountServiceGrpc.UserAccountSer
 
         boolean wasAdded = false;
         UserModel newUser = null;
+        UserModel createdUser = null;
 
         try {
             // Any empty fields are because you can't add those fields when you create an account initially.
@@ -42,10 +43,10 @@ public class RegisterServerService extends UserAccountServiceGrpc.UserAccountSer
                     "Default Bio", //request.getBio(),
                     "Unknown Pronouns" //request.getPersonalPronouns()
             );
-            UserModel user = userModelService.addUser(newUser);
-            System.out.println(user + "<- Just added");
-            System.out.println(user.getNickname() + "<- nickname");
-            System.out.println(user.getDateAddedString() + "<- date");
+            createdUser = userModelService.addUser(newUser);
+            System.out.println(createdUser + "<- Just added");
+            System.out.println(createdUser.getNickname() + "<- nickname");
+            System.out.println(createdUser.getDateAddedString() + "<- date");
             wasAdded = true;
         } catch (Exception e) {
             System.err.println("Failed to create and add new user to database");
@@ -54,12 +55,10 @@ public class RegisterServerService extends UserAccountServiceGrpc.UserAccountSer
         System.out.println(wasAdded + "<= Was added");
 
         if (wasAdded) {
-            responseObserver.onNext(reply.setNewUserId(newUser.getUserId()).build());
-            responseObserver.onNext(reply.setIsSuccess(true).build());
+            responseObserver.onNext(reply.setNewUserId(createdUser.getUserId()).setIsSuccess(true).build());
         } else {
             responseObserver.onNext(reply.setIsSuccess(false).build());
         }
-
         responseObserver.onCompleted();
     }
 
@@ -133,7 +132,7 @@ public class RegisterServerService extends UserAccountServiceGrpc.UserAccountSer
 ////                    "Personal_Pronouns VARCHAR(30) DEFAULT NULL, " +
 ////                    "Date_Added BINARY VARYING(1000) NOT NULL" +
 ////                    ");");
-////            System.out.println("Yee");
+////            System.out.println("RESET DATABASE");
 ////            conn.close();
 ////        } catch (SQLException e) {
 ////            e.printStackTrace();

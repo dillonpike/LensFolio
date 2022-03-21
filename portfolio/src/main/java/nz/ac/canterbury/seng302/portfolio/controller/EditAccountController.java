@@ -63,11 +63,27 @@ public class EditAccountController {
             HttpServletRequest request,
             HttpServletResponse response,
             @ModelAttribute("userId") int userId,
-            RedirectAttributes rm
+            RedirectAttributes rm,
+            Model model
     ) {
         System.out.println("enter load edit account");
-        //EditUserResponse saveUserdata = registerClientService.setUserData()
-        rm.addAttribute("userId",userId);
+        try {
+            EditUserResponse saveUserdata = registerClientService.setUserData(
+                    (int) model.getAttribute("userId"),
+                    (String) model.getAttribute("firstName"),
+                    (String) model.getAttribute("middleName"),
+                    (String) model.getAttribute("lastName"),
+                    (String) model.getAttribute("email"),
+                    (String) model.getAttribute("bio"),
+                    (String) model.getAttribute("nickname"),
+                    (String) model.getAttribute("personalPronouns")
+            );
+        } catch (Exception e) {
+            System.err.println("Something went wrong retrieving the data to save");
+            e.printStackTrace();
+        }
+
+        rm.addAttribute("userId", userId);
         return "redirect:editAccount";
     }
 }
