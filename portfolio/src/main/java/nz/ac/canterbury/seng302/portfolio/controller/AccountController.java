@@ -2,9 +2,13 @@ package nz.ac.canterbury.seng302.portfolio.controller;
 
 import com.google.protobuf.Timestamp;
 import io.grpc.StatusRuntimeException;
+import nz.ac.canterbury.seng302.portfolio.authentication.CookieUtil;
 import nz.ac.canterbury.seng302.portfolio.service.RegisterClientService;
+import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
+import nz.ac.canterbury.seng302.shared.identityprovider.LoggedInUserResponse;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -33,8 +37,12 @@ public class AccountController {
     @GetMapping("/account")
     public String showAccountPage(
             Model model,
+            HttpServletRequest request,
+            @AuthenticationPrincipal AuthState principal,
             @RequestParam(value = "userId") int userId
     ) {
+        LoggedInUserResponse response = registerClientService.getLoggedInUser(CookieUtil.getValue(request, "lens-session-token"));
+        System.out.println("Currently logged in ID: " + response.getUserId());
 
         UserResponse getUserByIdReply;
 
@@ -55,6 +63,9 @@ public class AccountController {
             model.addAttribute("loginMessage", "Error connecting to Identity Provider...");
             e.printStackTrace();
         }
+
+//        System.out.println(@AuthenticationPrincipal int userId);
+
         return "account";
     }
 

@@ -118,6 +118,13 @@ message UserRoleChangeResponse {
    bool Message = 2;
 }
 
+message LoggedInUserRequest {
+   string token = 1;
+}
+message LoggedInUserResponse {
+   int32 UserId = 1;
+}
+
 
 service UserAccountService {
    rpc ChangeUserPassword (ChangePasswordRequest) returns (ChangePasswordResponse);
@@ -129,4 +136,5 @@ service UserAccountService {
    rpc GetPaginatedUsers(GetPaginatedUsersRequest) returns (PaginatedUsersResponse);
    rpc AddRoleToUser(ModifyRoleOfUserRequest) returns (UserRoleChangeResponse);
    rpc RemoveRoleFromUser(ModifyRoleOfUserRequest) returns (UserRoleChangeResponse);
+   rpc GetLoggedInUser(LoggedInUserRequest) returns (LoggedInUserResponse);
 }

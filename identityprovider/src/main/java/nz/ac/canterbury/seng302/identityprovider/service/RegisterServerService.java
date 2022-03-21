@@ -4,11 +4,14 @@ import com.google.protobuf.Timestamp;
 import io.grpc.stub.StreamObserver;
 import jdk.swing.interop.SwingInterOpUtils;
 import net.devh.boot.grpc.server.service.GrpcService;
+import nz.ac.canterbury.seng302.identityprovider.authentication.JwtTokenUtil;
 import nz.ac.canterbury.seng302.identityprovider.model.UserModel;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserAccountServiceGrpc;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserRegisterRequest;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserRegisterResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import nz.ac.canterbury.seng302.shared.identityprovider.LoggedInUserRequest;
+import nz.ac.canterbury.seng302.shared.identityprovider.LoggedInUserResponse;
 
 import nz.ac.canterbury.seng302.shared.identityprovider.*;
 
@@ -20,6 +23,16 @@ public class RegisterServerService extends UserAccountServiceGrpc.UserAccountSer
 
     @Autowired
     private UserModelService userModelService;
+
+    private JwtTokenUtil jwtTokenService = JwtTokenUtil.getInstance();
+
+    @Override
+    public void getLoggedInUser(LoggedInUserRequest request, StreamObserver<LoggedInUserResponse> responseObserver) {
+        LoggedInUserResponse.Builder reply = LoggedInUserResponse.newBuilder();
+        reply.setUserId(jwtTokenService.getUserIDFromToken(request.getToken()));
+        responseObserver.onNext(reply.build());
+        responseObserver.onCompleted();
+    }
 
     @Override
     public void register(UserRegisterRequest request, StreamObserver<UserRegisterResponse> responseObserver) {

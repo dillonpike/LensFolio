@@ -26,4 +26,9 @@ public class RegisterClientService {
         return userAccountStub.getUserAccountById(response);
     }
 
+    public LoggedInUserResponse getLoggedInUser(final String token) {
+        LoggedInUserRequest response = LoggedInUserRequest.newBuilder().setToken(token).build();
+        return userAccountStub.getLoggedInUser(response);
+    }
+
 }

@@ -47,7 +47,8 @@ public class AuthenticateServerService extends AuthenticationServiceImplBase {
 
         if (user.getUsername().equals(request.getUsername()) && user.getPassword().equals(request.getPassword()) && !user.getUsername().equals("fail")) {
 
-            String token = jwtTokenService.generateTokenForUser(user.getUsername(), VALID_USER_ID, FULL_NAME_OF_USER, ROLE_OF_USER);
+            String token = jwtTokenService.generateTokenForUser(user.getUsername(), user.getUserId(),
+                    user.getFirstName() + user.getMiddleName() + user.getLastName(), ROLE_OF_USER);
             reply
                 .setEmail(user.getEmail())
                 .setFirstName(user.getFirstName())
@@ -78,4 +79,8 @@ public class AuthenticateServerService extends AuthenticationServiceImplBase {
         responseObserver.onCompleted();
     }
 
+//    @Override
+//    public void getLoggedInUser(AuthenticateRequest request) {
+//        jwtTokenService.getUserIDFromToken(CookieUtil.getValue());
+//    }
 }

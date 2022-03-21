@@ -50,6 +50,11 @@ public class JwtTokenUtil implements Serializable {
 		return getClaimFromToken(token, Claims::getExpiration);
 	}
 
+	public Integer getUserIDFromToken(String token) {
+		final Claims claims = getAllClaimsFromToken(token);
+		return claims.get("nameid", Integer.class);
+	}
+
 	public Object getNamedClaimFromToken(String token, String key) {
 		final Claims claims = getAllClaimsFromToken(token);
 		return claims.get(key);
