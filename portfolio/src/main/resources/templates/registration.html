@@ -100,5 +100,22 @@
         })()
 
     </SCRIPT>
+    <script>
+        function  checkPassword() {
+            if (document.getElementById("passwordLogin").value === '' && document.getElementById("confirmPassword").value === '') {
+                document.getElementById("passwordLogin").style.borderColor = null;
+                document.getElementById("confirmPassword").style.borderColor = null;
+            } else if(document.getElementById("passwordLogin").value !== document.getElementById("confirmPassword").value) {
+                document.getElementById("passwordLogin").style.borderColor = "red";
+                document.getElementById("confirmPassword").style.borderColor = "red";
+            } else {
+                document.getElementById("passwordLogin").style.borderColor = "green";
+                document.getElementById("confirmPassword").style.borderColor = "green";
+            }
+
+        }
+        document.getElementById("confirmPassword").onkeyup = checkPassword;
+        document.getElementById("passwordLogin").onkeyup = checkPassword;
+    </script>
 </section>
 </body>
