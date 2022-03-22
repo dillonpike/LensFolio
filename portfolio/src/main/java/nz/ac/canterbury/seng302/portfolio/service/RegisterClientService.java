@@ -25,10 +25,4 @@ public class RegisterClientService {
         GetUserByIdRequest response = GetUserByIdRequest.newBuilder().setId(userId).build();
         return userAccountStub.getUserAccountById(response);
     }
-
-    public LoggedInUserResponse getLoggedInUser(final String token) {
-        LoggedInUserRequest response = LoggedInUserRequest.newBuilder().setToken(token).build();
-        return userAccountStub.getLoggedInUser(response);
-    }
-
 }

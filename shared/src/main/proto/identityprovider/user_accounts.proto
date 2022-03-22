@@ -118,10 +118,10 @@ message UserRoleChangeResponse {
    bool Message = 2;
 }
 
-message LoggedInUserRequest {
+message UserIDFromTokenRequest {
    string token = 1;
 }
-message LoggedInUserResponse {
+message UserIDFromTokenResponse {
    int32 UserId = 1;
 }
 
@@ -136,5 +136,5 @@ service UserAccountService {
    rpc GetPaginatedUsers(GetPaginatedUsersRequest) returns (PaginatedUsersResponse);
    rpc AddRoleToUser(ModifyRoleOfUserRequest) returns (UserRoleChangeResponse);
    rpc RemoveRoleFromUser(ModifyRoleOfUserRequest) returns (UserRoleChangeResponse);
-   rpc GetLoggedInUser(LoggedInUserRequest) returns (LoggedInUserResponse);
+   rpc GetUserIDFromToken(UserIDFromTokenRequest) returns (UserIDFromTokenResponse);
 }

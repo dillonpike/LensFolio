@@ -2,10 +2,9 @@ package nz.ac.canterbury.seng302.portfolio.controller;
 
 import com.google.protobuf.Timestamp;
 import io.grpc.StatusRuntimeException;
-import nz.ac.canterbury.seng302.portfolio.authentication.CookieUtil;
 import nz.ac.canterbury.seng302.portfolio.service.RegisterClientService;
+import nz.ac.canterbury.seng302.portfolio.service.UserAccountService;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
-import nz.ac.canterbury.seng302.shared.identityprovider.LoggedInUserResponse;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -29,6 +28,9 @@ public class AccountController {
     @Autowired
     private RegisterClientService registerClientService;
 
+    @Autowired
+    private UserAccountService userAccountService;
+
     /***
      * Generate the account page which displays all user's info/attributes
      *
@@ -41,8 +43,8 @@ public class AccountController {
             @AuthenticationPrincipal AuthState principal,
             @RequestParam(value = "userId") int userId
     ) {
-        LoggedInUserResponse response = registerClientService.getLoggedInUser(CookieUtil.getValue(request, "lens-session-token"));
-        System.out.println("Currently logged in ID: " + response.getUserId());
+        Integer id = userAccountService.getLoggedInUserID(request);
+        System.out.println("Currently logged in ID: " + id);
 
         UserResponse getUserByIdReply;
 

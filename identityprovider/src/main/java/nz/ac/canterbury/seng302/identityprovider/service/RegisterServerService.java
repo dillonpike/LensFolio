@@ -10,8 +10,8 @@ import nz.ac.canterbury.seng302.shared.identityprovider.UserAccountServiceGrpc;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserRegisterRequest;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserRegisterResponse;
 import org.springframework.beans.factory.annotation.Autowired;
-import nz.ac.canterbury.seng302.shared.identityprovider.LoggedInUserRequest;
-import nz.ac.canterbury.seng302.shared.identityprovider.LoggedInUserResponse;
+import nz.ac.canterbury.seng302.shared.identityprovider.UserIDFromTokenRequest;
+import nz.ac.canterbury.seng302.shared.identityprovider.UserIDFromTokenResponse;
 
 import nz.ac.canterbury.seng302.shared.identityprovider.*;
 
@@ -25,14 +25,6 @@ public class RegisterServerService extends UserAccountServiceGrpc.UserAccountSer
     private UserModelService userModelService;
 
     private JwtTokenUtil jwtTokenService = JwtTokenUtil.getInstance();
-
-    @Override
-    public void getLoggedInUser(LoggedInUserRequest request, StreamObserver<LoggedInUserResponse> responseObserver) {
-        LoggedInUserResponse.Builder reply = LoggedInUserResponse.newBuilder();
-        reply.setUserId(jwtTokenService.getUserIDFromToken(request.getToken()));
-        responseObserver.onNext(reply.build());
-        responseObserver.onCompleted();
-    }
 
     @Override
     public void register(UserRegisterRequest request, StreamObserver<UserRegisterResponse> responseObserver) {
@@ -102,6 +94,13 @@ public class RegisterServerService extends UserAccountServiceGrpc.UserAccountSer
         responseObserver.onCompleted();
     }
 
+    @Override
+    public void getUserIDFromToken(UserIDFromTokenRequest request, StreamObserver<UserIDFromTokenResponse> responseObserver) {
+        UserIDFromTokenResponse.Builder reply = UserIDFromTokenResponse.newBuilder();
+        reply.setUserId(jwtTokenService.getUserIDFromToken(request.getToken()));
+        responseObserver.onNext(reply.build());
+        responseObserver.onCompleted();
+    }
 }
 
 // Code for if queries need to be made to the database directly.
