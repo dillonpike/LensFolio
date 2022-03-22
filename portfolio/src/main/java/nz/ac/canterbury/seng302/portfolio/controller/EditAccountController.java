@@ -3,6 +3,8 @@ package nz.ac.canterbury.seng302.portfolio.controller;
 import io.grpc.StatusRuntimeException;
 import nz.ac.canterbury.seng302.portfolio.model.Sprint;
 import nz.ac.canterbury.seng302.portfolio.service.RegisterClientService;
+import nz.ac.canterbury.seng302.shared.identityprovider.EditUserRequest;
+import nz.ac.canterbury.seng302.shared.identityprovider.EditUserResponse;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserRegisterRequestOrBuilder;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,10 +63,27 @@ public class EditAccountController {
             HttpServletRequest request,
             HttpServletResponse response,
             @ModelAttribute("userId") int userId,
-            RedirectAttributes rm
+            RedirectAttributes rm,
+            Model model
     ) {
         System.out.println("enter load edit account");
-        rm.addAttribute("userId",userId);
+        try {
+            EditUserResponse saveUserdata = registerClientService.setUserData(
+                    (int) model.getAttribute("userId"),
+                    (String) model.getAttribute("firstName"),
+                    (String) model.getAttribute("middleName"),
+                    (String) model.getAttribute("lastName"),
+                    (String) model.getAttribute("email"),
+                    (String) model.getAttribute("bio"),
+                    (String) model.getAttribute("nickname"),
+                    (String) model.getAttribute("personalPronouns")
+            );
+        } catch (Exception e) {
+            System.err.println("Something went wrong retrieving the data to save");
+            e.printStackTrace();
+        }
+
+        rm.addAttribute("userId", userId);
         return "redirect:editAccount";
     }
 }
