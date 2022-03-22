@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.Objects;
 
 
 @Controller
@@ -50,6 +51,10 @@ public class RegisterController {
 
         //TODO Pass the data to check if any duplicated username instead of <authenticate>
 //        registrationReply = registerClientService.receiveConformation(username, password, firstName, lastName, email);
+
+        if (!password.equals(confirmPassword)) {
+            return "redirect:register?passwordError";
+        }
         try {
             registrationReply = registerClientService.receiveConformation(username, password, firstName, middleName, lastName, email);
         } catch (Exception e) {

@@ -13,6 +13,8 @@
                 <div class="card shadow-2-strong" style="border-radius: 1rem;">
                     <div class="card-body p-5 text-center">
                         <h3 class="mb-5">Registration</h3>
+                        <div th:if="${param.passwordError}" class="alert alert-danger">
+                    Passwords do not match, please try again</div>
                         <form class="row g-3 needs-validation" novalidate th:action="@{/register}" method="post">
                             <div class="form-floating mb-3">
                                 <input type="text" class="form-control" id="username" placeholder="username" th:name="username" required>
