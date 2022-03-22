@@ -5,6 +5,7 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <link th:href="@{/styles/main.css}" rel="stylesheet" />
     <link th:href="@{/styles/form.css}" rel="stylesheet" />
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 <body>
 <div class="header">
@@ -48,7 +49,7 @@
             projectStartDate: document.getElementById("projectStartDate").value,
             projectEndDate: document.getElementById("projectEndDate").value
         }
-        $.post("error?" + new URLSearchParams(data)).done(function (fragment) {
+        $.post("edit-project/error?" + new URLSearchParams(data)).done(function (fragment) {
             console.log(fragment);
             $("#projectStartDateError").replaceWith(fragment);
             document.getElementById("saveButton").disabled = document.getElementById("projectStartDateError").textContent.length > 0;

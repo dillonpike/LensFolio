@@ -61,12 +61,14 @@ public class EditProjectController {
     }
 
     @RequestMapping(value="/edit-project/error", method= RequestMethod.POST)
-    public String updateProjectRangeErrors(@RequestParam(value="projectStartDate") String projectStartDate,
-        @RequestParam(value="projectEndDate") String projectEndDate,
-        Model model) {
-        model.addAttribute("projectDateError",
+    public String updateProjectRangeErrors(
+            @RequestParam(value="projectStartDate") String projectStartDate,
+            @RequestParam(value="projectEndDate") String projectEndDate,
+            Model model
+    ) {
+        model.addAttribute("projectStartDateError",
                 dateValidationService.validateProjectStartDate(projectStartDate, projectEndDate));
-        return "editProject :: #projectDateError";
+        return "editProject :: #projectStartDateError";
     }
 
 }
