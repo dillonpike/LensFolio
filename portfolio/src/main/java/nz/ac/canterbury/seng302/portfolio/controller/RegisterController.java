@@ -64,7 +64,7 @@ public class RegisterController {
             return "login";
         }
         if (registrationReply.getIsSuccess()) {
-            return "login";
+            return "redirect:register?successfulRegister";
         } else {
             model.addAttribute("err", "Something went wrong");
             System.out.println("registerController; Failed to register user");
