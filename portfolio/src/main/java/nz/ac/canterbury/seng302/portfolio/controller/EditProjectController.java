@@ -57,7 +57,7 @@ public class EditProjectController {
         newProject.setEndDateString(projectEndDate);
         newProject.setDescription(projectDescription);
         projectService.updateProject(newProject);
-        return "redirect:/edit-project";
+        return "redirect:/details";
     }
 
     @RequestMapping(value="/edit-project/error", method= RequestMethod.POST)
