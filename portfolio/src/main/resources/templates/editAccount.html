@@ -46,7 +46,7 @@
     </div>
   </header>
 
-  <div class="container">
+  <div class="container" th:if="${isAuthorised} == true">
 
 <!--    start left-side profile card-->
     <div class="row ">
@@ -140,6 +140,16 @@
 <!--end the right-side profile card-->
 
   </div>
+  </div>
+
+  <div class="container" th:if="${isAuthorised} == false">
+    <h1 style="color: red;">You Cannot Edit Other People's Profile</h1>
+    <form th:action="@{/editAccountLoad}" method="post" >
+      <div>
+        <input type="hidden" th:value="${userId}" name="userId">
+        <button type="submit" class="btn btn-link" >Continue editing your profile</button>
+      </div>
+    </form>
   </div>
 
 </body>

@@ -2,6 +2,7 @@ package nz.ac.canterbury.seng302.portfolio.controller;
 
 import com.google.protobuf.Timestamp;
 import io.grpc.StatusRuntimeException;
+import nz.ac.canterbury.seng302.portfolio.authentication.CookieUtil;
 import nz.ac.canterbury.seng302.portfolio.service.RegisterClientService;
 import nz.ac.canterbury.seng302.portfolio.service.UserAccountService;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
@@ -45,10 +46,19 @@ public class AccountController {
     ) {
         Integer id = userAccountService.getLoggedInUserID(request);
         System.out.println("Currently logged in ID: " + id);
+        if(id == userId){
+            model.addAttribute("isAuthorised", true);
+        } else {
+            model.addAttribute("isAuthorised", false);
+        }
 
         UserResponse getUserByIdReply;
-
+        UserResponse getUserByIdReplyHeader;
         try {
+            getUserByIdReplyHeader =registerClientService.getUserData(id);
+            String fullNameHeader = getUserByIdReplyHeader.getFirstName() + " " + getUserByIdReplyHeader.getMiddleName() + " " + getUserByIdReplyHeader.getLastName();
+            model.addAttribute("headerFullName", fullNameHeader);
+
             getUserByIdReply = registerClientService.getUserData(userId);
             model.addAttribute("firstName", getUserByIdReply.getFirstName());
             model.addAttribute("lastName", getUserByIdReply.getLastName());
@@ -59,14 +69,12 @@ public class AccountController {
             model.addAttribute("bio", getUserByIdReply.getBio());
             String fullName = getUserByIdReply.getFirstName() + " " + getUserByIdReply.getMiddleName() + " " + getUserByIdReply.getLastName();
             model.addAttribute("fullName", fullName);
-            model.addAttribute("userId", userId);
+            model.addAttribute("userId", id);
             model.addAttribute("dateAdded", getDateAddedString(getUserByIdReply.getCreated()));
         } catch (StatusRuntimeException e) {
             model.addAttribute("loginMessage", "Error connecting to Identity Provider...");
             e.printStackTrace();
         }
-
-//        System.out.println(@AuthenticationPrincipal int userId);
 
         return "account";
     }
