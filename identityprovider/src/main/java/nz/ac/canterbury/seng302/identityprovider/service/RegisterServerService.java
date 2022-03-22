@@ -30,8 +30,15 @@ public class RegisterServerService extends UserAccountServiceGrpc.UserAccountSer
         UserModel newUser = null;
         UserModel createdUser = null;
 
+        UserModel uniqueUser = userModelService.getUserByUsername(request.getUsername());
+
         try {
             // Any empty fields are because you can't add those fields when you create an account initially.
+            if (uniqueUser != null) {
+                responseObserver.onNext(reply.setIsSuccess(false).build());
+                responseObserver.onCompleted();
+                return;
+            }
             newUser = new UserModel(
                     request.getUsername(),
                     request.getPassword(),
@@ -51,7 +58,7 @@ public class RegisterServerService extends UserAccountServiceGrpc.UserAccountSer
         } catch (Exception e) {
             System.err.println("Failed to create and add new user to database");
             e.printStackTrace();
-        }
+        } //don't want to throw an exception
         System.out.println(wasAdded + "<= Was added");
 
         if (wasAdded) {

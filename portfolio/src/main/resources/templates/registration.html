@@ -14,7 +14,10 @@
                     <div class="card-body p-5 text-center">
                         <h3 class="mb-5">Registration</h3>
                         <div th:if="${param.passwordError}" class="alert alert-danger">
-                    Passwords do not match, please try again</div>
+                            Passwords do not match, please try again</div>
+                        <div th:if="${param.registerError}" class="alert alert-danger">
+                            Invalid registration, username taken
+                        </div>
                         <div th:if="${param.successfulRegister}" class="alert alert-success">
                             Successful registration, <a href="/login" class="alert-link">click here</a> to login
                         </div>
@@ -69,7 +72,7 @@
                             <div class="d-grid gap-2 col-6 mx-auto">
                                 <button class="btn btn-primary" type="submit" id="signIn">Sign up</button>
                             </div>
-<!--                            Error message TODO when login fail. display error message -->
+                            <!--                            Error message TODO when login fail. display error message -->
                             <div style="display: none;" id="errorMessage">
                                 <p style="color:red;">Invalid login, please try again</p>
                             </div>
@@ -122,3 +125,4 @@
     </script>
 </section>
 </body>
+</html>

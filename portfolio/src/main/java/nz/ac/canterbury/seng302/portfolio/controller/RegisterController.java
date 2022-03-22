@@ -68,7 +68,7 @@ public class RegisterController {
         } else {
             model.addAttribute("err", "Something went wrong");
             System.out.println("registerController; Failed to register user");
-            return "registration";
+            return "redirect:register?registerError";
         }
     }
 }
