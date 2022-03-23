@@ -55,6 +55,12 @@
             <div class="mb-4">
               <h3 class="h4 mb-0" th:text="${fullName}"></h3>
               <span class="text-primary mb-3" th:text="${username}"></span>
+              <div style="display: flex; flex-direction: row">
+                <p> Member since: </p>
+                <p  th:text="${dateAdded}" style="margin-left: 5px"></p>
+                <p  th:text="${monthsSinceAdded}" style="margin-left: 5px"></p>
+              </div>
+
             </div>
           </div>
         </div>
@@ -105,7 +111,7 @@
               </div>
 
               <div class="form-floating">
-                <textarea class="form-control" placeholder="bio" id="floatingTextarea2" style="height: 100px" th:value="${bio}" disabled></textarea>
+                <textarea class="form-control" placeholder="bio" id="floatingTextarea2" style="height: 100px" th:text="${bio}" disabled></textarea>
                 <label for="floatingTextarea2">Bio</label>
               </div>
             </form>

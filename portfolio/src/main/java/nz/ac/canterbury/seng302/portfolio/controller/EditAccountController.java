@@ -3,6 +3,7 @@ package nz.ac.canterbury.seng302.portfolio.controller;
 import io.grpc.StatusRuntimeException;
 import nz.ac.canterbury.seng302.portfolio.model.Sprint;
 import nz.ac.canterbury.seng302.portfolio.service.RegisterClientService;
+import nz.ac.canterbury.seng302.portfolio.utility.Utility;
 import nz.ac.canterbury.seng302.shared.identityprovider.EditUserRequest;
 import nz.ac.canterbury.seng302.shared.identityprovider.EditUserResponse;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserRegisterRequestOrBuilder;
@@ -16,9 +17,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import nz.ac.canterbury.seng302.portfolio.service.EditAccountClientService;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.web.servlet.support.RequestContextUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.Map;
 
 @Controller
 public class EditAccountController {
@@ -29,6 +32,8 @@ public class EditAccountController {
     @Autowired
     private RegisterClientService registerClientService;
 
+    private Utility utility = new Utility();
+
     /***
      * Generate the edit account page which let user edit info/attributes
      *
@@ -36,9 +41,21 @@ public class EditAccountController {
      */
     @GetMapping("/editAccount")
     public String showEditAccountPage(
-            @RequestParam(value = "userId") int userId, Model model
+            @RequestParam(value = "userId") int userId, Model model, HttpServletRequest request
     ) {
         UserResponse getUserByIdReply;
+        Map<String, ?> inputFlashMap = RequestContextUtils.getInputFlashMap(request);
+        if (inputFlashMap != null) {
+            boolean isUpdateSuccess = (boolean) inputFlashMap.get("isUpdateSuccess");
+            if(isUpdateSuccess){
+                model.addAttribute("isUpdateSuccess", true);
+                model.addAttribute("updateMessage", "Account Information Successfully Updated");
+            } else {
+                model.addAttribute("isUpdateSuccess", false);
+                model.addAttribute("updateMessage", "Update Canceled! Something went wrong!");
+            }
+
+        }
         try {
             getUserByIdReply = registerClientService.getUserData(userId);
             System.out.println(getUserByIdReply.getNickname());
@@ -53,6 +70,8 @@ public class EditAccountController {
             String fullName = getUserByIdReply.getFirstName() + " " + getUserByIdReply.getMiddleName() + " " + getUserByIdReply.getLastName();
             model.addAttribute("fullName", fullName);
             model.addAttribute("userId", userId);
+            model.addAttribute("dateAdded", utility.getDateAddedString(getUserByIdReply.getCreated()));
+            model.addAttribute("monthsSinceAdded", utility.getDateSinceAddedString(getUserByIdReply.getCreated()));
         } catch (StatusRuntimeException e) {
             model.addAttribute("loginMessage", "Error connecting to Identity Provider...");
             e.printStackTrace();
@@ -98,12 +117,18 @@ public class EditAccountController {
         System.out.println(bio);
         try {
             EditUserResponse saveUserdata = registerClientService.setUserData(userId, firstName, middleName, lastName, email, bio, nickName, personalPronouns);
+            if(saveUserdata.getIsSuccess()){
+                rm.addFlashAttribute("isUpdateSuccess", true);
+            } else {
+                rm.addFlashAttribute("isUpdateSuccess", false);
+            }
         } catch (Exception e) {
             System.err.println("Something went wrong retrieving the data to save");
             e.printStackTrace();
         }
 
         rm.addAttribute("userId", userId);
+
         return "redirect:editAccount";
     }
 }
