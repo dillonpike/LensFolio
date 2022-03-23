@@ -48,6 +48,7 @@ public class AccountController {
             model.addAttribute("lastName", getUserByIdReply.getLastName());
             model.addAttribute("username", getUserByIdReply.getUsername());
             model.addAttribute("middleName", getUserByIdReply.getMiddleName());
+            model.addAttribute("nickName", getUserByIdReply.getNickname());
             model.addAttribute("email", getUserByIdReply.getEmail());
             model.addAttribute("personalPronouns", getUserByIdReply.getPersonalPronouns());
             model.addAttribute("bio", getUserByIdReply.getBio());

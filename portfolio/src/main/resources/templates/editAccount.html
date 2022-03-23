@@ -105,13 +105,13 @@
               </div>
 
               <div class="form-floating mb-3">
-                <select th:field="*{personalPronouns}" th:value="${personalPronouns}" class="form-select" id="pronounsSelect" aria-label="Floating label select example" >
+                <select th:value="${personalPronouns}" class="form-select" th:name="personalPronouns" id="personalPronouns" aria-label="Floating label select example" >
                   <option th:value="'Unknown Pronouns'" th:text="'Select your pronouns'"></option>
                   <option th:value="'She/Her'" th:text="'She/Her'"></option>
                   <option th:value="'He/Him'" th:text="'He/Him'"></option>
                   <option th:value="'They/Them'" th:text="'They/Them'"></option>
                 </select>
-                <label for="pronounsSelect">Pronouns</label>
+                <label for="personalPronouns">Pronouns</label>
               </div>
               <input type="hidden" th:value="${userId}" name="userId" id="userId" th:name="userId">
               <div class="form-floating mb-3">

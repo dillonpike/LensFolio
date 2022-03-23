@@ -75,6 +75,7 @@ public class RegisterServerService extends UserAccountServiceGrpc.UserAccountSer
                     .setLastName(user.getLastName())
                     .setMiddleName(user.getMiddleName())
                     .setUsername(user.getUsername())
+                    .setNickname(user.getNickname())
                     .setBio(user.getBio())
                     .setPersonalPronouns(user.getPersonalPronouns())
                     .setCreated(user.getDateAdded());
@@ -88,12 +89,13 @@ public class RegisterServerService extends UserAccountServiceGrpc.UserAccountSer
 
     @Override
     public void editUser(EditUserRequest request, StreamObserver<EditUserResponse> responseObserver) {
-
+        System.out.println("enter editUser in idp in RegisterClassService class");
         EditUserResponse.Builder reply = EditUserResponse.newBuilder();
 
         boolean wasSaved;
 
         try {
+            UserModel currentUser = userModelService.getUserById(request.getUserId());
             UserModel user = new UserModel();
             user.setUserId(request.getUserId());
             user.setBio(request.getBio());
@@ -103,6 +105,9 @@ public class RegisterServerService extends UserAccountServiceGrpc.UserAccountSer
             user.setMiddleName(request.getMiddleName());
             user.setLastName(request.getLastName());
             user.setPersonalPronouns(request.getPersonalPronouns());
+            user.setUsername(currentUser.getUsername());
+            user.setPassword(currentUser.getPassword());
+            user.setDateAdded(currentUser.getDateAdded());
             wasSaved = userModelService.editUserAccount(user);
             if(wasSaved){
                 reply.setIsSuccess(true).setMessage("User Account is successfully updated!");

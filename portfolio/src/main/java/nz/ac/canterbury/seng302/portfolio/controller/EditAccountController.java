@@ -41,6 +41,7 @@ public class EditAccountController {
         UserResponse getUserByIdReply;
         try {
             getUserByIdReply = registerClientService.getUserData(userId);
+            System.out.println(getUserByIdReply.getNickname());
             model.addAttribute("firstName", getUserByIdReply.getFirstName());
             model.addAttribute("nickName", getUserByIdReply.getNickname());
             model.addAttribute("lastName", getUserByIdReply.getLastName());
@@ -93,15 +94,16 @@ public class EditAccountController {
         System.out.println(firstName);
         System.out.println(lastName);
         System.out.println(middleName);
+        System.out.println(nickName);
         System.out.println(bio);
-//        try {
-//            EditUserResponse saveUserdata = registerClientService.setUserData(id, firstName, middleName, lastName, email, bio, nickName, personalPronouns);
-//        } catch (Exception e) {
-//            System.err.println("Something went wrong retrieving the data to save");
-//            e.printStackTrace();
-//        }
-//
-//        rm.addAttribute("userId", id);
+        try {
+            EditUserResponse saveUserdata = registerClientService.setUserData(userId, firstName, middleName, lastName, email, bio, nickName, personalPronouns);
+        } catch (Exception e) {
+            System.err.println("Something went wrong retrieving the data to save");
+            e.printStackTrace();
+        }
+
+        rm.addAttribute("userId", userId);
         return "redirect:editAccount";
     }
 }
