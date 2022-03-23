@@ -75,6 +75,7 @@ public class RegisterServerService extends UserAccountServiceGrpc.UserAccountSer
                     .setLastName(user.getLastName())
                     .setMiddleName(user.getMiddleName())
                     .setUsername(user.getUsername())
+                    .setNickname(user.getNickname())
                     .setBio(user.getBio())
                     .setPersonalPronouns(user.getPersonalPronouns())
                     .setCreated(user.getDateAdded());
@@ -88,26 +89,36 @@ public class RegisterServerService extends UserAccountServiceGrpc.UserAccountSer
 
     @Override
     public void editUser(EditUserRequest request, StreamObserver<EditUserResponse> responseObserver) {
-
+        System.out.println("enter editUser in idp in RegisterClassService class");
         EditUserResponse.Builder reply = EditUserResponse.newBuilder();
 
-        boolean wasSaved = false;
+        boolean wasSaved;
 
         try {
-            UserModel user = userModelService.getUserById(request.getUserId());
+            UserModel currentUser = userModelService.getUserById(request.getUserId());
+            UserModel user = new UserModel();
+            user.setUserId(request.getUserId());
             user.setBio(request.getBio());
             user.setEmail(request.getEmail());
             user.setNickname(request.getNickname());
             user.setFirstName(request.getFirstName());
             user.setMiddleName(request.getMiddleName());
             user.setLastName(request.getLastName());
-            userModelService.addUser(user);
-            wasSaved = true;
+            user.setPersonalPronouns(request.getPersonalPronouns());
+            user.setUsername(currentUser.getUsername());
+            user.setPassword(currentUser.getPassword());
+            user.setDateAdded(currentUser.getDateAdded());
+            wasSaved = userModelService.editUserAccount(user);
+            if(wasSaved){
+                reply.setIsSuccess(true).setMessage("User Account is successfully updated!");
+            } else {
+                reply.setIsSuccess(false).setMessage("Something went wrong");
+            }
         } catch(Exception e) {
             System.err.println("User failed to be changed to new values");
         }
 
-        responseObserver.onNext(reply.setIsSuccess(wasSaved).build());
+        responseObserver.onNext(reply.build());
         responseObserver.onCompleted();
 
     }

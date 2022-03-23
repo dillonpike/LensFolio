@@ -3,6 +3,7 @@ package nz.ac.canterbury.seng302.portfolio.controller;
 import com.google.protobuf.Timestamp;
 import io.grpc.StatusRuntimeException;
 import nz.ac.canterbury.seng302.portfolio.service.RegisterClientService;
+import nz.ac.canterbury.seng302.portfolio.utility.Utility;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -29,6 +30,9 @@ public class AccountController {
     @Autowired
     private RegisterClientService registerClientService;
 
+
+    private Utility utility = new Utility();
+
     /***
      * Generate the account page which displays all user's info/attributes
      *
@@ -48,14 +52,16 @@ public class AccountController {
             model.addAttribute("lastName", getUserByIdReply.getLastName());
             model.addAttribute("username", getUserByIdReply.getUsername());
             model.addAttribute("middleName", getUserByIdReply.getMiddleName());
+            model.addAttribute("nickName", getUserByIdReply.getNickname());
             model.addAttribute("email", getUserByIdReply.getEmail());
             model.addAttribute("personalPronouns", getUserByIdReply.getPersonalPronouns());
             model.addAttribute("bio", getUserByIdReply.getBio());
+            System.out.println("this is the bio = " +getUserByIdReply.getBio());
             String fullName = getUserByIdReply.getFirstName() + " " + getUserByIdReply.getMiddleName() + " " + getUserByIdReply.getLastName();
             model.addAttribute("fullName", fullName);
             model.addAttribute("userId", userId);
-            model.addAttribute("dateAdded", getDateAddedString(getUserByIdReply.getCreated()));
-            model.addAttribute("monthsSinceAdded", getDateSinceAddedString(getUserByIdReply.getCreated()));
+            model.addAttribute("dateAdded", utility.getDateAddedString(getUserByIdReply.getCreated()));
+            model.addAttribute("monthsSinceAdded", utility.getDateSinceAddedString(getUserByIdReply.getCreated()));
         } catch (StatusRuntimeException e) {
             model.addAttribute("loginMessage", "Error connecting to Identity Provider...");
             e.printStackTrace();
@@ -63,65 +69,7 @@ public class AccountController {
         return "account";
     }
 
-    private String getDateAddedString(Timestamp dateAdded) {
-        if (dateAdded != null) {
-            Date date = new Date(dateAdded.getSeconds() * 1000);
-            SimpleDateFormat dateFormat = new SimpleDateFormat("dd MMMM yyyy");
-            return dateFormat.format(date);
-        } else {
-            return null;
-        }
-    }
 
-    private String getDateSinceAddedString(Timestamp dateAdded) {
-        StringBuilder timeSinceAddedSB = new StringBuilder();
-        timeSinceAddedSB.append("(");
-
-        int yearsSince = getYearsSinceAdded(dateAdded);
-        if (yearsSince > 0) {
-            timeSinceAddedSB.append(yearsSince);
-            timeSinceAddedSB.append(" Year");
-            if (yearsSince == 1) {
-                timeSinceAddedSB.append(", ");
-            } else {
-                timeSinceAddedSB.append("s, ");
-            }
-        }
-        int monthsSince = getMonthsSinceAdded(dateAdded);
-        timeSinceAddedSB.append(monthsSince % 12);
-        timeSinceAddedSB.append(" Month");
-        if (monthsSince % 12 == 1) {
-            timeSinceAddedSB.append(")");
-        } else {
-            timeSinceAddedSB.append("s)");
-        }
-
-        return timeSinceAddedSB.toString();
-    }
-
-    private int getMonthsSinceAdded(Timestamp dateAdded) {
-        if (dateAdded != null) {
-            Period difference = Period.between(
-                    LocalDate.ofEpochDay((dateAdded.getSeconds() / 86400)),
-                    LocalDate.now()
-            );
-            return difference.getMonths();
-        } else {
-            return 0;
-        }
-    }
-
-    private int getYearsSinceAdded(Timestamp dateAdded) {
-        if (dateAdded != null) {
-            Period difference = Period.between(
-                    LocalDate.ofEpochDay((dateAdded.getSeconds() / 86400)),
-                    LocalDate.now()
-            );
-            return difference.getYears();
-        } else {
-            return 0;
-        }
-    }
 
     @PostMapping("/backToAccountPage")
     public String editAccount(
