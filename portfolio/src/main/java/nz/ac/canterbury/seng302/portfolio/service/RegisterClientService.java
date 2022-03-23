@@ -12,6 +12,8 @@ public class RegisterClientService {
     private UserAccountServiceGrpc.UserAccountServiceBlockingStub userAccountStub;
 
     public UserRegisterResponse receiveConformation(final String username, final String password, final String firstName, final String middleName, final String lastName, final String email) {
+//        String encodePassword = encryptPassword(password);
+//        System.out.println(encodePassword);
         UserRegisterRequest response = UserRegisterRequest.newBuilder()
                 .setUsername(username)
                 .setPassword(password)
