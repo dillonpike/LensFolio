@@ -40,19 +40,11 @@ public class AuthenticateServerService extends AuthenticationServiceImplBase {
 
         UserModel user = userModelService.getUserByUsername(request.getUsername());
         if (user == null) {
-            // Create failed user to compare to
-            user = new UserModel("fail", "fail", "fail", "fail", "fail", "fail", "fail", "fail", "fail");
             reply
-                    .setMessage("Log in attempt failed: username incorrect")
+                    .setMessage("Log in attempt failed: password incorrect")
                     .setSuccess(false)
                     .setToken("");
-            responseObserver.onNext(reply.build());
-            responseObserver.onCompleted();
-            return;
-        }
-        System.out.println(user);
-
-        if (user.getUsername().equals(request.getUsername()) && user.getPassword().equals(request.getPassword()) && !user.getUsername().equals("fail")) {
+        } else if (user.getUsername().equals(request.getUsername()) && user.getPassword().equals(request.getPassword())) {
 
             String token = jwtTokenService.generateTokenForUser(user.getUsername(), VALID_USER_ID, FULL_NAME_OF_USER, ROLE_OF_USER);
             reply

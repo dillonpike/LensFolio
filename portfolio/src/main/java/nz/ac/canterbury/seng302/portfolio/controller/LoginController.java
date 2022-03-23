@@ -80,7 +80,7 @@ public class LoginController {
             if (loginReply.getMessage().equals("Log in attempt failed: username incorrect")) {
                 return "redirect:login?usernameError";
             } else {
-                return "redirect:login?error";
+                return "redirect:login?passwordError";
             }
 
         }
