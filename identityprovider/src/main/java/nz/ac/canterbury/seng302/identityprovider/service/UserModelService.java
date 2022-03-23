@@ -39,6 +39,30 @@ public class UserModelService {
         return repository.save(user);
     }
 
+    public boolean editUserAccount(UserModel user) {
+        boolean status;
+        try{
+            UserModel userEdit =repository.findByUserId(user.getUserId());
+            userEdit.setBio(user.getBio());
+            userEdit.setFirstName(user.getFirstName());
+            userEdit.setMiddleName(user.getMiddleName());
+            userEdit.setLastName(user.getLastName());
+            userEdit.setPersonalPronouns(user.getPersonalPronouns());
+            userEdit.setEmail(user.getEmail());
+            userEdit.setNickname(user.getNickname());
+            user.setUserId(userIdCount);
+            repository.save(user);
+            status = true;
+        } catch(Exception e) {
+            status = false;
+            e.printStackTrace();
+        }
+
+
+        return status;
+    }
+
+
     /**
      * Sets userIdCount to be the next available user id in the database.
      */

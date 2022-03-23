@@ -78,48 +78,48 @@
             <br>
 
 <!--            start form-->
-            <form action="#">
+            <form th:action="@{/saveEditAccount}" method="post" >
               <div class="form-floating mb-3">
-                <input type="text" class="form-control" id="firstNameInput" placeholder="First name" th:value="${firstName}">
-                <label for="firstNameInput">First name</label>
+                <input type="text" class="form-control" id="firstName" th:name="firstName" placeholder="First name" th:value="${firstName}" >
+                <label for="firstName">First name</label>
               </div>
 
               <div class="form-floating mb-3">
-                <input type="text" class="form-control" id="middleNameInput" placeholder="Middle name" th:value="${middleName}">
-                <label for="middleNameInput">Middle name</label>
+                <input type="text" class="form-control" id="middleName" th:name="middleName" placeholder="Middle name" th:value="${middleName}">
+                <label for="middleName">Middle name</label>
               </div>
 
               <div class="form-floating mb-3">
-                <input type="text" class="form-control" id="lastNameInput" placeholder="Last name" th:value="${lastName}">
-                <label for="lastNameInput">Last name</label>
+                <input type="text" class="form-control" id="lastName" th:name="lastName" placeholder="Last name" th:value="${lastName}" >
+                <label for="lastName">Last name</label>
               </div>
 
               <div class="form-floating mb-3">
-                <input type="text" class="form-control" id="nickNameInput" placeholder="Nickname/alias" th:value="${nickname}">
-                <label for="nickNameInput">Nickname/alias</label>
+                <input type="text" class="form-control" id="nickName" th:name="nickName" placeholder="Nickname/alias" th:value="${nickName}">
+                <label for="nickName">Nickname/alias</label>
               </div>
 
               <div class="form-floating mb-3">
-                <input type="email" class="form-control" id="emailInput" placeholder="name@example.com" th:value="${email}">
-                <label for="emailInput">Email address</label>
+                <input type="email" class="form-control" id="email" th:name="email" placeholder="name@example.com" th:value="${email}">
+                <label for="email">Email address</label>
               </div>
 
               <div class="form-floating mb-3">
-                <select class="form-select" id="pronounsSelect" aria-label="Floating label select example" >
-                  <option selected>Open this select menu</option>
-                  <option value="1">She/Her</option>
-                  <option value="2">He/Him</option>
-                  <option value="3">They/Them</option>
+                <select th:field="*{personalPronouns}" th:value="${personalPronouns}" class="form-select" id="pronounsSelect" aria-label="Floating label select example" >
+                  <option th:value="'Unknown Pronouns'" th:text="'Select your pronouns'"></option>
+                  <option th:value="'She/Her'" th:text="'She/Her'"></option>
+                  <option th:value="'He/Him'" th:text="'He/Him'"></option>
+                  <option th:value="'They/Them'" th:text="'They/Them'"></option>
                 </select>
                 <label for="pronounsSelect">Pronouns</label>
               </div>
-
+              <input type="hidden" th:value="${userId}" name="userId" id="userId" th:name="userId">
               <div class="form-floating mb-3">
-                <textarea class="form-control" placeholder="bio" id="floatingTextarea2" th:value="${bio}" style="height: 100px"></textarea>
-                <label for="floatingTextarea2">Bio</label>
+                <textarea class="form-control" placeholder="bio" id="bio" th:name="bio" th:value="${bio}" style="height: 100px"></textarea>
+                <label for="bio">Bio</label>
               </div>
               <div>
-                <button type="button" class="btn btn-success">Update Profile</button>
+                <button type="submit" class="btn btn-success">Update Profile</button>
               </div>
             </form>
 <!--          end form-->
@@ -131,7 +131,7 @@
               </form>
               <form th:action="@{/backToAccountPage}" method="post">
                 <div>
-                  <input type="hidden" th:value="${userId}" name="userId">
+                  <input type="hidden" th:value="${userId}" name="userId" id="userId" th:name="userId">
                   <button type="submit" class="btn btn-danger" style="margin-right: 10px">Cancel</button>
                 </div>
               </form>

@@ -42,6 +42,7 @@ public class EditAccountController {
         try {
             getUserByIdReply = registerClientService.getUserData(userId);
             model.addAttribute("firstName", getUserByIdReply.getFirstName());
+            model.addAttribute("nickName", getUserByIdReply.getNickname());
             model.addAttribute("lastName", getUserByIdReply.getLastName());
             model.addAttribute("username", getUserByIdReply.getUsername());
             model.addAttribute("middleName", getUserByIdReply.getMiddleName());
@@ -66,24 +67,41 @@ public class EditAccountController {
             RedirectAttributes rm,
             Model model
     ) {
-        System.out.println("enter load edit account");
-        try {
-            EditUserResponse saveUserdata = registerClientService.setUserData(
-                    (int) model.getAttribute("userId"),
-                    (String) model.getAttribute("firstName"),
-                    (String) model.getAttribute("middleName"),
-                    (String) model.getAttribute("lastName"),
-                    (String) model.getAttribute("email"),
-                    (String) model.getAttribute("bio"),
-                    (String) model.getAttribute("nickname"),
-                    (String) model.getAttribute("personalPronouns")
-            );
-        } catch (Exception e) {
-            System.err.println("Something went wrong retrieving the data to save");
-            e.printStackTrace();
-        }
-
+        System.out.println("enter load edit account"+userId);
         rm.addAttribute("userId", userId);
+        return "redirect:editAccount";
+    }
+
+    @PostMapping("/saveEditAccount")
+    public String saveEditAccount(
+            HttpServletRequest request,
+            HttpServletResponse response,
+            @ModelAttribute("userId") int userId,
+            @ModelAttribute("email") String email,
+            @ModelAttribute("firstName") String firstName,
+            @ModelAttribute("lastName") String lastName,
+            @ModelAttribute("middleName") String middleName,
+            @ModelAttribute("nickName") String nickName,
+            @ModelAttribute("personalPronouns") String personalPronouns,
+            @ModelAttribute("bio") String bio,
+            RedirectAttributes rm,
+            Model model
+    ) {
+        System.out.println(userId);
+        System.out.println(email);
+        System.out.println(personalPronouns);
+        System.out.println(firstName);
+        System.out.println(lastName);
+        System.out.println(middleName);
+        System.out.println(bio);
+//        try {
+//            EditUserResponse saveUserdata = registerClientService.setUserData(id, firstName, middleName, lastName, email, bio, nickName, personalPronouns);
+//        } catch (Exception e) {
+//            System.err.println("Something went wrong retrieving the data to save");
+//            e.printStackTrace();
+//        }
+//
+//        rm.addAttribute("userId", id);
         return "redirect:editAccount";
     }
 }
