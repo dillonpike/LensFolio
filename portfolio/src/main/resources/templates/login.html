@@ -15,7 +15,10 @@
                     <div class="card-body p-5 text-center">
                         <h3 class="mb-5">Sign in </h3>
                         <div th:if="${param.error}" class="alert alert-danger">
-                            Invalid login, please try again
+                            Invalid password, please try again
+                        </div>
+                        <div th:if="${param.usernameError}" class="alert alert-danger">
+                            Invalid username, please try again
                         </div>
                         <form th:action="@{/login}" class="row g-3 needs-validation" novalidate method="post">
                             <div class="form-floating mb-3">

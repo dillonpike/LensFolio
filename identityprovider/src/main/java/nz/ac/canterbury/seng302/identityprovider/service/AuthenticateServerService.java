@@ -42,6 +42,13 @@ public class AuthenticateServerService extends AuthenticationServiceImplBase {
         if (user == null) {
             // Create failed user to compare to
             user = new UserModel("fail", "fail", "fail", "fail", "fail", "fail", "fail", "fail", "fail");
+            reply
+                    .setMessage("Log in attempt failed: username incorrect")
+                    .setSuccess(false)
+                    .setToken("");
+            responseObserver.onNext(reply.build());
+            responseObserver.onCompleted();
+            return;
         }
         System.out.println(user);
 
@@ -59,7 +66,7 @@ public class AuthenticateServerService extends AuthenticationServiceImplBase {
                 .setUsername(user.getUsername());
         } else {
             reply
-            .setMessage("Log in attempt failed: username or password incorrect")
+            .setMessage("Log in attempt failed: password incorrect")
             .setSuccess(false)
             .setToken("");
         }
