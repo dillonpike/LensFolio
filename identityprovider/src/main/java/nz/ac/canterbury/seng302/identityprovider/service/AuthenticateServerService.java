@@ -41,7 +41,7 @@ public class AuthenticateServerService extends AuthenticationServiceImplBase {
         UserModel user = userModelService.getUserByUsername(request.getUsername());
         if (user == null) {
             reply
-                    .setMessage("Log in attempt failed: password incorrect")
+                    .setMessage("Log in attempt failed: username incorrect")
                     .setSuccess(false)
                     .setToken("");
         } else if (user.getUsername().equals(request.getUsername()) && user.getPassword().equals(request.getPassword())) {
