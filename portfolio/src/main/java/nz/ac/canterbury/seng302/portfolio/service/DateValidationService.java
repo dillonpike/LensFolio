@@ -37,11 +37,30 @@ public class DateValidationService {
                         startDate.before(sprint.getStartDate()) && endDate.before(sprint.getStartDate()) ||
                                 startDate.after(sprint.getEndDate()) && endDate.after(sprint.getEndDate())
                 )) {
-                    message = "Dates must not overlap with " + sprint.getName() + "'s dates\n(" +
+                    message = "Dates must not overlap with " + sprint.getName() + "'s dates (" +
                             sprint.getStartDateString() + " - " + sprint.getEndDateString() + ").";
                     break;
                 }
             }
+        }
+        return message;
+    }
+
+    public String validateSprintInProjectDateRange(String startDateString, String endDateString) {
+        String message = "";
+        Date startDate = Project.stringToDate(startDateString);
+        Date endDate = Project.stringToDate(endDateString);
+        Project project;
+        try {
+            project = projectService.getProjectById(0);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return message;
+        }
+        if (startDate.before(project.getStartDate()) || startDate.after(project.getEndDate()) ||
+                endDate.before(project.getStartDate()) || endDate.after(project.getEndDate())) {
+            message = "Sprint dates must be within the project's date range (" +
+                    project.getStartDateString() + " - " + project.getEndDateString() + ").";
         }
         return message;
     }

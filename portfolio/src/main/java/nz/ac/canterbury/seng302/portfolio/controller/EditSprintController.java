@@ -69,7 +69,8 @@ public class EditSprintController {
                                      Model model) {
         model.addAttribute("sprintDateError",
                 dateValidationService.validateSprintStartDate(sprintStartDate, sprintEndDate) + " " +
-                dateValidationService.validateSprintDateRange(sprintStartDate, sprintEndDate, id));
+                dateValidationService.validateSprintDateRange(sprintStartDate, sprintEndDate, id) + " " +
+                dateValidationService.validateSprintInProjectDateRange(sprintStartDate, sprintEndDate));
         return "editSprint :: #sprintDateError";
     }
 
