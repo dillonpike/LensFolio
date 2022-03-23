@@ -3,6 +3,7 @@ package nz.ac.canterbury.seng302.portfolio.controller;
 import com.google.protobuf.Timestamp;
 import io.grpc.StatusRuntimeException;
 import nz.ac.canterbury.seng302.portfolio.service.RegisterClientService;
+import nz.ac.canterbury.seng302.portfolio.utility.Utility;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -17,6 +18,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.sql.Date;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.Period;
+import java.time.temporal.TemporalUnit;
 import java.util.Map;
 
 @Controller
@@ -24,6 +29,9 @@ public class AccountController {
 
     @Autowired
     private RegisterClientService registerClientService;
+
+
+    private Utility utility = new Utility();
 
     /***
      * Generate the account page which displays all user's info/attributes
@@ -44,13 +52,16 @@ public class AccountController {
             model.addAttribute("lastName", getUserByIdReply.getLastName());
             model.addAttribute("username", getUserByIdReply.getUsername());
             model.addAttribute("middleName", getUserByIdReply.getMiddleName());
+            model.addAttribute("nickName", getUserByIdReply.getNickname());
             model.addAttribute("email", getUserByIdReply.getEmail());
             model.addAttribute("personalPronouns", getUserByIdReply.getPersonalPronouns());
             model.addAttribute("bio", getUserByIdReply.getBio());
+            System.out.println("this is the bio = " +getUserByIdReply.getBio());
             String fullName = getUserByIdReply.getFirstName() + " " + getUserByIdReply.getMiddleName() + " " + getUserByIdReply.getLastName();
             model.addAttribute("fullName", fullName);
             model.addAttribute("userId", userId);
-            model.addAttribute("dateAdded", getDateAddedString(getUserByIdReply.getCreated()));
+            model.addAttribute("dateAdded", utility.getDateAddedString(getUserByIdReply.getCreated()));
+            model.addAttribute("monthsSinceAdded", utility.getDateSinceAddedString(getUserByIdReply.getCreated()));
         } catch (StatusRuntimeException e) {
             model.addAttribute("loginMessage", "Error connecting to Identity Provider...");
             e.printStackTrace();
@@ -58,15 +69,7 @@ public class AccountController {
         return "account";
     }
 
-    private String getDateAddedString(Timestamp dateAdded) {
-        if (dateAdded != null) {
-            Date date = new Date(dateAdded.getSeconds() * 1000);
-            SimpleDateFormat dateFormat = new SimpleDateFormat("dd MMMM yyyy");
-            return dateFormat.format(date);
-        } else {
-            return null;
-        }
-    }
+
 
     @PostMapping("/backToAccountPage")
     public String editAccount(
