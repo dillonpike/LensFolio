@@ -24,14 +24,22 @@
         </ul>
 
 
-        <div class="dropdown text-end">
-          <a href="#" class="d-block link-dark text-decoration-none dropdown-toggle" id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false">
-            User 123  <img th:src="@{img/img.png}" alt="mdo" width="32" height="32" class="rounded-circle">
+        <div class="dropdown text-end" style="display: flex; flex-direction: row; align-items: center;">
+          <h6 th:text="${fullName}" style="margin-right: 5px;padding-top: 5px"></h6>
+          <a href="#" class="d-block link-dark text-decoration-none dropdown-toggle" id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false" >
+            <img th:src="@{img/img.png}" alt="mdo" width="32" height="32" class="rounded-circle">
           </a>
           <ul class="dropdown-menu text-small" aria-labelledby="dropdownUser1">
-            <li><a class="dropdown-item" href="#">Profile</a></li>
+            <li>
+              <form th:action="@{/backToAccountPage}" method="post">
+                <div>
+                  <input type="hidden" th:value="${userId}" name="userId">
+                  <button type="submit" class="btn btn-link" id="btn_prof" style="color:black;text-decoration: none;" >Profile</button>
+                </div>
+              </form>
+            </li>
             <li><hr class="dropdown-divider"></li>
-            <li><a class="dropdown-item" href="#">Sign out</a></li>
+            <li><a class="dropdown-item" href="/login">Sign out</a></li>
           </ul>
         </div>
       </div>
@@ -47,8 +55,11 @@
           <img th:src="@{img/img.png}" alt="mdo" width="300" height="300" class="rounded-circle" style ="margin-left: 60px; margin-top:20px">
           <div class="card-body p-1-9 p-xl-5">
             <div class="mb-4">
-              <h3 class="h4 mb-0">User 123</h3>
-              <span class="text-primary">use165</span>
+              <h3 class="h4 mb-0" th:text="${fullName}"></h3>
+              <span class="text-primary" th:text="${username}"></span>
+              <p> Member since: </p>
+              <h3 class="h4 mb-0" th:text="${dateAdded}"></h3>
+              <h3 class="h4 mb-0" th:text="${monthsSinceAdded}"></h3>
             </div>
           </div>
         </div>
@@ -67,38 +78,48 @@
             <br>
 
 <!--            start form-->
-            <form action="#">
+            <form th:action="@{/saveEditAccount}" method="post" >
               <div class="form-floating mb-3">
-                <input type="text" class="form-control" id="fullNameInput" placeholder="Full name" th:name="newFullName">
-                <label for="fullNameInput">Full name</label>
+                <input type="text" class="form-control" id="firstName" th:name="firstName" placeholder="First name" th:value="${firstName}" >
+                <label for="firstName">First name</label>
               </div>
 
               <div class="form-floating mb-3">
-                <input type="text" class="form-control" id="nickNameInput" placeholder="Nickname/alias" th:name="newNickName">
-                <label for="nickNameInput">Nickname/alias</label>
+                <input type="text" class="form-control" id="middleName" th:name="middleName" placeholder="Middle name" th:value="${middleName}">
+                <label for="middleName">Middle name</label>
               </div>
 
               <div class="form-floating mb-3">
-                <input type="email" class="form-control" id="emailInput" placeholder="name@example.com" th:name="newEmail">
-                <label for="emailInput">Email address</label>
+                <input type="text" class="form-control" id="lastName" th:name="lastName" placeholder="Last name" th:value="${lastName}" >
+                <label for="lastName">Last name</label>
               </div>
 
               <div class="form-floating mb-3">
-                <select class="form-select" id="pronounsSelect" aria-label="Floating label select example" th:name="newGender">
-                  <option selected>Open this select menu</option>
-                  <option value="1">She/Her</option>
-                  <option value="2">He/Him</option>
-                  <option value="3">They/Them</option>
+                <input type="text" class="form-control" id="nickName" th:name="nickName" placeholder="Nickname/alias" th:value="${nickName}">
+                <label for="nickName">Nickname/alias</label>
+              </div>
+
+              <div class="form-floating mb-3">
+                <input type="email" class="form-control" id="email" th:name="email" placeholder="name@example.com" th:value="${email}">
+                <label for="email">Email address</label>
+              </div>
+
+              <div class="form-floating mb-3">
+                <select th:value="${personalPronouns}" class="form-select" th:name="personalPronouns" id="personalPronouns" aria-label="Floating label select example" >
+                  <option th:value="'Unknown Pronouns'" th:text="'Select your pronouns'"></option>
+                  <option th:value="'She/Her'" th:text="'She/Her'"></option>
+                  <option th:value="'He/Him'" th:text="'He/Him'"></option>
+                  <option th:value="'They/Them'" th:text="'They/Them'"></option>
                 </select>
-                <label for="pronounsSelect">Pronouns</label>
+                <label for="personalPronouns">Pronouns</label>
               </div>
-
+              <input type="hidden" th:value="${userId}" name="userId" id="userId" th:name="userId">
               <div class="form-floating mb-3">
-                <textarea class="form-control" placeholder="bio" id="floatingTextarea2" th:name="newBio" style="height: 100px"></textarea>
-                <label for="floatingTextarea2">Bio</label>
+                <textarea class="form-control" placeholder="bio" id="bio" th:name="bio" th:value="${bio}" style="height: 100px"></textarea>
+                <label for="bio">Bio</label>
               </div>
               <div>
-                <button type="button" class="btn btn-success">Update Profile</button>
+                <button type="submit" class="btn btn-success">Update Profile</button>
               </div>
             </form>
 <!--          end form-->
@@ -108,8 +129,9 @@
                   <button type="submit" class="btn btn-primary" style="margin-right: 10px; width:200px">Change Password</button>
                 </div>
               </form>
-              <form th:action="@{/account}">
+              <form th:action="@{/backToAccountPage}" method="post">
                 <div>
+                  <input type="hidden" th:value="${userId}" name="userId" id="userId" th:name="userId">
                   <button type="submit" class="btn btn-danger" style="margin-right: 10px">Cancel</button>
                 </div>
               </form>
@@ -140,6 +162,7 @@
       document.getElementById("confirmPasswordInput").style.borderColor = "green";
     }
   }
+
 
 </script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>

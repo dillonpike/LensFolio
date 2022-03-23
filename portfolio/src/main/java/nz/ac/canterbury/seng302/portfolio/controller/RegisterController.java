@@ -5,14 +5,11 @@ import nz.ac.canterbury.seng302.portfolio.authentication.CookieUtil;
 import nz.ac.canterbury.seng302.portfolio.service.AuthenticateClientService;
 import nz.ac.canterbury.seng302.portfolio.service.GreeterClientService;
 import nz.ac.canterbury.seng302.portfolio.service.RegisterClientService;
-import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
-import nz.ac.canterbury.seng302.shared.identityprovider.AuthenticateResponse;
-import nz.ac.canterbury.seng302.shared.identityprovider.ClaimDTO;
+import nz.ac.canterbury.seng302.shared.identityprovider.*;
 
 import nz.ac.canterbury.seng302.shared.identityprovider.UserRegisterResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.crypto.password.Pbkdf2PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -32,14 +29,16 @@ public class RegisterController {
 
     @GetMapping("/register")
     public String registration() {
-        return "register";
+        return "registration";
     }
 
     @PostMapping("/register")
     public String registration(
             HttpServletRequest request,
             HttpServletResponse response,
-            @RequestParam(name = "fullName") String fullName,
+            @RequestParam(name = "firstName") String firstName,
+            @RequestParam(name = "middleName") String middleName,
+            @RequestParam(name = "lastName") String lastName,
             @RequestParam(name = "username") String username,
             @RequestParam(name = "email") String email,
             @RequestParam(name = "password") String password,
@@ -47,16 +46,23 @@ public class RegisterController {
             Model model
     ) {
         UserRegisterResponse registrationReply;
+
+        //TODO Pass the data to check if any duplicated username instead of <authenticate>
+//        registrationReply = registerClientService.receiveConformation(username, password, firstName, lastName, email);
         try {
-            registrationReply = registerClientService.receiveConformation(username, password, fullName, email);
-        } catch (StatusRuntimeException e) {
-            model.addAttribute("loginMessage", "Error connecting to Identity Provider...");
-            return "register";
+            registrationReply = registerClientService.receiveConformation(username, password, firstName, middleName, lastName, email);
+        } catch (Exception e) {
+            model.addAttribute("err", "Error connecting to Identity Provider...");
+            System.out.println("registerController; Failed connecting to Identity Provider");
+            e.printStackTrace();
+            return "login";
         }
         if (registrationReply.getIsSuccess()) {
             return "login";
         } else {
-            return "register";
+            model.addAttribute("err", "Something went wrong");
+            System.out.println("registerController; Failed to register user");
+            return "registration";
         }
     }
 }

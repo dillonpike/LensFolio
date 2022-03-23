@@ -6,6 +6,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import java.util.Date;
 import java.text.SimpleDateFormat;
+import java.util.Objects;
 
 @Entity // this is an entity, assumed to be in a table called Project
 public class Project {
@@ -63,7 +64,8 @@ public class Project {
      * @return the given date, as a string in format 01/Jan/2000
      */
     static String dateToString(Date date) {
-        return new SimpleDateFormat("dd/MMM/yyyy").format(date);
+        // Returns date in format unless its null which it then makes a new Date object.
+        return new SimpleDateFormat("dd/MMM/yyyy").format(Objects.requireNonNullElseGet(date, Date::new));
     }
 
     /* Getters/Setters */
@@ -119,6 +121,6 @@ public class Project {
     }
 
     public void setEndDateString(String date) {
-        this.projectStartDate = Project.stringToDate(date);
+        this.projectEndDate = Project.stringToDate(date);
     }
 }

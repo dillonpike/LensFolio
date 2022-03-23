@@ -3,95 +3,40 @@
 <head>
     <title>loginForm</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <link th:href="@{/css/login.css}" rel="stylesheet"/>
+    <!--    <link th:href="@{/css/login.css}" rel="stylesheet"/>-->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
 </head>
 <body>
-
-<div class="container">
-    <div class="forms">
-        <div class="form login">
-            <span class="title">Login</span>
-
-            <form th:action="@{/login}"
-                  method="post">
-                <div class="input-field">
-                    <input id="usernameLogin" type="text" placeholder="Enter your username" th:name="usernameLogin" required>
+<section class="vh-100" style="background: linear-gradient(-45deg, #ee6654, #e71c6e, #2396d5, #23c5ab) 400% 400%;">
+    <div class="container py-5 h-100">
+        <div class="row d-flex justify-content-center align-items-center h-100">
+            <div class="col-12 col-md-8 col-lg-6 col-xl-5">
+                <div class="card shadow-2-strong" style="border-radius: 1rem;">
+                    <div class="card-body p-5 text-center">
+                        <h3 class="mb-5">Sign in </h3>
+                        <div th:if="${param.error}" class="alert alert-danger">
+                            Invalid login, please try again
+                        </div>
+                        <form th:action="@{/login}" class="row g-3 needs-validation" novalidate method="post">
+                            <div class="form-floating mb-3">
+                                <input type="text" class="form-control" id="usernameLogin" placeholder="username" th:name="usernameLogin" required>
+                                <label for="usernameLogin">username</label>
+                            </div>
+                            <div class="form-floating mb-3">
+                                <input type="password" class="form-control" id="passwordLogin" placeholder="password" th:name="passwordLogin" required>
+                                <label for="passwordLogin">Password</label>
+                            </div>
+                            <div class="d-grid gap-2 col-6 mx-auto">
+                                <button class="btn btn-primary" type="submit">Sign in</button>
+                            </div>
+                        </form>
+                        <hr class="my-4">
+                        Don't have an account yet? <a href="/register">Signup Now</a>
+                    </div>
                 </div>
-                <div class="input-field">
-                    <input type="password" class="passwordLogin" placeholder="Enter your password" th:name="passwordLogin"  required>
-                </div>
-                <div class="input-field button">
-                    <input type="submit" value="Login" >
-                </div>
-            </form>
-
-            <div class="login-signup">
-                    <span class="text">First time?
-                        <a href="#" class="text signup-link">Signup now</a>
-                    </span>
-            </div>
-        </div>
-
-        <!-- Registration Form -->
-        <div class="form signup">
-            <span class="title">Registration</span>
-
-            <form th:action="@{./register}"
-            method="post">
-                <div class="input-field">
-                    <label>
-                        <input type="text" placeholder="Enter your full name" pattern="^(\w\w+)\s(\w+)$"
-                              th:name="fullName" required>
-                    </label>
-                    <i class="uil uil-user"></i>
-                </div>
-                <div class="input-field">
-                    <label for="username"></label>
-                    <input type="text" id="username" th:name="username" placeholder="Enter your username" maxlength="25" required>
-                    <i class="uil uil-user"></i>
-                </div>
-                <div class="input-field">
-                    <label>
-                        <input type="email" th:name="email" placeholder="Enter your email" required>
-                    </label>
-                    <i class="uil uil-envelope icon"></i>
-                </div>
-                <div class="input-field">
-                    <label for="password"></label><input th:name="password" type="password" id="password" placeholder="Enter your password" minlength="8" onpaste="return false" required>
-                </div>
-                <div class="input-field">
-                    <label>
-                        <input type="password" class="password" th:name="confirmPassword" placeholder="Confirm password" minlength="8"
-                               onpaste="return false" required>
-                    </label>
-                </div>
-                <div class="input-field button">
-                    <input type="submit" value="Register">
-                </div>
-            </form>
-            <div class="login-signup">
-                    <span class="text">
-                        Already sign up?
-                        <a href="#" class="text login-link">Login Now</a>
-                    </span>
             </div>
         </div>
     </div>
-</div>
-
-<script>
-    const container = document.querySelector(".container"),
-        signUp = document.querySelector(".signup-link"),
-        login = document.querySelector(".login-link");
-
-    // js code to appear signup and login form
-    signUp.addEventListener("click", ( )=>{
-        container.classList.add("active");
-    });
-    login.addEventListener("click", ( )=>{
-        container.classList.remove("active");
-    });
-
-</script>
+</section>
 </body>
 </html>
