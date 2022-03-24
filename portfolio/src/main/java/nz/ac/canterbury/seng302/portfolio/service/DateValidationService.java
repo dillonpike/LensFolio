@@ -1,7 +1,5 @@
 package nz.ac.canterbury.seng302.portfolio.service;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.concurrent.TimeUnit;
 import nz.ac.canterbury.seng302.portfolio.model.Project;
 import nz.ac.canterbury.seng302.portfolio.model.Sprint;
@@ -22,7 +20,7 @@ public class DateValidationService {
         Date startDate = Project.stringToDate(startDateString);
         Date endDate = Project.stringToDate(endDateString);
         if (startDate.after(endDate)) {
-            message =  "Start date must be on or before the end date.";
+            message = "Start date must be on or before the end date.";
         }
         return message;
     }
@@ -75,7 +73,7 @@ public class DateValidationService {
         }
 
         // Check the start date is less than a year ago
-        long diff = getDiff(startDate);
+        long diff = getDaysFromNow(startDate);
         if (diff >= 365) {
             message = "Start date must be less than a year ago";
         }
@@ -94,14 +92,15 @@ public class DateValidationService {
         return message;
     }
 
-    public long getDiff(Date startDate){
-        LocalDateTime now = LocalDateTime.now();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MMM/yyyy");
-        String formatDateTime = now.format(formatter);
-        Date today = Project.stringToDate(formatDateTime);
-
-        long diffInMs = Math.abs(today.getTime() - startDate.getTime());
-
+    /**
+     * Returns the time difference from now to the given date in days. Returns a positive value if the date is in the
+     * past, and a negative value of the date is in the future.
+     * @param date date to get the time difference from
+     * @return days since the given date from now
+     */
+    public long getDaysFromNow(Date date){
+        Date today = new Date();
+        long diffInMs = today.getTime() - date.getTime();
         return TimeUnit.DAYS.convert(diffInMs, TimeUnit.MILLISECONDS);
     }
 
