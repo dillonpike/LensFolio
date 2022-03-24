@@ -37,6 +37,6 @@ public class AddSprintController {
             Model model
     ) throws Exception {
         sprintService.addSprint(sprint);
-        return "redirect:/detail";
+        return "redirect:/details";
     }
 }
