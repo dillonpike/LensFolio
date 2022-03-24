@@ -40,10 +40,9 @@ public class AccountController {
      */
     @GetMapping("/account")
     public String showAccountPage(
-            Model model,
-            @RequestParam(value = "userId") int userId
+            Model model
     ) {
-
+        int userId = (int) model.asMap().get("userId");
         UserResponse getUserByIdReply;
 
         try {

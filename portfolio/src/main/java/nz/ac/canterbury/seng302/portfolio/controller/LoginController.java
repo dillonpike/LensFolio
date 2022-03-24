@@ -73,7 +73,7 @@ public class LoginController {
                 domain.startsWith("localhost") ? null : domain
             );
             System.out.println("logged in "+loginReply.getUserId());
-            rm.addAttribute("userId", (int)loginReply.getUserId());
+            rm.addFlashAttribute("userId", (int)loginReply.getUserId());
             return "redirect:account";
         } else {
             model.addAttribute("loginMessage", loginReply.getMessage());
