@@ -19,8 +19,10 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
  */
 @Controller
 public class EditSprintController {
+
     @Autowired
     private SprintService sprintService;
+
     @Autowired
     private DateValidationService dateValidationService;
 
@@ -33,7 +35,6 @@ public class EditSprintController {
         model.addAttribute("sprintStartDate", sprint.getStartDateString());
         model.addAttribute("sprintEndDate", sprint.getEndDateString());
         model.addAttribute("sprintDescription", sprint.getDescription());
-        model.addAttribute("sprintStartDateError", "");
         model.addAttribute("sprintDateError", "");
 
         /* Return the name of the Thymeleaf template */
@@ -64,15 +65,13 @@ public class EditSprintController {
 
     @RequestMapping(value="/edit-sprint/error", method=RequestMethod.POST)
     public String updateSprintRangeErrors(@RequestParam(value="id") Integer id,
-                                     @RequestParam(value="sprintStartDate") String sprintStartDate,
-                                     @RequestParam(value="sprintEndDate") String sprintEndDate,
-                                     Model model) {
+                                          @RequestParam(value="sprintStartDate") String sprintStartDate,
+                                          @RequestParam(value="sprintEndDate") String sprintEndDate,
+                                          Model model) {
         model.addAttribute("sprintDateError",
                 dateValidationService.validateSprintStartDate(sprintStartDate, sprintEndDate) + " " +
-                dateValidationService.validateSprintDateRange(sprintStartDate, sprintEndDate, id) + " " +
-                dateValidationService.validateSprintInProjectDateRange(sprintStartDate, sprintEndDate));
+                        dateValidationService.validateSprintDateRange(sprintStartDate, sprintEndDate, id) + " " +
+                        dateValidationService.validateSprintInProjectDateRange(sprintStartDate, sprintEndDate));
         return "editSprint :: #sprintDateError";
     }
-
-
 }
