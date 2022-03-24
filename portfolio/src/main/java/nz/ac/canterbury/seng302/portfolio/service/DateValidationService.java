@@ -15,7 +15,13 @@ public class DateValidationService {
     @Autowired
     private ProjectService projectService;
 
-    public String validateSprintStartDate(String startDateString, String endDateString) {
+    /**
+     * Returns a blank message if the start date is before or on the end date, otherwise returns an error message.
+     * @param startDateString start date to be compared
+     * @param endDateString end date to be compared
+     * @return blank message if the date is valid, otherwise an error message
+     */
+    public String validateStartDateNotAfterEndDate(String startDateString, String endDateString) {
         String message = "";
         Date startDate = Project.stringToDate(startDateString);
         Date endDate = Project.stringToDate(endDateString);
@@ -63,32 +69,18 @@ public class DateValidationService {
         return message;
     }
 
-    public String validateProjectStartDate(String startDateString, String endDateString) {
-        // Checks if the start date is before the end date
+    /**
+     * Returns a blank message if the given date is not over a year ago, otherwise returns an error message.
+     * @param dateString date to be checked
+     * @return blank message if the date is valid, otherwise an error message
+     */
+    public String validateDateNotOverAYearAgo(String dateString) {
         String message = "";
-        Date startDate = Project.stringToDate(startDateString);
-        Date endDate = Project.stringToDate(endDateString);
-        if (startDate.after(endDate)) {
-            message =  "Start date must be on or before the end date.";
+        Date date = Project.stringToDate(dateString);
+        long diff = getDaysFromNow(date);
+        if (diff > 365) {
+            message = "Start date must be less than a year ago.";
         }
-
-        // Check the start date is less than a year ago
-        long diff = getDaysFromNow(startDate);
-        if (diff >= 365) {
-            message = "Start date must be less than a year ago";
-        }
-
-        String startDateIsValid = isDateValid(startDateString);
-        String endDateIsValid = isDateValid(endDateString);
-
-        if (! startDateIsValid.equals("")) {
-            message = startDateIsValid;
-        }
-
-        if (! endDateIsValid.equals("")) {
-            message = endDateIsValid;
-        }
-
         return message;
     }
 

@@ -1,14 +1,11 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
-import nz.ac.canterbury.seng302.portfolio.model.Project;
 import nz.ac.canterbury.seng302.portfolio.model.Sprint;
 import nz.ac.canterbury.seng302.portfolio.service.DateValidationService;
-import nz.ac.canterbury.seng302.portfolio.service.ProjectService;
 import nz.ac.canterbury.seng302.portfolio.service.SprintService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -69,7 +66,7 @@ public class EditSprintController {
                                           @RequestParam(value="sprintEndDate") String sprintEndDate,
                                           Model model) {
         model.addAttribute("sprintDateError",
-                dateValidationService.validateSprintStartDate(sprintStartDate, sprintEndDate) + " " +
+                dateValidationService.validateStartDateNotAfterEndDate(sprintStartDate, sprintEndDate) + " " +
                         dateValidationService.validateSprintDateRange(sprintStartDate, sprintEndDate, id) + " " +
                         dateValidationService.validateSprintInProjectDateRange(sprintStartDate, sprintEndDate));
         return "editSprint :: #sprintDateError";

@@ -64,7 +64,7 @@ public class Project {
      * @param date the date to convert
      * @return the given date, as a string in format 01/Jan/2000
      */
-    static String dateToString(Date date) {
+    public static String dateToString(Date date) {
         // Returns date in format unless its null which it then makes a new Date object.
         return new SimpleDateFormat("dd/MMM/yyyy").format(Objects.requireNonNullElseGet(date, Date::new));
     }
