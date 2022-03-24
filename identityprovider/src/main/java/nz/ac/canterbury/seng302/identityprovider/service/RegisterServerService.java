@@ -96,7 +96,6 @@ public class RegisterServerService extends UserAccountServiceGrpc.UserAccountSer
 
     @Override
     public void editUser(EditUserRequest request, StreamObserver<EditUserResponse> responseObserver) {
-        System.out.println("enter editUser in idp in RegisterClassService class");
         EditUserResponse.Builder reply = EditUserResponse.newBuilder();
 
         boolean wasSaved;

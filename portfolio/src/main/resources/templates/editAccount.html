@@ -89,7 +89,7 @@
 <!--            start form-->
             <form th:action="@{/saveEditAccount}" method="post" >
               <div class="form-floating mb-3">
-                <input type="text" class="form-control" id="firstName" th:name="firstName" placeholder="First name" th:value="${firstName}" >
+                <input type="text" class="form-control" id="firstName" th:name="firstName" placeholder="First name" th:value="${firstName}" minlength="1">
                 <label for="firstName">First name</label>
               </div>
 
@@ -99,7 +99,7 @@
               </div>
 
               <div class="form-floating mb-3">
-                <input type="text" class="form-control" id="lastName" th:name="lastName" placeholder="Last name" th:value="${lastName}" >
+                <input type="text" class="form-control" id="lastName" th:name="lastName" placeholder="Last name" th:value="${lastName}" required>
                 <label for="lastName">Last name</label>
               </div>
 

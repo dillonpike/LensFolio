@@ -107,14 +107,6 @@ public class EditAccountController {
             RedirectAttributes rm,
             Model model
     ) {
-        System.out.println(userId);
-        System.out.println(email);
-        System.out.println(personalPronouns);
-        System.out.println(firstName);
-        System.out.println(lastName);
-        System.out.println(middleName);
-        System.out.println(nickName);
-        System.out.println(bio);
         try {
             EditUserResponse saveUserdata = registerClientService.setUserData(userId, firstName, middleName, lastName, email, bio, nickName, personalPronouns);
             if(saveUserdata.getIsSuccess()){
