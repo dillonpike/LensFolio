@@ -39,7 +39,7 @@ public class UserModelService {
         return repository.save(user);
     }
 
-    public boolean editUserAccount(UserModel user) {
+    public boolean saveEditedUser(UserModel user) {
         boolean status;
         try{
             repository.save(user);
