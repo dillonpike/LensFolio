@@ -38,7 +38,6 @@ public class RegisterClientService {
                 .setNickname(nickname)
                 .setPersonalPronouns(personalPronouns)
                 .build();
-        System.out.println(personalPronouns);
         return userAccountStub.editUser(response);
     }
 

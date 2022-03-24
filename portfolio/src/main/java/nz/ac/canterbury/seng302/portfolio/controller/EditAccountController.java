@@ -87,7 +87,6 @@ public class EditAccountController {
             RedirectAttributes rm,
             Model model
     ) {
-        System.out.println("enter load edit account"+userId);
         rm.addAttribute("userId", userId);
         return "redirect:editAccount";
     }
@@ -116,7 +115,6 @@ public class EditAccountController {
             }
         } catch (Exception e) {
             System.err.println("Something went wrong retrieving the data to save");
-            e.printStackTrace();
         }
 
         rm.addAttribute("userId", userId);

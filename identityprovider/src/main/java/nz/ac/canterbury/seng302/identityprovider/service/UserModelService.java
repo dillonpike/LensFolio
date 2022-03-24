@@ -48,8 +48,6 @@ public class UserModelService {
             status = false;
             e.printStackTrace();
         }
-
-
         return status;
     }
 
