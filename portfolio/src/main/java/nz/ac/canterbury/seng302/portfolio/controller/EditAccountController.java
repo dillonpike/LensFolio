@@ -3,8 +3,10 @@ package nz.ac.canterbury.seng302.portfolio.controller;
 import io.grpc.StatusRuntimeException;
 import nz.ac.canterbury.seng302.portfolio.service.RegisterClientService;
 import nz.ac.canterbury.seng302.portfolio.service.UserAccountService;
+import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -33,10 +35,11 @@ public class EditAccountController {
     @GetMapping("/editAccount")
     public String showEditAccountPage(
             @RequestParam(value = "userId") int userId,
+            @AuthenticationPrincipal AuthState principal,
             Model model,
             HttpServletRequest request
     ) {
-        Integer id = userAccountService.getLoggedInUserID(request);
+        Integer id = userAccountService.getUserIDFromAuthState(principal);
         if(id == userId){
             model.addAttribute("isAuthorised", true);
         } else {

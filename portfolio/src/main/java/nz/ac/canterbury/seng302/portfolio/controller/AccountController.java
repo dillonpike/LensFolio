@@ -44,7 +44,7 @@ public class AccountController {
             @AuthenticationPrincipal AuthState principal,
             @RequestParam(value = "userId") int userId
     ) {
-        Integer id = userAccountService.getLoggedInUserID(request);
+        Integer id = userAccountService.getUserIDFromAuthState(principal);
         System.out.println("Currently logged in ID: " + id);
         if(id == userId){
             model.addAttribute("isAuthorised", true);

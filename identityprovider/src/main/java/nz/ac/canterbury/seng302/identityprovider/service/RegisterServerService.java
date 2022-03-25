@@ -4,14 +4,11 @@ import com.google.protobuf.Timestamp;
 import io.grpc.stub.StreamObserver;
 import jdk.swing.interop.SwingInterOpUtils;
 import net.devh.boot.grpc.server.service.GrpcService;
-import nz.ac.canterbury.seng302.identityprovider.authentication.JwtTokenUtil;
 import nz.ac.canterbury.seng302.identityprovider.model.UserModel;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserAccountServiceGrpc;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserRegisterRequest;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserRegisterResponse;
 import org.springframework.beans.factory.annotation.Autowired;
-import nz.ac.canterbury.seng302.shared.identityprovider.UserIDFromTokenRequest;
-import nz.ac.canterbury.seng302.shared.identityprovider.UserIDFromTokenResponse;
 
 import nz.ac.canterbury.seng302.shared.identityprovider.*;
 
@@ -23,8 +20,6 @@ public class RegisterServerService extends UserAccountServiceGrpc.UserAccountSer
 
     @Autowired
     private UserModelService userModelService;
-
-    private JwtTokenUtil jwtTokenService = JwtTokenUtil.getInstance();
 
     @Override
     public void register(UserRegisterRequest request, StreamObserver<UserRegisterResponse> responseObserver) {
@@ -90,14 +85,6 @@ public class RegisterServerService extends UserAccountServiceGrpc.UserAccountSer
             e.printStackTrace();
         }
 
-        responseObserver.onNext(reply.build());
-        responseObserver.onCompleted();
-    }
-
-    @Override
-    public void getUserIDFromToken(UserIDFromTokenRequest request, StreamObserver<UserIDFromTokenResponse> responseObserver) {
-        UserIDFromTokenResponse.Builder reply = UserIDFromTokenResponse.newBuilder();
-        reply.setUserId(jwtTokenService.getUserIDFromToken(request.getToken()));
         responseObserver.onNext(reply.build());
         responseObserver.onCompleted();
     }
