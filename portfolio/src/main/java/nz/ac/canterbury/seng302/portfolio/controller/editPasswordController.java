@@ -12,6 +12,8 @@ public class editPasswordController {
     private AuthenticateClientService authenticateClientService;
 
     /***
+     * GET Method
+     *
      * Generate the edit password page which let user change password
      *
      * @return The edit password page

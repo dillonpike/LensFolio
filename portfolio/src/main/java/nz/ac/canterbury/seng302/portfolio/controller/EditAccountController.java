@@ -35,13 +35,17 @@ public class EditAccountController {
     private Utility utility = new Utility();
 
     /***
-     * Generate the edit account page which let user edit info/attributes
-     *
-     * @return The edit account page
+     * GET method to generate the edit account page which let user edit info/attributes
+     * @param userId ID for the current user
+     * @param model Parameters sent to thymeleaf template to be rendered into HTML
+     * @param request HTTP request sent to this endpoint
+     * @return the edit account page which let user edit info/attributes
      */
     @GetMapping("/editAccount")
     public String showEditAccountPage(
-            @RequestParam(value = "userId") int userId, Model model, HttpServletRequest request
+            @RequestParam(value = "userId") int userId,
+            Model model,
+            HttpServletRequest request
     ) {
         UserResponse getUserByIdReply;
         Map<String, ?> inputFlashMap = RequestContextUtils.getInputFlashMap(request);
@@ -79,6 +83,21 @@ public class EditAccountController {
        return "editAccount";
     }
 
+    /***
+     * POST Method
+     *
+     * This process works in a few stages:
+     *  1. We send Post request "editAccountLoad" when user click edit profile
+     *  2. We Load the current user's id and add it to model
+     *  3. Redirect to account page use GET Method
+     *
+     * @param request HTTP request sent to this endpoint
+     * @param response HTTP response that will be returned by this endpoint
+     * @param userId ID for the current user
+     * @param rm attributes pass to other controller
+     * @param model Parameters sent to thymeleaf template to be rendered into HTML
+     * @return Account Page
+     */
     @PostMapping("/editAccountLoad")
     public String editAccount(
             HttpServletRequest request,
@@ -91,6 +110,26 @@ public class EditAccountController {
         return "redirect:editAccount";
     }
 
+    /***
+     * POST Method
+     *
+     * Post the changed user made in the edit account page, check the response,
+     * and if it is successful new attributes will be stored for future use.
+     *
+     * @param request HTTP request sent to this endpoint
+     * @param response HTTP response that will be returned by this endpoint
+     * @param userId UserId of the current login user
+     * @param email New email associated with username
+     * @param firstName New firstName associated with username
+     * @param lastName New lastName associated with username
+     * @param middleName New middleName associated with username
+     * @param nickName New nickName associated with username
+     * @param personalPronouns New personalPronouns associated with username
+     * @param bio New bio associated with username
+     * @param rm Redirect attributes
+     * @param model Parameters sent to thymeleaf template to be rendered into HTML
+     * @return redirect back to account page
+     */
     @PostMapping("/saveEditAccount")
     public String saveEditAccount(
             HttpServletRequest request,

@@ -22,7 +22,10 @@ public class LoginController {
     @Autowired
     private AuthenticateClientService authenticateClientService;
 
-
+    /***
+     * GET method for login Controller
+     * @return the login page (login.html)
+     */
     @GetMapping("/login")
     public String login() {
         return "login";

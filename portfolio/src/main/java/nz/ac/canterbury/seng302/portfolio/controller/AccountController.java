@@ -34,16 +34,17 @@ public class AccountController {
     private Utility utility = new Utility();
 
     /***
-     * Generate the account page which displays all user's info/attributes
+     * GET method for account controller to generate user's info
      *
-     * @return The account(home) page for user
+     * @param model Parameters sent to thymeleaf template to be rendered into HTML
+     * @param userId ID for the current login user
+     * @return Account page which including user's info
      */
     @GetMapping("/account")
     public String showAccountPage(
             Model model,
             @RequestParam("userId") int userId
             ) {
-//        int userId = (int) model.asMap().get("userId");
         UserResponse getUserByIdReply;
 
         try {
@@ -69,7 +70,14 @@ public class AccountController {
     }
 
 
-
+    /***
+     *
+     * @param request HTTP request sent to this endpoint
+     * @param response HTTP response that will be returned by this endpoint
+     * @param userId userId ID for the current login user
+     * @param rm attributes pass to other controller
+     * @return Account page with user id
+     */
     @PostMapping("/backToAccountPage")
     public String editAccount(
             HttpServletRequest request,
