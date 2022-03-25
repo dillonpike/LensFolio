@@ -56,7 +56,6 @@ public class AccountController {
             model.addAttribute("email", getUserByIdReply.getEmail());
             model.addAttribute("personalPronouns", getUserByIdReply.getPersonalPronouns());
             model.addAttribute("bio", getUserByIdReply.getBio());
-            System.out.println("this is the bio = " +getUserByIdReply.getBio());
             String fullName = getUserByIdReply.getFirstName() + " " + getUserByIdReply.getMiddleName() + " " + getUserByIdReply.getLastName();
             model.addAttribute("fullName", fullName);
             model.addAttribute("userId", userId);
@@ -78,7 +77,6 @@ public class AccountController {
             @ModelAttribute("userId") int userId,
             RedirectAttributes rm
     ) {
-        System.out.println("enter load edit account");
         rm.addAttribute("userId",userId);
         return "redirect:account";
     }
