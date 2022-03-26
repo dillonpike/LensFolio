@@ -1,21 +1,20 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
 import io.grpc.StatusRuntimeException;
-import nz.ac.canterbury.seng302.portfolio.model.Sprint;
 import nz.ac.canterbury.seng302.portfolio.service.RegisterClientService;
+import nz.ac.canterbury.seng302.portfolio.service.UserAccountService;
+import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import nz.ac.canterbury.seng302.portfolio.utility.Utility;
-import nz.ac.canterbury.seng302.shared.identityprovider.EditUserRequest;
 import nz.ac.canterbury.seng302.shared.identityprovider.EditUserResponse;
-import nz.ac.canterbury.seng302.shared.identityprovider.UserRegisterRequestOrBuilder;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import nz.ac.canterbury.seng302.portfolio.service.EditAccountClientService;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.servlet.support.RequestContextUtils;
 
@@ -27,10 +26,10 @@ import java.util.Map;
 public class EditAccountController {
 
     @Autowired
-    private EditAccountClientService editAccountClientService;
+    private RegisterClientService registerClientService;
 
     @Autowired
-    private RegisterClientService registerClientService;
+    private UserAccountService userAccountService;
 
     private Utility utility = new Utility();
 
@@ -43,10 +42,17 @@ public class EditAccountController {
      */
     @GetMapping("/editAccount")
     public String showEditAccountPage(
-            @RequestParam(value = "userId") int userId,
             Model model,
-            HttpServletRequest request
+            HttpServletRequest request,
+            @RequestParam(value = "userId") int userId,
+            @AuthenticationPrincipal AuthState principal
     ) {
+        Integer id = userAccountService.getUserIDFromAuthState(principal);
+        if(id == userId){
+            model.addAttribute("isAuthorised", true);
+        } else {
+            model.addAttribute("isAuthorised", false);
+        }
         UserResponse getUserByIdReply;
         Map<String, ?> inputFlashMap = RequestContextUtils.getInputFlashMap(request);
         if (inputFlashMap != null) {
@@ -61,8 +67,7 @@ public class EditAccountController {
 
         }
         try {
-            getUserByIdReply = registerClientService.getUserData(userId);
-            System.out.println(getUserByIdReply.getNickname());
+            getUserByIdReply = registerClientService.getUserData(id);
             model.addAttribute("firstName", getUserByIdReply.getFirstName());
             model.addAttribute("nickName", getUserByIdReply.getNickname());
             model.addAttribute("lastName", getUserByIdReply.getLastName());
@@ -73,7 +78,7 @@ public class EditAccountController {
             model.addAttribute("bio", getUserByIdReply.getBio());
             String fullName = getUserByIdReply.getFirstName() + " " + getUserByIdReply.getMiddleName() + " " + getUserByIdReply.getLastName();
             model.addAttribute("fullName", fullName);
-            model.addAttribute("userId", userId);
+            model.addAttribute("userId", id);
             model.addAttribute("dateAdded", utility.getDateAddedString(getUserByIdReply.getCreated()));
             model.addAttribute("monthsSinceAdded", utility.getDateSinceAddedString(getUserByIdReply.getCreated()));
         } catch (StatusRuntimeException e) {
