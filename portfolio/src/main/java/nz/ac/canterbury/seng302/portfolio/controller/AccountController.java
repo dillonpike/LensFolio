@@ -35,7 +35,7 @@ public class AccountController {
      * GET method for account controller to generate user's info
      *
      * @param model Parameters sent to thymeleaf template to be rendered into HTML
-     * @param userId ID for the current login user
+//     * @param userId ID for the current login user
      * @return Account page which including user's info
      */
     @GetMapping("/account")
@@ -43,19 +43,19 @@ public class AccountController {
             Model model,
             HttpServletRequest request,
             @AuthenticationPrincipal AuthState principal,
-            @RequestParam(value = "userId") int userId
+            @RequestParam(value = "userId") String userIdInput
     ) {
-        Integer id = userAccountService.getUserIDFromAuthState(principal);
-        System.out.println("Currently logged in ID: " + id);
-        if(id == userId){
-            model.addAttribute("isAuthorised", true);
-        } else {
-            model.addAttribute("isAuthorised", false);
-        }
-
         UserResponse getUserByIdReply;
         UserResponse getUserByIdReplyHeader;
         try {
+            int userId = Integer.parseInt(userIdInput);
+            Integer id = userAccountService.getUserIDFromAuthState(principal);
+            System.out.println("Currently logged in ID: " + id);
+            if(id == userId){
+                model.addAttribute("isAuthorised", true);
+            } else {
+                model.addAttribute("isAuthorised", false);
+            }
             getUserByIdReplyHeader = registerClientService.getUserData(id);
             String fullNameHeader = getUserByIdReplyHeader.getFirstName() + " " + getUserByIdReplyHeader.getMiddleName() + " " + getUserByIdReplyHeader.getLastName();
             model.addAttribute("headerFullName", fullNameHeader);
@@ -77,6 +77,8 @@ public class AccountController {
         } catch (StatusRuntimeException e) {
             model.addAttribute("loginMessage", "Error connecting to Identity Provider...");
             e.printStackTrace();
+        } catch (NumberFormatException numberFormatException) {
+            //TODO Show error message. Invalid URL
         }
 
         return "account";
