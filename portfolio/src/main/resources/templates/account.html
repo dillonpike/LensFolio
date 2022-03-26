@@ -25,7 +25,7 @@
 
 
         <div class="dropdown text-end" style="display: flex; flex-direction: row; align-items: center;">
-          <h6 th:text="${fullName}" style="margin-right: 5px;padding-top: 5px"></h6>
+          <h6 th:text="${headerFullName}" style="margin-right: 5px;padding-top: 5px"></h6>
           <a href="#" class="d-block link-dark text-decoration-none dropdown-toggle" id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false" >
             <img th:src="@{img/img.png}" alt="mdo" width="32" height="32" class="rounded-circle">
           </a>
@@ -116,7 +116,7 @@
               </div>
             </form>
 <!--          end form-->
-            <form th:action="@{/editAccountLoad}" method="post">
+            <form th:action="@{/editAccountLoad}" method="post" th:if="${isAuthorised} == true">
               <div style="display:flex; justify-content: end" class="mt-3">
                 <input type="hidden" th:value="${userId}" name="userId">
                 <button type="submit" class="btn btn-primary">Edit Profile</button>

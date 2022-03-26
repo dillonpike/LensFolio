@@ -2,10 +2,14 @@ package nz.ac.canterbury.seng302.portfolio.controller;
 
 import com.google.protobuf.Timestamp;
 import io.grpc.StatusRuntimeException;
+import nz.ac.canterbury.seng302.portfolio.authentication.CookieUtil;
 import nz.ac.canterbury.seng302.portfolio.service.RegisterClientService;
 import nz.ac.canterbury.seng302.portfolio.utility.Utility;
+import nz.ac.canterbury.seng302.portfolio.service.UserAccountService;
+import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -30,6 +34,9 @@ public class AccountController {
     @Autowired
     private RegisterClientService registerClientService;
 
+    @Autowired
+    private UserAccountService userAccountService;
+
 
     private Utility utility = new Utility();
 
@@ -43,11 +50,25 @@ public class AccountController {
     @GetMapping("/account")
     public String showAccountPage(
             Model model,
-            @RequestParam("userId") int userId
-            ) {
-        UserResponse getUserByIdReply;
+            HttpServletRequest request,
+            @AuthenticationPrincipal AuthState principal,
+            @RequestParam(value = "userId") int userId
+    ) {
+        Integer id = userAccountService.getUserIDFromAuthState(principal);
+        System.out.println("Currently logged in ID: " + id);
+        if(id == userId){
+            model.addAttribute("isAuthorised", true);
+        } else {
+            model.addAttribute("isAuthorised", false);
+        }
 
+        UserResponse getUserByIdReply;
+        UserResponse getUserByIdReplyHeader;
         try {
+            getUserByIdReplyHeader = registerClientService.getUserData(id);
+            String fullNameHeader = getUserByIdReplyHeader.getFirstName() + " " + getUserByIdReplyHeader.getMiddleName() + " " + getUserByIdReplyHeader.getLastName();
+            model.addAttribute("headerFullName", fullNameHeader);
+
             getUserByIdReply = registerClientService.getUserData(userId);
             model.addAttribute("firstName", getUserByIdReply.getFirstName());
             model.addAttribute("lastName", getUserByIdReply.getLastName());
@@ -59,13 +80,14 @@ public class AccountController {
             model.addAttribute("bio", getUserByIdReply.getBio());
             String fullName = getUserByIdReply.getFirstName() + " " + getUserByIdReply.getMiddleName() + " " + getUserByIdReply.getLastName();
             model.addAttribute("fullName", fullName);
-            model.addAttribute("userId", userId);
+            model.addAttribute("userId", id);
             model.addAttribute("dateAdded", utility.getDateAddedString(getUserByIdReply.getCreated()));
             model.addAttribute("monthsSinceAdded", utility.getDateSinceAddedString(getUserByIdReply.getCreated()));
         } catch (StatusRuntimeException e) {
             model.addAttribute("loginMessage", "Error connecting to Identity Provider...");
             e.printStackTrace();
         }
+
         return "account";
     }
 
