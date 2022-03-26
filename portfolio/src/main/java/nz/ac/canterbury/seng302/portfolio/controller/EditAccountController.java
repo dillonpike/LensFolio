@@ -5,9 +5,7 @@ import nz.ac.canterbury.seng302.portfolio.service.RegisterClientService;
 import nz.ac.canterbury.seng302.portfolio.service.UserAccountService;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import nz.ac.canterbury.seng302.portfolio.utility.Utility;
-import nz.ac.canterbury.seng302.shared.identityprovider.EditUserRequest;
 import nz.ac.canterbury.seng302.shared.identityprovider.EditUserResponse;
-import nz.ac.canterbury.seng302.shared.identityprovider.UserRegisterRequestOrBuilder;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -26,9 +24,6 @@ import java.util.Map;
 
 @Controller
 public class EditAccountController {
-
-    @Autowired
-    private EditAccountClientService editAccountClientService;
 
     @Autowired
     private RegisterClientService registerClientService;
