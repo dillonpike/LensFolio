@@ -1,18 +1,22 @@
 package nz.ac.canterbury.seng302.identityprovider.service;
 
+import lombok.RequiredArgsConstructor;
 import nz.ac.canterbury.seng302.identityprovider.model.UserModel;
 import nz.ac.canterbury.seng302.identityprovider.model.UserModelRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
 public class UserModelService {
-    @Autowired
-    private UserModelRepository repository;
+
+    private final UserModelRepository repository;
 
     private static int userIdCount = 1;
+
+    public UserModelService(UserModelRepository repository) {
+        this.repository = repository;
+    }
 
     public UserModel getUserById(int userId) {
         return repository.findByUserId(userId);
