@@ -41,4 +41,13 @@ public class RegisterClientService {
         return userAccountStub.editUser(response);
     }
 
+    public ChangePasswordResponse setPassword(final int userId, final String currentPassword, final String newPassword) {
+        ChangePasswordRequest response = ChangePasswordRequest.newBuilder()
+                .setUserId(userId)
+                .setCurrentPassword(currentPassword)
+                .setNewPassword(newPassword)
+                .build();
+        return userAccountStub.changeUserPassword(response);
+    }
+
 }
