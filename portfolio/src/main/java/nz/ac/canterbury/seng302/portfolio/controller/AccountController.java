@@ -47,19 +47,18 @@ public class AccountController {
     ) {
         UserResponse getUserByIdReply;
         UserResponse getUserByIdReplyHeader;
+        Integer id = userAccountService.getUserIDFromAuthState(principal);
+        getUserByIdReplyHeader = registerClientService.getUserData(id);
+        String fullNameHeader = getUserByIdReplyHeader.getFirstName() + " " + getUserByIdReplyHeader.getMiddleName() + " " + getUserByIdReplyHeader.getLastName();
+        model.addAttribute("headerFullName", fullNameHeader);
         try {
             int userId = Integer.parseInt(userIdInput);
-            Integer id = userAccountService.getUserIDFromAuthState(principal);
             System.out.println("Currently logged in ID: " + id);
             if(id == userId){
                 model.addAttribute("isAuthorised", true);
             } else {
                 model.addAttribute("isAuthorised", false);
             }
-            getUserByIdReplyHeader = registerClientService.getUserData(id);
-            String fullNameHeader = getUserByIdReplyHeader.getFirstName() + " " + getUserByIdReplyHeader.getMiddleName() + " " + getUserByIdReplyHeader.getLastName();
-            model.addAttribute("headerFullName", fullNameHeader);
-
             getUserByIdReply = registerClientService.getUserData(userId);
             model.addAttribute("firstName", getUserByIdReply.getFirstName());
             model.addAttribute("lastName", getUserByIdReply.getLastName());
@@ -78,7 +77,8 @@ public class AccountController {
             model.addAttribute("loginMessage", "Error connecting to Identity Provider...");
             e.printStackTrace();
         } catch (NumberFormatException numberFormatException) {
-            //TODO Show error message. Invalid URL
+            model.addAttribute("userId", id);
+            return "404NotFound";
         }
 
         return "account";
