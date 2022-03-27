@@ -62,7 +62,7 @@ public class EditAccountController {
                 model.addAttribute("updateMessage", "Account Information Successfully Updated");
             } else {
                 model.addAttribute("isUpdateSuccess", false);
-                model.addAttribute("updateMessage", "Update Canceled! Something went wrong!");
+                model.addAttribute("updateMessage", "Update Cancelled! Something went wrong!");
             }
 
         }

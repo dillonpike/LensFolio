@@ -72,9 +72,10 @@ public class EditPasswordController {
             Model model
     ) {
         Integer userId = userAccountService.getUserIDFromAuthState(principal);
-        System.out.println("user id" + userId);
         try {
-            ChangePasswordResponse changeUserPassword = registerClientService.setPassword(userId, currentPassword, newPassword);
+            System.out.println(currentPassword);
+            System.out.println(newPassword);
+            ChangePasswordResponse changeUserPassword = registerClientService.changePassword(userId, currentPassword, newPassword);
             if(changeUserPassword.getIsSuccess()){
                 rm.addFlashAttribute("isUpdateSuccess", true);
             } else {
