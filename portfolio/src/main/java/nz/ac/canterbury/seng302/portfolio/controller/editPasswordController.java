@@ -7,6 +7,8 @@ import nz.ac.canterbury.seng302.portfolio.service.UserAccountService;
 import nz.ac.canterbury.seng302.portfolio.utility.Utility;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
+import nz.ac.canterbury.seng302.portfolio.service.UserAccountService;
+import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
@@ -41,7 +43,6 @@ public class editPasswordController {
     public String showEditPassword(
             Model model,
             HttpServletRequest request,
-            @RequestParam(value = "userId") int userId,
             @AuthenticationPrincipal AuthState principal
     ) {
         Integer id = userAccountService.getUserIDFromAuthState(principal);
@@ -52,13 +53,11 @@ public class editPasswordController {
             model.addAttribute("username", getUserByIdReply.getUsername());
             model.addAttribute("dateAdded", utility.getDateAddedString(getUserByIdReply.getCreated()));
             model.addAttribute("monthsSinceAdded", utility.getDateSinceAddedString(getUserByIdReply.getCreated()));
+            model.addAttribute("userId", id);
         } catch(Exception e) {
             model.addAttribute("loginMessage", "Error connecting to Identity Provider...");
             e.printStackTrace();
         }
-
-
-
         return "editPassword";
     }
 }
