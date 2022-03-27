@@ -1,6 +1,7 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
 import nz.ac.canterbury.seng302.portfolio.service.AuthenticateClientService;
+import nz.ac.canterbury.seng302.portfolio.service.ElementService;
 import nz.ac.canterbury.seng302.portfolio.service.RegisterClientService;
 import nz.ac.canterbury.seng302.portfolio.service.UserAccountService;
 import nz.ac.canterbury.seng302.portfolio.utility.Utility;
@@ -14,9 +15,11 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.web.servlet.support.RequestContextUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.Map;
 
 @Controller
 public class EditPasswordController {
@@ -29,6 +32,9 @@ public class EditPasswordController {
 
     @Autowired
     private UserAccountService userAccountService;
+
+    @Autowired
+    private ElementService elementService;
 
     private Utility utility = new Utility();
 
@@ -45,6 +51,7 @@ public class EditPasswordController {
             HttpServletRequest request,
             @AuthenticationPrincipal AuthState principal
     ) {
+        model = elementService.addBanner(model, request);
         Integer id = userAccountService.getUserIDFromAuthState(principal);
         try {
             UserResponse getUserByIdReply = registerClientService.getUserData(id);
@@ -72,20 +79,20 @@ public class EditPasswordController {
             Model model
     ) {
         Integer userId = userAccountService.getUserIDFromAuthState(principal);
+        rm.addAttribute("userId", userId);
         try {
-            System.out.println(currentPassword);
-            System.out.println(newPassword);
             ChangePasswordResponse changeUserPassword = registerClientService.changePassword(userId, currentPassword, newPassword);
             if(changeUserPassword.getIsSuccess()){
                 rm.addFlashAttribute("isUpdateSuccess", true);
+                return "redirect:editAccount";
             } else {
                 rm.addFlashAttribute("isUpdateSuccess", false);
             }
         } catch (Exception e) {
+            rm.addFlashAttribute("isUpdateSuccess", false);
             System.err.println("Something went wrong retrieving the data to save");
         }
-        rm.addAttribute("userId", userId);
 
-        return "redirect:editAccount";
+        return "redirect:editPassword";
     }
 }

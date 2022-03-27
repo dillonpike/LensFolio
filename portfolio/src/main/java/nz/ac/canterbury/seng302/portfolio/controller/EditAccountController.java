@@ -1,6 +1,7 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
 import io.grpc.StatusRuntimeException;
+import nz.ac.canterbury.seng302.portfolio.service.ElementService;
 import nz.ac.canterbury.seng302.portfolio.service.RegisterClientService;
 import nz.ac.canterbury.seng302.portfolio.service.UserAccountService;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
@@ -31,6 +32,9 @@ public class EditAccountController {
     @Autowired
     private UserAccountService userAccountService;
 
+    @Autowired
+    private ElementService elementService;
+
     private Utility utility = new Utility();
 
     /***
@@ -54,18 +58,7 @@ public class EditAccountController {
             model.addAttribute("isAuthorised", false);
         }
         UserResponse getUserByIdReply;
-        Map<String, ?> inputFlashMap = RequestContextUtils.getInputFlashMap(request);
-        if (inputFlashMap != null) {
-            boolean isUpdateSuccess = (boolean) inputFlashMap.get("isUpdateSuccess");
-            if(isUpdateSuccess){
-                model.addAttribute("isUpdateSuccess", true);
-                model.addAttribute("updateMessage", "Account Information Successfully Updated");
-            } else {
-                model.addAttribute("isUpdateSuccess", false);
-                model.addAttribute("updateMessage", "Update Cancelled! Something went wrong!");
-            }
-
-        }
+        model = elementService.addBanner(model, request);
         try {
             getUserByIdReply = registerClientService.getUserData(id);
             model.addAttribute("firstName", getUserByIdReply.getFirstName());

@@ -89,7 +89,7 @@
 <!--            start form-->
             <form th:action="@{/saveEditAccount}" method="post" >
               <div class="form-floating mb-3">
-                <input type="text" class="form-control" id="firstName" th:name="firstName" placeholder="First name" th:value="${firstName}" minlength="1">
+                <input type="text"Christophe class="form-control" id="firstName" th:name="firstName" placeholder="First name" th:value="${firstName}" minlength="1">
                 <label for="firstName">First name</label>
               </div>
 
@@ -184,7 +184,7 @@
     }
   }
 
-  function removeAlertBanner(){
+  function removeAlertBanner() {
     document.getElementById("alertBanner").style.display = "none";
   }
 
