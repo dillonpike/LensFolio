@@ -106,20 +106,5 @@ public class AccountController {
         return "redirect:account";
     }
 
-    @GetMapping
-    @ExceptionHandler(MissingServletRequestParameterException.class)
-    public String handleMissingParams(
-            MissingServletRequestParameterException ex,
-            @AuthenticationPrincipal AuthState principal,
-            Model model
-    ) {
-        UserResponse getUserByIdReplyHeader;
 
-        Integer id = userAccountService.getUserIDFromAuthState(principal);
-        getUserByIdReplyHeader = registerClientService.getUserData(id);
-        String fullNameHeader = getUserByIdReplyHeader.getFirstName() + " " + getUserByIdReplyHeader.getMiddleName() + " " + getUserByIdReplyHeader.getLastName();
-        model.addAttribute("headerFullName", fullNameHeader);
-        model.addAttribute("userId", id);
-        return "404NotFound";
-    }
 }
