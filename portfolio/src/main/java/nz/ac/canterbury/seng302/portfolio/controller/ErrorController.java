@@ -56,7 +56,6 @@ public class ErrorController {
         String fullNameHeader = getUserByIdReplyHeader.getFirstName() + " " + getUserByIdReplyHeader.getMiddleName() + " " + getUserByIdReplyHeader.getLastName();
         model.addAttribute("headerFullName", fullNameHeader);
         model.addAttribute("userId", id);
-        System.out.println(1);
         return "404NotFound";
     }
 }
