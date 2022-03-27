@@ -10,10 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.MissingServletRequestParameterException;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpServletRequest;
@@ -106,5 +104,22 @@ public class AccountController {
     ) {
         rm.addAttribute("userId",userId);
         return "redirect:account";
+    }
+
+    @GetMapping
+    @ExceptionHandler(MissingServletRequestParameterException.class)
+    public String handleMissingParams(
+            MissingServletRequestParameterException ex,
+            @AuthenticationPrincipal AuthState principal,
+            Model model
+    ) {
+        UserResponse getUserByIdReplyHeader;
+
+        Integer id = userAccountService.getUserIDFromAuthState(principal);
+        getUserByIdReplyHeader = registerClientService.getUserData(id);
+        String fullNameHeader = getUserByIdReplyHeader.getFirstName() + " " + getUserByIdReplyHeader.getMiddleName() + " " + getUserByIdReplyHeader.getLastName();
+        model.addAttribute("headerFullName", fullNameHeader);
+        model.addAttribute("userId", id);
+        return "404NotFound";
     }
 }

@@ -52,25 +52,6 @@ public class EditAccountController {
         getUserByIdReplyHeader = registerClientService.getUserData(id);
         String fullNameHeader = getUserByIdReplyHeader.getFirstName() + " " + getUserByIdReplyHeader.getMiddleName() + " " + getUserByIdReplyHeader.getLastName();
         model.addAttribute("headerFullName", fullNameHeader);
-//        int userId = Integer.parseInt(userIdInput);
-//        if(id == userId){
-//            model.addAttribute("isAuthorised", true);
-//        } else {
-//            model.addAttribute("isAuthorised", false);
-//        }
-//        UserResponse getUserByIdReply;
-//        Map<String, ?> inputFlashMap = RequestContextUtils.getInputFlashMap(request);
-//        if (inputFlashMap != null) {
-//            boolean isUpdateSuccess = (boolean) inputFlashMap.get("isUpdateSuccess");
-//            if(isUpdateSuccess){
-//                model.addAttribute("isUpdateSuccess", true);
-//                model.addAttribute("updateMessage", "Account Information Successfully Updated");
-//            } else {
-//                model.addAttribute("isUpdateSuccess", false);
-//                model.addAttribute("updateMessage", "Update Canceled! Something went wrong!");
-//            }
-//
-//        }
         try {
             int userId = Integer.parseInt(userIdInput);
             if(id == userId){
