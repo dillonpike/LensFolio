@@ -66,21 +66,24 @@ public class RegisterServerService extends UserAccountServiceGrpc.UserAccountSer
 
         UserResponse.Builder reply = UserResponse.newBuilder();
         boolean isExist = userModelService.existsByUserId(request.getId());
+        System.out.println(isExist);
         try {
             if (!isExist) {
-                reply.setEmail(null);
+                reply.setEmail("");
+            } else {
+                UserModel user = userModelService.getUserById(request.getId());
+                reply
+                        .setEmail(user.getEmail())
+                        .setFirstName(user.getFirstName())
+                        .setLastName(user.getLastName())
+                        .setMiddleName(user.getMiddleName())
+                        .setUsername(user.getUsername())
+                        .setNickname(user.getNickname())
+                        .setBio(user.getBio())
+                        .setPersonalPronouns(user.getPersonalPronouns())
+                        .setCreated(user.getDateAdded());
             }
-            UserModel user = userModelService.getUserById(request.getId());
-            reply
-                    .setEmail(user.getEmail())
-                    .setFirstName(user.getFirstName())
-                    .setLastName(user.getLastName())
-                    .setMiddleName(user.getMiddleName())
-                    .setUsername(user.getUsername())
-                    .setNickname(user.getNickname())
-                    .setBio(user.getBio())
-                    .setPersonalPronouns(user.getPersonalPronouns())
-                    .setCreated(user.getDateAdded());
+
         } catch(Exception e) {
             e.printStackTrace();
         }
