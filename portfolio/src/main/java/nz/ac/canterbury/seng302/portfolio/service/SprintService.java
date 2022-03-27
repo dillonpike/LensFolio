@@ -66,4 +66,14 @@ public class SprintService {
         sprint = repository.save(sprint);
         return sprint;
     }
+
+    public void removeSprint(Integer id) {
+        Optional<Sprint> sOptional = repository.findById(id);
+
+        if(sOptional.isPresent()) {
+            Sprint sprintUpdate = sOptional.get();
+            repository.delete(sprintUpdate);
+        }
+    }
+
 }

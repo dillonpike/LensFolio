@@ -1,23 +1,17 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
-import nz.ac.canterbury.seng302.portfolio.model.Project;
 import nz.ac.canterbury.seng302.portfolio.model.Sprint;
 import nz.ac.canterbury.seng302.portfolio.service.SprintService;
-import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * Controller for the add sprint page
  */
 @Controller
-public class AddSprintController {
+public class SprintLifetimeController {
     @Autowired
     private SprintService sprintService;
 
@@ -37,6 +31,15 @@ public class AddSprintController {
             Model model
     ) throws Exception {
         sprintService.addSprint(sprint);
+        return "redirect:/details";
+    }
+
+    @GetMapping("/delete-sprint/{id}")
+    public String sprintRemove(@PathVariable("id") Integer id, Model model) throws Exception {
+
+        sprintService.removeSprint(id);
+
+        /* Return the name of the Thymeleaf template */
         return "redirect:/details";
     }
 }
