@@ -30,7 +30,6 @@ public class RegisterServerService extends UserAccountServiceGrpc.UserAccountSer
         UserModel createdUser = null;
 
         UserModel uniqueUser = userModelService.getUserByUsername(request.getUsername());
-
         try {
             // Any empty fields are because you can't add those fields when you create an account initially.
             if (uniqueUser != null) {
@@ -66,8 +65,11 @@ public class RegisterServerService extends UserAccountServiceGrpc.UserAccountSer
     public void getUserAccountById(GetUserByIdRequest request, StreamObserver<UserResponse> responseObserver) {
 
         UserResponse.Builder reply = UserResponse.newBuilder();
-
+        boolean isExist = userModelService.existsByUserId(request.getId());
         try {
+            if (!isExist) {
+                reply.setEmail(null);
+            }
             UserModel user = userModelService.getUserById(request.getId());
             reply
                     .setEmail(user.getEmail())
@@ -121,6 +123,7 @@ public class RegisterServerService extends UserAccountServiceGrpc.UserAccountSer
         responseObserver.onCompleted();
 
     }
+
 }
 
 // Code for if queries need to be made to the database directly.

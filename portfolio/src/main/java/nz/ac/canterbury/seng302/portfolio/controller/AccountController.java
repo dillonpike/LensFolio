@@ -60,6 +60,10 @@ public class AccountController {
                 model.addAttribute("isAuthorised", false);
             }
             getUserByIdReply = registerClientService.getUserData(userId);
+            if (getUserByIdReply.getEmail().length() == 0) {
+                model.addAttribute("userId", id);
+                return "404NotFound";
+            }
             model.addAttribute("firstName", getUserByIdReply.getFirstName());
             model.addAttribute("lastName", getUserByIdReply.getLastName());
             model.addAttribute("username", getUserByIdReply.getUsername());

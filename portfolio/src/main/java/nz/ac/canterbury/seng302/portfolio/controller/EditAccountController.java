@@ -35,7 +35,7 @@ public class EditAccountController {
 
     /***
      * GET method to generate the edit account page which let user edit info/attributes
-     * @param userId ID for the current user
+     * @param userIdInput ID for the current user
      * @param model Parameters sent to thymeleaf template to be rendered into HTML
      * @param request HTTP request sent to this endpoint
      * @return the edit account page which let user edit info/attributes
@@ -44,29 +44,53 @@ public class EditAccountController {
     public String showEditAccountPage(
             Model model,
             HttpServletRequest request,
-            @RequestParam(value = "userId") int userId,
+            @RequestParam(value = "userId") String userIdInput,
             @AuthenticationPrincipal AuthState principal
     ) {
+        UserResponse getUserByIdReplyHeader;
         Integer id = userAccountService.getUserIDFromAuthState(principal);
-        if(id == userId){
-            model.addAttribute("isAuthorised", true);
-        } else {
-            model.addAttribute("isAuthorised", false);
-        }
-        UserResponse getUserByIdReply;
-        Map<String, ?> inputFlashMap = RequestContextUtils.getInputFlashMap(request);
-        if (inputFlashMap != null) {
-            boolean isUpdateSuccess = (boolean) inputFlashMap.get("isUpdateSuccess");
-            if(isUpdateSuccess){
-                model.addAttribute("isUpdateSuccess", true);
-                model.addAttribute("updateMessage", "Account Information Successfully Updated");
-            } else {
-                model.addAttribute("isUpdateSuccess", false);
-                model.addAttribute("updateMessage", "Update Canceled! Something went wrong!");
-            }
-
-        }
+        getUserByIdReplyHeader = registerClientService.getUserData(id);
+        String fullNameHeader = getUserByIdReplyHeader.getFirstName() + " " + getUserByIdReplyHeader.getMiddleName() + " " + getUserByIdReplyHeader.getLastName();
+        model.addAttribute("headerFullName", fullNameHeader);
+//        int userId = Integer.parseInt(userIdInput);
+//        if(id == userId){
+//            model.addAttribute("isAuthorised", true);
+//        } else {
+//            model.addAttribute("isAuthorised", false);
+//        }
+//        UserResponse getUserByIdReply;
+//        Map<String, ?> inputFlashMap = RequestContextUtils.getInputFlashMap(request);
+//        if (inputFlashMap != null) {
+//            boolean isUpdateSuccess = (boolean) inputFlashMap.get("isUpdateSuccess");
+//            if(isUpdateSuccess){
+//                model.addAttribute("isUpdateSuccess", true);
+//                model.addAttribute("updateMessage", "Account Information Successfully Updated");
+//            } else {
+//                model.addAttribute("isUpdateSuccess", false);
+//                model.addAttribute("updateMessage", "Update Canceled! Something went wrong!");
+//            }
+//
+//        }
         try {
+            int userId = Integer.parseInt(userIdInput);
+            if(id == userId){
+                model.addAttribute("isAuthorised", true);
+            } else {
+                model.addAttribute("isAuthorised", false);
+            }
+            UserResponse getUserByIdReply;
+            Map<String, ?> inputFlashMap = RequestContextUtils.getInputFlashMap(request);
+            if (inputFlashMap != null) {
+                boolean isUpdateSuccess = (boolean) inputFlashMap.get("isUpdateSuccess");
+                if(isUpdateSuccess){
+                    model.addAttribute("isUpdateSuccess", true);
+                    model.addAttribute("updateMessage", "Account Information Successfully Updated");
+                } else {
+                    model.addAttribute("isUpdateSuccess", false);
+                    model.addAttribute("updateMessage", "Update Canceled! Something went wrong!");
+                }
+
+            }
             getUserByIdReply = registerClientService.getUserData(id);
             model.addAttribute("firstName", getUserByIdReply.getFirstName());
             model.addAttribute("nickName", getUserByIdReply.getNickname());
@@ -84,6 +108,9 @@ public class EditAccountController {
         } catch (StatusRuntimeException e) {
             model.addAttribute("loginMessage", "Error connecting to Identity Provider...");
             e.printStackTrace();
+        } catch (NumberFormatException numberFormatException) {
+            model.addAttribute("userId", id);
+            return "404NotFound";
         }
        return "editAccount";
     }
