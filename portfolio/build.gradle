@@ -40,6 +40,8 @@ dependencies {
 
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
+
+    implementation 'org.webjars.npm:jquery:3.6.0'
 }
 
 tasks.named('test') {

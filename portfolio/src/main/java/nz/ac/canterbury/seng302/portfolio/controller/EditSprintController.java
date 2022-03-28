@@ -1,18 +1,14 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
-import nz.ac.canterbury.seng302.portfolio.model.Project;
 import nz.ac.canterbury.seng302.portfolio.model.Sprint;
-import nz.ac.canterbury.seng302.portfolio.service.ProjectService;
+import nz.ac.canterbury.seng302.portfolio.service.DateValidationService;
 import nz.ac.canterbury.seng302.portfolio.service.SprintService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.*;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.RequestParam;
 
 
 /**
@@ -20,8 +16,12 @@ import org.springframework.web.bind.annotation.RequestParam;
  */
 @Controller
 public class EditSprintController {
+
     @Autowired
     private SprintService sprintService;
+
+    @Autowired
+    private DateValidationService dateValidationService;
 
     @GetMapping("/edit-sprint/{id}")
     public String sprintForm(@PathVariable("id") Integer id, Model model ) throws Exception {
@@ -32,6 +32,7 @@ public class EditSprintController {
         model.addAttribute("sprintStartDate", sprint.getStartDateString());
         model.addAttribute("sprintEndDate", sprint.getEndDateString());
         model.addAttribute("sprintDescription", sprint.getDescription());
+        model.addAttribute("sprintDateError", "");
 
         /* Return the name of the Thymeleaf template */
         return "editSprint";
@@ -59,4 +60,15 @@ public class EditSprintController {
         return "redirect:/edit-sprint/"+id;
     }
 
+    @RequestMapping(value="/edit-sprint/error", method=RequestMethod.POST)
+    public String updateSprintRangeErrors(@RequestParam(value="id") Integer id,
+                                          @RequestParam(value="sprintStartDate") String sprintStartDate,
+                                          @RequestParam(value="sprintEndDate") String sprintEndDate,
+                                          Model model) {
+        model.addAttribute("sprintDateError",
+                dateValidationService.validateStartDateNotAfterEndDate(sprintStartDate, sprintEndDate) + " " +
+                        dateValidationService.validateSprintDateRange(sprintStartDate, sprintEndDate, id) + " " +
+                        dateValidationService.validateSprintInProjectDateRange(sprintStartDate, sprintEndDate));
+        return "editSprint :: #sprintDateError";
+    }
 }
