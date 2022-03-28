@@ -20,8 +20,8 @@
 <div class="content">
 <form th:action="@{/edit-project}"
       method="post">
-    <label for="projectName">Project Name</label> <br/>
-    <input id="projectName" type="text" th:name="projectName" th:value="*{projectName}">
+    <label for="projectName">Project Name (Character Limit: 30)</label> <br/>
+    <input id="projectName" type="text" th:name="projectName" th:value="*{projectName}" maxlength="30">
     <br/>
 
 
@@ -52,8 +52,8 @@
 
     <span id="projectStartDateError" style="color:red" th:text="*{projectStartDateError}"></span>
     <div>
-        <label for="projectDescription">Project Description</label> <br/>
-        <textarea class="description-input" id="projectDescription" th:name="projectDescription" th:text="*{projectDescription}"></textarea>
+        <label for="projectDescription">Project Description (Character Limit: 1000)</label> <br/>
+        <textarea class="description-input" id="projectDescription" th:name="projectDescription" th:text="*{projectDescription}" maxlength="150"></textarea>
     </div>
     <br/>
     <button class="cancel" type="button">
