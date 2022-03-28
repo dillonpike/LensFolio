@@ -2,17 +2,20 @@ package nz.ac.canterbury.seng302.identityprovider.service;
 
 import nz.ac.canterbury.seng302.identityprovider.model.UserModel;
 import nz.ac.canterbury.seng302.identityprovider.model.UserModelRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
 public class UserModelService {
-    @Autowired
-    private UserModelRepository repository;
+
+    private final UserModelRepository repository;
 
     private static int userIdCount = 1;
+
+    public UserModelService(UserModelRepository repository) {
+        this.repository = repository;
+    }
 
     public UserModel getUserById(int userId) {
         return repository.findByUserId(userId);
@@ -39,26 +42,15 @@ public class UserModelService {
         return repository.save(user);
     }
 
-    public boolean editUserAccount(UserModel user) {
+    public boolean saveEditedUser(UserModel user) {
         boolean status;
         try{
-            UserModel userEdit =repository.findByUserId(user.getUserId());
-            userEdit.setBio(user.getBio());
-            userEdit.setFirstName(user.getFirstName());
-            userEdit.setMiddleName(user.getMiddleName());
-            userEdit.setLastName(user.getLastName());
-            userEdit.setPersonalPronouns(user.getPersonalPronouns());
-            userEdit.setEmail(user.getEmail());
-            userEdit.setNickname(user.getNickname());
-            user.setUserId(userIdCount);
             repository.save(user);
             status = true;
         } catch(Exception e) {
             status = false;
             e.printStackTrace();
         }
-
-
         return status;
     }
 

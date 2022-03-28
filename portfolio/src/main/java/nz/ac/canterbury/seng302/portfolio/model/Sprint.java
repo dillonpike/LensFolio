@@ -14,7 +14,6 @@ import java.util.Date;
 @Entity // this is an entity, assumed to be in a table called Sprint
 public class Sprint {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
     private int parentProjectId;
     private String sprintName;
@@ -41,7 +40,7 @@ public class Sprint {
                 id, parentProjectId, sprintName, sprintLabel, sprintStartDate, sprintEndDate, sprintDescription);
     }
 
-
+    public void setId(int id) { this.id = id; }
     public int getId(){
         return id;
     }

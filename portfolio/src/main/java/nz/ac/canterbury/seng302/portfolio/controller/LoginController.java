@@ -22,7 +22,10 @@ public class LoginController {
     @Autowired
     private AuthenticateClientService authenticateClientService;
 
-
+    /***
+     * GET method for login Controller
+     * @return the login page (login.html)
+     */
     @GetMapping("/login")
     public String login() {
         return "login";
@@ -72,12 +75,16 @@ public class LoginController {
                 5 * 60 * 60, // Expires in 5 hours
                 domain.startsWith("localhost") ? null : domain
             );
-            System.out.println("logged in "+loginReply.getUserId());
             rm.addAttribute("userId", (int)loginReply.getUserId());
             return "redirect:account";
         } else {
             model.addAttribute("loginMessage", loginReply.getMessage());
-            return "redirect:login?error";
+            if (loginReply.getMessage().equals("Log in attempt failed: username incorrect")) {
+                return "redirect:login?usernameError";
+            } else {
+                return "redirect:login?passwordError";
+            }
+
         }
 
 

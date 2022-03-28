@@ -14,13 +14,16 @@
                 <div class="card shadow-2-strong" style="border-radius: 1rem;">
                     <div class="card-body p-5 text-center">
                         <h3 class="mb-5">Sign in </h3>
-                        <div th:if="${param.error}" class="alert alert-danger">
-                            Invalid login, please try again
+                        <div th:if="${param.passwordError}" class="alert alert-danger">
+                            Invalid password, please try again
+                        </div>
+                        <div th:if="${param.usernameError}" class="alert alert-danger">
+                            Invalid username, please try again
                         </div>
                         <form th:action="@{/login}" class="row g-3 needs-validation" novalidate method="post">
                             <div class="form-floating mb-3">
                                 <input type="text" class="form-control" id="usernameLogin" placeholder="username" th:name="usernameLogin" required>
-                                <label for="usernameLogin">username</label>
+                                <label for="usernameLogin">Username</label>
                             </div>
                             <div class="form-floating mb-3">
                                 <input type="password" class="form-control" id="passwordLogin" placeholder="password" th:name="passwordLogin" required>

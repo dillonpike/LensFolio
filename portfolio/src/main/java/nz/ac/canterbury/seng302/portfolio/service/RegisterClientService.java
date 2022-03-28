@@ -41,8 +41,16 @@ public class RegisterClientService {
                 .setNickname(nickname)
                 .setPersonalPronouns(personalPronouns)
                 .build();
-        System.out.println(personalPronouns);
         return userAccountStub.editUser(response);
+    }
+
+    public ChangePasswordResponse changePassword(final int userId, final String currentPassword, final String newPassword) {
+        ChangePasswordRequest response = ChangePasswordRequest.newBuilder()
+                .setUserId(userId)
+                .setCurrentPassword(currentPassword)
+                .setNewPassword(newPassword)
+                .build();
+        return userAccountStub.changeUserPassword(response);
     }
 
     public String encryptPassword (String password) {
