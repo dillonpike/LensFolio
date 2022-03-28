@@ -12,8 +12,7 @@ import org.springframework.web.bind.annotation.*;
  * Controller for the add sprint page
  */
 @Controller
-public class AddSprintController {
-
+public class SprintLifetimeController {
     @Autowired
     private SprintService sprintService;
 
@@ -37,7 +36,16 @@ public class AddSprintController {
             Model model
     ) {
         sprintService.addSprint(sprint);
-        return "redirect:/detail";
+        return "redirect:/details";
+    }
+
+    @GetMapping("/delete-sprint/{id}")
+    public String sprintRemove(@PathVariable("id") Integer id, Model model) throws Exception {
+
+        sprintService.removeSprint(id);
+
+        /* Return the name of the Thymeleaf template */
+        return "redirect:/details";
     }
 
     @RequestMapping(value="/add-sprint/error", method=RequestMethod.POST)
