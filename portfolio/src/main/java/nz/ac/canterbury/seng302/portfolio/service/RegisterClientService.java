@@ -1,7 +1,6 @@
 package nz.ac.canterbury.seng302.portfolio.service;
 
 import net.devh.boot.grpc.client.inject.GrpcClient;
-import nz.ac.canterbury.seng302.portfolio.controller.LoginController;
 import nz.ac.canterbury.seng302.shared.identityprovider.*;
 import org.springframework.stereotype.Service;
 import org.springframework.security.crypto.password.Pbkdf2PasswordEncoder;

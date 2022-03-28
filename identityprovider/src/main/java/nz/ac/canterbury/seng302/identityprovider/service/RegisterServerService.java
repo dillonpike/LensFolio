@@ -1,19 +1,14 @@
 package nz.ac.canterbury.seng302.identityprovider.service;
 
-import com.google.protobuf.Timestamp;
 import io.grpc.stub.StreamObserver;
-import jdk.swing.interop.SwingInterOpUtils;
 import net.devh.boot.grpc.server.service.GrpcService;
 import nz.ac.canterbury.seng302.identityprovider.model.UserModel;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserAccountServiceGrpc;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserRegisterRequest;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserRegisterResponse;
 import org.springframework.beans.factory.annotation.Autowired;
-
 import nz.ac.canterbury.seng302.shared.identityprovider.*;
 import org.springframework.security.crypto.password.Pbkdf2PasswordEncoder;
-
-import java.sql.Connection;
 
 
 @GrpcService
