@@ -10,5 +10,5 @@ public interface SprintRepository extends CrudRepository<Sprint, Integer> {
     List<Sprint> findBySprintName(String sprintName);
     Sprint findById(int id);
     List<Sprint> findByParentProjectId(int parentProjectId);
-    boolean existsById(int sprintId);
+    void deleteById(int id);
 }

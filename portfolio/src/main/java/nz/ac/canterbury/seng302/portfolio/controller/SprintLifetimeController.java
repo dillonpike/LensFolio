@@ -35,6 +35,8 @@ public class SprintLifetimeController {
             @ModelAttribute("sprint") Sprint sprint,
             Model model
     ) {
+        sprint.setStartDateString(sprint.getStartDateString());
+        sprint.setEndDateString(sprint.getEndDateString());
         sprintService.addSprint(sprint);
         return "redirect:/details";
     }

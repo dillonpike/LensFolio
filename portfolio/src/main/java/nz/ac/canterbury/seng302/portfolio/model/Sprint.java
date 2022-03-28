@@ -1,5 +1,7 @@
 package nz.ac.canterbury.seng302.portfolio.model;
 
+import org.hibernate.annotations.GenericGenerator;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -14,6 +16,8 @@ import java.util.Date;
 @Entity // this is an entity, assumed to be in a table called Sprint
 public class Sprint {
     @Id
+    @GeneratedValue(
+            strategy= GenerationType.IDENTITY)
     private int id;
     private int parentProjectId;
     private String sprintName;
