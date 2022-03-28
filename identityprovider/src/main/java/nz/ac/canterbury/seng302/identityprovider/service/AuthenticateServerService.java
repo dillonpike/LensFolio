@@ -24,7 +24,7 @@ public class AuthenticateServerService extends AuthenticationServiceImplBase {
     private final String FIRST_NAME_OF_USER = "Valid";
     private final String LAST_NAME_OF_USER = "User";
     private final String FULL_NAME_OF_USER = FIRST_NAME_OF_USER + " " + LAST_NAME_OF_USER;
-    private final String ROLE_OF_USER = "student"; // Puce teams may want to change this to "teacher" to test some functionality
+    private final String ROLE_OF_USER = "teacher"; // Puce teams may want to change this to "teacher" to test some functionality
 
     private JwtTokenUtil jwtTokenService = JwtTokenUtil.getInstance();
 
