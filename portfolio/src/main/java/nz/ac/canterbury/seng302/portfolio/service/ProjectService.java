@@ -27,30 +27,32 @@ public class ProjectService {
 
     /**
      * Get project by id
+     * @param id The project Id
+     * @return The project from the Database
+     * @throws Exception Throws if the project is not found.
      */
     public Project getProjectById(Integer id) throws Exception {
 
         Optional<Project> project = repository.findById(id);
         if(project!=null) {
             return project.get();
-        }
-        else
-        {
+        } else {
             throw new Exception("Project not found");
         }
     }
 
     /**
      * Get project by id
+     * @param id Id of project
+     * @return Project from the Database
+     * @throws Exception Throws if project is not found.
      */
     public Project UpdateProjectById(Integer id) throws Exception {
 
         Optional<Project> project = repository.findById(id);
         if(project!=null) {
             return project.get();
-        }
-        else
-        {
+        } else {
             throw new Exception("Project not found");
         }
     }
