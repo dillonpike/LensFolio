@@ -127,26 +127,29 @@ public class RegisterServerService extends UserAccountServiceGrpc.UserAccountSer
         ChangePasswordResponse.Builder reply = ChangePasswordResponse.newBuilder();
 
         boolean wasSaved;
-
         try {
             UserModel currentUser = userModelService.getUserById(request.getUserId());
-            UserModel user = new UserModel();
-            user.setUserId(request.getUserId());
-            user.setBio(currentUser.getBio());
-            user.setEmail(currentUser.getEmail());
-            user.setNickname(currentUser.getNickname());
-            user.setFirstName(currentUser.getFirstName());
-            user.setMiddleName(currentUser.getMiddleName());
-            user.setLastName(currentUser.getLastName());
-            user.setPersonalPronouns(currentUser.getPersonalPronouns());
-            user.setUsername(currentUser.getUsername());
-            user.setPassword(request.getNewPassword());
-            user.setDateAdded(currentUser.getDateAdded());
-            wasSaved = userModelService.saveEditedUser(user);
-            if(wasSaved){
-                reply.setIsSuccess(true).setMessage("User password successfully updated!");
+            if (currentUser.getPassword().equals(request.getCurrentPassword())) {
+                UserModel user = new UserModel();
+                user.setUserId(request.getUserId());
+                user.setBio(currentUser.getBio());
+                user.setEmail(currentUser.getEmail());
+                user.setNickname(currentUser.getNickname());
+                user.setFirstName(currentUser.getFirstName());
+                user.setMiddleName(currentUser.getMiddleName());
+                user.setLastName(currentUser.getLastName());
+                user.setPersonalPronouns(currentUser.getPersonalPronouns());
+                user.setUsername(currentUser.getUsername());
+                user.setPassword(request.getNewPassword());
+                user.setDateAdded(currentUser.getDateAdded());
+                wasSaved = userModelService.saveEditedUser(user);
+                if(wasSaved){
+                    reply.setIsSuccess(true).setMessage("User password successfully updated!");
+                } else {
+                    reply.setIsSuccess(false).setMessage("Something went wrong");
+                }
             } else {
-                reply.setIsSuccess(false).setMessage("Something went wrong");
+                reply.setIsSuccess(false).setMessage("Current password was incorrect.");
             }
         } catch(Exception e) {
             System.err.println("User failed to be changed to new values");

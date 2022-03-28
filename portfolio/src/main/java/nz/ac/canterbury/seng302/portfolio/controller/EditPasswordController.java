@@ -82,8 +82,10 @@ public class EditPasswordController {
         rm.addAttribute("userId", userId);
         try {
             ChangePasswordResponse changeUserPassword = registerClientService.changePassword(userId, currentPassword, newPassword);
-            if(changeUserPassword.getIsSuccess()){
+            rm.addFlashAttribute("failureMessage", changeUserPassword.getMessage());
+            if (changeUserPassword.getIsSuccess()){
                 rm.addFlashAttribute("isUpdateSuccess", true);
+                rm.addFlashAttribute("successMessage", changeUserPassword.getMessage());
                 return "redirect:editAccount";
             } else {
                 rm.addFlashAttribute("isUpdateSuccess", false);

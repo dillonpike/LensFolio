@@ -16,10 +16,14 @@ public class ElementService {
             boolean isUpdateSuccess = (boolean) inputFlashMap.get("isUpdateSuccess");
             if (isUpdateSuccess) {
                 model.addAttribute("isUpdateSuccess", true);
-                model.addAttribute("updateMessage", "Account Information Successfully Updated");
+                String message = inputFlashMap.containsKey("successMessage") ?
+                        (String) inputFlashMap.get("failureMessage") : "Account Information Successfully Updated";
+                model.addAttribute("updateMessage", message);
             } else {
                 model.addAttribute("isUpdateSuccess", false);
-                model.addAttribute("updateMessage", "Update Canceled! Something went wrong!");
+                String message = inputFlashMap.containsKey("failureMessage") ?
+                        (String) inputFlashMap.get("failureMessage") : "Update Canceled! Something went wrong!";
+                model.addAttribute("updateMessage", message);
             }
         }
         return model;
