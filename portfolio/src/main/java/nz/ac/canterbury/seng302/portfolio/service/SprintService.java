@@ -24,19 +24,22 @@ public class SprintService {
 
     /**
      * Get list of all sprints
+     * @return List of sprints
      */
     public List<Sprint> getAllSprints() {
-        List<Sprint> list = (List<Sprint>) repository.findAll();
-        return list;
+        return (List<Sprint>) repository.findAll();
     }
 
     /**
-     * Get sprint by id
+     * Get sprint by Id
+     * @param id id of sprint
+     * @return Sprint with the id that is the input
+     * @throws Exception If sprint can't be found
      */
     public Sprint getSprintById(Integer id) throws Exception {
 
         Optional<Sprint> sprint = repository.findById(id);
-        if(sprint!=null) {
+        if(sprint.isPresent()) {
             return sprint.get();
         }
         else
@@ -46,13 +49,14 @@ public class SprintService {
     }
 
     /**
-     *
-     * updates a sprint.
+     * Updates a sprint
+     * @param sprint Sprint to update it to
+     * @return Newly edited sprint
      */
     public Sprint updateSprint(Sprint sprint) {
         Optional<Sprint> sOptional = repository.findById((Integer) sprint.getId());
 
-        if(sOptional != null) {
+        if(sOptional.isPresent()) {
             Sprint sprintUpdate = sOptional.get();
             sprintUpdate.setDescription(sprint.getDescription());
             sprintUpdate.setStartDate(sprint.getStartDate());

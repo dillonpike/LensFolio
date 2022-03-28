@@ -1,28 +1,21 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
-import com.google.protobuf.Timestamp;
 import io.grpc.StatusRuntimeException;
 import nz.ac.canterbury.seng302.portfolio.service.RegisterClientService;
 import nz.ac.canterbury.seng302.portfolio.utility.Utility;
+import nz.ac.canterbury.seng302.portfolio.service.UserAccountService;
+import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.MissingServletRequestParameterException;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.sql.Date;
-import java.text.SimpleDateFormat;
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.Period;
-import java.time.temporal.TemporalUnit;
-import java.util.Map;
 
 @Controller
 public class AccountController {
@@ -30,24 +23,45 @@ public class AccountController {
     @Autowired
     private RegisterClientService registerClientService;
 
+    @Autowired
+    private UserAccountService userAccountService;
+
 
     private Utility utility = new Utility();
 
     /***
-     * Generate the account page which displays all user's info/attributes
+     * GET method for account controller to generate user's info
      *
-     * @return The account(home) page for user
+     * @param model Parameters sent to thymeleaf template to be rendered into HTML
+//     * @param userId ID for the current login user
+     * @return Account page which including user's info
      */
     @GetMapping("/account")
     public String showAccountPage(
             Model model,
-            @RequestParam(value = "userId") int userId
+            HttpServletRequest request,
+            @AuthenticationPrincipal AuthState principal,
+            @RequestParam(value = "userId") String userIdInput
     ) {
-
         UserResponse getUserByIdReply;
-
+        UserResponse getUserByIdReplyHeader;
+        Integer id = userAccountService.getUserIDFromAuthState(principal);
+        getUserByIdReplyHeader = registerClientService.getUserData(id);
+        String fullNameHeader = getUserByIdReplyHeader.getFirstName() + " " + getUserByIdReplyHeader.getMiddleName() + " " + getUserByIdReplyHeader.getLastName();
+        model.addAttribute("headerFullName", fullNameHeader);
         try {
+            int userId = Integer.parseInt(userIdInput);
+            System.out.println("Currently logged in ID: " + id);
+            if(id == userId){
+                model.addAttribute("isAuthorised", true);
+            } else {
+                model.addAttribute("isAuthorised", false);
+            }
             getUserByIdReply = registerClientService.getUserData(userId);
+            if (getUserByIdReply.getEmail().length() == 0) {
+                model.addAttribute("userId", id);
+                return "404NotFound";
+            }
             model.addAttribute("firstName", getUserByIdReply.getFirstName());
             model.addAttribute("lastName", getUserByIdReply.getLastName());
             model.addAttribute("username", getUserByIdReply.getUsername());
@@ -56,21 +70,31 @@ public class AccountController {
             model.addAttribute("email", getUserByIdReply.getEmail());
             model.addAttribute("personalPronouns", getUserByIdReply.getPersonalPronouns());
             model.addAttribute("bio", getUserByIdReply.getBio());
-            System.out.println("this is the bio = " +getUserByIdReply.getBio());
             String fullName = getUserByIdReply.getFirstName() + " " + getUserByIdReply.getMiddleName() + " " + getUserByIdReply.getLastName();
             model.addAttribute("fullName", fullName);
-            model.addAttribute("userId", userId);
+            model.addAttribute("userId", id);
             model.addAttribute("dateAdded", utility.getDateAddedString(getUserByIdReply.getCreated()));
             model.addAttribute("monthsSinceAdded", utility.getDateSinceAddedString(getUserByIdReply.getCreated()));
         } catch (StatusRuntimeException e) {
             model.addAttribute("loginMessage", "Error connecting to Identity Provider...");
             e.printStackTrace();
+        } catch (NumberFormatException numberFormatException) {
+            model.addAttribute("userId", id);
+            return "404NotFound";
         }
+
         return "account";
     }
 
 
-
+    /***
+     *
+     * @param request HTTP request sent to this endpoint
+     * @param response HTTP response that will be returned by this endpoint
+     * @param userId userId ID for the current login user
+     * @param rm attributes pass to other controller
+     * @return Account page with user id
+     */
     @PostMapping("/backToAccountPage")
     public String editAccount(
             HttpServletRequest request,
@@ -78,8 +102,9 @@ public class AccountController {
             @ModelAttribute("userId") int userId,
             RedirectAttributes rm
     ) {
-        System.out.println("enter load edit account");
         rm.addAttribute("userId",userId);
         return "redirect:account";
     }
+
+
 }

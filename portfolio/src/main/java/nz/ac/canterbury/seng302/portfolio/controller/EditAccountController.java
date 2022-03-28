@@ -1,21 +1,19 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
 import io.grpc.StatusRuntimeException;
-import nz.ac.canterbury.seng302.portfolio.model.Sprint;
+import nz.ac.canterbury.seng302.portfolio.service.ElementService;
 import nz.ac.canterbury.seng302.portfolio.service.RegisterClientService;
+import nz.ac.canterbury.seng302.portfolio.service.UserAccountService;
+import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import nz.ac.canterbury.seng302.portfolio.utility.Utility;
-import nz.ac.canterbury.seng302.shared.identityprovider.EditUserRequest;
 import nz.ac.canterbury.seng302.shared.identityprovider.EditUserResponse;
-import nz.ac.canterbury.seng302.shared.identityprovider.UserRegisterRequestOrBuilder;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import nz.ac.canterbury.seng302.portfolio.service.EditAccountClientService;
+import org.springframework.web.bind.MissingServletRequestParameterException;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.servlet.support.RequestContextUtils;
 
@@ -27,38 +25,45 @@ import java.util.Map;
 public class EditAccountController {
 
     @Autowired
-    private EditAccountClientService editAccountClientService;
+    private RegisterClientService registerClientService;
 
     @Autowired
-    private RegisterClientService registerClientService;
+    private UserAccountService userAccountService;
+
+    @Autowired
+    private ElementService elementService;
 
     private Utility utility = new Utility();
 
     /***
-     * Generate the edit account page which let user edit info/attributes
-     *
-     * @return The edit account page
+     * GET method to generate the edit account page which let user edit info/attributes
+     * @param userIdInput ID for the current user
+     * @param model Parameters sent to thymeleaf template to be rendered into HTML
+     * @param request HTTP request sent to this endpoint
+     * @return the edit account page which let user edit info/attributes
      */
     @GetMapping("/editAccount")
     public String showEditAccountPage(
-            @RequestParam(value = "userId") int userId, Model model, HttpServletRequest request
+            Model model,
+            HttpServletRequest request,
+            @RequestParam(value = "userId") String userIdInput,
+            @AuthenticationPrincipal AuthState principal
     ) {
+        UserResponse getUserByIdReplyHeader;
+        Integer id = userAccountService.getUserIDFromAuthState(principal);
+        getUserByIdReplyHeader = registerClientService.getUserData(id);
+        String fullNameHeader = getUserByIdReplyHeader.getFirstName() + " " + getUserByIdReplyHeader.getMiddleName() + " " + getUserByIdReplyHeader.getLastName();
+        model.addAttribute("headerFullName", fullNameHeader);
         UserResponse getUserByIdReply;
-        Map<String, ?> inputFlashMap = RequestContextUtils.getInputFlashMap(request);
-        if (inputFlashMap != null) {
-            boolean isUpdateSuccess = (boolean) inputFlashMap.get("isUpdateSuccess");
-            if(isUpdateSuccess){
-                model.addAttribute("isUpdateSuccess", true);
-                model.addAttribute("updateMessage", "Account Information Successfully Updated");
-            } else {
-                model.addAttribute("isUpdateSuccess", false);
-                model.addAttribute("updateMessage", "Update Canceled! Something went wrong!");
-            }
-
-        }
+        model = elementService.addBanner(model, request);
         try {
-            getUserByIdReply = registerClientService.getUserData(userId);
-            System.out.println(getUserByIdReply.getNickname());
+            int userId = Integer.parseInt(userIdInput);
+            if(id == userId){
+                model.addAttribute("isAuthorised", true);
+            } else {
+                model.addAttribute("isAuthorised", false);
+            }
+            getUserByIdReply = registerClientService.getUserData(id);
             model.addAttribute("firstName", getUserByIdReply.getFirstName());
             model.addAttribute("nickName", getUserByIdReply.getNickname());
             model.addAttribute("lastName", getUserByIdReply.getLastName());
@@ -69,16 +74,34 @@ public class EditAccountController {
             model.addAttribute("bio", getUserByIdReply.getBio());
             String fullName = getUserByIdReply.getFirstName() + " " + getUserByIdReply.getMiddleName() + " " + getUserByIdReply.getLastName();
             model.addAttribute("fullName", fullName);
-            model.addAttribute("userId", userId);
+            model.addAttribute("userId", id);
             model.addAttribute("dateAdded", utility.getDateAddedString(getUserByIdReply.getCreated()));
             model.addAttribute("monthsSinceAdded", utility.getDateSinceAddedString(getUserByIdReply.getCreated()));
         } catch (StatusRuntimeException e) {
             model.addAttribute("loginMessage", "Error connecting to Identity Provider...");
             e.printStackTrace();
+        } catch (NumberFormatException numberFormatException) {
+            model.addAttribute("userId", id);
+            return "404NotFound";
         }
        return "editAccount";
     }
 
+    /***
+     * POST Method
+     *
+     * This process works in a few stages:
+     *  1. We send Post request "editAccountLoad" when user click edit profile
+     *  2. We Load the current user's id and add it to model
+     *  3. Redirect to account page use GET Method
+     *
+     * @param request HTTP request sent to this endpoint
+     * @param response HTTP response that will be returned by this endpoint
+     * @param userId ID for the current user
+     * @param rm attributes pass to other controller
+     * @param model Parameters sent to thymeleaf template to be rendered into HTML
+     * @return Account Page
+     */
     @PostMapping("/editAccountLoad")
     public String editAccount(
             HttpServletRequest request,
@@ -87,11 +110,30 @@ public class EditAccountController {
             RedirectAttributes rm,
             Model model
     ) {
-        System.out.println("enter load edit account"+userId);
         rm.addAttribute("userId", userId);
         return "redirect:editAccount";
     }
 
+    /***
+     * POST Method
+     *
+     * Post the changed user made in the edit account page, check the response,
+     * and if it is successful new attributes will be stored for future use.
+     *
+     * @param request HTTP request sent to this endpoint
+     * @param response HTTP response that will be returned by this endpoint
+     * @param userId UserId of the current login user
+     * @param email New email associated with username
+     * @param firstName New firstName associated with username
+     * @param lastName New lastName associated with username
+     * @param middleName New middleName associated with username
+     * @param nickName New nickName associated with username
+     * @param personalPronouns New personalPronouns associated with username
+     * @param bio New bio associated with username
+     * @param rm Redirect attributes
+     * @param model Parameters sent to thymeleaf template to be rendered into HTML
+     * @return redirect back to account page
+     */
     @PostMapping("/saveEditAccount")
     public String saveEditAccount(
             HttpServletRequest request,
@@ -107,14 +149,6 @@ public class EditAccountController {
             RedirectAttributes rm,
             Model model
     ) {
-        System.out.println(userId);
-        System.out.println(email);
-        System.out.println(personalPronouns);
-        System.out.println(firstName);
-        System.out.println(lastName);
-        System.out.println(middleName);
-        System.out.println(nickName);
-        System.out.println(bio);
         try {
             EditUserResponse saveUserdata = registerClientService.setUserData(userId, firstName, middleName, lastName, email, bio, nickName, personalPronouns);
             if(saveUserdata.getIsSuccess()){
@@ -124,11 +158,11 @@ public class EditAccountController {
             }
         } catch (Exception e) {
             System.err.println("Something went wrong retrieving the data to save");
-            e.printStackTrace();
         }
 
         rm.addAttribute("userId", userId);
 
         return "redirect:editAccount";
     }
+
 }

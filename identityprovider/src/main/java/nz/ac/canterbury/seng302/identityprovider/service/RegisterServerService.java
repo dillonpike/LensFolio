@@ -23,15 +23,13 @@ public class RegisterServerService extends UserAccountServiceGrpc.UserAccountSer
 
     @Override
     public void register(UserRegisterRequest request, StreamObserver<UserRegisterResponse> responseObserver) {
-        System.out.println("start server regis");
         UserRegisterResponse.Builder reply = UserRegisterResponse.newBuilder();
 
         boolean wasAdded = false;
-        UserModel newUser = null;
+        UserModel newUser;
         UserModel createdUser = null;
 
         UserModel uniqueUser = userModelService.getUserByUsername(request.getUsername());
-
         try {
             // Any empty fields are because you can't add those fields when you create an account initially.
             if (uniqueUser != null) {
@@ -51,16 +49,10 @@ public class RegisterServerService extends UserAccountServiceGrpc.UserAccountSer
                     "Unknown Pronouns" //request.getPersonalPronouns()
             );
             createdUser = userModelService.addUser(newUser);
-            System.out.println(createdUser + "<- Just added");
-            System.out.println(createdUser.getNickname() + "<- nickname");
-            System.out.println(createdUser.getDateAddedString() + "<- date");
             wasAdded = true;
         } catch (Exception e) {
             System.err.println("Failed to create and add new user to database");
-            e.printStackTrace();
-        } //don't want to throw an exception
-        System.out.println(wasAdded + "<= Was added");
-
+        }
         if (wasAdded) {
             responseObserver.onNext(reply.setNewUserId(createdUser.getUserId()).setIsSuccess(true).build());
         } else {
@@ -73,19 +65,25 @@ public class RegisterServerService extends UserAccountServiceGrpc.UserAccountSer
     public void getUserAccountById(GetUserByIdRequest request, StreamObserver<UserResponse> responseObserver) {
 
         UserResponse.Builder reply = UserResponse.newBuilder();
-
+        boolean isExist = userModelService.existsByUserId(request.getId());
+        System.out.println(isExist);
         try {
-            UserModel user = userModelService.getUserById(request.getId());
-            reply
-                    .setEmail(user.getEmail())
-                    .setFirstName(user.getFirstName())
-                    .setLastName(user.getLastName())
-                    .setMiddleName(user.getMiddleName())
-                    .setUsername(user.getUsername())
-                    .setNickname(user.getNickname())
-                    .setBio(user.getBio())
-                    .setPersonalPronouns(user.getPersonalPronouns())
-                    .setCreated(user.getDateAdded());
+            if (!isExist) {
+                reply.setEmail("");
+            } else {
+                UserModel user = userModelService.getUserById(request.getId());
+                reply
+                        .setEmail(user.getEmail())
+                        .setFirstName(user.getFirstName())
+                        .setLastName(user.getLastName())
+                        .setMiddleName(user.getMiddleName())
+                        .setUsername(user.getUsername())
+                        .setNickname(user.getNickname())
+                        .setBio(user.getBio())
+                        .setPersonalPronouns(user.getPersonalPronouns())
+                        .setCreated(user.getDateAdded());
+            }
+
         } catch(Exception e) {
             e.printStackTrace();
         }
@@ -96,7 +94,6 @@ public class RegisterServerService extends UserAccountServiceGrpc.UserAccountSer
 
     @Override
     public void editUser(EditUserRequest request, StreamObserver<EditUserResponse> responseObserver) {
-        System.out.println("enter editUser in idp in RegisterClassService class");
         EditUserResponse.Builder reply = EditUserResponse.newBuilder();
 
         boolean wasSaved;
@@ -115,7 +112,7 @@ public class RegisterServerService extends UserAccountServiceGrpc.UserAccountSer
             user.setUsername(currentUser.getUsername());
             user.setPassword(currentUser.getPassword());
             user.setDateAdded(currentUser.getDateAdded());
-            wasSaved = userModelService.editUserAccount(user);
+            wasSaved = userModelService.saveEditedUser(user);
             if(wasSaved){
                 reply.setIsSuccess(true).setMessage("User Account is successfully updated!");
             } else {
@@ -129,6 +126,44 @@ public class RegisterServerService extends UserAccountServiceGrpc.UserAccountSer
         responseObserver.onCompleted();
 
     }
+
+    @Override
+    public void changeUserPassword(ChangePasswordRequest request, StreamObserver<ChangePasswordResponse> responseObserver) {
+        ChangePasswordResponse.Builder reply = ChangePasswordResponse.newBuilder();
+
+        boolean wasSaved;
+        try {
+            UserModel currentUser = userModelService.getUserById(request.getUserId());
+            if (currentUser.getPassword().equals(request.getCurrentPassword())) {
+                UserModel user = new UserModel();
+                user.setUserId(request.getUserId());
+                user.setBio(currentUser.getBio());
+                user.setEmail(currentUser.getEmail());
+                user.setNickname(currentUser.getNickname());
+                user.setFirstName(currentUser.getFirstName());
+                user.setMiddleName(currentUser.getMiddleName());
+                user.setLastName(currentUser.getLastName());
+                user.setPersonalPronouns(currentUser.getPersonalPronouns());
+                user.setUsername(currentUser.getUsername());
+                user.setPassword(request.getNewPassword());
+                user.setDateAdded(currentUser.getDateAdded());
+                wasSaved = userModelService.saveEditedUser(user);
+                if(wasSaved){
+                    reply.setIsSuccess(true).setMessage("User password successfully updated!");
+                } else {
+                    reply.setIsSuccess(false).setMessage("Something went wrong");
+                }
+            } else {
+                reply.setIsSuccess(false).setMessage("Current password was incorrect.");
+            }
+        } catch(Exception e) {
+            System.err.println("User failed to be changed to new values");
+        }
+
+        responseObserver.onNext(reply.build());
+        responseObserver.onCompleted();
+    }
+
 }
 
 // Code for if queries need to be made to the database directly.
