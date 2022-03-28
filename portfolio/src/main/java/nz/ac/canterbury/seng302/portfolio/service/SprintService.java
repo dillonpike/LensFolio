@@ -4,6 +4,7 @@ import nz.ac.canterbury.seng302.portfolio.model.Project;
 import nz.ac.canterbury.seng302.portfolio.model.Sprint;
 import nz.ac.canterbury.seng302.portfolio.model.SprintRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -80,4 +81,11 @@ public class SprintService {
         }
     }
 
+    /**
+     * Get list of all sprints
+     * @return List of sprints
+     */
+    public List<Sprint> getAllSprintsOrdered() {
+        return repository.findAllByOrderBySprintStartDate();
+    }
 }

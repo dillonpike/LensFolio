@@ -1,7 +1,10 @@
 package nz.ac.canterbury.seng302.portfolio.model;
 
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
+
 
 import java.util.List;
 
@@ -11,4 +14,6 @@ public interface SprintRepository extends CrudRepository<Sprint, Integer> {
     Sprint findById(int id);
     List<Sprint> findByParentProjectId(int parentProjectId);
     void deleteById(int id);
+
+    List<Sprint> findAllByOrderBySprintStartDate();
 }

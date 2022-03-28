@@ -32,7 +32,7 @@ public class DetailsController {
         Project project = projectService.getProjectById(0);
         model.addAttribute("project", project);
         
-        List<Sprint> sprintList = sprintService.getAllSprints();
+        List<Sprint> sprintList = sprintService.getAllSprintsOrdered();
         model.addAttribute("sprints", sprintList);
 
 
