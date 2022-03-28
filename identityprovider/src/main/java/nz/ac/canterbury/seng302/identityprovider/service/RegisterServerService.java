@@ -30,7 +30,6 @@ public class RegisterServerService extends UserAccountServiceGrpc.UserAccountSer
         UserModel createdUser = null;
 
         UserModel uniqueUser = userModelService.getUserByUsername(request.getUsername());
-
         try {
             // Any empty fields are because you can't add those fields when you create an account initially.
             if (uniqueUser != null) {
@@ -66,19 +65,25 @@ public class RegisterServerService extends UserAccountServiceGrpc.UserAccountSer
     public void getUserAccountById(GetUserByIdRequest request, StreamObserver<UserResponse> responseObserver) {
 
         UserResponse.Builder reply = UserResponse.newBuilder();
-
+        boolean isExist = userModelService.existsByUserId(request.getId());
+        System.out.println(isExist);
         try {
-            UserModel user = userModelService.getUserById(request.getId());
-            reply
-                    .setEmail(user.getEmail())
-                    .setFirstName(user.getFirstName())
-                    .setLastName(user.getLastName())
-                    .setMiddleName(user.getMiddleName())
-                    .setUsername(user.getUsername())
-                    .setNickname(user.getNickname())
-                    .setBio(user.getBio())
-                    .setPersonalPronouns(user.getPersonalPronouns())
-                    .setCreated(user.getDateAdded());
+            if (!isExist) {
+                reply.setEmail("");
+            } else {
+                UserModel user = userModelService.getUserById(request.getId());
+                reply
+                        .setEmail(user.getEmail())
+                        .setFirstName(user.getFirstName())
+                        .setLastName(user.getLastName())
+                        .setMiddleName(user.getMiddleName())
+                        .setUsername(user.getUsername())
+                        .setNickname(user.getNickname())
+                        .setBio(user.getBio())
+                        .setPersonalPronouns(user.getPersonalPronouns())
+                        .setCreated(user.getDateAdded());
+            }
+
         } catch(Exception e) {
             e.printStackTrace();
         }
@@ -158,6 +163,7 @@ public class RegisterServerService extends UserAccountServiceGrpc.UserAccountSer
         responseObserver.onNext(reply.build());
         responseObserver.onCompleted();
     }
+
 }
 
 // Code for if queries need to be made to the database directly.

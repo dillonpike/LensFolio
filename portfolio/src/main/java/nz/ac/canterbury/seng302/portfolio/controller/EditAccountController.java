@@ -12,10 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.MissingServletRequestParameterException;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.servlet.support.RequestContextUtils;
 
@@ -39,7 +37,7 @@ public class EditAccountController {
 
     /***
      * GET method to generate the edit account page which let user edit info/attributes
-     * @param userId ID for the current user
+     * @param userIdInput ID for the current user
      * @param model Parameters sent to thymeleaf template to be rendered into HTML
      * @param request HTTP request sent to this endpoint
      * @return the edit account page which let user edit info/attributes
@@ -48,18 +46,23 @@ public class EditAccountController {
     public String showEditAccountPage(
             Model model,
             HttpServletRequest request,
-            @RequestParam(value = "userId") int userId,
+            @RequestParam(value = "userId") String userIdInput,
             @AuthenticationPrincipal AuthState principal
     ) {
+        UserResponse getUserByIdReplyHeader;
         Integer id = userAccountService.getUserIDFromAuthState(principal);
-        if(id == userId){
-            model.addAttribute("isAuthorised", true);
-        } else {
-            model.addAttribute("isAuthorised", false);
-        }
+        getUserByIdReplyHeader = registerClientService.getUserData(id);
+        String fullNameHeader = getUserByIdReplyHeader.getFirstName() + " " + getUserByIdReplyHeader.getMiddleName() + " " + getUserByIdReplyHeader.getLastName();
+        model.addAttribute("headerFullName", fullNameHeader);
         UserResponse getUserByIdReply;
         model = elementService.addBanner(model, request);
         try {
+            int userId = Integer.parseInt(userIdInput);
+            if(id == userId){
+                model.addAttribute("isAuthorised", true);
+            } else {
+                model.addAttribute("isAuthorised", false);
+            }
             getUserByIdReply = registerClientService.getUserData(id);
             model.addAttribute("firstName", getUserByIdReply.getFirstName());
             model.addAttribute("nickName", getUserByIdReply.getNickname());
@@ -77,6 +80,9 @@ public class EditAccountController {
         } catch (StatusRuntimeException e) {
             model.addAttribute("loginMessage", "Error connecting to Identity Provider...");
             e.printStackTrace();
+        } catch (NumberFormatException numberFormatException) {
+            model.addAttribute("userId", id);
+            return "404NotFound";
         }
        return "editAccount";
     }
@@ -158,4 +164,5 @@ public class EditAccountController {
 
         return "redirect:editAccount";
     }
+
 }

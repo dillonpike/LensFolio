@@ -10,10 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.MissingServletRequestParameterException;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpServletRequest;
@@ -35,7 +33,7 @@ public class AccountController {
      * GET method for account controller to generate user's info
      *
      * @param model Parameters sent to thymeleaf template to be rendered into HTML
-     * @param userId ID for the current login user
+//     * @param userId ID for the current login user
      * @return Account page which including user's info
      */
     @GetMapping("/account")
@@ -43,24 +41,27 @@ public class AccountController {
             Model model,
             HttpServletRequest request,
             @AuthenticationPrincipal AuthState principal,
-            @RequestParam(value = "userId") int userId
+            @RequestParam(value = "userId") String userIdInput
     ) {
-        Integer id = userAccountService.getUserIDFromAuthState(principal);
-        System.out.println("Currently logged in ID: " + id);
-        if(id == userId){
-            model.addAttribute("isAuthorised", true);
-        } else {
-            model.addAttribute("isAuthorised", false);
-        }
-
         UserResponse getUserByIdReply;
         UserResponse getUserByIdReplyHeader;
+        Integer id = userAccountService.getUserIDFromAuthState(principal);
+        getUserByIdReplyHeader = registerClientService.getUserData(id);
+        String fullNameHeader = getUserByIdReplyHeader.getFirstName() + " " + getUserByIdReplyHeader.getMiddleName() + " " + getUserByIdReplyHeader.getLastName();
+        model.addAttribute("headerFullName", fullNameHeader);
         try {
-            getUserByIdReplyHeader = registerClientService.getUserData(id);
-            String fullNameHeader = getUserByIdReplyHeader.getFirstName() + " " + getUserByIdReplyHeader.getMiddleName() + " " + getUserByIdReplyHeader.getLastName();
-            model.addAttribute("headerFullName", fullNameHeader);
-
+            int userId = Integer.parseInt(userIdInput);
+            System.out.println("Currently logged in ID: " + id);
+            if(id == userId){
+                model.addAttribute("isAuthorised", true);
+            } else {
+                model.addAttribute("isAuthorised", false);
+            }
             getUserByIdReply = registerClientService.getUserData(userId);
+            if (getUserByIdReply.getEmail().length() == 0) {
+                model.addAttribute("userId", id);
+                return "404NotFound";
+            }
             model.addAttribute("firstName", getUserByIdReply.getFirstName());
             model.addAttribute("lastName", getUserByIdReply.getLastName());
             model.addAttribute("username", getUserByIdReply.getUsername());
@@ -77,6 +78,9 @@ public class AccountController {
         } catch (StatusRuntimeException e) {
             model.addAttribute("loginMessage", "Error connecting to Identity Provider...");
             e.printStackTrace();
+        } catch (NumberFormatException numberFormatException) {
+            model.addAttribute("userId", id);
+            return "404NotFound";
         }
 
         return "account";
@@ -101,4 +105,6 @@ public class AccountController {
         rm.addAttribute("userId",userId);
         return "redirect:account";
     }
+
+
 }
