@@ -16,6 +16,12 @@ public class SprintService {
     @Autowired
     private SprintRepository repository;
 
+    private static int sprintIdCount = 1;
+
+    public boolean existsById(int sprintId) {
+        return repository.existsById(sprintId);
+    }
+
     /**
      * Get list of all sprints
      */
@@ -63,6 +69,9 @@ public class SprintService {
     }
 
     public Sprint addSprint(Sprint sprint) {
+        findMaxSprintId();
+        sprint.setId(sprintIdCount);
+        sprintIdCount++;
         sprint = repository.save(sprint);
         return sprint;
     }
@@ -73,6 +82,15 @@ public class SprintService {
         if(sOptional.isPresent()) {
             Sprint sprintUpdate = sOptional.get();
             repository.delete(sprintUpdate);
+        }
+    }
+
+    /**
+     * Sets userIdCount to be the next available user id in the database.
+     */
+    private void findMaxSprintId() {
+        while(existsById(sprintIdCount)) {
+            sprintIdCount++;
         }
     }
 

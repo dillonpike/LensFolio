@@ -18,7 +18,7 @@
     </div>
 </div>
 <div class="content">
-<form th:action="@{/details}"
+<form th:action="@{/edit-project}"
       method="post">
     <label for="projectName">Project Name (Character Limit: 30)</label> <br/>
     <input id="projectName" type="text" th:name="projectName" th:value="*{projectName}" maxlength="30">
