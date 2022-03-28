@@ -1,22 +1,20 @@
 package nz.ac.canterbury.seng302.identityprovider.service;
 
-import com.google.protobuf.Timestamp;
 import io.grpc.stub.StreamObserver;
-import jdk.swing.interop.SwingInterOpUtils;
 import net.devh.boot.grpc.server.service.GrpcService;
 import nz.ac.canterbury.seng302.identityprovider.model.UserModel;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserAccountServiceGrpc;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserRegisterRequest;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserRegisterResponse;
 import org.springframework.beans.factory.annotation.Autowired;
-
 import nz.ac.canterbury.seng302.shared.identityprovider.*;
-
-import java.sql.Connection;
+import org.springframework.security.crypto.password.Pbkdf2PasswordEncoder;
 
 
 @GrpcService
 public class RegisterServerService extends UserAccountServiceGrpc.UserAccountServiceImplBase {
+
+    private Pbkdf2PasswordEncoder pbkdf2PasswordEncoder = new Pbkdf2PasswordEncoder();
 
     @Autowired
     private UserModelService userModelService;
@@ -66,7 +64,6 @@ public class RegisterServerService extends UserAccountServiceGrpc.UserAccountSer
 
         UserResponse.Builder reply = UserResponse.newBuilder();
         boolean isExist = userModelService.existsByUserId(request.getId());
-        System.out.println(isExist);
         try {
             if (!isExist) {
                 reply.setEmail("");
@@ -134,7 +131,7 @@ public class RegisterServerService extends UserAccountServiceGrpc.UserAccountSer
         boolean wasSaved;
         try {
             UserModel currentUser = userModelService.getUserById(request.getUserId());
-            if (currentUser.getPassword().equals(request.getCurrentPassword())) {
+            if (pbkdf2PasswordEncoder.matches(request.getCurrentPassword(), currentUser.getPassword())) {
                 UserModel user = new UserModel();
                 user.setUserId(request.getUserId());
                 user.setBio(currentUser.getBio());

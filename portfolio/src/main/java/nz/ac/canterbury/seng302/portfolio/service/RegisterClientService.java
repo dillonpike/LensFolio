@@ -3,6 +3,7 @@ package nz.ac.canterbury.seng302.portfolio.service;
 import net.devh.boot.grpc.client.inject.GrpcClient;
 import nz.ac.canterbury.seng302.shared.identityprovider.*;
 import org.springframework.stereotype.Service;
+import org.springframework.security.crypto.password.Pbkdf2PasswordEncoder;
 
 @Service
 public class RegisterClientService {
@@ -10,10 +11,14 @@ public class RegisterClientService {
     @GrpcClient(value = "identity-provider-grpc-server")
     private UserAccountServiceGrpc.UserAccountServiceBlockingStub userAccountStub;
 
+    Pbkdf2PasswordEncoder pbkdf2PasswordEncoder = new Pbkdf2PasswordEncoder();
+
+
     public UserRegisterResponse receiveConformation(final String username, final String password, final String firstName, final String middleName, final String lastName, final String email) {
+        String encodedPassword = encryptPassword(password);
         UserRegisterRequest response = UserRegisterRequest.newBuilder()
                 .setUsername(username)
-                .setPassword(password)
+                .setPassword(encodedPassword)
                 .setFirstName(firstName)
                 .setMiddleName(middleName)
                 .setLastName(lastName)
@@ -42,12 +47,18 @@ public class RegisterClientService {
     }
 
     public ChangePasswordResponse changePassword(final int userId, final String currentPassword, final String newPassword) {
+        String encodedNewPassword = pbkdf2PasswordEncoder.encode(newPassword);
         ChangePasswordRequest response = ChangePasswordRequest.newBuilder()
                 .setUserId(userId)
                 .setCurrentPassword(currentPassword)
-                .setNewPassword(newPassword)
+                .setNewPassword(encodedNewPassword)
                 .build();
         return userAccountStub.changeUserPassword(response);
     }
+
+    public String encryptPassword (String password) {
+        return pbkdf2PasswordEncoder.encode(password);
+    }
+
 
 }
