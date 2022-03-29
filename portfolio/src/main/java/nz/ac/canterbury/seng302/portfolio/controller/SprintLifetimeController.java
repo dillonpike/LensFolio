@@ -19,6 +19,10 @@ public class SprintLifetimeController {
     @Autowired
     private DateValidationService dateValidationService;
 
+    /**
+     * Gives the UI a blank sprint to use to add a new sprint.
+     * @param model For adding the sprint and errors
+     */
     @GetMapping("/add-sprint")
     public String sprintAddForm(Model model) {
 
@@ -30,6 +34,10 @@ public class SprintLifetimeController {
         return "addSprint";
     }
 
+    /**
+     * Tries to save the new sprint to the database
+     * @param sprint New sprint
+     */
     @PostMapping("/add-sprint")
     public String projectSave(
             @ModelAttribute("sprint") Sprint sprint,
@@ -39,6 +47,11 @@ public class SprintLifetimeController {
         return "redirect:/details";
     }
 
+    /**
+     * Tries to delete a sprint with given id.
+     * @param id Id of sprint being deleted
+     * @throws Exception If deleting sprint does not work
+     */
     @GetMapping("/delete-sprint/{id}")
     public String sprintRemove(@PathVariable("id") Integer id, Model model) throws Exception {
 

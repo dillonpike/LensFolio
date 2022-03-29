@@ -25,6 +25,11 @@ public class EditProjectController {
     @Autowired
     private DateValidationService dateValidationService;
 
+    /**
+     * Displays the project data on the editable form.
+     * @param model Used to add the data to the form
+     * @throws Exception If getting the project fails
+     */
     @GetMapping("/edit-project")
     public String projectForm(Model model) throws Exception {
         // Gets the project with id 0 to plonk on the page
@@ -41,6 +46,14 @@ public class EditProjectController {
         return "editProject";
     }
 
+    /**
+     * Tries to save the new data of a project to the database.
+     * @param projectName New project name
+     * @param projectStartDate New project start date
+     * @param projectEndDate New project end date
+     * @param projectDescription New project description
+     * @throws Exception if getting the project fails or saving the project fails
+     */
     @PostMapping("/edit-project")
     public String projectSave(
             @AuthenticationPrincipal AuthState principal,

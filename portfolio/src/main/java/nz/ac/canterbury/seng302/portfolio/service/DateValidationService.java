@@ -111,6 +111,12 @@ public class DateValidationService {
         return TimeUnit.DAYS.convert(diffInMs, TimeUnit.MILLISECONDS);
     }
 
+    /**
+     * Checks to se if a given date exists in the calendar, checking for days such as February 29th in certain years, and
+     * month lengths.
+     * @param date Given date to check
+     * @return Message if the date is invalid and why, empty otherwise
+     */
     public String isDateValid(String date) {
         String message = "";
         int day = Integer.parseInt(date.substring(0, 2));

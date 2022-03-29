@@ -30,7 +30,7 @@ public class AccountController {
      * GET method for account controller to generate user's info
      *
      * @param model Parameters sent to thymeleaf template to be rendered into HTML
-//     * @param userId ID for the current login user
+     * @param userIdInput ID for the current login user
      * @return Account page which including user's info
      */
     @GetMapping("/account")

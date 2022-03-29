@@ -36,8 +36,6 @@ public class EditPasswordController {
     @Autowired
     private ElementService elementService;
 
-    private Utility utility = new Utility();
-
     /***
      * GET Method
      *
@@ -58,8 +56,8 @@ public class EditPasswordController {
             String fullName = getUserByIdReply.getFirstName() + " " + getUserByIdReply.getMiddleName() + " " + getUserByIdReply.getLastName();
             model.addAttribute("fullName", fullName);
             model.addAttribute("username", getUserByIdReply.getUsername());
-            model.addAttribute("dateAdded", utility.getDateAddedString(getUserByIdReply.getCreated()));
-            model.addAttribute("monthsSinceAdded", utility.getDateSinceAddedString(getUserByIdReply.getCreated()));
+            model.addAttribute("dateAdded", Utility.getDateAddedString(getUserByIdReply.getCreated()));
+            model.addAttribute("monthsSinceAdded", Utility.getDateSinceAddedString(getUserByIdReply.getCreated()));
             model.addAttribute("userId", id);
         } catch(Exception e) {
             model.addAttribute("loginMessage", "Error connecting to Identity Provider...");
@@ -68,6 +66,12 @@ public class EditPasswordController {
         return "editPassword";
     }
 
+    /**
+     * Tries to save the new password to the IDP and checks whether it worked or not.
+     * @param currentPassword Old password of the user
+     * @param newPassword New password of the user
+     * @param rm used to get the userId of the user that is having its password changed
+     */
     @PostMapping("/savePassword")
     public String savePassword(
             HttpServletRequest request,

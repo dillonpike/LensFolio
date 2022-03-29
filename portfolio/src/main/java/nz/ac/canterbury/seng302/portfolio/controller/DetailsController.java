@@ -25,6 +25,9 @@ public class DetailsController {
     @Autowired
     private SprintService sprintService;
 
+    /**
+     * Gets the project from the database and displays it to the user.
+     */
     @GetMapping("/details")
     public String details(@AuthenticationPrincipal AuthState principal, Model model) throws Exception {
         /* Add project details to the model */
