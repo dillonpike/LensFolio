@@ -1,7 +1,10 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
 import nz.ac.canterbury.seng302.portfolio.service.ProjectService;
+import nz.ac.canterbury.seng302.portfolio.service.RegisterClientService;
 import nz.ac.canterbury.seng302.portfolio.service.SprintService;
+import nz.ac.canterbury.seng302.portfolio.service.UserAccountService;
+import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -22,8 +25,15 @@ public class DetailsController {
 
     @Autowired
     private ProjectService projectService;
+
     @Autowired
     private SprintService sprintService;
+
+    @Autowired
+    private RegisterClientService registerClientService;
+
+    @Autowired
+    private UserAccountService userAccountService;
 
     @GetMapping("/details")
     public String details(@AuthenticationPrincipal AuthState principal, Model model) throws Exception {
@@ -35,6 +45,12 @@ public class DetailsController {
         List<Sprint> sprintList = sprintService.getAllSprintsOrdered();
         model.addAttribute("sprints", sprintList);
 
+        UserResponse getUserByIdReplyHeader;
+        Integer id = userAccountService.getUserIDFromAuthState(principal);
+        getUserByIdReplyHeader = registerClientService.getUserData(id);
+        String fullNameHeader = getUserByIdReplyHeader.getFirstName() + " " + getUserByIdReplyHeader.getMiddleName() + " " + getUserByIdReplyHeader.getLastName();
+        model.addAttribute("fullName", fullNameHeader);
+        model.addAttribute("userId", id);
 
         // Below code is just begging to be added as a method somewhere...
         String role = principal.getClaimsList().stream()
