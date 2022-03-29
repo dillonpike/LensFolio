@@ -35,6 +35,7 @@ public class SprintLifetimeController {
             @ModelAttribute("sprint") Sprint sprint,
             Model model
     ) {
+        System.out.println(sprint.getEndDateString());
         sprint.setStartDateString(sprint.getStartDateString());
         sprint.setEndDateString(sprint.getEndDateString());
         sprintService.addSprint(sprint);
