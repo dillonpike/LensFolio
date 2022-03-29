@@ -78,9 +78,6 @@ public class AccountController {
         } catch (StatusRuntimeException e) {
             model.addAttribute("loginMessage", "Error connecting to Identity Provider...");
             e.printStackTrace();
-        } catch (NumberFormatException numberFormatException) {
-            model.addAttribute("userId", id);
-            return "404NotFound";
         }
 
         return "account";
