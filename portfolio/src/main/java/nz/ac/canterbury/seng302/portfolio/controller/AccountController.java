@@ -26,9 +26,6 @@ public class AccountController {
     @Autowired
     private UserAccountService userAccountService;
 
-
-    private Utility utility = new Utility();
-
     /***
      * GET method for account controller to generate user's info
      *
@@ -73,8 +70,8 @@ public class AccountController {
             String fullName = getUserByIdReply.getFirstName() + " " + getUserByIdReply.getMiddleName() + " " + getUserByIdReply.getLastName();
             model.addAttribute("fullName", fullName);
             model.addAttribute("userId", id);
-            model.addAttribute("dateAdded", utility.getDateAddedString(getUserByIdReply.getCreated()));
-            model.addAttribute("monthsSinceAdded", utility.getDateSinceAddedString(getUserByIdReply.getCreated()));
+            model.addAttribute("dateAdded", Utility.getDateAddedString(getUserByIdReply.getCreated()));
+            model.addAttribute("monthsSinceAdded", Utility.getDateSinceAddedString(getUserByIdReply.getCreated()));
         } catch (StatusRuntimeException e) {
             model.addAttribute("loginMessage", "Error connecting to Identity Provider...");
             e.printStackTrace();

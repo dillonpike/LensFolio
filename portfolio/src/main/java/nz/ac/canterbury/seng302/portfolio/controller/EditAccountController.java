@@ -33,8 +33,6 @@ public class EditAccountController {
     @Autowired
     private ElementService elementService;
 
-    private Utility utility = new Utility();
-
     /***
      * GET method to generate the edit account page which let user edit info/attributes
      * @param userIdInput ID for the current user
@@ -75,8 +73,8 @@ public class EditAccountController {
             String fullName = getUserByIdReply.getFirstName() + " " + getUserByIdReply.getMiddleName() + " " + getUserByIdReply.getLastName();
             model.addAttribute("fullName", fullName);
             model.addAttribute("userId", id);
-            model.addAttribute("dateAdded", utility.getDateAddedString(getUserByIdReply.getCreated()));
-            model.addAttribute("monthsSinceAdded", utility.getDateSinceAddedString(getUserByIdReply.getCreated()));
+            model.addAttribute("dateAdded", Utility.getDateAddedString(getUserByIdReply.getCreated()));
+            model.addAttribute("monthsSinceAdded", Utility.getDateSinceAddedString(getUserByIdReply.getCreated()));
         } catch (StatusRuntimeException e) {
             model.addAttribute("loginMessage", "Error connecting to Identity Provider...");
             e.printStackTrace();

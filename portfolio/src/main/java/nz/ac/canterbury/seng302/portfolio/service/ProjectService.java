@@ -18,11 +18,11 @@ public class ProjectService {
     private ProjectRepository repository;
 
     /**
-     * Get list of all projects
+     * Get list of all projects.
+     * @return List of projects saved in the database
      */
     public List<Project> getAllProjects() {
-        List<Project> list = (List<Project>) repository.findAll();
-        return list;
+        return (List<Project>) repository.findAll();
     }
 
     /**
@@ -34,7 +34,7 @@ public class ProjectService {
     public Project getProjectById(Integer id) throws Exception {
 
         Optional<Project> project = repository.findById(id);
-        if(project!=null) {
+        if(project.isPresent()) {
             return project.get();
         } else {
             throw new Exception("Project not found");
@@ -50,7 +50,7 @@ public class ProjectService {
     public Project UpdateProjectById(Integer id) throws Exception {
 
         Optional<Project> project = repository.findById(id);
-        if(project!=null) {
+        if(project.isPresent()) {
             return project.get();
         } else {
             throw new Exception("Project not found");
@@ -58,13 +58,14 @@ public class ProjectService {
     }
 
     /**
-     *
-     * updates a project.
+     * Updates a project in the Database and returns edited Project.
+     * @param project Project with new data
+     * @return New Project that is saved in the database
      */
     public Project updateProject(Project project) {
         Optional<Project> pOptional = repository.findById((Integer) project.getId());
 
-        if(pOptional != null) {
+        if(pOptional.isPresent()) {
             Project projectUpdate = pOptional.get();
             projectUpdate.setDescription(project.getDescription());
             projectUpdate.setStartDate(project.getStartDate());

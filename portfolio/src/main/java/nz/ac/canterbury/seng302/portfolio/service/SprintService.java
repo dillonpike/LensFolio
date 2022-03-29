@@ -72,6 +72,11 @@ public class SprintService {
         }
     }
 
+    /**
+     * Add a new sprint to the database. It gives the new sprint an ID based on sprintIdCount.
+     * @param sprint New sprint to add
+     * @return Sprint that was added to the database
+     */
     public Sprint addSprint(Sprint sprint) {
         findMaxSprintId();
         sprint.setId(sprintIdCount);
@@ -80,6 +85,10 @@ public class SprintService {
         return sprint;
     }
 
+    /**
+     * Remove a sprint from the database.
+     * @param id Id of the sprint being removed
+     */
     public void removeSprint(Integer id) {
         Optional<Sprint> sOptional = repository.findById(id);
 
@@ -90,7 +99,7 @@ public class SprintService {
     }
 
     /**
-     * Sets userIdCount to be the next available user id in the database.
+     * Sets sprintIdCount to be the next available sprint id in the database.
      */
     private void findMaxSprintId() {
         while(existsById(sprintIdCount)) {
