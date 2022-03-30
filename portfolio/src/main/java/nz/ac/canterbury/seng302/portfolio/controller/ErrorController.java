@@ -25,7 +25,17 @@ public class ErrorController implements org.springframework.boot.web.servlet.err
     @Autowired
     private RegisterClientService registerClientService;
 
-
+    /***
+     * Request Mapping Method
+     *
+     * Handles Errors that are caused by invalid URL's and links them to custom
+     * error pages in which can redirect to a proper page
+     *
+     * @param request HTTP request sent to this endpoint
+     * @param principal Authentication principal
+     * @param model Parameters sent to thymeleaf template to be rendered into HTML
+     * @return HTML page to show an error
+     */
     @RequestMapping("/error")
     public String handleError(HttpServletRequest request,
                               @AuthenticationPrincipal AuthState principal,
@@ -53,7 +63,7 @@ public class ErrorController implements org.springframework.boot.web.servlet.err
             else if (statusCode == HttpStatus.NOT_FOUND.value()) {
                 return "404NotFound";
             } else {
-                //technically bad request etc
+                //technically any other error
                 return "404NotFound";
             }
         }
