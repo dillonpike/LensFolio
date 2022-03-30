@@ -47,7 +47,6 @@ public class AccountController {
         model.addAttribute("headerFullName", fullNameHeader);
         try {
             int userId = Integer.parseInt(userIdInput);
-            System.out.println("Currently logged in ID: " + id);
             if(id == userId){
                 model.addAttribute("isAuthorised", true);
             } else {
