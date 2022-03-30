@@ -34,13 +34,19 @@ public class SprintLifetimeController {
 
         Sprint blankSprint = new Sprint();
         List<Sprint> sprints = sprintService.getAllSprintsOrdered();
-        blankSprint.setName("Sprint " + (sprints.size() + 1));
+        if (sprints.isEmpty()) {
+            blankSprint.setName("Sprint 1"); //TODO have the code use project as default dates.
+            blankSprint.setStartDate(java.sql.Date.valueOf(LocalDate.now()));
+            blankSprint.setStartDate(java.sql.Date.valueOf(LocalDate.now().plusWeeks(3)));
+        } else {
+            blankSprint.setName("Sprint " + (sprints.size() + 1));
 
-        Sprint lastSprint = sprints.get(sprints.size() - 1);
-        LocalDate start_date = lastSprint.getEndDate().toInstant()
-                .atZone(ZoneId.systemDefault()).toLocalDate();
-        blankSprint.setStartDate(java.sql.Date.valueOf(start_date.plusDays(1)));
-        blankSprint.setEndDate(java.sql.Date.valueOf(start_date.plusDays(1).plusWeeks((3))));
+            Sprint lastSprint = sprints.get(sprints.size() - 1);
+            LocalDate start_date = lastSprint.getEndDate().toInstant()
+                    .atZone(ZoneId.systemDefault()).toLocalDate();
+            blankSprint.setStartDate(java.sql.Date.valueOf(start_date.plusDays(1)));
+            blankSprint.setEndDate(java.sql.Date.valueOf(start_date.plusDays(1).plusWeeks((3))));
+        }
 
 
         model.addAttribute("sprint", blankSprint);
@@ -59,7 +65,7 @@ public class SprintLifetimeController {
             @ModelAttribute("sprint") Sprint sprint,
             Model model
     ) {
-        System.out.println(sprint.getEndDateString());
+
         sprint.setStartDateString(sprint.getStartDateString());
         sprint.setEndDateString(sprint.getEndDateString());
         sprintService.addSprint(sprint);
