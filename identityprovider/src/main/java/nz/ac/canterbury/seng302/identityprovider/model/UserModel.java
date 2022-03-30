@@ -13,7 +13,6 @@ import java.util.List;
 @Entity
 public class UserModel {
     @Id
-    //@GeneratedValue(strategy = GenerationType.IDENTITY)
     private int userId;
 
     private String username;

@@ -2,9 +2,7 @@ package nz.ac.canterbury.seng302.portfolio.service;
 
 import nz.ac.canterbury.seng302.portfolio.model.Project;
 import nz.ac.canterbury.seng302.portfolio.model.ProjectRepository;
-import org.hibernate.annotations.NotFound;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -14,55 +12,59 @@ import java.util.Optional;
 
 @Service
 public class ProjectService {
+
     @Autowired
     private ProjectRepository repository;
 
     /**
-     * Get list of all projects
+     * Get list of all projects.
+     * @return List of projects saved in the database
      */
     public List<Project> getAllProjects() {
-        List<Project> list = (List<Project>) repository.findAll();
-        return list;
+        return (List<Project>) repository.findAll();
     }
 
     /**
      * Get project by id
+     * @param id The project Id
+     * @return The project from the Database
+     * @throws Exception Throws if the project is not found.
      */
     public Project getProjectById(Integer id) throws Exception {
 
         Optional<Project> project = repository.findById(id);
-        if(project!=null) {
+        if(project.isPresent()) {
             return project.get();
-        }
-        else
-        {
+        } else {
             throw new Exception("Project not found");
         }
     }
 
     /**
      * Get project by id
+     * @param id Id of project
+     * @return Project from the Database
+     * @throws Exception Throws if project is not found.
      */
     public Project UpdateProjectById(Integer id) throws Exception {
 
         Optional<Project> project = repository.findById(id);
-        if(project!=null) {
+        if(project.isPresent()) {
             return project.get();
-        }
-        else
-        {
+        } else {
             throw new Exception("Project not found");
         }
     }
 
     /**
-     *
-     * updates a project.
+     * Updates a project in the Database and returns edited Project.
+     * @param project Project with new data
+     * @return New Project that is saved in the database
      */
     public Project updateProject(Project project) {
         Optional<Project> pOptional = repository.findById((Integer) project.getId());
 
-        if(pOptional != null) {
+        if(pOptional.isPresent()) {
             Project projectUpdate = pOptional.get();
             projectUpdate.setDescription(project.getDescription());
             projectUpdate.setStartDate(project.getStartDate());

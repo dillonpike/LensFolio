@@ -31,15 +31,23 @@ public class DateValidationService {
         return message;
     }
 
-    public String validateSprintDateRange(String startDateString, String endDateString, int sprintId) {
+    /**
+     * Validates the given sprint date range based on the start date and end date of the new sprint, making sure the sprint
+     * dates don't overlap with any other sprint.
+     * @param sprintStartDateString New sprint start date
+     * @param sprintEndDateString New sprint end date
+     * @param sprintId Id of the new sprint
+     * @return Message giving an error if there is overlaps with other sprints, empty otherwise
+     */
+    public String validateSprintDateRange(String sprintStartDateString, String sprintEndDateString, int sprintId) {
         String message = "";
-        Date startDate = Project.stringToDate(startDateString);
-        Date endDate = Project.stringToDate(endDateString);
-        if (startDate != null && endDate != null) {
+        Date sprintStartDate = Project.stringToDate(sprintStartDateString);
+        Date sprintEndDate = Project.stringToDate(sprintEndDateString);
+        if (sprintStartDate != null && sprintEndDate != null) {
             for (Sprint sprint : sprintService.getAllSprints()) {
                 if (sprint.getId() != sprintId && !(
-                        startDate.before(sprint.getStartDate()) && endDate.before(sprint.getStartDate()) ||
-                                startDate.after(sprint.getEndDate()) && endDate.after(sprint.getEndDate())
+                        sprintStartDate.before(sprint.getStartDate()) && sprintEndDate.before(sprint.getStartDate()) ||
+                                sprintStartDate.after(sprint.getEndDate()) && sprintEndDate.after(sprint.getEndDate())
                 )) {
                     message = "Dates must not overlap with " + sprint.getName() + "'s dates (" +
                             sprint.getStartDateString() + " - " + sprint.getEndDateString() + ").";
@@ -50,19 +58,26 @@ public class DateValidationService {
         return message;
     }
 
-    public String validateSprintInProjectDateRange(String startDateString, String endDateString) {
+    /**
+     * Validates the given sprint date range based on the start date and end date of the new sprint, making sure the sprint
+     * dates are within the project dates
+     * @param sprintStartDateString Start date of the sprint
+     * @param sprintEndDateString End date of the sprint
+     * @return Message giving an error if the dates are not within the project dates, empty otherwise
+     */
+    public String validateSprintInProjectDateRange(String sprintStartDateString, String sprintEndDateString) {
         String message = "";
-        Date startDate = Project.stringToDate(startDateString);
-        Date endDate = Project.stringToDate(endDateString);
+        Date sprintStartDate = Project.stringToDate(sprintStartDateString);
+        Date sprintEndDate = Project.stringToDate(sprintEndDateString);
         Project project;
         try {
             project = projectService.getProjectById(0);
         } catch (Exception e) {
-            e.printStackTrace();
+            System.err.println("No project exists");
             return message;
         }
-        if (startDate.before(project.getStartDate()) || startDate.after(project.getEndDate()) ||
-                endDate.before(project.getStartDate()) || endDate.after(project.getEndDate())) {
+        if (sprintStartDate.before(project.getStartDate()) || sprintStartDate.after(project.getEndDate()) ||
+                sprintEndDate.before(project.getStartDate()) || sprintEndDate.after(project.getEndDate())) {
             message = "Sprint dates must be within the project's date range (" +
                     project.getStartDateString() + " - " + project.getEndDateString() + ").";
         }
@@ -96,6 +111,12 @@ public class DateValidationService {
         return TimeUnit.DAYS.convert(diffInMs, TimeUnit.MILLISECONDS);
     }
 
+    /**
+     * Checks to se if a given date exists in the calendar, checking for days such as February 29th in certain years, and
+     * month lengths.
+     * @param date Given date to check
+     * @return Message if the date is invalid and why, empty otherwise
+     */
     public String isDateValid(String date) {
         String message = "";
         int day = Integer.parseInt(date.substring(0, 2));

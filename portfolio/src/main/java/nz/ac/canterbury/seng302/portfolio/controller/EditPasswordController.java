@@ -13,13 +13,10 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import org.springframework.web.servlet.support.RequestContextUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.Map;
 
 @Controller
 public class EditPasswordController {
@@ -36,8 +33,6 @@ public class EditPasswordController {
     @Autowired
     private ElementService elementService;
 
-    private Utility utility = new Utility();
-
     /***
      * GET Method
      *
@@ -51,15 +46,15 @@ public class EditPasswordController {
             HttpServletRequest request,
             @AuthenticationPrincipal AuthState principal
     ) {
-        model = elementService.addBanner(model, request);
+        model = elementService.addUpdateMessage(model, request);
         Integer id = userAccountService.getUserIDFromAuthState(principal);
         try {
             UserResponse getUserByIdReply = registerClientService.getUserData(id);
             String fullName = getUserByIdReply.getFirstName() + " " + getUserByIdReply.getMiddleName() + " " + getUserByIdReply.getLastName();
             model.addAttribute("fullName", fullName);
             model.addAttribute("username", getUserByIdReply.getUsername());
-            model.addAttribute("dateAdded", utility.getDateAddedString(getUserByIdReply.getCreated()));
-            model.addAttribute("monthsSinceAdded", utility.getDateSinceAddedString(getUserByIdReply.getCreated()));
+            model.addAttribute("dateAdded", Utility.getDateAddedString(getUserByIdReply.getCreated()));
+            model.addAttribute("monthsSinceAdded", Utility.getDateSinceAddedString(getUserByIdReply.getCreated()));
             model.addAttribute("userId", id);
         } catch(Exception e) {
             model.addAttribute("loginMessage", "Error connecting to Identity Provider...");
@@ -68,6 +63,12 @@ public class EditPasswordController {
         return "editPassword";
     }
 
+    /**
+     * Tries to save the new password to the IDP and checks whether it worked or not.
+     * @param currentPassword Old password of the user
+     * @param newPassword New password of the user
+     * @param rm used to get the userId of the user that is having its password changed
+     */
     @PostMapping("/savePassword")
     public String savePassword(
             HttpServletRequest request,

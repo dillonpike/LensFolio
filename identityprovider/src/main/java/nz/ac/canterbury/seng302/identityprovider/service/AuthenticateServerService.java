@@ -27,14 +27,14 @@ public class AuthenticateServerService extends AuthenticationServiceImplBase {
     private final String FIRST_NAME_OF_USER = "Valid";
     private final String LAST_NAME_OF_USER = "User";
     private final String FULL_NAME_OF_USER = FIRST_NAME_OF_USER + " " + LAST_NAME_OF_USER;
-    private final String ROLE_OF_USER = "student"; // Puce teams may want to change this to "teacher" to test some functionality
+    private final String ROLE_OF_USER = "teacher"; // Puce teams may want to change this to "teacher" to test some functionality
 
     private JwtTokenUtil jwtTokenService = JwtTokenUtil.getInstance();
 
     @Autowired
     private UserModelService userModelService;
     /**
-     * Attempts to authenticate a user with a given username and password. 
+     * Attempts to authenticate a user with a given username and password.
      */
     @Override
     public void authenticate(AuthenticateRequest request, StreamObserver<AuthenticateResponse> responseObserver) {
@@ -50,19 +50,19 @@ public class AuthenticateServerService extends AuthenticationServiceImplBase {
             String token = jwtTokenService.generateTokenForUser(user.getUsername(), user.getUserId(),
                     user.getFirstName() + user.getMiddleName() + user.getLastName(), ROLE_OF_USER);
             reply
-                .setEmail(user.getEmail())
-                .setFirstName(user.getFirstName())
-                .setLastName(user.getLastName())
-                .setMessage("Logged in successfully!")
-                .setSuccess(true)
-                .setToken(token)
-                .setUserId(user.getUserId())
-                .setUsername(user.getUsername());
+                    .setEmail(user.getEmail())
+                    .setFirstName(user.getFirstName())
+                    .setLastName(user.getLastName())
+                    .setMessage("Logged in successfully!")
+                    .setSuccess(true)
+                    .setToken(token)
+                    .setUserId(user.getUserId())
+                    .setUsername(user.getUsername());
         } else {
             reply
-            .setMessage("Log in attempt failed: password incorrect")
-            .setSuccess(false)
-            .setToken("");
+                    .setMessage("Log in attempt failed: password incorrect")
+                    .setSuccess(false)
+                    .setToken("");
         }
 
         responseObserver.onNext(reply.build());
@@ -78,9 +78,4 @@ public class AuthenticateServerService extends AuthenticationServiceImplBase {
         responseObserver.onNext(AuthenticationServerInterceptor.AUTH_STATE.get());
         responseObserver.onCompleted();
     }
-
-//    @Override
-//    public void getLoggedInUser(AuthenticateRequest request) {
-//        jwtTokenService.getUserIDFromToken(CookieUtil.getValue());
-//    }
 }

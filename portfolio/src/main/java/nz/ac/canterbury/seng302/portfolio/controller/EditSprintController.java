@@ -23,6 +23,12 @@ public class EditSprintController {
     @Autowired
     private DateValidationService dateValidationService;
 
+    /**
+     * Gets data for editing a given sprint.
+     * @param id Id of sprint
+     * @param model Used to display the sprint data to the UI
+     * @throws Exception If getting the sprint from the given id fails
+     */
     @GetMapping("/edit-sprint/{id}")
     public String sprintForm(@PathVariable("id") Integer id, Model model ) throws Exception {
         Sprint sprint = sprintService.getSprintById(id);
@@ -38,6 +44,15 @@ public class EditSprintController {
         return "editSprint";
     }
 
+    /**
+     * Tries to save new data to sprint with given sprintId to the database.
+     * @param id Id of sprint edited
+     * @param sprintName New sprint name
+     * @param sprintStartDate New sprint start date
+     * @param sprintEndDate New sprint end date
+     * @param sprintDescription New sprint description
+     * @throws Exception if sprint cannot be found from the given ID or if it cannot be saved.
+     */
     @PostMapping("/edit-sprint/{id}")
     public String sprintSave(
             @PathVariable("id") Integer id,
