@@ -7,6 +7,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.thymeleaf.util.DateUtils;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.List;
 
 /**
  * Controller for the add sprint page
@@ -27,6 +33,16 @@ public class SprintLifetimeController {
     public String sprintAddForm(Model model) {
 
         Sprint blankSprint = new Sprint();
+        List<Sprint> sprints = sprintService.getAllSprintsOrdered();
+        blankSprint.setName("Sprint " + (sprints.size() + 1));
+
+        Sprint lastSprint = sprints.get(sprints.size() - 1);
+        LocalDate start_date = lastSprint.getEndDate().toInstant()
+                .atZone(ZoneId.systemDefault()).toLocalDate();
+        blankSprint.setStartDate(java.sql.Date.valueOf(start_date.plusDays(1)));
+        blankSprint.setEndDate(java.sql.Date.valueOf(start_date.plusDays(1).plusWeeks((3))));
+
+
         model.addAttribute("sprint", blankSprint);
         model.addAttribute("sprintDateError", "");
 
