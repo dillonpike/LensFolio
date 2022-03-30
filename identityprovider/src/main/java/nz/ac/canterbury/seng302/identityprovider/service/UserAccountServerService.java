@@ -12,13 +12,16 @@ import org.springframework.security.crypto.password.Pbkdf2PasswordEncoder;
 
 
 @GrpcService
-public class RegisterServerService extends UserAccountServiceGrpc.UserAccountServiceImplBase {
+public class UserAccountServerService extends UserAccountServiceGrpc.UserAccountServiceImplBase {
 
     private Pbkdf2PasswordEncoder pbkdf2PasswordEncoder = new Pbkdf2PasswordEncoder();
 
     @Autowired
     private UserModelService userModelService;
 
+    /***
+     * Attempts to register a user with a given username, password, first name, middle name, last name, email.
+     */
     @Override
     public void register(UserRegisterRequest request, StreamObserver<UserRegisterResponse> responseObserver) {
         UserRegisterResponse.Builder reply = UserRegisterResponse.newBuilder();
@@ -59,6 +62,9 @@ public class RegisterServerService extends UserAccountServiceGrpc.UserAccountSer
         responseObserver.onCompleted();
     }
 
+    /***
+     * Getter method to get user model with a given user ID
+     */
     @Override
     public void getUserAccountById(GetUserByIdRequest request, StreamObserver<UserResponse> responseObserver) {
 
