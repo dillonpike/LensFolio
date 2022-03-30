@@ -73,7 +73,6 @@ public class DetailsController {
                 projectService.saveProject(project);
             } catch (Exception err) {
                 System.err.println("Failed to save new project");
-                err.printStackTrace();
             }
 
         }
