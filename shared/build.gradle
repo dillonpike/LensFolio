@@ -10,7 +10,7 @@ wrapper {
     gradleVersion = '7.4'
 }
 
-group "nz.ac.canterbury.seng302"
+group "nz.ac.canterbury.team-100"
 version "1.0"
 sourceCompatibility = '17'
 
