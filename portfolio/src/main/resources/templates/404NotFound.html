@@ -48,17 +48,18 @@
             </div>
         </div>
     </header>
-    <div class="text-start mb-1-6">
+    <div class="text-start mb-1-6" style="margin-left: 60px">
         <h1 class="h1 mb-0 fs-1">404: Not Found</h1>
         <p> Invalid URL</p>
     </div>
-    <form th:action="@{/backToAccountPage}" method="post">
-        <div>
-            <input type="hidden" th:value="${userId}" name="userId" id="userId" th:name="userId">
-            <button type="submit" class="btn btn-danger" style="margin-right: 10px">Back to Profile Page</button>
-        </div>
-    </form>
-
+    <div style="margin-left: 60px">
+        <form th:action="@{/backToAccountPage}" method="post">
+            <div>
+                <input type="hidden" th:value="${userId}" name="userId" id="userId" th:name="userId">
+                <button type="submit" class="btn btn-danger" style="margin-right: 10px">Back to Profile Page</button>
+            </div>
+        </form>
+    </div>
 </body>
 <script>
     function settingsMenuToggle(){
