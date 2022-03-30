@@ -89,4 +89,9 @@ public class LoginController {
 
     }
 
+    @GetMapping("/")
+    public String redirectLogin() {
+        return "redirect:login";
+    }
+
 }

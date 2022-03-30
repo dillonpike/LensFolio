@@ -4,7 +4,7 @@ plugins {
     id 'java'
 }
 
-group = 'nz.ac.canterbury.seng302'
+group = 'nz.ac.canterbury.team-100'
 version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '17'
 
@@ -20,6 +20,7 @@ repositories {
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter'
     implementation 'org.springframework:spring-web'
+    implementation 'org.springframework.boot:spring-boot-starter-security'
 
     // JWT dependencies
     implementation 'io.jsonwebtoken:jjwt-api:0.11.0'

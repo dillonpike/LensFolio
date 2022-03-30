@@ -4,8 +4,53 @@
     <title th:text="${project.getName}"></title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <link th:href="@{/styles/main.css}" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+
 </head>
 <body>
+<header class="p-3 mb-3 border-bottom">
+    <div class="container">
+        <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
+            <a href="/" class="d-flex align-items-center mb-2 mb-lg-0 text-dark text-decoration-none">
+                <svg class="bi me-2" width="40" height="32" role="img" aria-label="Bootstrap"><use xlink:href="#bootstrap"/></svg>
+            </a>
+            <!--     Add Logo here   -->
+            <a class="navbar-brand" href="#">
+                <img src="/docs/5.0/assets/brand/bootstrap-logo.svg" alt="" width="30" height="24">
+            </a>
+
+            <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
+                <li><form>
+                    <div>
+                        <input type="hidden" th:value="${userId}" name="userId">
+                        <button type="submit" class="btn btn-link" id="" style="color:black;text-decoration: none;" >  <a href="/details" class="nav-link px-2 link-secondary">Projects</a>
+                        </button>
+                    </div>
+                </form></li>
+            </ul>
+
+
+            <div class="dropdown text-end" style="display: flex; flex-direction: row; align-items: center;">
+                <h6 th:text="${fullName}" style="margin-right: 5px;padding-top: 5px"></h6>
+                <a href="#" class="d-block link-dark text-decoration-none dropdown-toggle" id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false" >
+                    <img th:src="@{img/img.png}" alt="mdo" width="32" height="32" class="rounded-circle">
+                </a>
+                <ul class="dropdown-menu text-small" aria-labelledby="dropdownUser1">
+                    <li>
+                        <form th:action="@{/backToAccountPage}" method="post">
+                            <div>
+                                <input type="hidden" th:value="${userId}" name="userId">
+                                <button type="submit" class="btn btn-link" id="btn_prof" style="color:black;text-decoration: none;" >Profile</button>
+                            </div>
+                        </form>
+                    </li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item" href="/login">Sign out</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</header>
 <div class="header">
     <div class="title">
         <p class="title-name" th:text="${project.getName}" />
@@ -22,9 +67,9 @@
 <div class="content">
     <div class="detail-block" th:text="${project.getDescription}" />
     <hr/>
-    <div th:each="sprint: ${sprints}">
+    <div th:each="sprint, meta: ${sprints}">
         <div class="sprint-block">
-            <div class="sprint-label" th:text="${sprint.getLabel}" />
+            <div class="sprint-label" th:text="'Sprint' + (${meta.index} + 1)" />
             <div class="detail-block">
                 <div>
                     <div class="sprint-title" th:text="${sprint.getName}" />
@@ -59,5 +104,14 @@
         Add Sprint
     </button>
 </div>
+<script>
+    function settingsMenuToggle(){
+        var settingmenu = document.querySelector(".setting-menu");
+        settingmenu.classList.toggle('setting-menu-height');
+        settingmenu.addEventListener('click',function(){event.stopPropagation()})
+    }
+</script>
 </body>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+
 </html>

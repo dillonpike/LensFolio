@@ -12,11 +12,14 @@ import nz.ac.canterbury.seng302.shared.identityprovider.AuthenticateRequest;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthenticateResponse;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthenticationServiceGrpc.AuthenticationServiceImplBase;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.Pbkdf2PasswordEncoder;
 
 import java.sql.*;
 
 @GrpcService
 public class AuthenticateServerService extends AuthenticationServiceImplBase {
+
+    private Pbkdf2PasswordEncoder pbkdf2PasswordEncoder = new Pbkdf2PasswordEncoder();
 
     private final int VALID_USER_ID = 1;
     private final String VALID_USER = "abc123";
@@ -30,7 +33,6 @@ public class AuthenticateServerService extends AuthenticationServiceImplBase {
 
     @Autowired
     private UserModelService userModelService;
-
     /**
      * Attempts to authenticate a user with a given username and password.
      */
@@ -44,8 +46,7 @@ public class AuthenticateServerService extends AuthenticationServiceImplBase {
                     .setMessage("Log in attempt failed: username incorrect")
                     .setSuccess(false)
                     .setToken("");
-        } else if (user.getUsername().equals(request.getUsername()) && user.getPassword().equals(request.getPassword())) {
-
+        } else if (user.getUsername().equals(request.getUsername()) && pbkdf2PasswordEncoder.matches( request.getPassword(),  user.getPassword())) {
             String token = jwtTokenService.generateTokenForUser(user.getUsername(), user.getUserId(),
                     user.getFirstName() + user.getMiddleName() + user.getLastName(), ROLE_OF_USER);
             reply

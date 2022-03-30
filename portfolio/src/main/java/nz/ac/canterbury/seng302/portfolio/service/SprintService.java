@@ -3,6 +3,7 @@ package nz.ac.canterbury.seng302.portfolio.service;
 import nz.ac.canterbury.seng302.portfolio.model.Sprint;
 import nz.ac.canterbury.seng302.portfolio.model.SprintRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -15,12 +16,6 @@ public class SprintService {
 
     @Autowired
     private SprintRepository repository;
-
-    private static int sprintIdCount = 1;
-
-    public boolean existsById(int sprintId) {
-        return repository.existsById(sprintId);
-    }
 
     /**
      * Get list of all sprints
@@ -78,9 +73,6 @@ public class SprintService {
      * @return Sprint that was added to the database
      */
     public Sprint addSprint(Sprint sprint) {
-        findMaxSprintId();
-        sprint.setId(sprintIdCount);
-        sprintIdCount++;
         sprint = repository.save(sprint);
         return sprint;
     }
@@ -94,17 +86,15 @@ public class SprintService {
 
         if(sOptional.isPresent()) {
             Sprint sprintUpdate = sOptional.get();
-            repository.delete(sprintUpdate);
+            repository.deleteById(sprintUpdate.getId());
         }
     }
 
     /**
-     * Sets sprintIdCount to be the next available sprint id in the database.
+     * Get list of all sprints
+     * @return List of sprints
      */
-    private void findMaxSprintId() {
-        while(existsById(sprintIdCount)) {
-            sprintIdCount++;
-        }
+    public List<Sprint> getAllSprintsOrdered() {
+        return repository.findAllByOrderBySprintStartDate();
     }
-
 }

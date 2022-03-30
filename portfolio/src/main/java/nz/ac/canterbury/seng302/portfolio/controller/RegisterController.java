@@ -1,7 +1,10 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
+import nz.ac.canterbury.seng302.portfolio.authentication.CookieUtil;
+import nz.ac.canterbury.seng302.portfolio.service.AuthenticateClientService;
 import nz.ac.canterbury.seng302.portfolio.service.RegisterClientService;
 
+import nz.ac.canterbury.seng302.shared.identityprovider.AuthenticateResponse;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserRegisterResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -9,16 +12,19 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 
 @Controller
 public class RegisterController {
 
     @Autowired
     private RegisterClientService registerClientService;
+
+    @Autowired
+    private AuthenticateClientService authenticateClientService;
 
     /***
      *  GET method to return registration web page
@@ -55,10 +61,12 @@ public class RegisterController {
             @RequestParam(name = "email") String email,
             @RequestParam(name = "password") String password,
             @RequestParam(name = "confirmPassword") String confirmPassword,
-            Model model
-    ) {
-        UserRegisterResponse registrationReply;
+            Model model,
+            RedirectAttributes rm
 
+    ) {
+        AuthenticateResponse loginReply;
+        UserRegisterResponse registrationReply;
         if (!password.equals(confirmPassword)) {
             return "redirect:register?passwordError";
         }
@@ -69,7 +77,18 @@ public class RegisterController {
             return "login";
         }
         if (registrationReply.getIsSuccess()) {
-            return "redirect:register?successfulRegister";
+            loginReply = authenticateClientService.authenticate(username, password);
+            var domain = request.getHeader("host");
+            CookieUtil.create(
+                    response,
+                    "lens-session-token",
+                    loginReply.getToken(),
+                    true,
+                    5 * 60 * 60, // Expires in 5 hours
+                    domain.startsWith("localhost") ? null : domain
+            );
+            rm.addAttribute("userId", (int)loginReply.getUserId());
+            return "redirect:account";
         } else {
             model.addAttribute("err", "Something went wrong");
             return "redirect:register?registerError";

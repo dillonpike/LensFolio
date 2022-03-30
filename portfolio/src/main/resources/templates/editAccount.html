@@ -20,7 +20,13 @@
         </a>
 
         <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
-          <li><a href="#" class="nav-link px-2 link-secondary">Projects</a></li>
+          <li><form>
+            <div>
+              <input type="hidden" th:value="${userId}" name="userId">
+              <button type="submit" class="btn btn-link" id="" style="color:black;text-decoration: none;" >  <a href="/details" class="nav-link px-2 link-secondary">Projects</a>
+              </button>
+            </div>
+          </form></li>
         </ul>
 
 
@@ -39,7 +45,7 @@
               </form>
             </li>
             <li><hr class="dropdown-divider"></li>
-            <li><a class="dropdown-item" href="/login">Sign out</a></li>
+            <li><a class="dropdown-item" href="/logout">Sign out</a></li>
           </ul>
         </div>
       </div>
@@ -89,7 +95,7 @@
 <!--            start form-->
             <form th:action="@{/saveEditAccount}" method="post" >
               <div class="form-floating mb-3">
-                <input type="text"Christophe class="form-control" id="firstName" th:name="firstName" placeholder="First name" th:value="${firstName}" minlength="1">
+                <input type="text"Christophe class="form-control" id="firstName" th:name="firstName" placeholder="First name" th:value="${firstName}" minlength="1" required>
                 <label for="firstName">First name</label>
               </div>
 
@@ -110,7 +116,7 @@
               </div>
 
               <div class="form-floating mb-3">
-                <input type="email" class="form-control" id="email" th:name="email" placeholder="name@example.com" th:value="${email}">
+                <input type="email" class="form-control" id="email" th:name="email" placeholder="name@example.com" th:value="${email}" required>
                 <label for="email">Email address</label>
               </div>
 

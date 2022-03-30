@@ -25,10 +25,12 @@ public class EditProjectController {
     @Autowired
     private DateValidationService dateValidationService;
 
-    /**
-     * Displays the project data on the editable form.
-     * @param model Used to add the data to the form
-     * @throws Exception If getting the project fails
+    /***
+     * GET request method handler, followed by the request URL(../edit-project)
+     *
+     * @param model Parameters sent to thymeleaf template to be rendered into HTML
+     * @return The editProject page
+     * @throws Exception
      */
     @GetMapping("/edit-project")
     public String projectForm(Model model) throws Exception {
@@ -46,13 +48,17 @@ public class EditProjectController {
         return "editProject";
     }
 
-    /**
-     * Tries to save the new data of a project to the database.
-     * @param projectName New project name
-     * @param projectStartDate New project start date
-     * @param projectEndDate New project end date
-     * @param projectDescription New project description
-     * @throws Exception if getting the project fails or saving the project fails
+    /***
+     * Handler methods for mapping HTTP POST request, followed by the URL(../edit-project)
+     *
+     * @param principal
+     * @param projectName Current project name
+     * @param projectStartDate Current project start date
+     * @param projectEndDate Current project end date
+     * @param projectDescription Current project description
+     * @param model Parameters sent to thymeleaf template to be rendered into HTML
+     * @return Redirect to detail page(send HTTP GET request)
+     * @throws Exception If invalid input has been caught
      */
     @PostMapping("/edit-project")
     public String projectSave(
