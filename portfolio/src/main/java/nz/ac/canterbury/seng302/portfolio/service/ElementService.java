@@ -10,7 +10,18 @@ import java.util.Map;
 @Service
 public class ElementService {
 
-    public Model addBanner(Model model, HttpServletRequest request) {
+    /**
+     * Returns an updated version of the given model to with an updateMessage attribute.
+     *
+     * If isUpdateSuccess in the request is true, updateMessage will be set to successMessage from the request, or a
+     * default success message if successMessage doesn't exist. If isUpdateSuccess is false, updateMessage will be set
+     * to failureMessage from the request, or a default failure message if failureMessage doesn't exist.
+     *
+     * @param model model from controller method
+     * @param request HTTP request from controller method
+     * @return updated model
+     */
+    public Model addUpdateMessage(Model model, HttpServletRequest request) {
         Map<String, ?> inputFlashMap = RequestContextUtils.getInputFlashMap(request);
         if (inputFlashMap != null) {
             boolean isUpdateSuccess = (boolean) inputFlashMap.get("isUpdateSuccess");

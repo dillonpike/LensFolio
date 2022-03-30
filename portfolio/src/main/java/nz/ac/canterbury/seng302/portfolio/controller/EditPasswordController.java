@@ -13,13 +13,10 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import org.springframework.web.servlet.support.RequestContextUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.Map;
 
 @Controller
 public class EditPasswordController {
@@ -49,7 +46,7 @@ public class EditPasswordController {
             HttpServletRequest request,
             @AuthenticationPrincipal AuthState principal
     ) {
-        model = elementService.addBanner(model, request);
+        model = elementService.addUpdateMessage(model, request);
         Integer id = userAccountService.getUserIDFromAuthState(principal);
         try {
             UserResponse getUserByIdReply = registerClientService.getUserData(id);
