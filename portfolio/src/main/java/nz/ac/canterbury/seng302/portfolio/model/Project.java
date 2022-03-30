@@ -11,7 +11,6 @@ import java.util.Objects;
 @Entity // this is an entity, assumed to be in a table called Project
 public class Project {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
     private String projectName;
     private String projectDescription;
@@ -73,6 +72,10 @@ public class Project {
 
     public int getId(){
         return  id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getName() {

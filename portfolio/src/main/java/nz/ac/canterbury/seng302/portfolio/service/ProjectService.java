@@ -57,7 +57,7 @@ public class ProjectService {
     }
 
     /**
-     * Updates a project in the Database and returns edited Project.
+     * Updates a project in the Database and returns edited project.
      * @param project Project with new data
      * @return New Project that is saved in the database
      */
@@ -76,6 +76,22 @@ public class ProjectService {
         }
         else {
             project = repository.save(project);
+            return project;
+        }
+    }
+
+    /**
+     * Saves a project in the Database and returns the saved project.
+     * @param project New project
+     * @return New Project that is saved in the database
+     */
+    public Project saveProject(Project project) {
+        Project newProject;
+        try {
+            newProject = repository.save(project);
+            return newProject;
+        } catch (Exception e) {
+            System.err.println("Failed to save new project");
             return project;
         }
     }
