@@ -4,7 +4,7 @@ plugins {
     id 'java'
 }
 
-group = 'nz.ac.canterbury.seng302'
+group = 'nz.ac.canterbury.team-100'
 version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '17'
 
