@@ -2,9 +2,6 @@ package nz.ac.canterbury.seng302.identityprovider;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
-import nz.ac.canterbury.seng302.identityprovider.service.RegisterServerService;
-import nz.ac.canterbury.seng302.identityprovider.service.UserModelService;
-import nz.ac.canterbury.seng302.identityprovider.model.UserModel;
 
 @SpringBootTest
 class IdentityproviderDatabaseTests {
