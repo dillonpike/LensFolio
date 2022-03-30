@@ -15,9 +15,9 @@
 <div class="content">
     <div class="detail-block" th:text="${project.getDescription}" />
     <hr/>
-    <div th:each="sprint: ${sprints}">
+    <div th:each="sprint, meta: ${sprints}">
         <div class="sprint-block">
-            <div class="sprint-label" th:text="${sprint.getLabel}" />
+            <div class="sprint-label" th:text="'Sprint' + (${meta.index} + 1)" />
             <div class="detail-block">
                 <div>
                 <div class="sprint-title" th:text="${sprint.getName}" />

@@ -84,6 +84,9 @@ public class AccountController {
 
 
     /***
+     * Handler for HTTP POST request, followed by (../backToAccountPage)
+     * We load the current userID from HTML file which contains current userID,
+     * redirect to account page
      *
      * @param request HTTP request sent to this endpoint
      * @param response HTTP response that will be returned by this endpoint
