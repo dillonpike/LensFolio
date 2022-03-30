@@ -13,18 +13,36 @@ public class UserModelService {
 
     private static int userIdCount = 1;
 
+    /**
+     * Constructor of UserModelService Class
+     */
     public UserModelService(UserModelRepository repository) {
         this.repository = repository;
     }
 
+    /**
+     * Get User entity from database with the given id
+     * @param userId user's id which used to search user entity in database
+     * @return UserModel user entity retrieved from database
+     */
     public UserModel getUserById(int userId) {
         return repository.findByUserId(userId);
     }
 
+    /**
+     * Check if there is a user entity with the given id
+     * @param userId user's id which used to search user entity in database
+     * @return true if user with given id exist in database, false otherwise
+     */
     public boolean existsByUserId(int userId) {
         return repository.existsByUserId(userId);
     }
 
+    /**
+     * Get the user entity with the given username
+     * @param username username input which used to search a user entity in database
+     * @return user object retrieved from the database
+     */
     public UserModel getUserByUsername(String username) {
         List<UserModel> retrievedUsers = repository.findByUsername(username);
         if (retrievedUsers.size() == 0) {
@@ -34,7 +52,11 @@ public class UserModelService {
         }
     }
 
-
+    /**
+     * Add new user to the database
+     * @param user contains all data of the user that will be persisted in database
+     * @return UserModel object which is the saved entity
+     */
     public UserModel addUser(UserModel user) {
         findMaxUserId();
         user.setUserId(userIdCount);
@@ -42,6 +64,11 @@ public class UserModelService {
         return repository.save(user);
     }
 
+    /**
+     * Update the user account information to the database
+     * @param user contains all new data of a user that will be persisted in database
+     * @return true if update transaction success, false otherwise
+     */
     public boolean saveEditedUser(UserModel user) {
         boolean status;
         try{
