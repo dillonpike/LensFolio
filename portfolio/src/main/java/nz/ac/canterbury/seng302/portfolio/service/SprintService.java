@@ -1,6 +1,5 @@
 package nz.ac.canterbury.seng302.portfolio.service;
 
-import nz.ac.canterbury.seng302.portfolio.model.Project;
 import nz.ac.canterbury.seng302.portfolio.model.Sprint;
 import nz.ac.canterbury.seng302.portfolio.model.SprintRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +13,7 @@ import java.util.Optional;
 
 @Service
 public class SprintService {
+
     @Autowired
     private SprintRepository repository;
 
@@ -67,11 +67,20 @@ public class SprintService {
         }
     }
 
+    /**
+     * Add a new sprint to the database. It gives the new sprint an ID based on sprintIdCount.
+     * @param sprint New sprint to add
+     * @return Sprint that was added to the database
+     */
     public Sprint addSprint(Sprint sprint) {
         sprint = repository.save(sprint);
         return sprint;
     }
 
+    /**
+     * Remove a sprint from the database.
+     * @param id Id of the sprint being removed
+     */
     public void removeSprint(Integer id) {
         Optional<Sprint> sOptional = repository.findById(id);
 

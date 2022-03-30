@@ -1,15 +1,16 @@
 package nz.ac.canterbury.seng302.portfolio.service;
 
-import net.devh.boot.grpc.client.inject.GrpcClient;
-import nz.ac.canterbury.seng302.portfolio.authentication.CookieUtil;
 import nz.ac.canterbury.seng302.shared.identityprovider.*;
 import org.springframework.stereotype.Service;
-
-import javax.servlet.http.HttpServletRequest;
 
 @Service
 public class UserAccountService {
 
+    /**
+     * Returns the user id from the given AuthState.
+     * @param principal AutState to extract the user id from
+     * @return user id from the given AuthState
+     */
     public Integer getUserIDFromAuthState(AuthState principal) {
         return Integer.valueOf(principal.getClaimsList().stream()
                 .filter(claim -> claim.getType().equals("nameid"))
@@ -18,6 +19,11 @@ public class UserAccountService {
                 .orElse("-100"));
     }
 
+    /**
+     * Returns the user role from the given AuthState.
+     * @param principal AutState to extract the user role from
+     * @return user role from the given AuthState
+     */
     public String getRoleFromAuthState(AuthState principal) {
         return principal.getClaimsList().stream()
                 .filter(claim -> claim.getType().equals("role"))
