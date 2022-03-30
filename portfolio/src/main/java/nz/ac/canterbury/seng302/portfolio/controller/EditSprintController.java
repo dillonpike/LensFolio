@@ -72,7 +72,7 @@ public class EditSprintController {
 
         sprintService.updateSprint(newSprint);
 
-        return "redirect:/edit-sprint/"+id;
+        return "redirect:/details";
     }
 
     @RequestMapping(value="/edit-sprint/error", method=RequestMethod.POST)
