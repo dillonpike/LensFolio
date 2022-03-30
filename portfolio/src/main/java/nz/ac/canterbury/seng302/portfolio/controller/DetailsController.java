@@ -35,6 +35,14 @@ public class DetailsController {
     @Autowired
     private UserAccountService userAccountService;
 
+    /***
+     * GET request method, followed by the request URL(../details)
+     *
+     * @param principal
+     * @param model Parameters sent to thymeleaf template to be rendered into HTML
+     * @return TeacherProjectDetails or userProjectDetails which is dependent on user's role
+     * @throws Exception
+     */
     @GetMapping("/details")
     public String details(@AuthenticationPrincipal AuthState principal, Model model) throws Exception {
         /* Add project details to the model */
@@ -61,7 +69,7 @@ public class DetailsController {
 
         /* Return the name of the Thymeleaf template */
         // detects the role of the current user and returns appropriate page
-        if (!role.equals("teacher")) { //TODO Change this back to normal. (Remove !)
+        if (!role.equals("teacher")) {
             return "teacherProjectDetails";
         } else {
             return "userProjectDetails";
