@@ -1,17 +1,21 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
+import nz.ac.canterbury.seng302.portfolio.model.Project;
 import nz.ac.canterbury.seng302.portfolio.model.Sprint;
 import nz.ac.canterbury.seng302.portfolio.service.DateValidationService;
+import nz.ac.canterbury.seng302.portfolio.service.ProjectService;
 import nz.ac.canterbury.seng302.portfolio.service.SprintService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.thymeleaf.util.DateUtils;
 
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -23,7 +27,18 @@ public class SprintLifetimeController {
     private SprintService sprintService;
 
     @Autowired
+    private ProjectService projectService;
+
+    @Autowired
     private DateValidationService dateValidationService;
+
+    public Date getUpdatedDate(Date toUpdate, int day, int week) {
+        Calendar date = Calendar.getInstance();
+        date.setTime(toUpdate);
+        date.add(Calendar.DATE, day);
+        date.add(Calendar.WEEK_OF_YEAR, week);
+        return date.getTime();
+    }
 
     /**
      * Gives the UI a blank sprint to use to add a new sprint.
@@ -35,17 +50,22 @@ public class SprintLifetimeController {
         Sprint blankSprint = new Sprint();
         List<Sprint> sprints = sprintService.getAllSprintsOrdered();
         if (sprints.isEmpty()) {
-            blankSprint.setName("Sprint 1"); //TODO have the code use project as default dates.
-            blankSprint.setStartDate(java.sql.Date.valueOf(LocalDate.now()));
-            blankSprint.setStartDate(java.sql.Date.valueOf(LocalDate.now().plusWeeks(3)));
+            blankSprint.setName("Sprint 1");
+            try {
+                Project project = projectService.getProjectById(0);
+                blankSprint.setStartDate(project.getStartDate());
+                blankSprint.setEndDate(getUpdatedDate(project.getEndDate(), 0, 3));
+            } catch (Exception e) {
+                Date now = Date.from(Instant.from(LocalDate.now()));
+                blankSprint.setStartDate(now);
+                blankSprint.setEndDate(getUpdatedDate(now, 0, 3));
+            }
         } else {
             blankSprint.setName("Sprint " + (sprints.size() + 1));
 
             Sprint lastSprint = sprints.get(sprints.size() - 1);
-            LocalDate start_date = lastSprint.getEndDate().toInstant()
-                    .atZone(ZoneId.systemDefault()).toLocalDate();
-            blankSprint.setStartDate(java.sql.Date.valueOf(start_date.plusDays(1)));
-            blankSprint.setEndDate(java.sql.Date.valueOf(start_date.plusDays(1).plusWeeks((3))));
+            blankSprint.setStartDate(getUpdatedDate(lastSprint.getStartDate(), 1, 0));
+            blankSprint.setEndDate(getUpdatedDate(lastSprint.getEndDate(), 0, 3));
         }
 
 
