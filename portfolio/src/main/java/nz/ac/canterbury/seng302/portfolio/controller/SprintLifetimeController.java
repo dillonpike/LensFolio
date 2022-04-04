@@ -32,6 +32,14 @@ public class SprintLifetimeController {
     @Autowired
     private DateValidationService dateValidationService;
 
+    /**
+     * Add a given number of days and/or weeks to a date.util using Calendars.
+     *
+     * @param toUpdate  The starting date.
+     * @param day       The number of days to increase by.
+     * @param week      The number of weeks to increase by.
+     * @return          A new updated date.
+     */
     public Date getUpdatedDate(Date toUpdate, int day, int week) {
         Calendar date = Calendar.getInstance();
         date.setTime(toUpdate);
@@ -54,7 +62,7 @@ public class SprintLifetimeController {
             try {
                 Project project = projectService.getProjectById(0);
                 blankSprint.setStartDate(project.getStartDate());
-                blankSprint.setEndDate(getUpdatedDate(project.getEndDate(), 0, 3));
+                blankSprint.setEndDate(getUpdatedDate(project.getStartDate(), 0, 3));
             } catch (Exception e) {
                 Date now = Date.from(Instant.from(LocalDate.now()));
                 blankSprint.setStartDate(now);
@@ -64,7 +72,7 @@ public class SprintLifetimeController {
             blankSprint.setName("Sprint " + (sprints.size() + 1));
 
             Sprint lastSprint = sprints.get(sprints.size() - 1);
-            blankSprint.setStartDate(getUpdatedDate(lastSprint.getStartDate(), 1, 0));
+            blankSprint.setStartDate(getUpdatedDate(lastSprint.getEndDate(), 1, 0));
             blankSprint.setEndDate(getUpdatedDate(lastSprint.getEndDate(), 0, 3));
         }
 
