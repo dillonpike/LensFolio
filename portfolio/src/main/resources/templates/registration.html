@@ -49,7 +49,7 @@
                                 </div>
                             </div>
                             <div class="form-floating mb-3">
-                                <input type="email" class="form-control" id="email"  placeholder="email" th:name="email" required>
+                                <input type="email" class="form-control" id="email"  placeholder="email" th:name="email" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z0-9.-]+$" required>
                                 <label for="email">Email(*)</label>
                                 <div class="invalid-feedback">
                                     Please enter your email correctly. E.g. name@example.com.
