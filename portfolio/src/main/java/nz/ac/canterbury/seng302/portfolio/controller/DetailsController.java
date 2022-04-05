@@ -87,7 +87,7 @@ public class DetailsController {
         Integer id = userAccountService.getUserIDFromAuthState(principal);
         getUserByIdReplyHeader = registerClientService.getUserData(id);
         String fullNameHeader = getUserByIdReplyHeader.getFirstName() + " " + getUserByIdReplyHeader.getMiddleName() + " " + getUserByIdReplyHeader.getLastName();
-        model.addAttribute("fullName", fullNameHeader);
+        model.addAttribute("headerFullName", fullNameHeader);
         model.addAttribute("userId", id);
 
         // Below code is just begging to be added as a method somewhere...
