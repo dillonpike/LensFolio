@@ -2,6 +2,8 @@ plugins {
     id 'org.springframework.boot' version '2.6.3'
     id 'io.spring.dependency-management' version '1.0.11.RELEASE'
     id 'java'
+    id "org.sonarqube" version "3.3"
+    id 'jacoco'
 }
 
 group = 'nz.ac.canterbury.team-100'
@@ -44,6 +46,33 @@ dependencies {
     implementation 'org.webjars.npm:jquery:3.6.0'
 }
 
+// Jacoco test coverage configuration
+jacoco {
+    toolVersion = "0.8.2"
+}
+// select what reports to generate and where to put them
+jacocoTestReport {
+    reports {
+        xml.enabled true
+        xml.destination file("${buildDir}/jacoco/test-report.xml")
+        csv.enabled false
+        html.destination file("${buildDir}/jacoco/html")
+    }
+}
+
+// Sonarqube specific configuration
+sonarqube {
+    properties {
+        property "sonar.projectKey", "team-XXX-server"
+        property "sonar.projectName", "team XXX - server"
+        property "sonar.sourceEncoding", "UTF-8"
+        // replace "X" hereunder to match your VM url
+        property "sonar.host.url", "https://csse-s302gX.canterbury.ac.nz/sonarqube/"
+        property "sonar.login", "TOKEN_GENERATED_FROM_SONARQUBE"
+    }
+}
+
 tasks.named('test') {
     useJUnitPlatform()
+    finalizedBy jacocoTestReport
 }
