@@ -6,9 +6,12 @@ import nz.ac.canterbury.seng302.identityprovider.model.UserModel;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserAccountServiceGrpc;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserRegisterRequest;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserRegisterResponse;
+import nz.ac.canterbury.seng302.shared.util.FileUploadStatusResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import nz.ac.canterbury.seng302.shared.identityprovider.*;
 import org.springframework.security.crypto.password.Pbkdf2PasswordEncoder;
+
+import java.sql.Blob;
 
 
 @GrpcService
@@ -165,6 +168,43 @@ public class UserAccountServerService extends UserAccountServiceGrpc.UserAccount
 
         responseObserver.onNext(reply.build());
         responseObserver.onCompleted();
+    }
+
+    //  TODO Needs implementing (learning StreamObserver class)
+    @Override
+    public StreamObserver<UploadUserProfilePhotoRequest> uploadUserProfilePhoto(StreamObserver<FileUploadStatusResponse> responseObserver) {
+        FileUploadStatusResponse.Builder reply = FileUploadStatusResponse.newBuilder();
+
+        //  Somehow call the function below (savePhotoToUser)
+
+        responseObserver.onNext(reply.build());
+        responseObserver.onCompleted();
+
+        return null;
+    }
+
+    /**
+     * Saves a photo to a user in the database. Overwrites anything already saved.
+     * @param userId Id of the user you want to add the photo to
+     * @param photo Photo blob for saving
+     * @return Whether the new photo was saved
+     */
+    private boolean savePhotoToUser(int userId, Blob photo) {
+        boolean status;
+        try{
+            UserModel user = userModelService.getUserById(userId);
+            if (user != null) {
+                user.setPhoto(photo);
+                userModelService.saveEditedUser(user);
+                status = true;
+            } else {
+                status = false;
+            }
+        } catch(Exception e) {
+            status = false;
+            System.err.println("Photo not saved");
+        }
+        return status;
     }
 
 }

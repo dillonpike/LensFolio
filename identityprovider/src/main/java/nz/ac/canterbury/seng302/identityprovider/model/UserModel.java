@@ -4,6 +4,7 @@ import com.google.protobuf.Timestamp;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
+import java.sql.Blob;
 import java.sql.Date;
 import java.sql.Time;
 import java.text.SimpleDateFormat;
@@ -25,6 +26,7 @@ public class UserModel {
     private String bio;
     private String personalPronouns;
     private Timestamp dateAdded;
+    private Blob photo;
 
     public UserModel() {}
 
@@ -138,6 +140,14 @@ public class UserModel {
         } else {
             return null;
         }
+    }
+
+    public void setPhoto(Blob photo) {
+        this.photo = photo;
+    }
+
+    public Blob getPhoto() {
+        return photo;
     }
 
     @Override
