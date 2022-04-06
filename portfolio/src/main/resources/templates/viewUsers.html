@@ -29,12 +29,20 @@
         </tr>
         </thead>
         <tbody>
+<!--            <tr th:each="user : ${users}">-->
+<!--                <td><span th:text="${user.firstName}"> Firstname </span></td>-->
+<!--                <td><span th:text="${user.lastName}"> Lastname </span></td>-->
+<!--                <td><span th:text="${user.userName}"> Username </span></td>-->
+<!--                <td><span th:text="${user.nickname}"> Alias </span></td>-->
+<!--                <td><span th:text="${user.role}"> Role </span></td>-->
+<!--            </tr>-->
         </tbody>
     </table>
 </div>
 <script>
     $('#sortTable').DataTable({
-        stateSave: true
+        stateSave: true,
+        "dom": 'rtip'
     });
 </script>
 </body>
