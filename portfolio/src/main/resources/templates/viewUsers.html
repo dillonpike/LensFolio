@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title> Bootstrap SORT table Example </title>
+    <title> View Users</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
@@ -24,18 +24,18 @@
             <th>Firstname</th>
             <th>Lastname</th>
             <th>Username</th>
-            <th>Alias</th>
-            <th>Role</th>
+<!--            <th>Alias</th>-->
+<!--            <th>Role</th>-->
         </tr>
         </thead>
         <tbody>
-<!--            <tr th:each="user : ${users}">-->
-<!--                <td><span th:text="${user.firstName}"> Firstname </span></td>-->
-<!--                <td><span th:text="${user.lastName}"> Lastname </span></td>-->
-<!--                <td><span th:text="${user.userName}"> Username </span></td>-->
+            <tr th:each="user : ${users}">
+                <td><span th:text="${user.FirstName}"> Firstname </span></td>
+                <td><span th:text="${user.LastName}"> Lastname </span></td>
+                <td><span th:text="${user.username}"> Username </span></td>
 <!--                <td><span th:text="${user.nickname}"> Alias </span></td>-->
 <!--                <td><span th:text="${user.role}"> Role </span></td>-->
-<!--            </tr>-->
+            </tr>
         </tbody>
     </table>
 </div>

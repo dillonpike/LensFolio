@@ -91,4 +91,13 @@ public class UserModelService {
         }
     }
 
+    /***
+     *
+     * @return
+     */
+    public List<UserModel> findAllUser() {
+        return (List<UserModel>) repository.findAll();
+    }
+
+
 }

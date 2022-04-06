@@ -10,11 +10,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import nz.ac.canterbury.seng302.shared.identityprovider.*;
 import org.springframework.security.crypto.password.Pbkdf2PasswordEncoder;
 
+import java.util.List;
+
 
 @GrpcService
 public class UserAccountServerService extends UserAccountServiceGrpc.UserAccountServiceImplBase {
 
     private Pbkdf2PasswordEncoder pbkdf2PasswordEncoder = new Pbkdf2PasswordEncoder();
+
 
     @Autowired
     private UserModelService userModelService;
@@ -165,6 +168,26 @@ public class UserAccountServerService extends UserAccountServiceGrpc.UserAccount
 
         responseObserver.onNext(reply.build());
         responseObserver.onCompleted();
+    }
+
+    @Override
+    public void getPaginatedUsers(GetPaginatedUsersRequest request, StreamObserver<PaginatedUsersResponse> responseObserver) {
+        PaginatedUsersResponse.Builder reply = PaginatedUsersResponse.newBuilder();
+        List<UserModel> allUsers = userModelService.findAllUser();
+        for (int i = 0; i < allUsers.size(); i++) {
+            reply.addUsers(getUserInfo(allUsers.get(i)));
+        }
+        responseObserver.onNext(reply.build());
+        responseObserver.onCompleted();
+    }
+
+    private UserResponse getUserInfo(UserModel user) {
+        UserResponse.Builder response = UserResponse.newBuilder();
+        response.setUsername(user.getUsername())
+                .setFirstName(user.getFirstName())
+                .setLastName(user.getLastName())
+                .setNickname(user.getNickname());
+        return response.build();
     }
 
 }
