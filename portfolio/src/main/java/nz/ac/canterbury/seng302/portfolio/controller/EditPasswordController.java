@@ -3,7 +3,7 @@ package nz.ac.canterbury.seng302.portfolio.controller;
 import nz.ac.canterbury.seng302.portfolio.service.AuthenticateClientService;
 import nz.ac.canterbury.seng302.portfolio.service.ElementService;
 import nz.ac.canterbury.seng302.portfolio.service.RegisterClientService;
-import nz.ac.canterbury.seng302.portfolio.service.UserAccountService;
+import nz.ac.canterbury.seng302.portfolio.service.UserAccountClientService;
 import nz.ac.canterbury.seng302.portfolio.utility.Utility;
 import nz.ac.canterbury.seng302.shared.identityprovider.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +28,7 @@ public class EditPasswordController {
     private RegisterClientService registerClientService;
 
     @Autowired
-    private UserAccountService userAccountService;
+    private UserAccountClientService userAccountClientService;
 
     @Autowired
     private ElementService elementService;
@@ -47,7 +47,7 @@ public class EditPasswordController {
             @AuthenticationPrincipal AuthState principal
     ) {
         model = elementService.addUpdateMessage(model, request);
-        Integer id = userAccountService.getUserIDFromAuthState(principal);
+        Integer id = userAccountClientService.getUserIDFromAuthState(principal);
         try {
             UserResponse getUserByIdReply = registerClientService.getUserData(id);
             String fullName = getUserByIdReply.getFirstName() + " " + getUserByIdReply.getMiddleName() + " " + getUserByIdReply.getLastName();
@@ -79,7 +79,7 @@ public class EditPasswordController {
             RedirectAttributes rm,
             Model model
     ) {
-        Integer userId = userAccountService.getUserIDFromAuthState(principal);
+        Integer userId = userAccountClientService.getUserIDFromAuthState(principal);
         rm.addAttribute("userId", userId);
         try {
             ChangePasswordResponse changeUserPassword = registerClientService.changePassword(userId, currentPassword, newPassword);

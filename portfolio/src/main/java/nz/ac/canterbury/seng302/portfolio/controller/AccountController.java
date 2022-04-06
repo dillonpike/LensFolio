@@ -3,7 +3,7 @@ package nz.ac.canterbury.seng302.portfolio.controller;
 import io.grpc.StatusRuntimeException;
 import nz.ac.canterbury.seng302.portfolio.service.RegisterClientService;
 import nz.ac.canterbury.seng302.portfolio.utility.Utility;
-import nz.ac.canterbury.seng302.portfolio.service.UserAccountService;
+import nz.ac.canterbury.seng302.portfolio.service.UserAccountClientService;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +23,7 @@ public class AccountController {
     private RegisterClientService registerClientService;
 
     @Autowired
-    private UserAccountService userAccountService;
+    private UserAccountClientService userAccountClientService;
 
     /***
      * GET method for account controller to generate user's info
@@ -41,7 +41,7 @@ public class AccountController {
     ) {
         UserResponse getUserByIdReply;
         UserResponse getUserByIdReplyHeader;
-        Integer id = userAccountService.getUserIDFromAuthState(principal);
+        Integer id = userAccountClientService.getUserIDFromAuthState(principal);
         getUserByIdReplyHeader = registerClientService.getUserData(id);
         String fullNameHeader = getUserByIdReplyHeader.getFirstName() + " " + getUserByIdReplyHeader.getMiddleName() + " " + getUserByIdReplyHeader.getLastName();
         model.addAttribute("headerFullName", fullNameHeader);
