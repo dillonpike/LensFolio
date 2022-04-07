@@ -6,12 +6,18 @@ import nz.ac.canterbury.seng302.identityprovider.model.UserModel;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserAccountServiceGrpc;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserRegisterRequest;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserRegisterResponse;
+import nz.ac.canterbury.seng302.shared.util.FileUploadStatus;
 import nz.ac.canterbury.seng302.shared.util.FileUploadStatusResponse;
+import org.mariadb.jdbc.MariaDbBlob;
 import org.springframework.beans.factory.annotation.Autowired;
 import nz.ac.canterbury.seng302.shared.identityprovider.*;
 import org.springframework.security.crypto.password.Pbkdf2PasswordEncoder;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.sql.Blob;
+
+import static nz.ac.canterbury.seng302.shared.util.FileUploadStatus.*;
 
 
 @GrpcService
@@ -170,17 +176,70 @@ public class UserAccountServerService extends UserAccountServiceGrpc.UserAccount
         responseObserver.onCompleted();
     }
 
-    //  TODO Needs implementing (learning StreamObserver class)
+
     @Override
     public StreamObserver<UploadUserProfilePhotoRequest> uploadUserProfilePhoto(StreamObserver<FileUploadStatusResponse> responseObserver) {
-        FileUploadStatusResponse.Builder reply = FileUploadStatusResponse.newBuilder();
 
-        //  Somehow call the function below (savePhotoToUser)
 
-        responseObserver.onNext(reply.build());
-        responseObserver.onCompleted();
+        return new StreamObserver<UploadUserProfilePhotoRequest>() {
+            ByteArrayOutputStream imageArray = new ByteArrayOutputStream();
+            FileUploadStatus fileUploadStatus = PENDING;
+            boolean byteFailed = false;
+            String message = "Byte uploading";
+            int userId;
+            String fileType;
 
-        return null;
+            @Override
+            public void onNext(UploadUserProfilePhotoRequest value) {
+                FileUploadStatusResponse.Builder reply = FileUploadStatusResponse.newBuilder();
+
+                if (value.hasMetaData()) {
+                    userId = value.getMetaData().getUserId();
+                    fileType = value.getMetaData().getFileType();
+                } else {
+                    try {
+                        imageArray.write(value.getFileContent().toByteArray());
+                        fileUploadStatus = IN_PROGRESS;
+                        message = "Byte uploading";
+                        responseObserver.onNext(reply.setStatus(fileUploadStatus).setMessage(message).build());
+                    } catch (IOException e) {
+                        fileUploadStatus = FAILED;
+                        message = "Byte failed to write to OutputStream";
+                        byteFailed = true;
+                        responseObserver.onNext(reply.setStatus(fileUploadStatus).setMessage(message).build());
+                        e.printStackTrace();
+                    }
+                }
+            }
+
+            @Override
+            public void onError(Throwable t) {
+                System.err.println("Failed to stream image");
+            }
+
+            @Override
+            public void onCompleted() {
+                FileUploadStatusResponse.Builder reply = FileUploadStatusResponse.newBuilder();
+
+                //  Somehow call the function below (savePhotoToUser)
+                Blob blob = new MariaDbBlob(imageArray.toByteArray());
+                boolean wasSaved = false;
+                if (byteFailed) {
+                    wasSaved = savePhotoToUser(userId, blob);
+                }
+
+                if (wasSaved) {
+                    message = "Image saved to database";
+                    fileUploadStatus = SUCCESS;
+                } else {
+                    message = "Image failed to save to database";
+                    fileUploadStatus = FAILED;
+                }
+
+                responseObserver.onNext(reply.setStatus(fileUploadStatus).setMessage(message).build());
+                responseObserver.onCompleted();
+            }
+        };
     }
 
     /**
@@ -203,6 +262,7 @@ public class UserAccountServerService extends UserAccountServiceGrpc.UserAccount
         } catch(Exception e) {
             status = false;
             System.err.println("Photo not saved");
+            e.printStackTrace();
         }
         return status;
     }
