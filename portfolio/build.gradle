@@ -43,7 +43,7 @@ dependencies {
 
     // https://mvnrepository.com/artifact/org.mariadb.jdbc/mariadb-java-client
     implementation 'org.mariadb.jdbc:mariadb-java-client:2.7.3'
-
+    testImplementation 'org.mockito:mockito-core:4.3.1'
 
 
     developmentOnly 'org.springframework.boot:spring-boot-devtools'

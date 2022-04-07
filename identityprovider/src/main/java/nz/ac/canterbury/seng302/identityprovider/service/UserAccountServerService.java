@@ -180,7 +180,6 @@ public class UserAccountServerService extends UserAccountServiceGrpc.UserAccount
     @Override
     public StreamObserver<UploadUserProfilePhotoRequest> uploadUserProfilePhoto(StreamObserver<FileUploadStatusResponse> responseObserver) {
 
-
         return new StreamObserver<UploadUserProfilePhotoRequest>() {
             ByteArrayOutputStream imageArray = new ByteArrayOutputStream();
             FileUploadStatus fileUploadStatus = PENDING;
