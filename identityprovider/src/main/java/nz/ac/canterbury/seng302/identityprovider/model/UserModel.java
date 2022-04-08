@@ -27,6 +27,8 @@ public class UserModel implements Serializable {
     private Timestamp dateAdded;
 
 
+
+
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
     @JoinTable(name = "user_to_role",
             joinColumns =
@@ -42,6 +44,9 @@ public class UserModel implements Serializable {
 
     public Set<Roles> getRoles() {
         return roles;
+    }
+    public void setRoles(Set<Roles> roles) {
+        this.roles = roles;
     }
 
     public UserModel() {}
