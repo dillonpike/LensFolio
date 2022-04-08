@@ -1,17 +1,13 @@
 package nz.ac.canterbury.seng302.identityprovider.model;
 
 import com.google.protobuf.Timestamp;
-import org.hibernate.annotations.GenericGenerator;
 
-import javax.management.relation.Role;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.sql.Date;
-import java.sql.Time;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -30,15 +26,23 @@ public class UserModel implements Serializable {
     private String personalPronouns;
     private Timestamp dateAdded;
 
+
     @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     @JoinTable(name = "user_to_role",
-            joinColumns = {
-                    @JoinColumn(name = "User_Id", referencedColumnName = "User_Id",
-                            nullable = false, updatable = false)},
-            inverseJoinColumns = {
-                    @JoinColumn(name = "Role_Id", referencedColumnName = "id",
-                            nullable = false, updatable = false)})
-    private Set<Roles> Roles = new HashSet<>();
+            joinColumns =
+                    @JoinColumn(name = "User_Id"),
+            inverseJoinColumns =
+                    @JoinColumn(name = "Role_Id")
+    )
+    private Set<Role> roles = new HashSet<>();
+
+    public void addRoles(Role role) {
+        this.roles.add(role);
+    }
+
+    public Set<Role> getRoles() {
+        return roles;
+    }
 
     public UserModel() {}
 
@@ -59,6 +63,7 @@ public class UserModel implements Serializable {
     public int getUserId() {
         return userId;
     }
+
 
     public void setUserId(int userId) {
         this.userId = userId;
