@@ -1,5 +1,6 @@
 package nz.ac.canterbury.seng302.identityprovider.service;
 
+import nz.ac.canterbury.seng302.identityprovider.model.Roles;
 import nz.ac.canterbury.seng302.identityprovider.model.RolesRepository;
 import nz.ac.canterbury.seng302.identityprovider.model.UserModel;
 import nz.ac.canterbury.seng302.identityprovider.model.UserModelRepository;
@@ -66,10 +67,8 @@ public class UserModelService {
         findMaxUserId();
         user.setUserId(userIdCount);
         userIdCount++;
-//        System.out.println("here");
-//        Roles role = rolesRepository.findByRoleName("STUDENT");
-//        System.out.println(role);
-//        user.addRoles(role);
+        Roles studentRole = rolesRepository.findByRoleName("STUDENT");
+        user.addRoles(studentRole);
         return repository.save(user);
     }
 
