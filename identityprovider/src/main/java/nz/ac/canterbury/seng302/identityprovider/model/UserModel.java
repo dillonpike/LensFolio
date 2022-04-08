@@ -27,20 +27,20 @@ public class UserModel implements Serializable {
     private Timestamp dateAdded;
 
 
-    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
     @JoinTable(name = "user_to_role",
             joinColumns =
                     @JoinColumn(name = "User_Id"),
             inverseJoinColumns =
                     @JoinColumn(name = "Role_Id")
     )
-    private Set<Role> roles = new HashSet<>();
+    private Set<Roles> roles = new HashSet<>();
 
-    public void addRoles(Role role) {
+    public void addRoles(Roles role) {
         this.roles.add(role);
     }
 
-    public Set<Role> getRoles() {
+    public Set<Roles> getRoles() {
         return roles;
     }
 

@@ -2,6 +2,7 @@ package nz.ac.canterbury.seng302.identityprovider.service;
 
 import io.grpc.stub.StreamObserver;
 import net.devh.boot.grpc.server.service.GrpcService;
+import nz.ac.canterbury.seng302.identityprovider.model.Roles;
 import nz.ac.canterbury.seng302.identityprovider.model.UserModel;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserAccountServiceGrpc;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserRegisterRequest;
@@ -9,6 +10,8 @@ import nz.ac.canterbury.seng302.shared.identityprovider.UserRegisterResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import nz.ac.canterbury.seng302.shared.identityprovider.*;
 import org.springframework.security.crypto.password.Pbkdf2PasswordEncoder;
+
+import java.util.Set;
 
 
 @GrpcService
@@ -85,6 +88,15 @@ public class UserAccountServerService extends UserAccountServiceGrpc.UserAccount
                         .setBio(user.getBio())
                         .setPersonalPronouns(user.getPersonalPronouns())
                         .setCreated(user.getDateAdded());
+                Set<Roles> roles = user.getRoles();
+                Roles[] rolesArray = roles.toArray(new Roles[roles.size()]);
+
+                for(int i = 0; i< rolesArray.length; i++){
+                    reply.addRolesValue(rolesArray[i].getId());
+//                    System.out.println("=======");
+//                    System.out.println(rolesArray[i].getRoleName());
+//                    System.out.println(rolesArray[i].getId());
+                }
             }
 
         } catch(Exception e) {

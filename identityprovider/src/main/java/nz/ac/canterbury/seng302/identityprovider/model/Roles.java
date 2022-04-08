@@ -2,23 +2,17 @@ package nz.ac.canterbury.seng302.identityprovider.model;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.HashSet;
-import java.util.Set;
 
 @Entity
-public class Role implements Serializable {
+public class Roles implements Serializable {
     @Id
     private int id;
 
     private String roleName;
 
-//    @ManyToMany(mappedBy = "Roles", fetch = FetchType.LAZY)
-//    private Set<UserModel> users = new HashSet<>();
+    public Roles() { }
 
-
-    public Role() { }
-
-    public Role(int id, String roleName) {
+    public Roles(int id, String roleName) {
         this.id = id;
         this.roleName = roleName;
     }
