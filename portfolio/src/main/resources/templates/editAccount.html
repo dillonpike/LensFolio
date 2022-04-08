@@ -40,7 +40,7 @@
         <div class="dropdown text-end" style="display: flex; flex-direction: row; align-items: center;">
           <h6 th:text="${fullName}" style="margin-right: 5px;padding-top: 5px"></h6>
           <a href="#" class="d-block link-dark text-decoration-none dropdown-toggle" id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false" >
-            <img th:src="@{img/img.png}" alt="mdo" width="32" height="32" class="rounded-circle">
+            <img th:src="@{img/img.png}" id="accountImage" alt="mdo" width="32" height="32" class="rounded-circle">
           </a>
           <ul class="dropdown-menu text-small" aria-labelledby="dropdownUser1">
             <li>
@@ -71,7 +71,7 @@
           <div class="card-body p-1-9 p-xl-5">
             <div class="form-group">
               <div id="image-box" class="image-container"></div>
-              <button class="btn btn-outline-info" id="crop-btn" style="width: 100%; margin: 10px; display: none;" type="button">Crop</button>
+              <button class="btn btn-outline-info" id="crop-btn" style="width: 100%; margin-top: 10px; display: none;" type="button">Crop</button>
               <button class="btn btn-outline-info" id="confirm-btn" style="width: 100%; margin-top: 10px; display: none;" type="submit">Post</button>
             </div>
             <div class="mb-4">
@@ -297,6 +297,7 @@
 
     oFReader.onload = function (oFREvent) {
         document.getElementById("uploadPreview").src = oFREvent.target.result;
+        document.getElementById("accountImage").src = oFREvent.target.result;
     };
   };
 </script>
