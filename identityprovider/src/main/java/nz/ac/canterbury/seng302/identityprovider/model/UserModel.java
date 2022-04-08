@@ -3,15 +3,19 @@ package nz.ac.canterbury.seng302.identityprovider.model;
 import com.google.protobuf.Timestamp;
 import org.hibernate.annotations.GenericGenerator;
 
+import javax.management.relation.Role;
 import javax.persistence.*;
+import java.io.Serializable;
 import java.sql.Date;
 import java.sql.Time;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
-public class UserModel {
+public class UserModel implements Serializable {
     @Id
     private int userId;
 
@@ -25,6 +29,16 @@ public class UserModel {
     private String bio;
     private String personalPronouns;
     private Timestamp dateAdded;
+
+    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
+    @JoinTable(name = "user_to_role",
+            joinColumns = {
+                    @JoinColumn(name = "User_Id", referencedColumnName = "User_Id",
+                            nullable = false, updatable = false)},
+            inverseJoinColumns = {
+                    @JoinColumn(name = "Role_Id", referencedColumnName = "id",
+                            nullable = false, updatable = false)})
+    private Set<Roles> Roles = new HashSet<>();
 
     public UserModel() {}
 
