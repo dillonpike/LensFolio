@@ -60,7 +60,10 @@ public class AccountController {
                 return "404NotFound";
             }
             System.out.println("Hereee");
-
+            ArrayList<UserRole> rolesList = new ArrayList<>();
+            for(int i = 0; i< getUserByIdReply.getRolesCount(); i++){
+                rolesList.add((getUserByIdReply.getRoles(i)));
+            }
             model.addAttribute("firstName", getUserByIdReply.getFirstName());
             model.addAttribute("lastName", getUserByIdReply.getLastName());
             model.addAttribute("username", getUserByIdReply.getUsername());
@@ -74,7 +77,7 @@ public class AccountController {
             model.addAttribute("userId", id);
             model.addAttribute("dateAdded", Utility.getDateAddedString(getUserByIdReply.getCreated()));
             model.addAttribute("monthsSinceAdded", Utility.getDateSinceAddedString(getUserByIdReply.getCreated()));
-
+            model.addAttribute("rolesList", rolesList);
         } catch (StatusRuntimeException e) {
             model.addAttribute("loginMessage", "Error connecting to Identity Provider...");
             e.printStackTrace();

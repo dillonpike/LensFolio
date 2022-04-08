@@ -28,7 +28,14 @@
                 <p  th:text="${dateAdded}" style="margin-left: 5px"></p>
                 <p  th:text="${monthsSinceAdded}" style="margin-left: 5px"></p>
               </div>
-
+              <H6 style="margin-bottom: 0px">Role(s):</H6>
+              <div style="display: flex; flex-wrap: wrap; flex-direction: row;">
+                <div th:each="eachRole: ${rolesList}" style="background: linear-gradient(-45deg, #ee6654, #e71c6e, #2396d5, #23c5ab) 400% 400%; border-radius: 10px;padding:5px; margin-right: 10px;margin-top: 5px;">
+                  <div style="background: white;padding:2px;border-radius: 5px;">
+                    <p th:text="${eachRole}" style="margin-top: 5px;margin-bottom: 5px"></p>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
