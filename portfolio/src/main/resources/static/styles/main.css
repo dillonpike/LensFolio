@@ -1,3 +1,26 @@
+/* Tag Changes */
+* {
+    font-family: 'Helvetica';
+    box-sizing: inherit;
+}
+
+a {
+    color: inherit;
+    font-weight: inherit;
+    text-decoration: inherit;
+}
+
+/* Global Page Top */
+.top {
+    background: linear-gradient(90deg, #26547C, #EF476F) 400% 400%;
+}
+
+.border-bottom {
+    background-color: white;
+}
+/* Global Page Top End */
+
+/* Header (Project) */
 .header {
     background: linear-gradient(90deg, #26547C, #EF476F) 400% 400%;
     display: flex;
@@ -20,19 +43,91 @@
     padding-right: 5px;
 }
 
-.title-date {
-    color: #ffffff99;
-    font-size: large;
+.edit-project-button {
+    height: 60px;
+    width: 60px;
+    border-radius: 40px;
+    border: none;
+    background-color: white;
+    color: #336ba1;
 }
 
+.edit-project-button:hover {
+    background-color: #c2c0c0
+}
+
+.project-button-link {
+    border-radius: 40px;
+    text-decoration: none;
+    margin: 20px;
+}
+
+.bg-custom {
+    background-color: #FFFFFF;
+}
+
+.project-desc {
+    color: #636363;
+    padding-top: 10px;
+}
+/* Header End */
+
+
+/* Body (Sprints) */
+.body {
+    background-color: white;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+/* Sprints-Display */
 .content {
     margin: 10px;
     width:calc(100% - 20px);
+    background: white;
+}
+
+.detail-block {
+    /* Border */
+    border: 2px solid transparent;
+    border-radius: 25px;
+    background:
+            linear-gradient(to right, whitesmoke, whitesmoke),
+            linear-gradient(to right, #06D6A0 , #EF476F);
+    background-clip: padding-box, border-box;
+    background-origin: padding-box, border-box;
+
+    /* Other styles */
+    height: 150px;
+    width: 100%;
+    padding: 10px;
+    margin: 5px;
+}
+
+.bg-custom-desc {
+    background: #15be8b;
+}
+
+.sprints-top {
+    font-weight: bold;
+    background: linear-gradient(90deg, #5682b4, #EF476F) 400% 400%;
+    border-radius: 15px;
+    margin-top: 30px;
+    margin-bottom: 10px;
+    padding: 2px;
+    display: flex;
+    justify-content: center;
+    color: #ffffff;
 }
 
 .sprint-block {
     display:flex;
     width: 100%;
+}
+
+.detail-block {
+    display: flex;
+    justify-content: space-between;
 }
 
 .sprint-label {
@@ -65,12 +160,18 @@
     color: #636363;
     padding-top: 5px;
 }
+/* Sprints-Display End */
 
-* {
-    font-family: 'Helvetica';
-    box-sizing: inherit;
+/* Sprints-Buttons */
+
+.button-divider {
+    margin-bottom: 3px;
 }
 
+.button-link {
+    border-radius: 40px;
+    text-decoration: none;
+}
 
 .edit-button {
     height: 40px;
@@ -78,16 +179,11 @@
     border-radius: 40px;
     border: none;
     background-color: #06D6A0;
-    color: #5e0202;
+    color: #0c506b;
 }
-.edit-project-button {
-    height: 60px;
-    width: 60px;
-    border-radius: 40px;
-    border: none;
-    background-color: white;
-    color: #5e0202;
-    margin: 20px;
+
+.edit-button:hover {
+    background-color: #05a881
 }
 
 .delete-button {
@@ -99,15 +195,8 @@
     color: white;
 }
 
-.detail-block {
-    display: flex;
-    justify-content: space-between;
-}
-
-a {
-    color: inherit;
-    font-weight: inherit;
-    text-decoration: inherit;
+.delete-button:hover {
+    background-color: #d3254c
 }
 
 .add-sprint {
@@ -117,73 +206,19 @@ a {
     padding: 10px 20px 10px 10px;
     font-size: large;
     border-radius: 10px;
-    border: 1px solid #26547C;
-    color: #26547C;
+    border: 1px solid #26547C !important; /* Needs to override bootstrap */
+    background-color: #336ba1 !important; /* Needs to override bootstrap */
     font-weight: bold;
-    min-width: 50px;
+    width: 140px;
     height: 35px;
     display: flex;
     align-items: center;
 
 }
 
-.bg-custom {
-    background-color: #FFFFFF;
+.add-sprint:hover {
+    background-color: #26547C !important; /* Needs to override bootstrap */
 }
+/* Sprints-Buttons End */
 
-.detail-block {
-    /* Border */
-    border: 2px solid transparent;
-    border-radius: 25px;
-    background:
-            linear-gradient(to right, whitesmoke, whitesmoke),
-            linear-gradient(to right, #06D6A0 , #EF476F);
-    background-clip: padding-box, border-box;
-    background-origin: padding-box, border-box;
-
-    /* Other styles */
-    height: 150px;
-    width: 100%;
-    padding: 10px;
-    margin: 5px;
-}
-
-
-.content {
-    background: white;
-}
-
-.body {
-    background-color: white;
-    margin: 0;
-    box-sizing: border-box;
-}
-
-.top {
-    background: linear-gradient(90deg, #26547C, #EF476F) 400% 400%;
-}
-
-.border-bottom {
-    background-color: white;
-}
-
-.bg-custom-desc {
-    background: #15be8b;
-}
-
-.project-desc {
-    color: #636363;
-    padding-top: 10px;
-}
-
-.sprints-top {
-    font-weight: bold;
-    background: linear-gradient(90deg, #5682b4, #EF476F) 400% 400%;
-    border-radius: 15px;
-    margin-top: 30px;
-    margin-bottom: 10px;
-    padding: 2px;
-    display: flex;
-    justify-content: center;
-    color: #ffffff;
-}
+/* Body End */
