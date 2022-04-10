@@ -19,6 +19,12 @@ public class UserSorting {
     public UserSorting() {
     }
 
+    public UserSorting(int userId) {
+        this.userId = userId;
+        this.columnIndex = 0;
+        this.sortOrder = "asc";
+    }
+
     public UserSorting(int userId, int columnIndex, String sortOrder) {
         this.userId = userId;
         this.columnIndex = columnIndex;

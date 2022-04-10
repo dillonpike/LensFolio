@@ -7,6 +7,7 @@ import nz.ac.canterbury.seng302.portfolio.service.UserSortingService;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import nz.ac.canterbury.seng302.shared.identityprovider.PaginatedUsersResponse;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
+import org.apache.catalina.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
@@ -54,18 +55,23 @@ public class ViewUsersController {
         userResponseList = response.getUsersList();
         System.out.println(userResponseList);
         model.addAttribute("users", userResponseList);
-
-
+        UserSorting userSorting;
+        try {
+            userSorting = userSortingService.getUserSortingById(id);
+        } catch (Exception e) {
+            userSorting = new UserSorting(id);
+        }
+        model.addAttribute("userSorting", userSorting);
         return "viewUsers";
     }
 
     @RequestMapping(value="/viewUsers/saveSort", method=RequestMethod.POST)
     public String updateSprintRangeErrors(@RequestParam(value="columnIndex") Integer columnIndex,
-                                          @RequestParam(value="order") String order,
+                                          @RequestParam(value="sortOrder") String sortOrder,
                                           @AuthenticationPrincipal AuthState principal) {
         Integer id = userAccountClientService.getUserIDFromAuthState(principal);
-        UserSorting userSorting = new UserSorting(id, columnIndex, order);
-        UserSorting sortUpdate = userSortingService.updateUserSorting(userSorting);
+        UserSorting userSorting = new UserSorting(id, columnIndex, sortOrder);
+        userSortingService.updateUserSorting(userSorting);
         return "viewUsers";
     }
 

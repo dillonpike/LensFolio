@@ -40,27 +40,29 @@
         </tbody>
     </table>
 </div>
-<script>
+<script th:inline="javascript">
     const table = $('#sortTable');
 
     function saveSort() {
         const data = {
             columnIndex: table.dataTable().fnSettings().aaSorting[0][0],
-            order: table.dataTable().fnSettings().aaSorting[0][1]
+            sortOrder: table.dataTable().fnSettings().aaSorting[0][1]
         }
-        console.log(data);
-        $.post("viewUsers/saveSort?" + new URLSearchParams(data)).done(function () {
-            console.log(`Saved ${data.sort}`);
-        });
-
+        $.post("viewUsers/saveSort?" + new URLSearchParams(data));
     }
 
     document.getElementById("sortTable").onclick = saveSort;
 
+    /*<![CDATA[*/
+    var userSorting = /*[[${userSorting}]]*/ 'default';
+    /*]]>*/
+
     table.DataTable({
         stateSave: false,
-        "dom": 'rtip'
+        "dom": 'rtip',
+        order: [userSorting.columnIndex, userSorting.sortOrder]
     });
+
 </script>
 </body>
 </html>
