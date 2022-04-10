@@ -36,9 +36,7 @@ public class SprintService {
         Optional<Sprint> sprint = repository.findById(id);
         if(sprint.isPresent()) {
             return sprint.get();
-        }
-        else
-        {
+        } else {
             throw new Exception("Project not found");
         }
     }
@@ -51,7 +49,7 @@ public class SprintService {
     public Sprint updateSprint(Sprint sprint) {
         Optional<Sprint> sOptional = repository.findById((Integer) sprint.getId());
 
-        if(sOptional.isPresent()) {
+        if (sOptional.isPresent()) {
             Sprint sprintUpdate = sOptional.get();
             sprintUpdate.setDescription(sprint.getDescription());
             sprintUpdate.setStartDate(sprint.getStartDate());
@@ -60,8 +58,7 @@ public class SprintService {
 
             sprintUpdate = repository.save(sprintUpdate);
             return sprintUpdate;
-        }
-        else {
+        } else {
             sprint = repository.save(sprint);
             return sprint;
         }

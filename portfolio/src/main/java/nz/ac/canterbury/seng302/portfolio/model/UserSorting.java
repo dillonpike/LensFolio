@@ -12,14 +12,17 @@ public class UserSorting {
     @Id
     private int userId;
 
-    private String sort;
+    private int columnIndex;
+
+    private String sortOrder;
 
     public UserSorting() {
     }
 
-    public UserSorting(int userId, String sort) {
+    public UserSorting(int userId, int columnIndex, String sortOrder) {
         this.userId = userId;
-        this.sort = sort;
+        this.columnIndex = columnIndex;
+        this.sortOrder = sortOrder;
     }
 
 
@@ -31,12 +34,19 @@ public class UserSorting {
         this.userId = userId;
     }
 
-    public String getSort() {
-        return sort;
+    public int getColumnIndex() {
+        return columnIndex;
     }
 
-    public void setSort(String sort) {
-        this.sort = sort;
+    public void setColumnIndex(int columnIndex) {
+        this.columnIndex = columnIndex;
     }
 
+    public String getSortOrder() {
+        return sortOrder;
+    }
+
+    public void setSortOrder(String sortOrder) {
+        this.sortOrder = sortOrder;
+    }
 }
