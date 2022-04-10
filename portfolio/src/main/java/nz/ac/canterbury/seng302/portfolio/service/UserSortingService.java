@@ -14,6 +14,13 @@ public class UserSortingService {
     @Autowired
     private UserSortingRepository repository;
 
+    /**
+     * Check if a user has set up sorting method by checking if there is entity in the 'user_sorting' table with User_Id same as the id of the user
+     * if entity is found, then update the Column_Index in the database with the new one, and also the Sort_Order as well
+     * Otherwise, do nothing( save the current sorting method
+     * @param userSorting UserSorting object which contains the information of the new sorting method chosen by the user
+     * @return a UserSorting object which either the updated one or the non-updated one
+     */
     public UserSorting updateUserSorting(UserSorting userSorting) {
         Optional<UserSorting> sOptional = repository.findById((Integer) userSorting.getUserId());
 
@@ -31,6 +38,11 @@ public class UserSortingService {
         }
     }
 
+    /**
+     * Getting the UserSorting Object based on the given user's id
+     * @param id Integer user's Id
+     * @return a UserSorting object
+     */
     public UserSorting getUserSortingById(Integer id) throws Exception {
 
         Optional<UserSorting> userSorting = repository.findById(id);
