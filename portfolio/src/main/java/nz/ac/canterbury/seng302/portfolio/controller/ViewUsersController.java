@@ -65,6 +65,13 @@ public class ViewUsersController {
         return "viewUsers";
     }
 
+    /***
+     * POST method request handler when the url is "/viewUsers/saveSort"
+     * @param columnIndex an Integer which column is chosen as the base of the sorting
+     * @param sortOrder a String between 'asc' or 'desc'. 'asc' means Ascending and 'desc' means Descending
+     * @param principal Used to get the user's id
+     * @return viewUsers html page
+     */
     @RequestMapping(value="/viewUsers/saveSort", method=RequestMethod.POST)
     public String updateSprintRangeErrors(@RequestParam(value="columnIndex") Integer columnIndex,
                                           @RequestParam(value="sortOrder") String sortOrder,
