@@ -32,12 +32,11 @@ public class UserSortingService {
     }
 
     public UserSorting getUserSortingById(Integer id) throws Exception {
-
         Optional<UserSorting> userSorting = repository.findById(id);
         if (userSorting.isPresent()) {
             return userSorting.get();
         } else {
-            throw new Exception("Project not found");
+            throw new Exception("UserSorting not found");
         }
     }
 }
