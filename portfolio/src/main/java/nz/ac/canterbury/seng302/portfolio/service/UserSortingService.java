@@ -1,6 +1,5 @@
 package nz.ac.canterbury.seng302.portfolio.service;
 
-import nz.ac.canterbury.seng302.portfolio.model.Sprint;
 import nz.ac.canterbury.seng302.portfolio.model.UserSorting;
 import nz.ac.canterbury.seng302.portfolio.model.UserSortingRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,9 +7,15 @@ import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
+/**
+ * Contains methods for saving and retrieving UserSorting objects to the database.
+ */
 @Service
 public class UserSortingService {
 
+    /**
+     * Repository of UserSorting objects.
+     */
     @Autowired
     private UserSortingRepository repository;
 
