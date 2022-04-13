@@ -41,6 +41,12 @@
     </table>
 </div>
 <script th:inline="javascript">
+    function settingsMenuToggle(){
+        var settingmenu = document.querySelector(".setting-menu");
+        settingmenu.classList.toggle('setting-menu-height');
+        settingmenu.addEventListener('click',function(){event.stopPropagation()})
+    }
+
     const table = $('#sortTable');
 
     function saveSort() {
@@ -57,12 +63,25 @@
     var userSorting = /*[[${userSorting}]]*/ 'default';
     /*]]>*/
 
-    table.DataTable({
+    // Create the data table to get the number of columns for constraining the column index, then destroy it and
+    // remake it with the new sort order.
+    // This stops a popup about reinitialising the data table.
+    table.DataTable();
+
+    // Ensure the column index and sort order are valid
+    userSorting.columnIndex = Math.max(Math.min(userSorting.columnIndex, table.DataTable().columns().nodes().length), 0);
+    userSorting.sortOrder = ['asc', 'desc'].includes(userSorting.sortOrder) ? userSorting.sortOrder : 'asc';
+
+    const tableOptions = {
         stateSave: false,
         "dom": 'rtip',
         order: [userSorting.columnIndex, userSorting.sortOrder]
-    });
+    };
+
+    table.DataTable().destroy();
+    table.DataTable(tableOptions);
 
 </script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
 </body>
 </html>
