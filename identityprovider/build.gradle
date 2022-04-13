@@ -1,7 +1,10 @@
+import org.gradle.api.tasks.testing.logging.TestLogEvent
+
 plugins {
     id 'org.springframework.boot' version '2.6.3'
     id 'io.spring.dependency-management' version '1.0.11.RELEASE'
     id 'java'
+    id 'se.thinkcode.cucumber-runner' version '0.0.8'
 }
 
 group = 'nz.ac.canterbury.team-100'
@@ -10,6 +13,11 @@ sourceCompatibility = '17'
 
 wrapper {
     gradleVersion = '7.4'
+}
+
+ext {
+    junitVersion = '5.7.2'
+    cucumberVersion = '6.10.4'
 }
 
 repositories {
@@ -43,9 +51,46 @@ dependencies {
     // https://mvnrepository.com/artifact/org.mariadb.jdbc/mariadb-java-client
     implementation 'org.mariadb.jdbc:mariadb-java-client:2.7.3'
 
+    testImplementation "org.junit.jupiter:junit-jupiter-api:${junitVersion}"
+    testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:${junitVersion}"
+
+    testImplementation "io.cucumber:cucumber-java:${cucumberVersion}"
+
+    testImplementation "io.cucumber:cucumber-junit:${cucumberVersion}"
+    testImplementation "org.junit.vintage:junit-vintage-engine:${junitVersion}"
+
 
 }
 
-tasks.named('test') {
+//tasks.named('test') {
+//    useJUnitPlatform()
+//}
+
+task cucumberCli() {
+    dependsOn assemble, testClasses
+    doLast {
+        javaexec {
+            main = "io.cucumber.core.cli.Main"
+            classpath = configurations.cucumberRuntime + sourceSets.main.output + sourceSets.test.output
+            args = [
+                    '--plugin', 'pretty',
+                    '--plugin', 'html:target/cucumber-report.html',
+                    '--glue', 'nz.ac.canterbury.seng302.identityprovider.cucumber',
+                    'src/test/resources']
+        }
+    }
+}
+
+cucumber {
+    main = 'io.cucumber.core.cli.Main'
+}
+
+test {
     useJUnitPlatform()
+
+    testLogging {
+        events TestLogEvent.FAILED, TestLogEvent.PASSED, TestLogEvent.SKIPPED
+    }
+
+    systemProperties(project.gradle.startParameter.systemPropertiesArgs)
 }
