@@ -53,7 +53,6 @@ public class ViewUsersController {
 
         PaginatedUsersResponse response = userAccountClientService.getAllUsers();
         userResponseList = response.getUsersList();
-        System.out.println(userResponseList);
         model.addAttribute("users", userResponseList);
         UserSorting userSorting;
         try {

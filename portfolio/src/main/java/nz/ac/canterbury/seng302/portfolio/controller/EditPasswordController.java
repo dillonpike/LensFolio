@@ -17,6 +17,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
 
 @Controller
 public class EditPasswordController {
@@ -50,12 +51,17 @@ public class EditPasswordController {
         Integer id = userAccountClientService.getUserIDFromAuthState(principal);
         try {
             UserResponse getUserByIdReply = registerClientService.getUserData(id);
+            ArrayList<UserRole> rolesList = new ArrayList<>();
+            for(int i = 0; i< getUserByIdReply.getRolesCount(); i++){
+                rolesList.add((getUserByIdReply.getRoles(i)));
+            }
             String fullName = getUserByIdReply.getFirstName() + " " + getUserByIdReply.getMiddleName() + " " + getUserByIdReply.getLastName();
             model.addAttribute("fullName", fullName);
             model.addAttribute("username", getUserByIdReply.getUsername());
             model.addAttribute("dateAdded", Utility.getDateAddedString(getUserByIdReply.getCreated()));
             model.addAttribute("monthsSinceAdded", Utility.getDateSinceAddedString(getUserByIdReply.getCreated()));
             model.addAttribute("userId", id);
+            model.addAttribute("rolesList", rolesList);
         } catch(Exception e) {
             model.addAttribute("loginMessage", "Error connecting to Identity Provider...");
             e.printStackTrace();
