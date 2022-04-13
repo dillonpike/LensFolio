@@ -5,6 +5,15 @@ Feature: Account is credited with amount
     When I browse to list of user page
     Then I can see the page that contains list of users registered
 
+  Scenario: AC5 - The sort field and order will persist when I log out and log back in again.
+    Given I log in as admin
+    And I browse to the list of users page
+    When I sort the list of users by username descending
+    And I log out
+    And I log in as admin
+    And I browse to the list of users page
+    Then The list of users is sorted by username descending
+
 #  Scenario Outline: Withdraw money
 #    Given I have <Balance> in the account
 #    When I choose to withdraw the fixed amount of <Withdrawal>
