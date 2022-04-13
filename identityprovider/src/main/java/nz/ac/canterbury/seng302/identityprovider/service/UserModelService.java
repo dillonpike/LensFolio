@@ -1,7 +1,10 @@
 package nz.ac.canterbury.seng302.identityprovider.service;
 
+import nz.ac.canterbury.seng302.identityprovider.model.Roles;
+import nz.ac.canterbury.seng302.identityprovider.model.RolesRepository;
 import nz.ac.canterbury.seng302.identityprovider.model.UserModel;
 import nz.ac.canterbury.seng302.identityprovider.model.UserModelRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -10,6 +13,9 @@ import java.util.List;
 public class UserModelService {
 
     private final UserModelRepository repository;
+
+    @Autowired
+    RolesRepository rolesRepository;
 
     private static int userIdCount = 1;
 
@@ -61,8 +67,11 @@ public class UserModelService {
         findMaxUserId();
         user.setUserId(userIdCount);
         userIdCount++;
+        Roles studentRole = rolesRepository.findByRoleName("STUDENT");
+        user.addRoles(studentRole);
         return repository.save(user);
     }
+
 
     /**
      * Update the user account information to the database

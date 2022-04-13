@@ -6,6 +6,7 @@ import nz.ac.canterbury.seng302.portfolio.utility.Utility;
 import nz.ac.canterbury.seng302.portfolio.service.UserAccountClientService;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
+import nz.ac.canterbury.seng302.shared.identityprovider.UserRole;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
@@ -15,6 +16,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
 
 @Controller
 public class AccountController {
@@ -57,6 +59,11 @@ public class AccountController {
                 model.addAttribute("userId", id);
                 return "404NotFound";
             }
+            System.out.println("Hereee");
+            ArrayList<UserRole> rolesList = new ArrayList<>();
+            for(int i = 0; i< getUserByIdReply.getRolesCount(); i++){
+                rolesList.add((getUserByIdReply.getRoles(i)));
+            }
             model.addAttribute("firstName", getUserByIdReply.getFirstName());
             model.addAttribute("lastName", getUserByIdReply.getLastName());
             model.addAttribute("username", getUserByIdReply.getUsername());
@@ -70,6 +77,7 @@ public class AccountController {
             model.addAttribute("userId", id);
             model.addAttribute("dateAdded", Utility.getDateAddedString(getUserByIdReply.getCreated()));
             model.addAttribute("monthsSinceAdded", Utility.getDateSinceAddedString(getUserByIdReply.getCreated()));
+            model.addAttribute("rolesList", rolesList);
         } catch (StatusRuntimeException e) {
             model.addAttribute("loginMessage", "Error connecting to Identity Provider...");
             e.printStackTrace();
