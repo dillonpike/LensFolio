@@ -35,7 +35,13 @@
                 <td><span th:text="${user.LastName}"> Lastname </span></td>
                 <td><span th:text="${user.username}"> Username </span></td>
                 <td><span th:text="${user.nickname}"> Alias </span></td>
-                <td><span th:text="${user.rolesList}"> Role </span></td>
+                <td>
+                    <div th:each="role : ${user.rolesList}">
+                        <div class="tagDiv">
+                            <div class="badge badge-primary" th:text="${role}"></div>
+                        </div>
+                    </div>
+                </td>
             </tr>
         </tbody>
     </table>
@@ -61,7 +67,8 @@
     // Create the data table to get the number of columns for constraining the column index, then destroy it and
     // remake it with the new sort order.
     // This stops a popup about reinitialising the data table.
-    table.DataTable();
+    table.DataTable({
+    });
 
     // Ensure the column index and sort order are valid
     userSorting.columnIndex = Math.max(Math.min(userSorting.columnIndex, table.DataTable().columns().nodes().length), 0);
