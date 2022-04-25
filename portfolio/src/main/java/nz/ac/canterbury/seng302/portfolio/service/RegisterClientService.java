@@ -1,15 +1,28 @@
 package nz.ac.canterbury.seng302.portfolio.service;
 
+import com.google.protobuf.ByteString;
+import io.grpc.stub.StreamObserver;
 import net.devh.boot.grpc.client.inject.GrpcClient;
 import nz.ac.canterbury.seng302.shared.identityprovider.*;
+import nz.ac.canterbury.seng302.shared.util.FileUploadStatusResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.security.crypto.password.Pbkdf2PasswordEncoder;
+
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.nio.ByteBuffer;
 
 @Service
 public class RegisterClientService {
 
     @GrpcClient(value = "identity-provider-grpc-server")
     private UserAccountServiceGrpc.UserAccountServiceBlockingStub userAccountStub;
+
+    @GrpcClient(value = "identity-provider-grpc-server")
+    private UserAccountServiceGrpc.UserAccountServiceStub userAccountNonBlockingStub;
 
     Pbkdf2PasswordEncoder pbkdf2PasswordEncoder = new Pbkdf2PasswordEncoder();
 
@@ -99,5 +112,53 @@ public class RegisterClientService {
         return pbkdf2PasswordEncoder.encode(password);
     }
 
+    public void UploadUserProfilePhoto(int userId, File imageFile) {
 
+        byte[] imageArray = new byte[0];
+        try {
+            BufferedImage testImage = ImageIO.read(new File("test/resources/exampleFiles/test_image_1.jpg"));  // DEBUGGING Use imageFile instead
+            ByteArrayOutputStream imageArrayOutputStream = new ByteArrayOutputStream();
+            ImageIO.write(testImage, "jpg", imageArrayOutputStream);
+            imageArray = imageArrayOutputStream.toByteArray();
+        } catch (IOException e) {
+            System.err.println("You didn't find the image correctly");
+        }
+        byte[] finalImageArray = imageArray;
+
+        StreamObserver<FileUploadStatusResponse> responseObserver = new StreamObserver<FileUploadStatusResponse>() {
+            @Override
+            public void onNext(FileUploadStatusResponse value) {
+
+            }
+
+            @Override
+            public void onError(Throwable t) {
+
+            }
+
+            @Override
+            public void onCompleted() {
+
+            }
+        };
+
+        StreamObserver<UploadUserProfilePhotoRequest> requestObserver = userAccountNonBlockingStub.uploadUserProfilePhoto(responseObserver);
+        try {
+            // Start with uploading the metadata
+            UploadUserProfilePhotoRequest.Builder replyMetaData = UploadUserProfilePhotoRequest.newBuilder();
+            ProfilePhotoUploadMetadata.Builder metaData = ProfilePhotoUploadMetadata.newBuilder().setUserId(userId).setFileType("jpeg");
+            replyMetaData.setMetaData(metaData.build());
+            requestObserver.onNext(replyMetaData.build());
+            // Loop through the bytes
+            for (byte b : finalImageArray) {
+                UploadUserProfilePhotoRequest.Builder reply = UploadUserProfilePhotoRequest.newBuilder();
+                reply.setFileContent(ByteString.copyFrom(ByteBuffer.allocateDirect(b)));
+                requestObserver.onNext(reply.build());
+            }
+            requestObserver.onCompleted();
+        } catch (Exception e) {
+            System.err.println("Something went wrong uploading the file");
+        }
+
+    }
 }

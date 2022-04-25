@@ -195,6 +195,7 @@ public class UserAccountServerService extends UserAccountServiceGrpc.UserAccount
                 if (value.hasMetaData()) {
                     userId = value.getMetaData().getUserId();
                     fileType = value.getMetaData().getFileType();
+                    responseObserver.onNext(reply.setStatus(fileUploadStatus).setMessage("Got Metadata").build());
                 } else {
                     try {
                         imageArray.write(value.getFileContent().toByteArray());
@@ -223,7 +224,7 @@ public class UserAccountServerService extends UserAccountServiceGrpc.UserAccount
                 //  Somehow call the function below (savePhotoToUser)
                 Blob blob = new MariaDbBlob(imageArray.toByteArray());
                 boolean wasSaved = false;
-                if (byteFailed) {
+                if (!byteFailed) {
                     wasSaved = savePhotoToUser(userId, blob);
                 }
 
