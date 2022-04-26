@@ -116,7 +116,7 @@ public class RegisterClientService {
 
         byte[] imageArray = new byte[0];
         try {
-            BufferedImage testImage = ImageIO.read(new File("test/resources/exampleFiles/test_image_1.jpg"));  // DEBUGGING Use imageFile instead
+            BufferedImage testImage = ImageIO.read(new File("C:/Users/jmtho/Documents/Uni/SENG302 22W/Sprint 2/team-100/identityprovider/src/test/resources/exampleFiles/test_image_1.jpg"));  // DEBUGGING Use imageFile instead
             ByteArrayOutputStream imageArrayOutputStream = new ByteArrayOutputStream();
             ImageIO.write(testImage, "jpg", imageArrayOutputStream);
             imageArray = imageArrayOutputStream.toByteArray();
@@ -129,6 +129,30 @@ public class RegisterClientService {
             @Override
             public void onNext(FileUploadStatusResponse value) {
 
+                UploadUserProfilePhotoRequest.Builder reply = UploadUserProfilePhotoRequest.newBuilder();
+
+                switch (value.getStatusValue()) {
+                    case 0:  // PENDING
+                        System.out.println("Server pending");
+                        System.out.println("    System returned: " + value.getMessage());
+                        break;
+
+                    case 1:  // IN_PROGRESS
+                        System.out.println("Server uploading");
+                        System.out.println("    System returned: " + value.getMessage());
+                        break;
+
+                    case 2:  // SUCCESS
+                        System.out.println("Server finished successfully");
+                        System.out.println("    System returned: " + value.getMessage());
+                        break;
+
+                    case 3:  // FAILED
+                        System.out.println("Server failed to upload image");
+                        System.out.println("    System returned: " + value.getMessage());
+                        break;
+
+                }
             }
 
             @Override
@@ -138,7 +162,7 @@ public class RegisterClientService {
 
             @Override
             public void onCompleted() {
-
+                System.out.println("<-> Finished <->");
             }
         };
 
@@ -150,14 +174,15 @@ public class RegisterClientService {
             replyMetaData.setMetaData(metaData.build());
             requestObserver.onNext(replyMetaData.build());
             // Loop through the bytes
-            for (byte b : finalImageArray) {
+            //for (byte b : finalImageArray) {
                 UploadUserProfilePhotoRequest.Builder reply = UploadUserProfilePhotoRequest.newBuilder();
-                reply.setFileContent(ByteString.copyFrom(ByteBuffer.allocateDirect(b)));
+                reply.setFileContent(ByteString.copyFrom(finalImageArray));
                 requestObserver.onNext(reply.build());
-            }
+            //}
             requestObserver.onCompleted();
         } catch (Exception e) {
             System.err.println("Something went wrong uploading the file");
+            e.printStackTrace();
         }
 
     }

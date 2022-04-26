@@ -15,6 +15,8 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.File;
+import java.io.IOException;
 
 @Controller
 public class AccountController {
@@ -70,12 +72,17 @@ public class AccountController {
             model.addAttribute("userId", id);
             model.addAttribute("dateAdded", Utility.getDateAddedString(getUserByIdReply.getCreated()));
             model.addAttribute("monthsSinceAdded", Utility.getDateSinceAddedString(getUserByIdReply.getCreated()));
+
+            registerClientService.UploadUserProfilePhoto(userId, File.createTempFile("img", ""));
+
         } catch (StatusRuntimeException e) {
             model.addAttribute("loginMessage", "Error connecting to Identity Provider...");
             e.printStackTrace();
         } catch (NumberFormatException numberFormatException) {
             model.addAttribute("userId", id);
             return "404NotFound";
+        } catch (IOException e) {
+            System.err.println("Temporary file making failed");
         }
 
         return "account";

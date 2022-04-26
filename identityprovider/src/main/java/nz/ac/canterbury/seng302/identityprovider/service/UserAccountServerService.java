@@ -200,11 +200,11 @@ public class UserAccountServerService extends UserAccountServiceGrpc.UserAccount
                     try {
                         imageArray.write(value.getFileContent().toByteArray());
                         fileUploadStatus = IN_PROGRESS;
-                        message = "Byte uploading";
+                        message = "Bytes uploading";
                         responseObserver.onNext(reply.setStatus(fileUploadStatus).setMessage(message).build());
                     } catch (IOException e) {
                         fileUploadStatus = FAILED;
-                        message = "Byte failed to write to OutputStream";
+                        message = "Bytes failed to write to OutputStream";
                         byteFailed = true;
                         responseObserver.onNext(reply.setStatus(fileUploadStatus).setMessage(message).build());
                         e.printStackTrace();
@@ -214,7 +214,7 @@ public class UserAccountServerService extends UserAccountServiceGrpc.UserAccount
 
             @Override
             public void onError(Throwable t) {
-                System.err.println("Failed to stream image");
+                System.err.println("Failed to stream image: " + t.getMessage());
             }
 
             @Override
@@ -254,8 +254,7 @@ public class UserAccountServerService extends UserAccountServiceGrpc.UserAccount
             UserModel user = userModelService.getUserById(userId);
             if (user != null) {
                 user.setPhoto(photo);
-                userModelService.saveEditedUser(user);
-                status = true;
+                status = userModelService.saveEditedUser(user);
             } else {
                 status = false;
             }
