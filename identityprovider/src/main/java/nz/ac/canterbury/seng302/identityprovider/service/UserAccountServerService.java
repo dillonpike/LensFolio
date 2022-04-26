@@ -177,6 +177,11 @@ public class UserAccountServerService extends UserAccountServiceGrpc.UserAccount
     }
 
 
+    /**
+     * Saves the new profile photo to the user using bi-directional streams
+     * @param responseObserver for telling the portfolio method the current status
+     * @return A Stream Observer that saves photo data as it is given
+     */
     @Override
     public StreamObserver<UploadUserProfilePhotoRequest> uploadUserProfilePhoto(StreamObserver<FileUploadStatusResponse> responseObserver) {
 

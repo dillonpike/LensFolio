@@ -112,16 +112,23 @@ public class RegisterClientService {
         return pbkdf2PasswordEncoder.encode(password);
     }
 
+    /**
+     * Uploads a new profile photo to the idp using a bi-directional stream connection.
+     * @param userId Id of the user that is having its photo changed
+     * @param imageFile File object of new image
+     */
     public void UploadUserProfilePhoto(int userId, File imageFile) {
 
         byte[] imageArray = new byte[0];
+        boolean imageFoundCorrectly = true;
         try {
-            BufferedImage testImage = ImageIO.read(new File("C:/Users/jmtho/Documents/Uni/SENG302 22W/Sprint 2/team-100/identityprovider/src/test/resources/exampleFiles/test_image_1.jpg"));  // DEBUGGING Use imageFile instead
+            BufferedImage testImage = ImageIO.read(new File("src/main/resources/exampleFiles/test_image_1.jpg"));  // DEBUGGING Use imageFile instead
             ByteArrayOutputStream imageArrayOutputStream = new ByteArrayOutputStream();
             ImageIO.write(testImage, "jpg", imageArrayOutputStream);
             imageArray = imageArrayOutputStream.toByteArray();
         } catch (IOException e) {
             System.err.println("You didn't find the image correctly");
+            imageFoundCorrectly = false;
         }
         byte[] finalImageArray = imageArray;
 
@@ -166,23 +173,25 @@ public class RegisterClientService {
             }
         };
 
-        StreamObserver<UploadUserProfilePhotoRequest> requestObserver = userAccountNonBlockingStub.uploadUserProfilePhoto(responseObserver);
-        try {
-            // Start with uploading the metadata
-            UploadUserProfilePhotoRequest.Builder replyMetaData = UploadUserProfilePhotoRequest.newBuilder();
-            ProfilePhotoUploadMetadata.Builder metaData = ProfilePhotoUploadMetadata.newBuilder().setUserId(userId).setFileType("jpeg");
-            replyMetaData.setMetaData(metaData.build());
-            requestObserver.onNext(replyMetaData.build());
-            // Loop through the bytes
-            UploadUserProfilePhotoRequest.Builder reply = UploadUserProfilePhotoRequest.newBuilder();
-            reply.setFileContent(ByteString.copyFrom(finalImageArray));
-            requestObserver.onNext(reply.build());
-            // Complete conversation
-            requestObserver.onCompleted();
-        } catch (Exception e) {
-            System.err.println("Something went wrong uploading the file");
-            e.printStackTrace();
-        }
+        if (imageFoundCorrectly) {
+            StreamObserver<UploadUserProfilePhotoRequest> requestObserver = userAccountNonBlockingStub.uploadUserProfilePhoto(responseObserver);
+            try {
 
+                // Start with uploading the metadata
+                UploadUserProfilePhotoRequest.Builder replyMetaData = UploadUserProfilePhotoRequest.newBuilder();
+                ProfilePhotoUploadMetadata.Builder metaData = ProfilePhotoUploadMetadata.newBuilder().setUserId(userId).setFileType("jpeg");
+                replyMetaData.setMetaData(metaData.build());
+                requestObserver.onNext(replyMetaData.build());
+                // Loop through the bytes
+                UploadUserProfilePhotoRequest.Builder reply = UploadUserProfilePhotoRequest.newBuilder();
+                reply.setFileContent(ByteString.copyFrom(finalImageArray));
+                requestObserver.onNext(reply.build());
+                // Complete conversation
+                requestObserver.onCompleted();
+            } catch (Exception e) {
+                System.err.println("Something went wrong uploading the file");
+                e.printStackTrace();
+            }
+        }
     }
 }
