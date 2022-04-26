@@ -174,11 +174,10 @@ public class RegisterClientService {
             replyMetaData.setMetaData(metaData.build());
             requestObserver.onNext(replyMetaData.build());
             // Loop through the bytes
-            //for (byte b : finalImageArray) {
-                UploadUserProfilePhotoRequest.Builder reply = UploadUserProfilePhotoRequest.newBuilder();
-                reply.setFileContent(ByteString.copyFrom(finalImageArray));
-                requestObserver.onNext(reply.build());
-            //}
+            UploadUserProfilePhotoRequest.Builder reply = UploadUserProfilePhotoRequest.newBuilder();
+            reply.setFileContent(ByteString.copyFrom(finalImageArray));
+            requestObserver.onNext(reply.build());
+            // Complete conversation
             requestObserver.onCompleted();
         } catch (Exception e) {
             System.err.println("Something went wrong uploading the file");
