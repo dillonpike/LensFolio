@@ -6,6 +6,7 @@ import nz.ac.canterbury.seng302.portfolio.service.RegisterClientService;
 import nz.ac.canterbury.seng302.portfolio.service.UserAccountService;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import nz.ac.canterbury.seng302.portfolio.utility.Utility;
+import nz.ac.canterbury.seng302.shared.identityprovider.DeleteUserProfilePhotoResponse;
 import nz.ac.canterbury.seng302.shared.identityprovider.EditUserResponse;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -157,6 +158,30 @@ public class EditAccountController {
 
         rm.addAttribute("userId", userId);
 
+        return "redirect:editAccount";
+    }
+
+    @PostMapping("/editAccountPhoto")
+    public String deletePhoto(
+            @ModelAttribute("userId") int userId,
+            RedirectAttributes rm,
+            Model model
+    ) {
+        boolean wasDeleted = false;
+        try {
+            DeleteUserProfilePhotoResponse reply = registerClientService.DeleteUserProfilePhoto(userId);
+            wasDeleted = reply.getIsSuccess();
+            if (wasDeleted) {
+                rm.addFlashAttribute("isUpdateSuccess", true);
+            } else {
+                rm.addFlashAttribute("isUpdateSuccess", false);
+                rm.addFlashAttribute("message", "Photo failed to delete");
+            }
+
+        } catch (Exception e) {
+            System.err.println("Something went wrong requesting to delete the photo");
+        }
+        rm.addAttribute("userId", userId);
         return "redirect:editAccount";
     }
 

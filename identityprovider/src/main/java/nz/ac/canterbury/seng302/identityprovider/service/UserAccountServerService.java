@@ -271,4 +271,34 @@ public class UserAccountServerService extends UserAccountServiceGrpc.UserAccount
         return status;
     }
 
+    /**
+     * Deletes a users image from the database (Sets it to null).
+     * @param request Holds the user Id
+     * @param responseObserver Tells the portfolio the status of whether the photo was deleted
+     */
+    @Override
+    public void deleteUserProfilePhoto(DeleteUserProfilePhotoRequest request, StreamObserver<DeleteUserProfilePhotoResponse> responseObserver) {
+        DeleteUserProfilePhotoResponse.Builder reply = DeleteUserProfilePhotoResponse.newBuilder();
+
+        boolean wasDeleted = false;
+        String message = "Photo failed to delete";
+
+        try {
+            UserModel user = userModelService.getUserById(request.getUserId());
+            if (user != null) {
+                user.setPhoto(null);
+                userModelService.saveEditedUser(user);
+                wasDeleted = true;
+                message = "Photo deleted successfully";
+            }
+        } catch (Exception e) {
+            System.err.println("Something went wrong deleting the users photo");
+        }
+
+        reply.setIsSuccess(wasDeleted);
+        // reply.setMessage(message)  Not setting a message as the message is a boolean in the contracts (seems like an error).
+        responseObserver.onNext(reply.build());
+        responseObserver.onCompleted();
+
+    }
 }

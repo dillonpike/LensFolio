@@ -194,4 +194,9 @@ public class RegisterClientService {
             }
         }
     }
+
+    public DeleteUserProfilePhotoResponse DeleteUserProfilePhoto(int userId) {
+        DeleteUserProfilePhotoRequest.Builder request = DeleteUserProfilePhotoRequest.newBuilder();
+        return userAccountStub.deleteUserProfilePhoto(request.setUserId(userId).build());
+    }
 }
