@@ -73,7 +73,7 @@ public class AccountController {
             model.addAttribute("dateAdded", Utility.getDateAddedString(getUserByIdReply.getCreated()));
             model.addAttribute("monthsSinceAdded", Utility.getDateSinceAddedString(getUserByIdReply.getCreated()));
 
-            registerClientService.UploadUserProfilePhoto(userId, File.createTempFile("img", ""));
+            registerClientService.UploadUserProfilePhoto(userId, File.createTempFile("img", ""));  // DEBUGGING runs the image upload manually
 
         } catch (StatusRuntimeException e) {
             model.addAttribute("loginMessage", "Error connecting to Identity Provider...");
