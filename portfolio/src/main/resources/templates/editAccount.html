@@ -77,7 +77,7 @@
               </div>
 
               <div class="form-floating mb-3">
-                <input type="email" class="form-control" id="email" th:name="email" placeholder="name@example.com" th:value="${email}" required>
+                <input type="email" class="form-control" id="email" th:name="email" placeholder="name@example.com" th:value="${email}" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z0-9.-]+$" title="Email need to be in the correct format. E.g. name@example.com" required>
                 <label for="email">Email address</label>
               </div>
 
