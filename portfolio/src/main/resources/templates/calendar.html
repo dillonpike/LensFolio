@@ -19,7 +19,10 @@
                 validRange: {
                     start: [[${startDate}]],
                     end: [[${endDate}]]
-                }
+                },
+                events: [
+                    [(${sprints})] // Ignore this error it works.
+                ]
             });
             calendar.render();
         });
