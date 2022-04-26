@@ -18,6 +18,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.File;
 
 @Controller
 public class EditAccountController {
@@ -161,7 +162,7 @@ public class EditAccountController {
         return "redirect:editAccount";
     }
 
-    @PostMapping("/editAccountPhoto")
+    @PostMapping("/deleteAccountPhoto")
     public String deletePhoto(
             @ModelAttribute("userId") int userId,
             RedirectAttributes rm,
@@ -181,6 +182,33 @@ public class EditAccountController {
         } catch (Exception e) {
             System.err.println("Something went wrong requesting to delete the photo");
         }
+        rm.addAttribute("userId", userId);
+        return "redirect:editAccount";
+    }
+
+    @PostMapping("/saveAccountPhoto")
+    public String savePhoto(
+            @ModelAttribute("userId") int userId,
+            RedirectAttributes rm,
+            Model model
+    ) {
+        boolean wasSaved = false;
+        try {
+            // TODO Needs to get the image from the model
+            registerClientService.UploadUserProfilePhoto(userId, File.createTempFile("img", ""));
+            // You cant tell if it saves correctly with the above method as it returns nothing
+            wasSaved = true;
+            if (wasSaved) {
+                rm.addFlashAttribute("isUpdateSuccess", true);
+            } else {
+                rm.addFlashAttribute("isUpdateSuccess", false);
+                rm.addFlashAttribute("message", "Photo failed to save");
+            }
+
+        } catch (Exception e) {
+            System.err.println("Something went wrong requesting to save the photo");
+        }
+
         rm.addAttribute("userId", userId);
         return "redirect:editAccount";
     }

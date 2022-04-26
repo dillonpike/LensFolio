@@ -20,12 +20,16 @@
           <img th:src="@{img/img.png}" id="uploadPreview" alt="mdo" width="300" height="300" class="rounded-circle" style ="margin-left: 60px; margin-top:20px">
           <label for="avatar" style="text-align:center">Update profile picture: </label>
           <input type="file" id="avatar" style="margin-left:25%" name="avatar" value="Upload Profile Picture" accept="image/png, image/jpeg, image/jpg" onchange="PreviewImage();">
-          <form th:action="@{/editAccountPhoto}" method="post">
-            <div class="card-header p-1-9 p-xl-5">
+          <div class="card-body p-2-1 p-xl-5">
+            <form th:action="@{/saveAccountPhoto}" method="post">
               <input type="hidden" th:value="${userId}" name="userId">
-              <button type="submit" class="btn btn-danger" style="margin-right: 10px">Delete Photo</button>
-            </div>
-          </form>
+              <button type="submit" class="btn btn-primary" style="margin-bottom: 10px">Save Photo</button>
+            </form>
+            <form th:action="@{/deleteAccountPhoto}" method="post">
+              <input type="hidden" th:value="${userId}" name="userId">
+              <button type="submit" class="btn btn-danger" style="margin-bottom: 10px">Delete Photo</button>
+            </form>
+          </div>
           <div class="card-body p-1-9 p-xl-5">
             <div class="mb-4">
               <h3 class="h4 mb-0" th:text="${fullName}"></h3>

@@ -122,6 +122,7 @@ public class RegisterClientService {
         byte[] imageArray = new byte[0];
         boolean imageFoundCorrectly = true;
         try {
+            // TODO Change to use the file from the attributes once a valid file is being given
             BufferedImage testImage = ImageIO.read(new File("src/main/resources/exampleFiles/test_image_1.jpg"));  // DEBUGGING Use imageFile instead
             ByteArrayOutputStream imageArrayOutputStream = new ByteArrayOutputStream();
             ImageIO.write(testImage, "jpg", imageArrayOutputStream);

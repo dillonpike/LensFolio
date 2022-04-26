@@ -73,16 +73,12 @@ public class AccountController {
             model.addAttribute("dateAdded", Utility.getDateAddedString(getUserByIdReply.getCreated()));
             model.addAttribute("monthsSinceAdded", Utility.getDateSinceAddedString(getUserByIdReply.getCreated()));
 
-            registerClientService.UploadUserProfilePhoto(userId, File.createTempFile("img", ""));  // DEBUGGING runs the image upload manually
-
         } catch (StatusRuntimeException e) {
             model.addAttribute("loginMessage", "Error connecting to Identity Provider...");
             e.printStackTrace();
         } catch (NumberFormatException numberFormatException) {
             model.addAttribute("userId", id);
             return "404NotFound";
-        } catch (IOException e) {
-            System.err.println("Temporary file making failed");
         }
 
         return "account";
