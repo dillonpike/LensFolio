@@ -1,9 +1,9 @@
 Feature: UUv: List of Users
 
   Scenario: AC1 - Once I am logged in, I can browse to the page containing a list of all users.
-    Given I am logged as a user
-    When I browse to list of user page
-    Then I can see the page that contains list of users registered
+    Given I am logged in as admin
+    When I browse to the list of users page
+    Then I can see a list of users
 
   Scenario: AC5 - The sort field and order will persist when I log out and log back in again.
     Given I am logged in as admin

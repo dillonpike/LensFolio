@@ -17,6 +17,8 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import io.github.bonigarcia.wdm.WebDriverManager;
 
 public class SeleniumStepDefs {
@@ -87,5 +89,12 @@ public class SeleniumStepDefs {
     @And("I am on the list of users page")
     public void iAmOnTheListOfUsersPage() {
         iBrowseToTheListOfUsersPage();
+    }
+
+    @Then("I can see a list of users")
+    public void iCanSeeAListOfUsers() {
+        assertTrue(webDriver.findElement(By.id("sortTable")).isDisplayed());
+        // Check table contains at least one row
+        assertTrue(webDriver.findElement(By.xpath("//tbody/tr")).isDisplayed());
     }
 }
