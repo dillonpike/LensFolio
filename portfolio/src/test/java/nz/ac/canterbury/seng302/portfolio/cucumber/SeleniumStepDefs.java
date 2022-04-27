@@ -10,32 +10,34 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
-import java.nio.file.Paths;
+import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import io.github.bonigarcia.wdm.WebDriverManager;
 
 public class SeleniumStepDefs {
     private WebDriver webDriver;
-    private final int delay = 5;
-    WebDriverWait wait;
+    private WebDriverWait wait;
 
     @Before
     public void setUp() {
-        System.setProperty("webdriver.chrome.driver",
-                Paths.get("src/test/resources/chromedriver_win32/chromedriver.exe").toString());
-        if (webDriver == null) {
+        if (Objects.equals(System.getProperty("browser"), "firefox")) {
+            WebDriverManager.firefoxdriver().setup();
+            webDriver = new FirefoxDriver();
+        } else {
+            WebDriverManager.chromedriver().setup();
             webDriver = new ChromeDriver();
         }
-        wait = new WebDriverWait(webDriver, delay);
+        wait = new WebDriverWait(webDriver, 5);
     }
 
     @After
     public void tearDown() {
         if (webDriver != null) {
-            webDriver.close();
             webDriver.quit();
         }
     }

@@ -1,4 +1,4 @@
-Feature: Account is credited with amount
+Feature: UUv: List of Users
 
   Scenario: AC1 - Once I am logged in, I can browse to the page containing a list of all users.
     Given I am logged as a user
