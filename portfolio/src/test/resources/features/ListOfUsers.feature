@@ -6,8 +6,8 @@ Feature: UUv: List of Users
     Then I can see the page that contains list of users registered
 
   Scenario: AC5 - The sort field and order will persist when I log out and log back in again.
-    Given I log in as admin
-    And I browse to the list of users page
+    Given I am logged in as admin
+    And I am on the list of users page
     When I sort the list of users by username descending
     And I log out
     And I log in as admin

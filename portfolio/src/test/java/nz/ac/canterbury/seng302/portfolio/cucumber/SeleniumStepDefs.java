@@ -78,4 +78,14 @@ public class SeleniumStepDefs {
     public void theListOfUsersIsSortedByUsernameDescending() {
         assertEquals("descending", webDriver.findElement(By.id("usernameColumn")).getAttribute("aria-sort"));
     }
+
+    @Given("I am logged in as admin")
+    public void iAmLoggedInAsAdmin() {
+        iLogInAsAdmin();
+    }
+
+    @And("I am on the list of users page")
+    public void iAmOnTheListOfUsersPage() {
+        iBrowseToTheListOfUsersPage();
+    }
 }
