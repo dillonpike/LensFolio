@@ -5,6 +5,15 @@ Feature: UUv: List of Users
     When I browse to the list of users page
     Then I can see a list of users
 
+  Scenario: AC2 - The list is displayed in a table format with name, username, alias, and roles, as columns.
+    Given I am logged in as admin
+    When I browse to the list of users page
+    Then The list of users has the following columns:
+    | name     |
+    | username |
+    | alias    |
+    | roles    |
+
   Scenario: AC5 - The sort field and order will persist when I log out and log back in again.
     Given I am logged in as admin
     And I am on the list of users page

@@ -1,5 +1,6 @@
 package nz.ac.canterbury.seng302.portfolio.cucumber;
 
+import io.cucumber.datatable.DataTable;
 import io.cucumber.java.After;
 import io.cucumber.java.Before;
 import io.cucumber.java.en.And;
@@ -14,6 +15,7 @@ import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
+import java.util.List;
 import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -96,5 +98,13 @@ public class SeleniumStepDefs {
         assertTrue(webDriver.findElement(By.id("sortTable")).isDisplayed());
         // Check table contains at least one row
         assertTrue(webDriver.findElement(By.xpath("//tbody/tr")).isDisplayed());
+    }
+
+    @Then("The list of users has the following columns:")
+    public void theListOfUsersHasTheFollowingColumns(DataTable dataTableColumns) {
+        for (String expectedColumn : dataTableColumns.asList()) {
+            assertTrue(webDriver.findElement(By.xpath("//thead/tr/th[translate(text(), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'," +
+                    " 'abcdefghijklmnopqrstuvwxyz')='" + expectedColumn + "']")).isDisplayed());
+        }
     }
 }
