@@ -9,10 +9,11 @@ Feature: UUv: List of Users
     Given I am logged in as admin
     When I browse to the list of users page
     Then The list of users has the following columns:
-    | name     |
-    | username |
-    | alias    |
-    | roles    |
+    | First Name |
+    | Last Name  |
+    | Username   |
+    | Alias      |
+    | Roles      |
 
   Scenario: AC5 - The sort field and order will persist when I log out and log back in again.
     Given I am logged in as admin

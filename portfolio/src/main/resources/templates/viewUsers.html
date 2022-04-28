@@ -22,17 +22,17 @@
     <table class="table table-striped table-bordered display" id="sortTable">
         <thead class="table-dark">
         <tr>
-            <th id="firstNameColumn">Firstname</th>
-            <th id="lastNameColumn">Lastname</th>
+            <th id="firstNameColumn">First Name</th>
+            <th id="lastNameColumn">Last Name</th>
             <th id="usernameColumn">Username</th>
             <th id="aliasColumn">Alias</th>
-            <th id="roleColumn">Role</th>
+            <th id="roleColumn">Roles</th>
         </tr>
         </thead>
         <tbody>
             <tr th:each="user : ${users}">
-                <td><span th:text="${user.FirstName}"> Firstname </span></td>
-                <td><span th:text="${user.LastName}"> Lastname </span></td>
+                <td><span th:text="${user.FirstName}"> First Name </span></td>
+                <td><span th:text="${user.LastName}"> Last Name </span></td>
                 <td><span th:text="${user.username}"> Username </span></td>
                 <td><span th:text="${user.nickname}"> Alias </span></td>
                 <td>
