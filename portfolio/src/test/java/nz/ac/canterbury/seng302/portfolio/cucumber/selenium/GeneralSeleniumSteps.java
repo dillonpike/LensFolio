@@ -17,7 +17,7 @@ public class GeneralSeleniumSteps {
 
     @Before
     public void setUp() {
-        webDriver = SeleniumService.getDriver();
+        webDriver = SeleniumService.getWebDriver();
         wait = SeleniumService.getWait();
     }
 

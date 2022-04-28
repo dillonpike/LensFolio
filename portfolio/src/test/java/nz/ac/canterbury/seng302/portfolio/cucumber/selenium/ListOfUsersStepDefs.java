@@ -22,7 +22,7 @@ public class ListOfUsersStepDefs {
 
     @Before
     public void setUp() {
-        webDriver = SeleniumService.getDriver();
+        webDriver = SeleniumService.getWebDriver();
         wait = SeleniumService.getWait();
     }
 
