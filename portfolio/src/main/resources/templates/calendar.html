@@ -32,7 +32,9 @@
 <header th:replace="fragments/header"></header>
 
 <body>
-    <div class='calendar', id='calendar'></div>
+    <h2 class="title" th:text="${projectName}"/>
+    <p class="title" th:text="${projectStartDateString} + ' - ' + ${projectEndDateString}" />
+    <div class='calendar' id='calendar'></div>
 </body>
 
 </html>
