@@ -118,3 +118,11 @@ deploy-production-portfolio:
   only:
     - tags
     - master
+
+sonarqube-report:
+  stage: sonarqube
+  script:
+    - cd identityprovider
+    - ./gradlew sonarqube
+    - cd ../portfolio
+    - ./gradlew sonarqube

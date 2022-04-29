@@ -2,8 +2,8 @@ plugins {
     id 'org.springframework.boot' version '2.6.3'
     id 'io.spring.dependency-management' version '1.0.11.RELEASE'
     id 'java'
-    id "org.sonarqube" version "3.3"
     id 'jacoco'
+    id "org.sonarqube" version "3.3"
 }
 
 group = 'nz.ac.canterbury.team-100'
@@ -46,11 +46,18 @@ dependencies {
     implementation 'org.webjars.npm:jquery:3.6.0'
 }
 
+
+tasks.named('test') {
+    useJUnitPlatform()
+    finalizedBy jacocoTestReport
+}
+
 // Jacoco test coverage configuration
 jacoco {
-    toolVersion = "0.8.2"
+    toolVersion = "0.8.7"
 }
-// select what reports to generate and where to put them
+
+// select what reports Jacoco generates and where to put them
 jacocoTestReport {
     reports {
         xml.enabled true
@@ -60,19 +67,13 @@ jacocoTestReport {
     }
 }
 
-// Sonarqube specific configuration
+// Sonarqube specific configuration (task)
 sonarqube {
     properties {
-        property "sonar.projectKey", "team-XXX-server"
-        property "sonar.projectName", "team XXX - server"
+        property "sonar.projectKey", "team-100-portfolio"
+        property "sonar.projectName", "team 100-portfolio"
         property "sonar.sourceEncoding", "UTF-8"
-        // replace "X" hereunder to match your VM url
-        property "sonar.host.url", "https://csse-s302gX.canterbury.ac.nz/sonarqube/"
-        property "sonar.login", "TOKEN_GENERATED_FROM_SONARQUBE"
+        property "sonar.host.url", "http://sonarqube.csse.canterbury.ac.nz:9000"
+        property "sonar.login", "70e9b54e5f96fe2dc25061fbafb4d869a2eb0168"
     }
-}
-
-tasks.named('test') {
-    useJUnitPlatform()
-    finalizedBy jacocoTestReport
 }
