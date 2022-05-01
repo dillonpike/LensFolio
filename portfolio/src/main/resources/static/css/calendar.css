@@ -3,9 +3,14 @@
     padding-right: 6%;
 }
 
-.title {
+.title-date {
+    background: #15d99b;
+}
+
+.header {
     text-align: center;
 }
+
 
 body {
     padding-bottom: 50px;

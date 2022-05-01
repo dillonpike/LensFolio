@@ -45,6 +45,7 @@ dependencies {
     implementation 'org.mariadb.jdbc:mariadb-java-client:2.7.3'
 
     implementation 'org.webjars.npm:fullcalendar:5.10.2'
+    implementation 'org.webjars.npm:fullcalendar__bootstrap5:5.10.2'
 
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
