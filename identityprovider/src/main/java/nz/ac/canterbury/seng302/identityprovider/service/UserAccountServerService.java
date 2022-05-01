@@ -209,4 +209,10 @@ public class UserAccountServerService extends UserAccountServiceGrpc.UserAccount
         }
         return response.build();
     }
+
+//    @Override
+//    public void addRoleToUser(ModifyRoleOfUserRequest request) {
+//        UserRoleChangeResponse.Builder reply = UserRoleChangeResponse.newBuilder();
+//
+//    }
 }

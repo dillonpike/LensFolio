@@ -36,7 +36,7 @@ public class ViewUsersController {
     /***
      * HTTP GET method request handler when url is "/viewUsers"
      * @param model Parameters sent to thymeleaf template to be rendered into HTML
-     * @param principal
+     * @param principal Used to get the user's id
      * @return
      */
     @GetMapping("/viewUsers")
