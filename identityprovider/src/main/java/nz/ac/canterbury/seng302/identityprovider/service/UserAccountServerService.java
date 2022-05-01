@@ -95,9 +95,6 @@ public class UserAccountServerService extends UserAccountServiceGrpc.UserAccount
 
                 for(int i = 0; i< rolesArray.length; i++){
                     reply.addRolesValue(rolesArray[i].getId());
-//                    System.out.println("=======");
-//                    System.out.println(rolesArray[i].getRoleName());
-//                    System.out.println(rolesArray[i].getId());
                 }
             }
 
@@ -205,14 +202,12 @@ public class UserAccountServerService extends UserAccountServiceGrpc.UserAccount
 
         for (int i = 0; i < rolesArray.length; i++) {
             response.addRolesValue(rolesArray[i].getId());
-//            response.addRoles()
         }
         return response.build();
     }
 
-//    @Override
 //    public void addRoleToUser(ModifyRoleOfUserRequest request) {
 //        UserRoleChangeResponse.Builder reply = UserRoleChangeResponse.newBuilder();
-//
+//        reply.
 //    }
 }

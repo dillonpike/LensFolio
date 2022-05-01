@@ -59,7 +59,6 @@ public class AccountController {
                 model.addAttribute("userId", id);
                 return "404NotFound";
             }
-            System.out.println("Hereee");
             ArrayList<UserRole> rolesList = new ArrayList<>();
             for(int i = 0; i< getUserByIdReply.getRolesCount(); i++){
                 rolesList.add((getUserByIdReply.getRoles(i)));
