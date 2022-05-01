@@ -6,3 +6,7 @@
 .title {
     text-align: center;
 }
+
+body {
+    padding-bottom: 50px;
+}
