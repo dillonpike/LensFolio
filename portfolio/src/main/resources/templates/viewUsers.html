@@ -20,7 +20,7 @@
 <div class="container" style="width:60%";>
     <h1>Participants</h1>
     <table class="table table-striped table-bordered display" id="sortTable">
-        <thead class="table-dark">
+        <thead class="table-dark" id="headTable">
         <tr>
             <th id="firstNameColumn">First Name</th>
             <th id="lastNameColumn">Last Name</th>
@@ -60,7 +60,7 @@
         $.post("viewUsers/saveSort?" + new URLSearchParams(data));
     }
 
-    document.getElementById("sortTable").onclick = saveSort;
+    document.getElementById("headTable").onclick = saveSort;
 
     /*<![CDATA[*/
     var userSorting = /*[[${userSorting}]]*/ 'default';
