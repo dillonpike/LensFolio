@@ -18,6 +18,9 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 
 @Controller
 public class EditPasswordController {
@@ -51,10 +54,15 @@ public class EditPasswordController {
         Integer id = userAccountClientService.getUserIDFromAuthState(principal);
         try {
             UserResponse getUserByIdReply = registerClientService.getUserData(id);
-            ArrayList<UserRole> rolesList = new ArrayList<>();
+            ArrayList<String> rolesList = new ArrayList<String>();
             for(int i = 0; i< getUserByIdReply.getRolesCount(); i++){
-                rolesList.add((getUserByIdReply.getRoles(i)));
+                String role = getUserByIdReply.getRoles(i).toString();
+                if(role == "COURSE_ADMINISTRATOR"){
+                    role = "COURSE ADMINISTRATOR";
+                }
+                rolesList.add(role);
             }
+            Collections.sort(rolesList);
             String fullName = getUserByIdReply.getFirstName() + " " + getUserByIdReply.getMiddleName() + " " + getUserByIdReply.getLastName();
             model.addAttribute("fullName", fullName);
             model.addAttribute("username", getUserByIdReply.getUsername());

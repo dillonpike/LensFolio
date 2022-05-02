@@ -19,6 +19,8 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 @Controller
 public class EditAccountController {
@@ -61,10 +63,15 @@ public class EditAccountController {
                 model.addAttribute("isAuthorised", false);
             }
             getUserByIdReply = registerClientService.getUserData(id);
-            ArrayList<UserRole> rolesList = new ArrayList<>();
+            ArrayList<String> rolesList = new ArrayList<String>();
             for(int i = 0; i< getUserByIdReply.getRolesCount(); i++){
-                rolesList.add((getUserByIdReply.getRoles(i)));
+                String role = getUserByIdReply.getRoles(i).toString();
+                if(role == "COURSE_ADMINISTRATOR"){
+                    role = "COURSE ADMINISTRATOR";
+                }
+                rolesList.add(role);
             }
+            Collections.sort(rolesList);
             model.addAttribute("firstName", getUserByIdReply.getFirstName());
             model.addAttribute("nickName", getUserByIdReply.getNickname());
             model.addAttribute("lastName", getUserByIdReply.getLastName());
