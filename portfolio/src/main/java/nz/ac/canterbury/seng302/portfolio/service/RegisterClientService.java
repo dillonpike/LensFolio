@@ -11,12 +11,15 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.imageio.ImageIO;
+import javax.imageio.ImageReader;
+import javax.imageio.stream.ImageInputStream;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
+import java.util.Iterator;
 import java.util.Objects;
 
 @Service
@@ -127,10 +130,16 @@ public class RegisterClientService {
         boolean imageFoundCorrectly = true;
         try {
             // TODO Change to use the file from the attributes once a valid file is being given
+            ImageInputStream iis = ImageIO.createImageInputStream(imageFile);
+            Iterator<ImageReader> imageReaders = ImageIO.getImageReaders(iis);
+            ImageReader reader = null;
+            while (imageReaders.hasNext()) {
+                reader = (ImageReader) imageReaders.next();
+            }
 
             BufferedImage testImage = ImageIO.read(imageFile);  // DEBUGGING Use imageFile instead
             ByteArrayOutputStream imageArrayOutputStream = new ByteArrayOutputStream();
-            ImageIO.write(testImage, "jpg", imageArrayOutputStream);
+            ImageIO.write(testImage, reader.getFormatName(), imageArrayOutputStream);
             imageArray = imageArrayOutputStream.toByteArray();
         } catch (IOException e) {
             System.err.println("You didn't find the image correctly");
@@ -182,10 +191,18 @@ public class RegisterClientService {
         if (imageFoundCorrectly) {
             StreamObserver<UploadUserProfilePhotoRequest> requestObserver = userAccountNonBlockingStub.uploadUserProfilePhoto(responseObserver);
             try {
+                ImageInputStream iis = ImageIO.createImageInputStream(imageFile);
+
+                Iterator<ImageReader> imageReaders = ImageIO.getImageReaders(iis);
+
+                ImageReader reader = null;
+                while (imageReaders.hasNext()) {
+                    reader = (ImageReader) imageReaders.next();
+                }
 
                 // Start with uploading the metadata
                 UploadUserProfilePhotoRequest.Builder replyMetaData = UploadUserProfilePhotoRequest.newBuilder();
-                ProfilePhotoUploadMetadata.Builder metaData = ProfilePhotoUploadMetadata.newBuilder().setUserId(userId).setFileType("jpeg");
+                ProfilePhotoUploadMetadata.Builder metaData = ProfilePhotoUploadMetadata.newBuilder().setUserId(userId).setFileType(reader.getFormatName());
                 replyMetaData.setMetaData(metaData.build());
                 requestObserver.onNext(replyMetaData.build());
                 // Loop through the bytes
