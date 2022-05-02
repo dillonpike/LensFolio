@@ -185,6 +185,10 @@ public class EditAccountController {
             DeleteUserProfilePhotoResponse reply = registerClientService.DeleteUserProfilePhoto(userId);
             wasDeleted = reply.getIsSuccess();
             if (wasDeleted) {
+                Path src = Paths.get("src/main/resources/static/img/default.jpg");
+                Path dest = Paths.get("src/main/resources/static/img/userImage.jpg");
+                Files.copy(src, dest, StandardCopyOption.REPLACE_EXISTING);
+
                 rm.addFlashAttribute("isUpdateSuccess", true);
             } else {
                 rm.addFlashAttribute("isUpdateSuccess", false);

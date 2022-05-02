@@ -134,7 +134,6 @@ public class RegisterClientService {
             imageArray = imageArrayOutputStream.toByteArray();
         } catch (IOException e) {
             System.err.println("You didn't find the image correctly");
-            System.err.println(e.getMessage());
             imageFoundCorrectly = false;
         }
         byte[] finalImageArray = imageArray;
