@@ -7,13 +7,17 @@ import nz.ac.canterbury.seng302.shared.identityprovider.*;
 import nz.ac.canterbury.seng302.shared.util.FileUploadStatusResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.security.crypto.password.Pbkdf2PasswordEncoder;
+import org.springframework.util.StringUtils;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.ByteBuffer;
+import java.util.Objects;
 
 @Service
 public class RegisterClientService {
@@ -123,12 +127,14 @@ public class RegisterClientService {
         boolean imageFoundCorrectly = true;
         try {
             // TODO Change to use the file from the attributes once a valid file is being given
-            BufferedImage testImage = ImageIO.read(new File("src/main/resources/exampleFiles/test_image_1.jpg"));  // DEBUGGING Use imageFile instead
+
+            BufferedImage testImage = ImageIO.read(imageFile);  // DEBUGGING Use imageFile instead
             ByteArrayOutputStream imageArrayOutputStream = new ByteArrayOutputStream();
             ImageIO.write(testImage, "jpg", imageArrayOutputStream);
             imageArray = imageArrayOutputStream.toByteArray();
         } catch (IOException e) {
             System.err.println("You didn't find the image correctly");
+            System.err.println(e.getMessage());
             imageFoundCorrectly = false;
         }
         byte[] finalImageArray = imageArray;

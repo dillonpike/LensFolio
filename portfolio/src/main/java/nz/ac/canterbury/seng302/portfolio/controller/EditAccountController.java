@@ -1,5 +1,6 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
+
 import io.grpc.StatusRuntimeException;
 import nz.ac.canterbury.seng302.portfolio.service.ElementService;
 import nz.ac.canterbury.seng302.portfolio.service.RegisterClientService;
@@ -11,14 +12,25 @@ import nz.ac.canterbury.seng302.shared.identityprovider.EditUserResponse;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+import java.util.Objects;
 
 @Controller
 public class EditAccountController {
@@ -190,12 +202,23 @@ public class EditAccountController {
     public String savePhoto(
             @ModelAttribute("userId") int userId,
             RedirectAttributes rm,
+            @RequestParam("avatar") MultipartFile multipartFile,
             Model model
     ) {
+        if (multipartFile.isEmpty()) {
+            rm.addFlashAttribute("message", "Please select a file to upload.");
+            return "redirect:editAccount";
+        }
         boolean wasSaved = false;
         try {
             // TODO Needs to get the image from the model
-            registerClientService.UploadUserProfilePhoto(userId, File.createTempFile("img", ""));
+
+            File imageFile = new File("src/main/resources/static/img/userImage.jpg");
+            FileOutputStream fos = new FileOutputStream( imageFile );
+            fos.write( multipartFile.getBytes() );
+            fos.close();
+
+            registerClientService.UploadUserProfilePhoto(userId, new File("src/main/resources/static/img/userImage.jpg"));
             // You cant tell if it saves correctly with the above method as it returns nothing
             wasSaved = true;
             if (wasSaved) {
