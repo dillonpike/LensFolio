@@ -16,7 +16,11 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.sql.Blob;
+import java.sql.SQLException;
 
 @Controller
 public class AccountController {
@@ -73,6 +77,24 @@ public class AccountController {
             model.addAttribute("dateAdded", Utility.getDateAddedString(getUserByIdReply.getCreated()));
             model.addAttribute("monthsSinceAdded", Utility.getDateSinceAddedString(getUserByIdReply.getCreated()));
 
+
+            try {
+                String profileImagePath = getUserByIdReply.getProfileImagePath();
+                File imageFile;
+                if (!profileImagePath.equals("")) {
+                    imageFile = new File(profileImagePath);
+                } else {
+                    imageFile = new File("src/main/resources/static/img/default.jpg");
+                }
+                File usedImageFile = new File("src/main/resources/static/img/userImage.jpg");
+                FileOutputStream imageOutput = new FileOutputStream(usedImageFile);
+                FileInputStream imageInput = new FileInputStream(imageFile);
+                imageOutput.write(imageInput.readAllBytes());
+                imageInput.close();
+                imageOutput.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         } catch (StatusRuntimeException e) {
             model.addAttribute("loginMessage", "Error connecting to Identity Provider...");
             e.printStackTrace();

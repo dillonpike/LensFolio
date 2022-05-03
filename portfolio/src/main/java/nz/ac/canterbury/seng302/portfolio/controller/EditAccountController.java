@@ -22,10 +22,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -185,9 +182,16 @@ public class EditAccountController {
             DeleteUserProfilePhotoResponse reply = registerClientService.DeleteUserProfilePhoto(userId);
             wasDeleted = reply.getIsSuccess();
             if (wasDeleted) {
-                Path src = Paths.get("src/main/resources/static/img/default.jpg");
-                Path dest = Paths.get("src/main/resources/static/img/userImage.jpg");
-                Files.copy(src, dest, StandardCopyOption.REPLACE_EXISTING);
+//                Path src = Paths.get("src/main/resources/static/img/default.jpg");
+//                Path dest = Paths.get("src/main/resources/static/img/userImage.jpg");
+//                Files.copy(src, dest, StandardCopyOption.REPLACE_EXISTING);
+                File imageFile = new File("src/main/resources/static/img/default.jpg");
+                File usedImageFile = new File("src/main/resources/static/img/userImage.jpg");
+                FileOutputStream imageOutput = new FileOutputStream(usedImageFile);
+                FileInputStream imageInput = new FileInputStream(imageFile);
+                imageOutput.write(imageInput.readAllBytes());
+                imageInput.close();
+                imageOutput.close();
 
                 rm.addFlashAttribute("isUpdateSuccess", true);
             } else {
@@ -197,6 +201,7 @@ public class EditAccountController {
 
         } catch (Exception e) {
             System.err.println("Something went wrong requesting to delete the photo");
+            e.printStackTrace();
         }
         rm.addAttribute("userId", userId);
         return "redirect:editAccount";

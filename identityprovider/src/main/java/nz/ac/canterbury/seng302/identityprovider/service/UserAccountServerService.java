@@ -14,8 +14,11 @@ import nz.ac.canterbury.seng302.shared.identityprovider.*;
 import org.springframework.security.crypto.password.Pbkdf2PasswordEncoder;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.sql.Blob;
+import java.sql.SQLException;
 
 import static nz.ac.canterbury.seng302.shared.util.FileUploadStatus.*;
 
@@ -84,6 +87,23 @@ public class UserAccountServerService extends UserAccountServiceGrpc.UserAccount
                 reply.setEmail("");
             } else {
                 UserModel user = userModelService.getUserById(request.getId());
+
+                String profileImagePath = "";
+                try {
+                    Blob imageBlob = user.getPhoto();
+                    File imageFile = new File("src/main/resources/Images/profileImage");
+                    FileOutputStream imageOutput = new FileOutputStream(imageFile);
+                    imageOutput.write(imageBlob.getBytes(1, (int) imageBlob.length()));
+                    imageOutput.close();
+                    if (imageBlob.length() > 1) {
+                        profileImagePath = imageFile.getAbsolutePath();
+                    } else {
+                        profileImagePath = "";
+                    }
+
+                } catch (SQLException | IOException e) {
+                    e.printStackTrace();
+                }
                 reply
                         .setEmail(user.getEmail())
                         .setFirstName(user.getFirstName())
@@ -93,7 +113,8 @@ public class UserAccountServerService extends UserAccountServiceGrpc.UserAccount
                         .setNickname(user.getNickname())
                         .setBio(user.getBio())
                         .setPersonalPronouns(user.getPersonalPronouns())
-                        .setCreated(user.getDateAdded());
+                        .setCreated(user.getDateAdded())
+                        .setProfileImagePath(profileImagePath);
             }
 
         } catch(Exception e) {
@@ -286,9 +307,8 @@ public class UserAccountServerService extends UserAccountServiceGrpc.UserAccount
         try {
             UserModel user = userModelService.getUserById(request.getUserId());
             if (user != null) {
-                user.setPhoto(null);
-                userModelService.saveEditedUser(user);
-                wasDeleted = true;
+                user.setPhoto(new MariaDbBlob());
+                wasDeleted = userModelService.saveEditedUser(user);
                 message = "Photo deleted successfully";
             }
         } catch (Exception e) {
