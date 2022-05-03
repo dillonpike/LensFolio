@@ -1,7 +1,6 @@
 package nz.ac.canterbury.seng302.identityprovider;
 
 
-import com.sun.xml.bind.v2.TODO;
 import nz.ac.canterbury.seng302.identityprovider.model.Roles;
 import nz.ac.canterbury.seng302.identityprovider.model.RolesRepository;
 import nz.ac.canterbury.seng302.identityprovider.model.UserModel;
@@ -107,7 +106,6 @@ public class UserModelServiceTests {
         user.setEmail("123@gmail.com");
         when(userModelRepository.save(any(UserModel.class))).thenReturn(user);
         UserModel newUser = userModelService.addUser(user);
-        System.out.println(newUser.getRoles());
     }
 
 }
