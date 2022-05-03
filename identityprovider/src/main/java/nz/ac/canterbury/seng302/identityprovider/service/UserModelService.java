@@ -12,18 +12,18 @@ import java.util.List;
 @Service
 public class UserModelService {
 
-    private final UserModelRepository repository;
+//    private final UserModelRepository repository;
+    @Autowired
+    UserModelRepository repository;
 
     @Autowired
     RolesRepository rolesRepository;
 
     private static int userIdCount = 1;
 
-    /**
-     * Constructor of UserModelService Class
-     */
-    public UserModelService(UserModelRepository repository) {
-        this.repository = repository;
+    public UserModelService(UserModelRepository userModelRepository, RolesRepository rolesRepository) {
+        this.repository = userModelRepository;
+        this.rolesRepository = rolesRepository;
     }
 
     /**
