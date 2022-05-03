@@ -15,6 +15,7 @@ import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -69,8 +70,10 @@ public class UserModelServiceTests {
         user.setEmail("test@test.com");
         user.setBio("bio");
         user.setPersonalPronouns("Unknown");
+        userModelRepository.save(user);
         when(userModelRepository.save(any(UserModel.class))).thenReturn(user);
         UserModel newUser = userModelService.addUser(user);
+        System.out.println(userModelRepository.findAll());
 
         assertThat(newUser.getUserId()).isSameAs(user.getUserId());
         assertThat(newUser.getUsername()).isSameAs(user.getUsername());
@@ -106,6 +109,52 @@ public class UserModelServiceTests {
         user.setEmail("123@gmail.com");
         when(userModelRepository.save(any(UserModel.class))).thenReturn(user);
         UserModel newUser = userModelService.addUser(user);
+    }
+
+    @Test
+    public void testSaveEditedUser_givenUserExist_returnSuccess() {
+        UserModel user = new UserModel();
+        user.setUsername("username");
+        user.setPassword("password");
+        user.setFirstName("firstName");
+        user.setMiddleName("middleName");
+        user.setLastName("lastName");
+        user.setNickname("nickName");
+        user.setEmail("test@test.com");
+        user.setBio("bio");
+        user.setPersonalPronouns("Unknown");
+        when(userModelRepository.save(any(UserModel.class))).thenReturn(user);
+        boolean saved = userModelService.saveEditedUser(user);
+        assertTrue(saved);
+    }
+
+    @Test
+    public void testGetUserByUsername_givenUserExist_returnSameUserAttributes() {
+        UserModel user = new UserModel();
+        user.setUsername("username");
+        user.setPassword("password");
+        user.setFirstName("firstName");
+        user.setMiddleName("middleName");
+        user.setLastName("lastName");
+        user.setNickname("nickName");
+        user.setEmail("test@test.com");
+        user.setBio("bio");
+        user.setPersonalPronouns("Unknown");
+        when(userModelRepository.save(any(UserModel.class))).thenReturn(user);
+        UserModel newUser = userModelService.addUser(user);
+
+        UserModel testUser = userModelService.getUserByUsername("username");
+
+        assertThat(testUser.getUserId()).isSameAs(user.getUserId());
+        assertThat(testUser.getUsername()).isSameAs(user.getUsername());
+        assertThat(testUser.getPassword()).isSameAs(user.getPassword());
+        assertThat(testUser.getFirstName()).isSameAs(user.getFirstName());
+        assertThat(testUser.getMiddleName()).isSameAs(user.getMiddleName());
+        assertThat(testUser.getLastName()).isSameAs(user.getLastName());
+        assertThat(testUser.getNickname()).isSameAs(user.getNickname());
+        assertThat(testUser.getEmail()).isSameAs(user.getEmail());
+        assertThat(testUser.getBio()).isSameAs(user.getBio());
+        assertThat(testUser.getPersonalPronouns()).isSameAs(user.getPersonalPronouns());
     }
 
 }
