@@ -89,6 +89,8 @@ By default, the Portfolio will run on local port 9000 (`http://localhost:9000`)
 ### 1 - Run the application
 For the automated GUI tests to work, tests must be run while the application is running.
 
+Follow the steps from the "How to run" section to do this.
+
 ### 2 - Running the tests
 Tests for each module can be run using the following command in the module's directory...
 
