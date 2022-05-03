@@ -69,6 +69,7 @@ By default, the IdP will run on local port 9002 (`http://localhost:9002`).
 Now that the IdP is up and running, we will be able to use the Portfolio module (note: it is entirely possible to start it up without the IdP running, you just won't be able to get very far).
 
 From the root directory (and likely in a second terminal tab / window)...
+
 On Linux:
 ```
 cd portfolio
@@ -83,6 +84,36 @@ gradlew bootRun
 
 By default, the Portfolio will run on local port 9000 (`http://localhost:9000`)
 
+## How to run tests
+
+### 1 - Run the application
+For the automated GUI tests to work, tests must be run while the application is running.
+
+### 2 - Running the tests
+Tests for each module can be run using the following command in the module's directory...
+
+On Linux:
+```
+./gradlew test
+```
+
+On Windows:
+```
+gradlew test
+```
+
+### (Optional) 3 - Changing browsers
+The automated GUI tests are run on Chrome by default, but can be run on Firefox with the following command... 
+
+On Linux:
+```
+./gradlew test -Dbrowser=firefox
+```
+
+On Windows:
+```
+gradlew test -Dbrowser=firefox
+```
 
 ## Contributors
 - Christopher Hamdajani
