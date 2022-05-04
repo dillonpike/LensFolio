@@ -3,9 +3,10 @@ package nz.ac.canterbury.seng302.portfolio.controller;
 import io.grpc.StatusRuntimeException;
 import nz.ac.canterbury.seng302.portfolio.service.RegisterClientService;
 import nz.ac.canterbury.seng302.portfolio.utility.Utility;
-import nz.ac.canterbury.seng302.portfolio.service.UserAccountService;
+import nz.ac.canterbury.seng302.portfolio.service.UserAccountClientService;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
+import nz.ac.canterbury.seng302.shared.identityprovider.UserRole;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
@@ -15,6 +16,9 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 @Controller
 public class AccountController {
@@ -23,7 +27,7 @@ public class AccountController {
     private RegisterClientService registerClientService;
 
     @Autowired
-    private UserAccountService userAccountService;
+    private UserAccountClientService userAccountClientService;
 
     /***
      * GET method for account controller to generate user's info
@@ -41,7 +45,7 @@ public class AccountController {
     ) {
         UserResponse getUserByIdReply;
         UserResponse getUserByIdReplyHeader;
-        Integer id = userAccountService.getUserIDFromAuthState(principal);
+        Integer id = userAccountClientService.getUserIDFromAuthState(principal);
         getUserByIdReplyHeader = registerClientService.getUserData(id);
         String fullNameHeader = getUserByIdReplyHeader.getFirstName() + " " + getUserByIdReplyHeader.getMiddleName() + " " + getUserByIdReplyHeader.getLastName();
         model.addAttribute("headerFullName", fullNameHeader);
@@ -57,6 +61,15 @@ public class AccountController {
                 model.addAttribute("userId", id);
                 return "404NotFound";
             }
+            ArrayList<String> rolesList = new ArrayList<String>();
+            for(int i = 0; i< getUserByIdReply.getRolesCount(); i++){
+                String role = getUserByIdReply.getRoles(i).toString();
+                if(role == "COURSE_ADMINISTRATOR"){
+                    role = "COURSE ADMINISTRATOR";
+                }
+                rolesList.add(role);
+            }
+            Collections.sort(rolesList);
             model.addAttribute("firstName", getUserByIdReply.getFirstName());
             model.addAttribute("lastName", getUserByIdReply.getLastName());
             model.addAttribute("username", getUserByIdReply.getUsername());
@@ -70,6 +83,7 @@ public class AccountController {
             model.addAttribute("userId", id);
             model.addAttribute("dateAdded", Utility.getDateAddedString(getUserByIdReply.getCreated()));
             model.addAttribute("monthsSinceAdded", Utility.getDateSinceAddedString(getUserByIdReply.getCreated()));
+            model.addAttribute("rolesList", rolesList);
         } catch (StatusRuntimeException e) {
             model.addAttribute("loginMessage", "Error connecting to Identity Provider...");
             e.printStackTrace();

@@ -1,7 +1,6 @@
-package nz.ac.canterbury.seng302.portfolio;
+package nz.ac.canterbury.seng302.portfolio.service;
 
 import nz.ac.canterbury.seng302.portfolio.model.Project;
-import nz.ac.canterbury.seng302.portfolio.service.DateValidationService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -16,7 +15,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * Unit tests for DateValidationService class.
  */
 @Controller
-public class DateValidationServiceTests {
+public class DateValidationServiceTest {
 
     /**
      * DateValidationService object.

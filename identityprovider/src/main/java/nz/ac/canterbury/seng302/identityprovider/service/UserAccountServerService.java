@@ -2,6 +2,7 @@ package nz.ac.canterbury.seng302.identityprovider.service;
 
 import io.grpc.stub.StreamObserver;
 import net.devh.boot.grpc.server.service.GrpcService;
+import nz.ac.canterbury.seng302.identityprovider.model.Roles;
 import nz.ac.canterbury.seng302.identityprovider.model.UserModel;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserAccountServiceGrpc;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserRegisterRequest;
@@ -9,6 +10,10 @@ import nz.ac.canterbury.seng302.shared.identityprovider.UserRegisterResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import nz.ac.canterbury.seng302.shared.identityprovider.*;
 import org.springframework.security.crypto.password.Pbkdf2PasswordEncoder;
+
+import java.util.Set;
+
+import java.util.List;
 
 
 @GrpcService
@@ -85,6 +90,12 @@ public class UserAccountServerService extends UserAccountServiceGrpc.UserAccount
                         .setBio(user.getBio())
                         .setPersonalPronouns(user.getPersonalPronouns())
                         .setCreated(user.getDateAdded());
+                Set<Roles> roles = user.getRoles();
+                Roles[] rolesArray = roles.toArray(new Roles[roles.size()]);
+
+                for(int i = 0; i< rolesArray.length; i++){
+                    reply.addRolesValue(rolesArray[i].getId());
+                }
             }
 
         } catch(Exception e) {
@@ -115,13 +126,14 @@ public class UserAccountServerService extends UserAccountServiceGrpc.UserAccount
             user.setUsername(currentUser.getUsername());
             user.setPassword(currentUser.getPassword());
             user.setDateAdded(currentUser.getDateAdded());
+            user.setRoles(currentUser.getRoles());
             wasSaved = userModelService.saveEditedUser(user);
-            if(wasSaved){
+            if (wasSaved) {
                 reply.setIsSuccess(true).setMessage("User Account is successfully updated!");
             } else {
                 reply.setIsSuccess(false).setMessage("Something went wrong");
             }
-        } catch(Exception e) {
+        } catch (Exception e) {
             System.err.println("User failed to be changed to new values");
         }
 
@@ -150,8 +162,9 @@ public class UserAccountServerService extends UserAccountServiceGrpc.UserAccount
                 user.setUsername(currentUser.getUsername());
                 user.setPassword(request.getNewPassword());
                 user.setDateAdded(currentUser.getDateAdded());
+                user.setRoles(currentUser.getRoles());
                 wasSaved = userModelService.saveEditedUser(user);
-                if(wasSaved){
+                if (wasSaved) {
                     reply.setIsSuccess(true).setMessage("User password successfully updated!");
                 } else {
                     reply.setIsSuccess(false).setMessage("Something went wrong");
@@ -159,7 +172,7 @@ public class UserAccountServerService extends UserAccountServiceGrpc.UserAccount
             } else {
                 reply.setIsSuccess(false).setMessage("Current password was incorrect.");
             }
-        } catch(Exception e) {
+        } catch (Exception e) {
             System.err.println("User failed to be changed to new values");
         }
 
@@ -167,4 +180,34 @@ public class UserAccountServerService extends UserAccountServiceGrpc.UserAccount
         responseObserver.onCompleted();
     }
 
+    @Override
+    public void getPaginatedUsers(GetPaginatedUsersRequest request, StreamObserver<PaginatedUsersResponse> responseObserver) {
+        PaginatedUsersResponse.Builder reply = PaginatedUsersResponse.newBuilder();
+        List<UserModel> allUsers = userModelService.findAllUser();
+        for (UserModel allUser : allUsers) {
+            reply.addUsers(getUserInfo(allUser));
+        }
+        responseObserver.onNext(reply.build());
+        responseObserver.onCompleted();
+    }
+
+    private UserResponse getUserInfo(UserModel user) {
+        UserResponse.Builder response = UserResponse.newBuilder();
+        response.setUsername(user.getUsername())
+                .setFirstName(user.getFirstName())
+                .setLastName(user.getLastName())
+                .setNickname(user.getNickname());
+        Set<Roles> roles = user.getRoles();
+        Roles[] rolesArray = roles.toArray(new Roles[roles.size()]);
+
+        for (int i = 0; i < rolesArray.length; i++) {
+            response.addRolesValue(rolesArray[i].getId());
+        }
+        return response.build();
+    }
+
+//    public void addRoleToUser(ModifyRoleOfUserRequest request) {
+//        UserRoleChangeResponse.Builder reply = UserRoleChangeResponse.newBuilder();
+//        reply.
+//    }
 }

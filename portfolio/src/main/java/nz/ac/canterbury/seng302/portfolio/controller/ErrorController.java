@@ -2,7 +2,7 @@ package nz.ac.canterbury.seng302.portfolio.controller;
 
 
 import nz.ac.canterbury.seng302.portfolio.service.RegisterClientService;
-import nz.ac.canterbury.seng302.portfolio.service.UserAccountService;
+import nz.ac.canterbury.seng302.portfolio.service.UserAccountClientService;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,7 +10,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.RequestDispatcher;
@@ -20,7 +19,7 @@ import javax.servlet.http.HttpServletRequest;
 public class ErrorController implements org.springframework.boot.web.servlet.error.ErrorController {
 
     @Autowired
-    private UserAccountService userAccountService;
+    private UserAccountClientService userAccountClientService;
 
     @Autowired
     private RegisterClientService registerClientService;
@@ -51,7 +50,7 @@ public class ErrorController implements org.springframework.boot.web.servlet.err
 
             UserResponse getUserByIdReplyHeader;
 
-            Integer id = userAccountService.getUserIDFromAuthState(principal);
+            Integer id = userAccountClientService.getUserIDFromAuthState(principal);
             getUserByIdReplyHeader = registerClientService.getUserData(id);
             String fullNameHeader = getUserByIdReplyHeader.getFirstName() + " " + getUserByIdReplyHeader.getMiddleName() + " " + getUserByIdReplyHeader.getLastName();
             model.addAttribute("headerFullName", fullNameHeader);
