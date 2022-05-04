@@ -21,7 +21,7 @@ a {
 /* Global Page Top End */
 
 /* Header (Project) */
-.header {
+.project-header {
     background: linear-gradient(90deg, #26547C, #EF476F) 400% 400%;
     display: flex;
     justify-content: space-between;
