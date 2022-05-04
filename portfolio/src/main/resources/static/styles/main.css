@@ -1,7 +1,31 @@
+/* Tag Changes */
+* {
+    font-family: 'Helvetica';
+    box-sizing: inherit;
+}
+
+a {
+    color: inherit;
+    font-weight: inherit;
+    text-decoration: inherit;
+}
+
+/* Global Page Top */
+.top {
+    background: linear-gradient(90deg, #26547C, #EF476F) 400% 400%;
+}
+
+.border-bottom {
+    background-color: white;
+}
+/* Global Page Top End */
+
+/* Header (Project) */
 .header {
-    background-color: #b70f0a;
+    background: linear-gradient(90deg, #26547C, #EF476F) 400% 400%;
     display: flex;
     justify-content: space-between;
+    height: 90px;
 }
 
 .title {
@@ -19,24 +43,81 @@
     padding-right: 5px;
 }
 
-.title-date {
-    color: #ffffff99;
-    font-size: large;
+.edit-project-button {
+    height: 60px;
+    width: 60px;
+    border-radius: 40px;
+    border: none;
+    background-color: white;
+    color: #336ba1;
 }
 
+.edit-project-button:hover {
+    background-color: #c2c0c0
+}
+
+.project-button-link {
+    border-radius: 40px;
+    text-decoration: none;
+    margin: 20px;
+}
+
+.bg-custom {
+    background-color: #FFFFFF;
+}
+
+.project-desc {
+    color: #636363;
+    padding-top: 10px;
+}
+/* Header End */
+
+
+/* Body (Sprints) */
+.body {
+    background-color: white;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+/* Sprints-Display */
 .content {
     margin: 10px;
     width:calc(100% - 20px);
+    background: white;
 }
 
 .detail-block {
-    padding: 5px;
-    min-height: 100px;
-    background-color: white;
-    border-radius: 8px;
+    /* Border */
+    border: 2px solid transparent;
+    border-radius: 25px;
+    background:
+            linear-gradient(to right, whitesmoke, whitesmoke),
+            linear-gradient(to right, #06D6A0 , #EF476F);
+    background-clip: padding-box, border-box;
+    background-origin: padding-box, border-box;
+
+    /* Other styles */
+    height: 150px;
+    width: 100%;
+    padding: 10px;
     margin: 5px;
-    flex-grow: 1;
-    width:calc(100% - 10px);
+}
+
+.bg-custom-desc {
+    background: #15be8b;
+}
+
+.sprints-top {
+    font-weight: bold;
+    background: linear-gradient(90deg, #5682b4, #EF476F) 400% 400%;
+    border-radius: 15px;
+    margin-top: 30px;
+    margin-bottom: 10px;
+    padding: 2px;
+    display: flex;
+    justify-content: center;
+    color: #ffffff;
 }
 
 .sprint-block {
@@ -44,16 +125,24 @@
     width: 100%;
 }
 
+.detail-block {
+    display: flex;
+    justify-content: space-between;
+}
+
 .sprint-label {
-    background-color: white;
-    border-radius: 8px;
+    height: 120px;
+    align-self: center;
+    font-weight: bold;
+    background: #5682b4;
+    border-radius: 15px;
     margin: 10px;
     padding: 2px;
     display: flex;
     justify-content: center;
     writing-mode: vertical-rl;
     transform: rotate(180deg);
-    color: #ff3823;
+    color: #ffffff;
 }
 
 .sprint-title {
@@ -71,16 +160,17 @@
     color: #636363;
     padding-top: 5px;
 }
+/* Sprints-Display End */
 
-* {
-    font-family: 'Helvetica';
-    box-sizing: inherit;
+/* Sprints-Buttons */
+
+.button-divider {
+    margin-bottom: 3px;
 }
 
-body {
-    background-color: #f0e6e5;
-    margin: 0;
-    box-sizing: border-box;
+.button-link {
+    border-radius: 40px;
+    text-decoration: none;
 }
 
 .edit-button {
@@ -88,17 +178,12 @@ body {
     width: 40px;
     border-radius: 40px;
     border: none;
-    background-color: #c0c0c0;
-    color: #5e0202;
+    background-color: #06D6A0;
+    color: #0c506b;
 }
-.edit-project-button {
-    height: 60px;
-    width: 60px;
-    border-radius: 40px;
-    border: none;
-    background-color: white;
-    color: #5e0202;
-    margin: 20px;
+
+.edit-button:hover {
+    background-color: #05a881
 }
 
 .delete-button {
@@ -106,31 +191,34 @@ body {
     width: 40px;
     border-radius: 40px;
     border: none;
-    background-color: #e61610;
+    background-color: #EF476F;
     color: white;
 }
 
-.detail-block {
-    display: flex;
-    justify-content: space-between;
-}
-
-a {
-    color: inherit;
-    font-weight: inherit;
-    text-decoration: inherit;
+.delete-button:hover {
+    background-color: #d3254c
 }
 
 .add-sprint {
+    margin-top: 10px;
+    margin-left: auto;
+    margin-right: 10px;
     padding: 10px 20px 10px 10px;
     font-size: large;
     border-radius: 10px;
-    border: 1px solid #5e0202;
-    color: #5e0202;
+    border: 1px solid #26547C !important; /* Needs to override bootstrap */
+    background-color: #336ba1 !important; /* Needs to override bootstrap */
     font-weight: bold;
-    min-width: 50px;
+    width: 140px;
+    height: 35px;
     display: flex;
     align-items: center;
+
 }
 
+.add-sprint:hover {
+    background-color: #26547C !important; /* Needs to override bootstrap */
+}
+/* Sprints-Buttons End */
 
+/* Body End */
