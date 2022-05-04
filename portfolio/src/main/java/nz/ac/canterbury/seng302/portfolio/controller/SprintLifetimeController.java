@@ -40,7 +40,7 @@ public class SprintLifetimeController {
      * @param week      The number of weeks to increase by.
      * @return          A new updated date.
      */
-    public Date getUpdatedDate(Date toUpdate, int day, int week) {
+    public static Date getUpdatedDate(Date toUpdate, int day, int week) {
         Calendar date = Calendar.getInstance();
         date.setTime(toUpdate);
         date.add(Calendar.DATE, day);

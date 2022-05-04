@@ -1,0 +1,17 @@
+.calendar {
+    padding-left: 6%;
+    padding-right: 6%;
+}
+
+.title-date {
+    background: #15d99b;
+}
+
+.header {
+    text-align: center;
+}
+
+
+body {
+    padding-bottom: 50px;
+}
