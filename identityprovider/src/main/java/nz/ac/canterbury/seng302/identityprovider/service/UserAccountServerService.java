@@ -98,14 +98,13 @@ public class UserAccountServerService extends UserAccountServiceGrpc.UserAccount
                     Blob imageBlob = user.getPhoto();
                     File imageFile = new File("src/main/resources/Images/profileImage");
                     FileOutputStream imageOutput = new FileOutputStream(imageFile);
-                    imageOutput.write(imageBlob.getBytes(1, (int) imageBlob.length()));
-                    imageOutput.close();
-                    if (imageBlob.length() > 1) {
+                    if  (imageBlob != null) {
+                        imageOutput.write(imageBlob.getBytes(1, (int) imageBlob.length()));
                         profileImagePath = imageFile.getAbsolutePath();
                     } else {
                         profileImagePath = "";
                     }
-
+                    imageOutput.close();
                 } catch (SQLException | IOException e) {
                     e.printStackTrace();
                 }
@@ -332,6 +331,7 @@ public class UserAccountServerService extends UserAccountServiceGrpc.UserAccount
         // reply.setMessage(message)  Not setting a message as the message is a boolean in the contracts (seems like an error).
         responseObserver.onNext(reply.build());
         responseObserver.onCompleted();
+    }
 
     @Override
     public void getPaginatedUsers(GetPaginatedUsersRequest request, StreamObserver<PaginatedUsersResponse> responseObserver) {
