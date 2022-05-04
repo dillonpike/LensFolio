@@ -7,6 +7,9 @@ import nz.ac.canterbury.seng302.identityprovider.model.UserModel;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserAccountServiceGrpc;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserRegisterRequest;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserRegisterResponse;
+import nz.ac.canterbury.seng302.shared.util.FileUploadStatus;
+import nz.ac.canterbury.seng302.shared.util.FileUploadStatusResponse;
+import org.mariadb.jdbc.MariaDbBlob;
 import org.springframework.beans.factory.annotation.Autowired;
 import nz.ac.canterbury.seng302.shared.identityprovider.*;
 import org.springframework.security.crypto.password.Pbkdf2PasswordEncoder;
@@ -14,6 +17,15 @@ import org.springframework.security.crypto.password.Pbkdf2PasswordEncoder;
 import java.util.Set;
 
 import java.util.List;
+
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.sql.Blob;
+import java.sql.SQLException;
+
+import static nz.ac.canterbury.seng302.shared.util.FileUploadStatus.*;
 
 
 @GrpcService
@@ -80,6 +92,22 @@ public class UserAccountServerService extends UserAccountServiceGrpc.UserAccount
                 reply.setEmail("");
             } else {
                 UserModel user = userModelService.getUserById(request.getId());
+
+                String profileImagePath = "";
+                try {
+                    Blob imageBlob = user.getPhoto();
+                    File imageFile = new File("src/main/resources/Images/profileImage");
+                    FileOutputStream imageOutput = new FileOutputStream(imageFile);
+                    if  (imageBlob != null) {
+                        imageOutput.write(imageBlob.getBytes(1, (int) imageBlob.length()));
+                        profileImagePath = imageFile.getAbsolutePath();
+                    } else {
+                        profileImagePath = "";
+                    }
+                    imageOutput.close();
+                } catch (SQLException | IOException e) {
+                    e.printStackTrace();
+                }
                 reply
                         .setEmail(user.getEmail())
                         .setFirstName(user.getFirstName())
@@ -89,7 +117,8 @@ public class UserAccountServerService extends UserAccountServiceGrpc.UserAccount
                         .setNickname(user.getNickname())
                         .setBio(user.getBio())
                         .setPersonalPronouns(user.getPersonalPronouns())
-                        .setCreated(user.getDateAdded());
+                        .setCreated(user.getDateAdded())
+                        .setProfileImagePath(profileImagePath);
                 Set<Roles> roles = user.getRoles();
                 Roles[] rolesArray = roles.toArray(new Roles[roles.size()]);
 
@@ -176,6 +205,130 @@ public class UserAccountServerService extends UserAccountServiceGrpc.UserAccount
             System.err.println("User failed to be changed to new values");
         }
 
+        responseObserver.onNext(reply.build());
+        responseObserver.onCompleted();
+    }
+
+
+    /**
+     * Saves the new profile photo to the user using bi-directional streams
+     * @param responseObserver for telling the portfolio method the current status
+     * @return A Stream Observer that saves photo data as it is given
+     */
+    @Override
+    public StreamObserver<UploadUserProfilePhotoRequest> uploadUserProfilePhoto(StreamObserver<FileUploadStatusResponse> responseObserver) {
+
+        return new StreamObserver<UploadUserProfilePhotoRequest>() {
+            ByteArrayOutputStream imageArray = new ByteArrayOutputStream();
+            FileUploadStatus fileUploadStatus = PENDING;
+            boolean byteFailed = false;
+            String message = "Byte uploading";
+            int userId;
+            String fileType;
+
+            @Override
+            public void onNext(UploadUserProfilePhotoRequest value) {
+                FileUploadStatusResponse.Builder reply = FileUploadStatusResponse.newBuilder();
+
+                if (value.hasMetaData()) {
+                    userId = value.getMetaData().getUserId();
+                    fileType = value.getMetaData().getFileType();
+                    responseObserver.onNext(reply.setStatus(fileUploadStatus).setMessage("Got Metadata").build());
+                } else {
+                    try {
+                        imageArray.write(value.getFileContent().toByteArray());
+                        fileUploadStatus = IN_PROGRESS;
+                        message = "Bytes uploading";
+                        responseObserver.onNext(reply.setStatus(fileUploadStatus).setMessage(message).build());
+                    } catch (IOException e) {
+                        fileUploadStatus = FAILED;
+                        message = "Bytes failed to write to OutputStream";
+                        byteFailed = true;
+                        responseObserver.onNext(reply.setStatus(fileUploadStatus).setMessage(message).build());
+                        e.printStackTrace();
+                    }
+                }
+            }
+
+            @Override
+            public void onError(Throwable t) {
+                System.err.println("Failed to stream image: " + t.getMessage());
+            }
+
+            @Override
+            public void onCompleted() {
+                FileUploadStatusResponse.Builder reply = FileUploadStatusResponse.newBuilder();
+
+                //  Somehow call the function below (savePhotoToUser)
+                Blob blob = new MariaDbBlob(imageArray.toByteArray());
+                boolean wasSaved = false;
+                if (!byteFailed) {
+                    wasSaved = savePhotoToUser(userId, blob);
+                }
+
+                if (wasSaved) {
+                    message = "Image saved to database";
+                    fileUploadStatus = SUCCESS;
+                } else {
+                    message = "Image failed to save to database";
+                    fileUploadStatus = FAILED;
+                }
+
+                responseObserver.onNext(reply.setStatus(fileUploadStatus).setMessage(message).build());
+                responseObserver.onCompleted();
+            }
+        };
+    }
+
+    /**
+     * Saves a photo to a user in the database. Overwrites anything already saved.
+     * @param userId Id of the user you want to add the photo to
+     * @param photo Photo blob for saving
+     * @return Whether the new photo was saved
+     */
+    private boolean savePhotoToUser(int userId, Blob photo) {
+        boolean status;
+        try{
+            UserModel user = userModelService.getUserById(userId);
+            if (user != null) {
+                user.setPhoto(photo);
+                status = userModelService.saveEditedUser(user);
+            } else {
+                status = false;
+            }
+        } catch(Exception e) {
+            status = false;
+            System.err.println("Photo not saved");
+            e.printStackTrace();
+        }
+        return status;
+    }
+
+    /**
+     * Deletes a users image from the database (Sets it to null).
+     * @param request Holds the user Id
+     * @param responseObserver Tells the portfolio the status of whether the photo was deleted
+     */
+    @Override
+    public void deleteUserProfilePhoto(DeleteUserProfilePhotoRequest request, StreamObserver<DeleteUserProfilePhotoResponse> responseObserver) {
+        DeleteUserProfilePhotoResponse.Builder reply = DeleteUserProfilePhotoResponse.newBuilder();
+
+        boolean wasDeleted = false;
+        String message = "Photo failed to delete";
+
+        try {
+            UserModel user = userModelService.getUserById(request.getUserId());
+            if (user != null) {
+                user.setPhoto(new MariaDbBlob());
+                wasDeleted = userModelService.saveEditedUser(user);
+                message = "Photo deleted successfully";
+            }
+        } catch (Exception e) {
+            System.err.println("Something went wrong deleting the users photo");
+        }
+
+        reply.setIsSuccess(wasDeleted);
+        // reply.setMessage(message)  Not setting a message as the message is a boolean in the contracts (seems like an error).
         responseObserver.onNext(reply.build());
         responseObserver.onCompleted();
     }

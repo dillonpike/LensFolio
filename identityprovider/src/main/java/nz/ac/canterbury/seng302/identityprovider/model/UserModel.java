@@ -1,10 +1,13 @@
 package nz.ac.canterbury.seng302.identityprovider.model;
 
 import com.google.protobuf.Timestamp;
+import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.sql.Blob;
 import java.sql.Date;
+import java.sql.Time;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.util.HashSet;
@@ -25,6 +28,7 @@ public class UserModel implements Serializable {
     private String bio;
     private String personalPronouns;
     private Timestamp dateAdded;
+    private Blob photo;
 
 
 
@@ -68,7 +72,6 @@ public class UserModel implements Serializable {
     public int getUserId() {
         return userId;
     }
-
 
     public void setUserId(int userId) {
         this.userId = userId;
@@ -162,6 +165,14 @@ public class UserModel implements Serializable {
         } else {
             return null;
         }
+    }
+
+    public void setPhoto(Blob photo) {
+        this.photo = photo;
+    }
+
+    public Blob getPhoto() {
+        return photo;
     }
 
     @Override

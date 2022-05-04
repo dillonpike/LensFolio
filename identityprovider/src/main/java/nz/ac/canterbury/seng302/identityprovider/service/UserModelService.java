@@ -7,6 +7,7 @@ import nz.ac.canterbury.seng302.identityprovider.model.UserModelRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.sql.Blob;
 import java.util.List;
 
 @Service
@@ -85,7 +86,7 @@ public class UserModelService {
             status = true;
         } catch(Exception e) {
             status = false;
-            e.printStackTrace();
+            System.err.println("Edited user not saved");
         }
         return status;
     }

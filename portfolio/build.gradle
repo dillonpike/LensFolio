@@ -46,6 +46,8 @@ dependencies {
 
     implementation 'org.webjars.npm:fullcalendar:5.10.2'
     implementation 'org.webjars.npm:fullcalendar__bootstrap5:5.10.2'
+    testImplementation 'org.mockito:mockito-core:4.3.1'
+
 
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'

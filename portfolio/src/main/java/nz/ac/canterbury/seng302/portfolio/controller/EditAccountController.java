@@ -6,14 +6,18 @@ import nz.ac.canterbury.seng302.portfolio.service.RegisterClientService;
 import nz.ac.canterbury.seng302.portfolio.service.UserAccountClientService;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import nz.ac.canterbury.seng302.portfolio.utility.Utility;
+import nz.ac.canterbury.seng302.shared.identityprovider.DeleteUserProfilePhotoResponse;
 import nz.ac.canterbury.seng302.shared.identityprovider.EditUserResponse;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserRole;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpServletRequest;
@@ -21,6 +25,12 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+import java.util.Objects;
 
 @Controller
 public class EditAccountController {
@@ -171,6 +181,80 @@ public class EditAccountController {
 
         rm.addAttribute("userId", userId);
 
+        return "redirect:editAccount";
+    }
+
+    @PostMapping("/deleteAccountPhoto")
+    public String deletePhoto(
+            @ModelAttribute("userId") int userId,
+            RedirectAttributes rm,
+            Model model
+    ) {
+        boolean wasDeleted = false;
+        try {
+            DeleteUserProfilePhotoResponse reply = registerClientService.DeleteUserProfilePhoto(userId);
+            wasDeleted = reply.getIsSuccess();
+            if (wasDeleted) {
+//                Path src = Paths.get("src/main/resources/static/img/default.jpg");
+//                Path dest = Paths.get("src/main/resources/static/img/userImage.jpg");
+//                Files.copy(src, dest, StandardCopyOption.REPLACE_EXISTING);
+                File imageFile = new File("src/main/resources/static/img/default.jpg");
+                File usedImageFile = new File("src/main/resources/static/img/userImage.jpg");
+                FileOutputStream imageOutput = new FileOutputStream(usedImageFile);
+                FileInputStream imageInput = new FileInputStream(imageFile);
+                imageOutput.write(imageInput.readAllBytes());
+                imageInput.close();
+                imageOutput.close();
+
+                rm.addFlashAttribute("isUpdateSuccess", true);
+            } else {
+                rm.addFlashAttribute("isUpdateSuccess", false);
+                rm.addFlashAttribute("message", "Photo failed to delete");
+            }
+
+        } catch (Exception e) {
+            System.err.println("Something went wrong requesting to delete the photo");
+            e.printStackTrace();
+        }
+        rm.addAttribute("userId", userId);
+        return "redirect:editAccount";
+    }
+
+    @PostMapping("/saveAccountPhoto")
+    public String savePhoto(
+            @ModelAttribute("userId") int userId,
+            RedirectAttributes rm,
+            @RequestParam("avatar") MultipartFile multipartFile,
+            Model model
+    ) {
+        if (multipartFile.isEmpty()) {
+            rm.addFlashAttribute("message", "Please select a file to upload.");
+            return "redirect:editAccount";
+        }
+        boolean wasSaved = false;
+        try {
+            // TODO Needs to get the image from the model
+
+            File imageFile = new File("src/main/resources/static/img/userImage.jpg");
+            FileOutputStream fos = new FileOutputStream( imageFile );
+            fos.write( multipartFile.getBytes() );
+            fos.close();
+
+            registerClientService.UploadUserProfilePhoto(userId, new File("src/main/resources/static/img/userImage.jpg"));
+            // You cant tell if it saves correctly with the above method as it returns nothing
+            wasSaved = true;
+            if (wasSaved) {
+                rm.addFlashAttribute("isUpdateSuccess", true);
+            } else {
+                rm.addFlashAttribute("isUpdateSuccess", false);
+                rm.addFlashAttribute("message", "Photo failed to save");
+            }
+
+        } catch (Exception e) {
+            System.err.println("Something went wrong requesting to save the photo");
+        }
+
+        rm.addAttribute("userId", userId);
         return "redirect:editAccount";
     }
 
