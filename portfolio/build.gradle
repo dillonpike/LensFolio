@@ -74,6 +74,6 @@ sonarqube {
         property "sonar.projectName", "team 100-portfolio"
         property "sonar.sourceEncoding", "UTF-8"
         property "sonar.host.url", "http://sonarqube.csse.canterbury.ac.nz:9000"
-        property "sonar.login", "70e9b54e5f96fe2dc25061fbafb4d869a2eb0168"
+        property "sonar.login", System.getenv("SonarQubeAPIKey")
     }
 }
