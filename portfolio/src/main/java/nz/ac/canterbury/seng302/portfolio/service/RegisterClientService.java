@@ -115,7 +115,7 @@ public class RegisterClientService {
      * @param password password to encrypt
      * @return encrypted password
      */
-    public String encryptPassword (String password) {
+    public String encryptPassword(String password) {
         return pbkdf2PasswordEncoder.encode(password);
     }
 

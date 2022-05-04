@@ -14,8 +14,13 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+
+import java.util.Set;
+
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.AdditionalAnswers.returnsFirstArg;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -102,13 +107,19 @@ public class UserModelServiceTests {
         assertThat(newUser.getEmail()).isSameAs(user.getEmail());
     }
 
-    //TODO Find a way to add default roles to rolesRepo(e.g. STUDENT, TEACHER AND ADMIN)
+    /**
+     * Tests that when a user is saved to the repository, the student role is assigned to them by default.
+     */
     @Test
     public void testWhenAddUser_ThenReturnDefaultStudentRole() {
         UserModel user = new UserModel();
         user.setEmail("123@gmail.com");
-        when(userModelRepository.save(any(UserModel.class))).thenReturn(user);
+        Roles studentRole = new Roles(0, "STUDENT");
+        when(rolesRepository.findByRoleName("STUDENT")).thenReturn(studentRole);
+        // userModelRepository is mocked so that when it is called to save a user, it returns the user that was given
+        when(userModelRepository.save(any(UserModel.class))).then(returnsFirstArg());
         UserModel newUser = userModelService.addUser(user);
+        assertEquals(Set.of(studentRole), newUser.getRoles());
     }
 
     @Test
