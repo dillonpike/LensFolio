@@ -1,12 +1,12 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
 import io.grpc.StatusRuntimeException;
+import nz.ac.canterbury.seng302.portfolio.service.ElementService;
 import nz.ac.canterbury.seng302.portfolio.service.RegisterClientService;
 import nz.ac.canterbury.seng302.portfolio.utility.Utility;
 import nz.ac.canterbury.seng302.portfolio.service.UserAccountClientService;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
-import nz.ac.canterbury.seng302.shared.identityprovider.UserRole;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
@@ -18,13 +18,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.sql.Blob;
-import java.sql.SQLException;
 
 @Controller
 public class AccountController {
@@ -34,6 +31,9 @@ public class AccountController {
 
     @Autowired
     private UserAccountClientService userAccountClientService;
+
+    @Autowired
+    private ElementService elementService;
 
     /***
      * GET method for account controller to generate user's info
@@ -52,9 +52,7 @@ public class AccountController {
         UserResponse getUserByIdReply;
         UserResponse getUserByIdReplyHeader;
         Integer id = userAccountClientService.getUserIDFromAuthState(principal);
-        getUserByIdReplyHeader = registerClientService.getUserData(id);
-        String fullNameHeader = getUserByIdReplyHeader.getFirstName() + " " + getUserByIdReplyHeader.getMiddleName() + " " + getUserByIdReplyHeader.getLastName();
-        model.addAttribute("headerFullName", fullNameHeader);
+        elementService.addHeaderAttributes(model, id);
         try {
             int userId = Integer.parseInt(userIdInput);
             if(id == userId){

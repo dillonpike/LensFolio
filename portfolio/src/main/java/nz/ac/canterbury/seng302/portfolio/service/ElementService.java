@@ -1,5 +1,7 @@
 package nz.ac.canterbury.seng302.portfolio.service;
 
+import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 import org.springframework.web.servlet.support.RequestContextUtils;
@@ -10,8 +12,11 @@ import java.util.Map;
 @Service
 public class ElementService {
 
+    @Autowired
+    private RegisterClientService registerClientService;
+
     /**
-     * Returns an updated version of the given model to with an updateMessage attribute.
+     * Updates the given model with an updateMessage attribute.
      *
      * If isUpdateSuccess in the request is true, updateMessage will be set to successMessage from the request, or a
      * default success message if successMessage doesn't exist. If isUpdateSuccess is false, updateMessage will be set
@@ -19,9 +24,8 @@ public class ElementService {
      *
      * @param model model from controller method
      * @param request HTTP request from controller method
-     * @return updated model
      */
-    public Model addUpdateMessage(Model model, HttpServletRequest request) {
+    public void addUpdateMessage(Model model, HttpServletRequest request) {
         Map<String, ?> inputFlashMap = RequestContextUtils.getInputFlashMap(request);
         if (inputFlashMap != null) {
             boolean isUpdateSuccess = (boolean) inputFlashMap.get("isUpdateSuccess");
@@ -37,6 +41,11 @@ public class ElementService {
                 model.addAttribute("updateMessage", message);
             }
         }
-        return model;
+    }
+
+    public void addHeaderAttributes(Model model, int userId) {
+        UserResponse userData = registerClientService.getUserData(userId);
+        String fullNameHeader = userData.getFirstName() + " " + userData.getMiddleName() + " " + userData.getLastName();
+        model.addAttribute("headerFullName", fullNameHeader);
     }
 }

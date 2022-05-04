@@ -1,12 +1,8 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
-import com.google.protobuf.Timestamp;
 import nz.ac.canterbury.seng302.portfolio.model.Project;
 import nz.ac.canterbury.seng302.portfolio.model.Sprint;
-import nz.ac.canterbury.seng302.portfolio.service.ProjectService;
-import nz.ac.canterbury.seng302.portfolio.service.RegisterClientService;
-import nz.ac.canterbury.seng302.portfolio.service.SprintService;
-import nz.ac.canterbury.seng302.portfolio.service.UserAccountClientService;
+import nz.ac.canterbury.seng302.portfolio.service.*;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,9 +11,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.ZoneId;
 import java.util.*;
 
 @Controller
@@ -33,7 +26,7 @@ public class CalendarController {
     private UserAccountClientService userAccountClientService;
 
     @Autowired
-    private RegisterClientService registerClientService;
+    private ElementService elementService;
 
     public String listToJSON(List<Sprint> sprints) {
         String json = "";
@@ -69,9 +62,7 @@ public class CalendarController {
         List<Sprint> sprints;
         UserResponse getUserByIdReplyHeader;
         Integer id = userAccountClientService.getUserIDFromAuthState(principal);
-        getUserByIdReplyHeader = registerClientService.getUserData(id);
-        String fullNameHeader = getUserByIdReplyHeader.getFirstName() + " " + getUserByIdReplyHeader.getMiddleName() + " " + getUserByIdReplyHeader.getLastName();
-        model.addAttribute("headerFullName", fullNameHeader);
+        elementService.addHeaderAttributes(model, id);
         model.addAttribute("userId", id);
         try {
             sprints = sprintService.getAllSprintsOrdered();

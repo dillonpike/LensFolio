@@ -1,13 +1,12 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
 import nz.ac.canterbury.seng302.portfolio.model.UserSorting;
-import nz.ac.canterbury.seng302.portfolio.service.RegisterClientService;
+import nz.ac.canterbury.seng302.portfolio.service.ElementService;;
 import nz.ac.canterbury.seng302.portfolio.service.UserAccountClientService;
 import nz.ac.canterbury.seng302.portfolio.service.UserSortingService;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import nz.ac.canterbury.seng302.shared.identityprovider.PaginatedUsersResponse;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
-import org.apache.catalina.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
@@ -26,7 +25,7 @@ public class ViewUsersController {
     private UserAccountClientService userAccountClientService;
 
     @Autowired
-    private RegisterClientService registerClientService;
+    private ElementService elementService;
 
     @Autowired
     private UserSortingService userSortingService;
@@ -46,9 +45,7 @@ public class ViewUsersController {
     ) {
         UserResponse getUserByIdReplyHeader;
         Integer id = userAccountClientService.getUserIDFromAuthState(principal);
-        getUserByIdReplyHeader = registerClientService.getUserData(id);
-        String fullNameHeader = getUserByIdReplyHeader.getFirstName() + " " + getUserByIdReplyHeader.getMiddleName() + " " + getUserByIdReplyHeader.getLastName();
-        model.addAttribute("headerFullName", fullNameHeader);
+        elementService.addHeaderAttributes(model, id);
         model.addAttribute("userId", id);
 
         PaginatedUsersResponse response = userAccountClientService.getAllUsers();

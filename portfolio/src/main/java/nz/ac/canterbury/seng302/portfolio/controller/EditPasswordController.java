@@ -18,9 +18,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 
 @Controller
 public class EditPasswordController {
@@ -50,8 +48,9 @@ public class EditPasswordController {
             HttpServletRequest request,
             @AuthenticationPrincipal AuthState principal
     ) {
-        model = elementService.addUpdateMessage(model, request);
+        elementService.addUpdateMessage(model, request);
         Integer id = userAccountClientService.getUserIDFromAuthState(principal);
+        elementService.addHeaderAttributes(model, id);
         try {
             UserResponse getUserByIdReply = registerClientService.getUserData(id);
             ArrayList<String> rolesList = new ArrayList<String>();
