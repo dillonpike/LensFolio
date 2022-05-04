@@ -80,7 +80,6 @@ public class DetailsController {
         List<Sprint> sprintList = sprintService.getAllSprintsOrdered();
         model.addAttribute("sprints", sprintList);
 
-        UserResponse getUserByIdReplyHeader;
         Integer id = userAccountClientService.getUserIDFromAuthState(principal);
         elementService.addHeaderAttributes(model, id);
         model.addAttribute("userId", id);

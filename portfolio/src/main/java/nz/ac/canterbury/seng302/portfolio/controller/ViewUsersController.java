@@ -43,7 +43,6 @@ public class ViewUsersController {
             Model model,
             @AuthenticationPrincipal AuthState principal
     ) {
-        UserResponse getUserByIdReplyHeader;
         Integer id = userAccountClientService.getUserIDFromAuthState(principal);
         elementService.addHeaderAttributes(model, id);
         model.addAttribute("userId", id);

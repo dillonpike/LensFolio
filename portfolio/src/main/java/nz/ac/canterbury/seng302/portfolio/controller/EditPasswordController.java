@@ -1,6 +1,5 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
-import nz.ac.canterbury.seng302.portfolio.service.AuthenticateClientService;
 import nz.ac.canterbury.seng302.portfolio.service.ElementService;
 import nz.ac.canterbury.seng302.portfolio.service.RegisterClientService;
 import nz.ac.canterbury.seng302.portfolio.service.UserAccountClientService;
@@ -17,14 +16,9 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.ArrayList;
-import java.util.Collections;
 
 @Controller
 public class EditPasswordController {
-
-    @Autowired
-    private AuthenticateClientService authenticateClientService;
 
     @Autowired
     private RegisterClientService registerClientService;
@@ -53,22 +47,13 @@ public class EditPasswordController {
         elementService.addHeaderAttributes(model, id);
         try {
             UserResponse getUserByIdReply = registerClientService.getUserData(id);
-            ArrayList<String> rolesList = new ArrayList<String>();
-            for(int i = 0; i< getUserByIdReply.getRolesCount(); i++){
-                String role = getUserByIdReply.getRoles(i).toString();
-                if(role == "COURSE_ADMINISTRATOR"){
-                    role = "COURSE ADMINISTRATOR";
-                }
-                rolesList.add(role);
-            }
-            Collections.sort(rolesList);
+            elementService.addRoles(model, getUserByIdReply);
             String fullName = getUserByIdReply.getFirstName() + " " + getUserByIdReply.getMiddleName() + " " + getUserByIdReply.getLastName();
             model.addAttribute("fullName", fullName);
             model.addAttribute("username", getUserByIdReply.getUsername());
             model.addAttribute("dateAdded", Utility.getDateAddedString(getUserByIdReply.getCreated()));
             model.addAttribute("monthsSinceAdded", Utility.getDateSinceAddedString(getUserByIdReply.getCreated()));
             model.addAttribute("userId", id);
-            model.addAttribute("rolesList", rolesList);
         } catch(Exception e) {
             model.addAttribute("loginMessage", "Error connecting to Identity Provider...");
             e.printStackTrace();

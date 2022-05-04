@@ -49,7 +49,6 @@ public class EditAccountController {
             @RequestParam(value = "userId") String userIdInput,
             @AuthenticationPrincipal AuthState principal
     ) {
-        UserResponse getUserByIdReplyHeader;
         Integer id = userAccountClientService.getUserIDFromAuthState(principal);
         elementService.addHeaderAttributes(model, id);
         UserResponse getUserByIdReply;
@@ -62,15 +61,7 @@ public class EditAccountController {
                 model.addAttribute("isAuthorised", false);
             }
             getUserByIdReply = registerClientService.getUserData(id);
-            ArrayList<String> rolesList = new ArrayList<String>();
-            for(int i = 0; i< getUserByIdReply.getRolesCount(); i++){
-                String role = getUserByIdReply.getRoles(i).toString();
-                if(role == "COURSE_ADMINISTRATOR"){
-                    role = "COURSE ADMINISTRATOR";
-                }
-                rolesList.add(role);
-            }
-            Collections.sort(rolesList);
+            elementService.addRoles(model, getUserByIdReply);
             model.addAttribute("firstName", getUserByIdReply.getFirstName());
             model.addAttribute("nickName", getUserByIdReply.getNickname());
             model.addAttribute("lastName", getUserByIdReply.getLastName());
@@ -84,7 +75,6 @@ public class EditAccountController {
             model.addAttribute("userId", id);
             model.addAttribute("dateAdded", Utility.getDateAddedString(getUserByIdReply.getCreated()));
             model.addAttribute("monthsSinceAdded", Utility.getDateSinceAddedString(getUserByIdReply.getCreated()));
-            model.addAttribute("rolesList", rolesList);
         } catch (StatusRuntimeException e) {
             model.addAttribute("loginMessage", "Error connecting to Identity Provider...");
             e.printStackTrace();

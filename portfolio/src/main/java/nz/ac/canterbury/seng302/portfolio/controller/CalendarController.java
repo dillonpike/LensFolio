@@ -60,7 +60,6 @@ public class CalendarController {
             Model model,
             @AuthenticationPrincipal AuthState principal) throws Exception {
         List<Sprint> sprints;
-        UserResponse getUserByIdReplyHeader;
         Integer id = userAccountClientService.getUserIDFromAuthState(principal);
         elementService.addHeaderAttributes(model, id);
         model.addAttribute("userId", id);

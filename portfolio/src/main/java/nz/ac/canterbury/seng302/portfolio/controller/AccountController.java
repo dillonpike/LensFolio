@@ -50,7 +50,6 @@ public class AccountController {
             @RequestParam(value = "userId") String userIdInput
     ) {
         UserResponse getUserByIdReply;
-        UserResponse getUserByIdReplyHeader;
         Integer id = userAccountClientService.getUserIDFromAuthState(principal);
         elementService.addHeaderAttributes(model, id);
         try {
@@ -65,15 +64,7 @@ public class AccountController {
                 model.addAttribute("userId", id);
                 return "404NotFound";
             }
-            ArrayList<String> rolesList = new ArrayList<String>();
-            for(int i = 0; i< getUserByIdReply.getRolesCount(); i++){
-                String role = getUserByIdReply.getRoles(i).toString();
-                if(role == "COURSE_ADMINISTRATOR"){
-                    role = "COURSE ADMINISTRATOR";
-                }
-                rolesList.add(role);
-            }
-            Collections.sort(rolesList);
+            elementService.addRoles(model, getUserByIdReply);
             model.addAttribute("firstName", getUserByIdReply.getFirstName());
             model.addAttribute("lastName", getUserByIdReply.getLastName());
             model.addAttribute("username", getUserByIdReply.getUsername());
@@ -87,7 +78,6 @@ public class AccountController {
             model.addAttribute("userId", id);
             model.addAttribute("dateAdded", Utility.getDateAddedString(getUserByIdReply.getCreated()));
             model.addAttribute("monthsSinceAdded", Utility.getDateSinceAddedString(getUserByIdReply.getCreated()));
-            model.addAttribute("rolesList", rolesList);
 
 
             try {
