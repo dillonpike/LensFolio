@@ -66,8 +66,8 @@ public class ListOfUsersStepDefs {
     @Then("The list of users has the following columns:")
     public void theListOfUsersHasTheFollowingColumns(DataTable dataTableColumns) {
         for (String expectedColumn : dataTableColumns.asList()) {
-            assertTrue(webDriver.findElement(By.xpath("//thead/tr/th[translate(text(), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'," +
-                    " 'abcdefghijklmnopqrstuvwxyz')='" + expectedColumn.toLowerCase() + "']")).isDisplayed());
+            assertTrue(webDriver.findElement(By.xpath("//thead/tr/th[" + SeleniumService.XPATH_LOWER_CASE_TEXT + "='" +
+                    expectedColumn.toLowerCase() + "']")).isDisplayed());
         }
     }
 

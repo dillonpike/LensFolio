@@ -43,9 +43,17 @@ public class GeneralSeleniumSteps {
 
     @And("I log out")
     public void iLogOut() {
-        webDriver.findElement(By.id("profileImageHeader")).click();
+        webDriver.findElement(By.id("dropdownUser1")).click();
         wait.until(ExpectedConditions.elementToBeClickable(By.id("signOutButton")));
         webDriver.findElement(By.id("signOutButton")).click();
         wait.until(ExpectedConditions.elementToBeClickable(By.id("usernameLogin")));
+    }
+
+    @When("I browse to the account page")
+    public void iBrowseToTheAccountPage() {
+        webDriver.findElement(By.id("dropdownUser1")).click();
+        wait.until(ExpectedConditions.elementToBeClickable(By.id("profileButton")));
+        webDriver.findElement(By.id("profileButton")).click();
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//h2[contains(., 'Profile')]")));
     }
 }
