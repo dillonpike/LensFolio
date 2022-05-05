@@ -21,7 +21,7 @@
                         <div th:if="${param.successfulRegister}" class="alert alert-success">
                             Successful registration, <a href="/login" class="alert-link">click here</a> to login
                         </div>
-                        <form class="row g-3 needs-validation" novalidate th:action="@{/register}" method="post">
+                        <form class="row g-3 needs-validation" novalidate th:action="@{register}" method="post">
                             <div class="form-floating mb-3">
                                 <input type="text" class="form-control" id="username" placeholder="username" th:name="username" required>
                                 <label for="username">Username(*)</label>
@@ -78,7 +78,7 @@
                             </div>
                         </form>
                         <hr class="my-4">
-                        Already have an account? <a href="/login">Log in here</a>
+                        Already have an account? <a th:href="@{login}">Log in here</a>
                     </div>
                 </div>
             </div>

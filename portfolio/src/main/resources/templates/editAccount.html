@@ -26,7 +26,7 @@
           <img th:src="@{/src/main/resources/static/img/userImage.jpg}" id="uploadPreview" alt="mdo" width="300" height="300" class="rounded-circle" style ="margin-left: 60px; margin-top:20px">
           <label for="avatar" style="text-align:center">Update profile picture: </label>
 
-          <form th:action="@{/saveAccountPhoto}" method="post" enctype="multipart/form-data">
+          <form th:action="@{saveAccountPhoto}" method="post" enctype="multipart/form-data">
             <input type="file" id="avatar" style="margin-left:25%" name="avatar" value="Upload Profile Picture" accept="image/png, image/jpeg, image/jpg" onchange="PreviewImage();">
             <div class="card-body p-xl-2">
               <div style="display: flex; flex-direction: row; justify-content: center">
@@ -85,7 +85,7 @@
             <br>
 
 <!--            start form-->
-            <form th:action="@{/saveEditAccount}" method="post" >
+            <form th:action="@{saveEditAccount}" method="post" >
               <div class="form-floating mb-3">
                 <input type="text" class="form-control" id="firstName" th:name="firstName" placeholder="First name" th:value="${firstName}" minlength="1" required>
                 <label for="firstName">First name</label>
@@ -132,13 +132,13 @@
             </form>
 <!--          end form-->
             <div style="display:flex; justify-content: space-between" class="mt-3">
-              <form th:action="@{/editPassword}">
+              <form th:action="@{editPassword}">
                 <div>
                   <input type="hidden" th:value="${userId}" name="userId">
                   <button type="submit" class="btn btn-primary" style="margin-right: 10px; width:200px">Change Password</button>
                 </div>
               </form>
-              <form th:action="@{/backToAccountPage}" method="post">
+              <form th:action="@{backToAccountPage}" method="post">
                 <div>
                   <input type="hidden" th:value="${userId}" name="userId" th:name="userId">
                   <button type="submit" class="btn btn-danger" style="margin-right: 10px">Back to Profile Page</button>
@@ -156,7 +156,7 @@
 
   <div class="container" th:if="${isAuthorised} == false">
     <h1 style="color: red;">You Cannot Edit Other People's Profile</h1>
-    <form th:action="@{/editAccountLoad}" method="post" >
+    <form th:action="@{editAccountLoad}" method="post" >
       <div>
         <input type="hidden" th:value="${userId}" name="userId">
         <button type="submit" class="btn btn-link" >Continue editing your profile</button>
