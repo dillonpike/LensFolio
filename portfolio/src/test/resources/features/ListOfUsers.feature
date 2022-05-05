@@ -15,6 +15,11 @@ Feature: UUv: List of Users
     | Alias      |
     | Roles      |
 
+  Scenario: AC3 - If I have many users, it should not all display on one page.
+    Given I am logged in as admin
+    When I browse to the list of users page
+    Then The list of users is separated into multiple pages
+
   Scenario: AC5 - The sort field and order will persist when I log out and log back in again.
     Given I am logged in as admin
     And I am on the list of users page
