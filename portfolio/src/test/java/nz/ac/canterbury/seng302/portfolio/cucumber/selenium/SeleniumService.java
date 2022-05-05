@@ -14,6 +14,11 @@ import java.util.Objects;
 public class SeleniumService {
 
     /**
+     * String that can be included in an xpath to get the text of an element as lowercase.
+     */
+    static final String XPATH_LOWER_CASE_TEXT = "translate(text(), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz')";
+
+    /**
      * Webdriver used during tests.
      */
     private static WebDriver webDriver;
