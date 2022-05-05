@@ -84,4 +84,22 @@ public class ProfilePhotoStepDefs {
         webDriver.findElement(By.id("save-btn")).click();
         wait.until(ExpectedConditions.elementToBeClickable(By.id("removeUpdateAlert")));
     }
+
+    @Then("My small version of my profile photo is displayed in the header of the page")
+    public void mySmallVersionOfMyProfilePhotoIsDisplayedInTheHeaderOfThePage() {
+        assertTrue(webDriver.findElement(By.id("userIconSmall")).isDisplayed());
+        WebElement profilePhotoElement = webDriver.findElement(By.id("userIconSmall"));
+        BufferedImage expectedImage = null;
+        try {
+            expectedImage = ImageIO.read(new File("src/main/resources/static/img/userImage.jpg"));
+        } catch (IOException e) {
+            fail("Error loading default profile photo during test");
+        }
+        Screenshot logoImageScreenshot = new AShot().takeScreenshot(webDriver, profilePhotoElement);
+        BufferedImage actualImage = logoImageScreenshot.getImage();
+
+        ImageDiffer imgDiff = new ImageDiffer();
+        ImageDiff diff = imgDiff.makeDiff(actualImage, expectedImage);
+        assertTrue(diff.hasDiff(), "Images are Sames");
+    }
 }
