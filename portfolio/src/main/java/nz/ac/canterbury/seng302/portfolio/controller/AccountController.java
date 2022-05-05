@@ -2,6 +2,7 @@ package nz.ac.canterbury.seng302.portfolio.controller;
 
 import io.grpc.StatusRuntimeException;
 import nz.ac.canterbury.seng302.portfolio.service.ElementService;
+import nz.ac.canterbury.seng302.portfolio.service.PhotoService;
 import nz.ac.canterbury.seng302.portfolio.service.RegisterClientService;
 import nz.ac.canterbury.seng302.portfolio.utility.Utility;
 import nz.ac.canterbury.seng302.portfolio.service.UserAccountClientService;
@@ -16,12 +17,6 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
 
 @Controller
 public class AccountController {
@@ -34,6 +29,9 @@ public class AccountController {
 
     @Autowired
     private ElementService elementService;
+
+    @Autowired
+    private PhotoService photoService;
 
     /***
      * GET method for account controller to generate user's info
@@ -78,28 +76,7 @@ public class AccountController {
             model.addAttribute("userId", id);
             model.addAttribute("dateAdded", Utility.getDateAddedString(getUserByIdReply.getCreated()));
             model.addAttribute("monthsSinceAdded", Utility.getDateSinceAddedString(getUserByIdReply.getCreated()));
-
-
-            try {
-                String profileImagePath = getUserByIdReply.getProfileImagePath();
-                File imageFile;
-                if (!profileImagePath.equals("")) {
-                    imageFile = new File(profileImagePath);
-                    if (imageFile.length() == 0) {
-                        imageFile = new File("src/main/resources/static/img/default.jpg");
-                    }
-                } else {
-                    imageFile = new File("src/main/resources/static/img/default.jpg");
-                }
-                File usedImageFile = new File("src/main/resources/static/img/userImage.jpg");
-                FileOutputStream imageOutput = new FileOutputStream(usedImageFile);
-                FileInputStream imageInput = new FileInputStream(imageFile);
-                imageOutput.write(imageInput.readAllBytes());
-                imageInput.close();
-                imageOutput.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            photoService.savePhotoToPortfolio(getUserByIdReply.getProfileImagePath());
         } catch (StatusRuntimeException e) {
             model.addAttribute("loginMessage", "Error connecting to Identity Provider...");
             e.printStackTrace();
