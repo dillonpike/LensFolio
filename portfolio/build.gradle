@@ -68,6 +68,10 @@ dependencies {
     // https://mvnrepository.com/artifact/io.github.bonigarcia/webdrivermanager
     testImplementation group: 'io.github.bonigarcia', name: 'webdrivermanager', version: '5.1.1'
 
+    // https://mvnrepository.com/artifact/ru.yandex.qatools.ashot/ashot
+    testImplementation group: 'ru.yandex.qatools.ashot', name: 'ashot', version: '1.5.4'
+
+
 }
 
 //tasks.named('test') {

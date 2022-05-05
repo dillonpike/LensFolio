@@ -56,4 +56,11 @@ public class GeneralSeleniumSteps {
         webDriver.findElement(By.id("profileButton")).click();
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//h2[contains(., 'Profile')]")));
     }
+
+    @And("I am on the edit account page")
+    public void iAmOnTheEditAccountPage() {
+        iBrowseToTheAccountPage();
+        webDriver.findElement(By.id("editProfileButton")).click();
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//h2[contains(., 'Edit Profile')]")));
+    }
 }

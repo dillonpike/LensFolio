@@ -47,6 +47,7 @@ public class SeleniumService {
                 webDriver = new ChromeDriver();
             }
         }
+        webDriver.manage().window().maximize();
         wait = new WebDriverWait(webDriver, 5);
     }
 
