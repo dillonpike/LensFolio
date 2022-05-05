@@ -43,7 +43,7 @@
             <div class="form-group">
               <div id="image-box" class="image-container"></div>
               <button class="btn btn-outline-info" id="crop-btn" style="width: 100%; margin-top: 10px; display: none;" type="button">Crop</button>
-              <button class="btn btn-outline-info" id="confirm-btn" style="width: 100%; margin-top: 10px; display: none;" type="submit">Post</button>
+              <!--button class="btn btn-outline-info" id="confirm-btn" style="width: 100%; margin-top: 10px; display: none;" type="submit">Post</button-->
             </div>
             <div class="mb-4">
               <h3 class="h4 mb-0" th:text="${fullName}"></h3>
@@ -170,7 +170,7 @@
 <script>
 	// image-box is the id of the div element that will store our cropping image preview
 	const imagebox = document.getElementById('image-box')
-        // crop-btn is the id of button that will trigger the event of change original file with cropped file.
+    // crop-btn is the id of button that will trigger the event of change original file with cropped file.
 	const crop_btn = document.getElementById('crop-btn')
 	// id_image is the id of the input tag where we will upload the image
 	const input = document.getElementById('avatar')
@@ -193,8 +193,6 @@
 	  document.getElementById('image-box').style.display = 'block'
 	  // Displaying the Crop buttton
 	  document.getElementById('crop-btn').style.display = 'block'
-	  // Hiding the Post button
-	  document.getElementById('confirm-btn').style.display = 'none'
 
 	  // Creating a croper object with the cropping view image
 	  // The new Cropper() method will do all the magic and diplay the cropping view and adding cropping functionality on the website
@@ -229,10 +227,10 @@
 	      document.getElementById('image-box').style.display = 'none'
 	      // Hide the crop button
 	      document.getElementById('crop-btn').style.display = 'none'
-	      // Hide the Post button
-	      document.getElementById('confirm-btn').style.display = 'none'
+
+          document.getElementById("save-btn").hidden = false;
         PreviewImage();
-	      });
+	      }, "image/jpeg", 0.5);
 	    });
 	});
 </script>
@@ -276,27 +274,8 @@
 
     oFReader.onload = function (oFREvent) {
         document.getElementById("uploadPreview").src = oFREvent.target.result;
-        document.getElementById("save-btn").hidden = false;
     };
   };
-</script>
-<script>
-  // import 'cropperjs/dist/cropper.css';
-  import Cropper from 'cropperjs';
-
-  const image = document.getElementById('uploadPreview');
-  const cropper = new Cropper(image, {
-    aspectRatio: 16 / 9,
-    crop(event) {
-      console.log(event.detail.x);
-      console.log(event.detail.y);
-      console.log(event.detail.width);
-      console.log(event.detail.height);
-      console.log(event.detail.rotate);
-      console.log(event.detail.scaleX);
-      console.log(event.detail.scaleY);
-    },
-  });
 </script>
 <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha384-xBuQ/xzmlsLoJpyjoggmTEz8OWUFM0/RC5BsqQBDX2v5cMvDHcMakNTNrHIW2I5f" crossorigin="anonymous"></script>
 <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
