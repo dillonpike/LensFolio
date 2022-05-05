@@ -13,6 +13,7 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class ListOfUsersStepDefs {
@@ -68,5 +69,11 @@ public class ListOfUsersStepDefs {
             assertTrue(webDriver.findElement(By.xpath("//thead/tr/th[translate(text(), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'," +
                     " 'abcdefghijklmnopqrstuvwxyz')='" + expectedColumn.toLowerCase() + "']")).isDisplayed());
         }
+    }
+
+    @Then("The list of users is separated into multiple pages")
+    public void theListOfUsersIsSeparatedIntoMultiplePages() {
+        String nextButtonClass = webDriver.findElement(By.id("sortTable_next")).getAttribute("class");
+        assertNotNull(nextButtonClass);
     }
 }
