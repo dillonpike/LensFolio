@@ -85,6 +85,9 @@ public class AccountController {
                 File imageFile;
                 if (!profileImagePath.equals("")) {
                     imageFile = new File(profileImagePath);
+                    if (imageFile.length() == 0) {
+                        imageFile = new File("src/main/resources/static/img/default.jpg");
+                    }
                 } else {
                     imageFile = new File("src/main/resources/static/img/default.jpg");
                 }
