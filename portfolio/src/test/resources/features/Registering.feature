@@ -35,6 +35,6 @@ Feature: UUi Registering and logging into a user account
     Examples:
       |Username   |isAlreadyRegistered    |Outcome                         |isLoggedIn    |
       |"rlh89"    |"False"                |"Username not registered"       |"False"       |
-      |"rlh89"    |"True"                 |"Logged In"                     |"True"        |
+      |"rlh89"    |"True"                 |"Logged in"                     |"True"        |
       |"rlh88"    |"False"                |"Username not registered"       |"False"       |
 

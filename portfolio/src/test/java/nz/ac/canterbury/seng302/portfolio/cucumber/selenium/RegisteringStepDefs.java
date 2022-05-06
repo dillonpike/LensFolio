@@ -62,23 +62,23 @@ public class RegisteringStepDefs {
 
     @Then("Mandatory fields are marked")
     public void mandatoryFieldsAreMarked() {
-        String username = webDriver.findElement(By.id("username")).getCssValue("required");
-        assertEquals("True", username);
+        String username = webDriver.findElement(By.id("username")).getAttribute("required");
+        assertNotNull(username);
 
-        String firstName = webDriver.findElement(By.id("firstName")).getCssValue("required");
-        assertEquals("True", firstName);
+        String firstName = webDriver.findElement(By.id("firstName")).getAttribute("required");
+        assertNotNull(firstName);
 
         String lastName = webDriver.findElement(By.id("lastName")).getAttribute("required");
-        assertEquals("True", lastName);
+        assertNotNull(lastName);
 
         String email = webDriver.findElement(By.id("email")).getAttribute("required");
-        assertEquals("True", email);
+        assertNotNull(email);
 
         String passwordLogin = webDriver.findElement(By.id("passwordLogin")).getAttribute("required");
-        assertEquals("True", passwordLogin);
+        assertNotNull(passwordLogin);
 
         String confirmPassword = webDriver.findElement(By.id("confirmPassword")).getAttribute("required");
-        assertEquals("True", confirmPassword);
+        assertNotNull(confirmPassword);
     }
 
     @When("I register with a username {string}")
@@ -99,7 +99,11 @@ public class RegisteringStepDefs {
                 outcome = "Logged in";
             }
         } else {
-            outcome = "Registered";
+            if (Objects.equals(address, "http://localhost:9000/register")) {
+                outcome = "Registered";
+            } else {
+                outcome = "Username not registered";
+            }
         }
     }
 
