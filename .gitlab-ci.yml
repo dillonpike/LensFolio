@@ -63,7 +63,7 @@ deploy-staging-identityprovider:
     - touch deploy
     - echo "MARIADB_USERNAME=$MARIADB_USERNAME" >> deploy
     - echo "MARIADB_PASSWORD=$MARIADB_PASSWORD" >> deploy
-    - cat deploy
+    - realpath deploy
     - sudo systemctl restart staging-identityprovider
   artifacts:
     paths:
@@ -85,7 +85,7 @@ deploy-staging-portfolio:
     - touch deploy
     - echo "MARIADB_USERNAME=$MARIADB_USERNAME" >> deploy
     - echo "MARIADB_PASSWORD=$MARIADB_PASSWORD" >> deploy
-    - cat deploy
+    - realpath deploy
     - sudo systemctl restart staging-portfolio
   artifacts:
     paths:
