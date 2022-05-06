@@ -25,17 +25,34 @@ import java.io.IOException;
 import static org.junit.Assert.fail;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+/**
+ * Selenium Cucumber step definitions for the profile photo feature.
+ */
 public class ProfilePhotoStepDefs {
 
-    private static WebDriver webDriver;
-    private static WebDriverWait wait;
+    /**
+     * Webdriver used during tests.
+     */
+    private WebDriver webDriver;
 
+    /**
+     * WebDriverWait object that is used to wait until some criteria is met, for example an element to be visible.
+     */
+    private WebDriverWait wait;
+
+    /**
+     * Sets up for scenario by getting a web driver and WebDriverWait object.
+     */
     @Before
     public void setUp() {
         webDriver = SeleniumService.getWebDriver();
         wait = SeleniumService.getWait();
     }
 
+    /**
+     * Tears down after running scenario by quitting the web driver (thus closing the browser) and setting the web
+     * driver to null.
+     */
     @After
     public void tearDown() {
         SeleniumService.tearDownWebDriver();
@@ -78,7 +95,7 @@ public class ProfilePhotoStepDefs {
     }
 
     @When("I upload a profile photo")
-    public void iUploadAProfilePhoto() throws InterruptedException {
+    public void iUploadAProfilePhoto() {
         webDriver.findElement(By.id("avatar")).sendKeys(new File("src/test/resources/static/img/T100Logo.png").getAbsolutePath());
         wait.until(ExpectedConditions.elementToBeClickable(By.id("save-btn")));
         webDriver.findElement(By.id("save-btn")).click();
