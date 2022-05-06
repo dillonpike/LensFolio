@@ -60,4 +60,11 @@ public class GeneralSeleniumSteps {
     @Given("I am logged in as <username>")
     public void iAmLoggedInAsUsername() {
     }
+
+    @And("I am on the edit account page")
+    public void iAmOnTheEditAccountPage() {
+        iBrowseToTheAccountPage();
+        webDriver.findElement(By.id("editProfileButton")).click();
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//h2[contains(., 'Edit Profile')]")));
+    }
 }

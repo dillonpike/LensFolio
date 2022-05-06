@@ -156,6 +156,7 @@ public class UserAccountServerService extends UserAccountServiceGrpc.UserAccount
             user.setPassword(currentUser.getPassword());
             user.setDateAdded(currentUser.getDateAdded());
             user.setRoles(currentUser.getRoles());
+            user.setPhoto(currentUser.getPhoto());
             wasSaved = userModelService.saveEditedUser(user);
             if (wasSaved) {
                 reply.setIsSuccess(true).setMessage("User Account is successfully updated!");
@@ -192,6 +193,7 @@ public class UserAccountServerService extends UserAccountServiceGrpc.UserAccount
                 user.setPassword(request.getNewPassword());
                 user.setDateAdded(currentUser.getDateAdded());
                 user.setRoles(currentUser.getRoles());
+                user.setPhoto(currentUser.getPhoto());
                 wasSaved = userModelService.saveEditedUser(user);
                 if (wasSaved) {
                     reply.setIsSuccess(true).setMessage("User password successfully updated!");

@@ -20,7 +20,7 @@
                         <div th:if="${param.usernameError}" class="alert alert-danger">
                             Invalid username, please try again
                         </div>
-                        <form th:action="@{/login}" class="row g-3 needs-validation" novalidate method="post">
+                        <form th:action="@{login}" class="row g-3 needs-validation" novalidate method="post">
                             <div class="form-floating mb-3">
                                 <input type="text" class="form-control" id="usernameLogin" placeholder="username" th:name="usernameLogin" required>
                                 <label for="usernameLogin">Username</label>
@@ -34,7 +34,7 @@
                             </div>
                         </form>
                         <hr class="my-4">
-                        Don't have an account yet? <a th:href="@{/register}">Signup Now</a>
+                        Don't have an account yet? <a th:href="@{register}">Signup Now</a>
                     </div>
                 </div>
             </div>
