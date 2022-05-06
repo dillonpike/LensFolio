@@ -5,6 +5,7 @@ StartLimitBurst=5
 
 [Service]
 Type=simple
+EnvironmentFile=-deploy
 Restart=always
 RestartSec=30
 User=gitlab-runner
