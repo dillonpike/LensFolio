@@ -24,6 +24,7 @@ public class RegisteringStepDefs {
     private WebDriverWait wait;
     private Boolean alreadyRegistered = false;
     private String outcome = "";
+    private String address = "http://localhost:9000/login";
 
     @Before
     public void setUp() {
@@ -38,13 +39,13 @@ public class RegisteringStepDefs {
 
     @Given("I am not logged in")
     public void iAmNotLoggedIn() {
-        webDriver.navigate().to("http://localhost:9000/login");
+        webDriver.navigate().to(address);
         wait.until(ExpectedConditions.elementToBeClickable(By.id("usernameLogin")));
     }
 
     @When("I am on the login page")
     public void iAmOnTheLoginPage() {
-        webDriver.navigate().to("http://localhost:9000/login");
+        webDriver.navigate().to(address);
     }
 
     @Then("I can login or register")
@@ -55,12 +56,16 @@ public class RegisteringStepDefs {
 
     @When("I am on the register page")
     public void iAmOnTheRegisterPage() {
-        webDriver.navigate().to("http://localhost:9000/register");
+        address = "http://localhost:9000/register";
+        webDriver.navigate().to(address);
     }
 
     @Then("Mandatory fields are marked")
     public void mandatoryFieldsAreMarked() {
-        String firstName = webDriver.findElement(By.id("firstName")).getAttribute("required");
+        String username = webDriver.findElement(By.id("username")).getCssValue("required");
+        assertEquals("True", username);
+
+        String firstName = webDriver.findElement(By.id("firstName")).getCssValue("required");
         assertEquals("True", firstName);
 
         String lastName = webDriver.findElement(By.id("lastName")).getAttribute("required");
@@ -76,32 +81,34 @@ public class RegisteringStepDefs {
         assertEquals("True", confirmPassword);
     }
 
-    @When("I register with a username {String}")
+    @When("I register with a username {string}")
     public void iRegisterWithAUsernameUsername(String username) {
-        webDriver.navigate().to("http://localhost:9000/register");
+        address = "http://localhost:9000/register";
+        webDriver.navigate().to(address);
         wait.until(ExpectedConditions.elementToBeClickable(By.id("signUp")));
         webDriver.findElement(By.id("username")).sendKeys(username);
     }
-    @When("I register with a username <Username>")
-    public void iRegisterWithAUsernameUsername() {
-    }
 
-    @And("Username is already registered {String}")
+    @And("Username is already registered {string}")
     public void usernameIsAlreadyRegisteredIsAlreadyRegistered(String alreadyReg) {
         if (Objects.equals(alreadyReg, "True")) {
             alreadyRegistered = true;
-            outcome = "Username already registered";
+            if (Objects.equals(address, "http://localhost:9000/register")) {
+                outcome = "Username already registered";
+            } else {
+                outcome = "Logged in";
+            }
         } else {
             outcome = "Registered";
         }
     }
 
-    @Then("{String} message occurs")
+    @Then("{string} message occurs")
     public void outcomeMessageOccurs(String outcomeMessage) {
         assertEquals(outcome, outcomeMessage);
     }
 
-    @And("Username is registered {String}")
+    @And("Username is registered {string}")
     public void usernameIsRegisteredIsRegistered(String reg) {
         String isReg = "True";
         if (alreadyRegistered) {
@@ -111,12 +118,22 @@ public class RegisteringStepDefs {
 
     }
 
-    @When("I login with a username <Username>")
-    public void iLoginWithAUsernameUsername() {
-        
+    @When("I login with a username {string}")
+    public void iLoginWithAUsernameUsername(String username) {
+        address = "http://localhost:9000/login";
+        webDriver.navigate().to(address);
+        wait.until(ExpectedConditions.elementToBeClickable(By.id("usernameLogin")));
+        webDriver.findElement(By.id("usernameLogin")).sendKeys(username);
+        webDriver.findElement(By.id("passwordLogin")).sendKeys("password");
+        webDriver.findElement(By.id("signIn")).click();
     }
 
-    @And("Username is logged in <isLoggedIn>")
-    public void usernameIsLoggedInIsLoggedIn() {
+    @And("Username is logged in {string}")
+    public void usernameIsLoggedInIsLoggedIn(String loggedIn) {
+        String reg = "False";
+        if (alreadyRegistered) {
+            reg = "True";
+        }
+        assertEquals(reg, loggedIn);
     }
 }
