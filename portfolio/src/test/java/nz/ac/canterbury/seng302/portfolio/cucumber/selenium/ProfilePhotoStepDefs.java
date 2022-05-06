@@ -85,7 +85,7 @@ public class ProfilePhotoStepDefs {
     }
 
     @Given("My profile photo is not the default photo")
-    public void myProfilePhotoIsNotTheDefaultPhoto() throws InterruptedException {
+    public void myProfilePhotoIsNotTheDefaultPhoto() {
         try {
             myProfilePhotoIsTheDefaultPhoto();
             iUploadAProfilePhoto();

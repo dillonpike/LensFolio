@@ -8,6 +8,8 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
@@ -43,9 +45,9 @@ public class RolesStepDefs {
         SeleniumService.tearDownWebDriver();
     }
 
-    @Then("My account page displays the following roles:")
-    public void myAccountPageDisplaysTheFollowingRoles(DataTable rolesDataTable) {
-        for (String role: rolesDataTable.asList()) {
+    @Then("My account page displays the following roles: {string}")
+    public void myAccountPageDisplaysTheFollowingRoles(String rolesString) {
+        for (String role: rolesString.split(", ")) {
             assertTrue(webDriver.findElement(By.xpath("//h6[" + SeleniumService.XPATH_LOWER_CASE_TEXT + "='" +
                     role.toLowerCase() + "']")).isDisplayed());
         }
