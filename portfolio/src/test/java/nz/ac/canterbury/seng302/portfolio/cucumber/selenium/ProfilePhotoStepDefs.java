@@ -2,11 +2,9 @@ package nz.ac.canterbury.seng302.portfolio.cucumber.selenium;
 
 import io.cucumber.java.After;
 import io.cucumber.java.Before;
-import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
-import junit.framework.AssertionFailedError;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -80,29 +78,24 @@ public class ProfilePhotoStepDefs {
         Screenshot logoImageScreenshot = new AShot().takeScreenshot(webDriver, profilePhotoElement);
         BufferedImage actualImage = logoImageScreenshot.getImage();
 
-        File actualTest = new File("src/test/resources/static/img/actualTest.jpg");
-        File expectedTest = new File("src/test/resources/static/img/expectedTest.jpg");
-
-        BufferedImage resizedImage = new BufferedImage(actualImage.getWidth(), actualImage.getHeight(), BufferedImage.SCALE_SMOOTH);
-        Graphics2D graphics2D = resizedImage.createGraphics();
-        graphics2D.drawImage(expectedImage, 0, 0, actualImage.getWidth(), actualImage.getHeight(), null);
+        BufferedImage resizedExpectedImage = new BufferedImage(actualImage.getWidth(), actualImage.getHeight(), BufferedImage.SCALE_SMOOTH);
+        Graphics2D graphics2D = resizedExpectedImage.createGraphics();
+        graphics2D.drawImage(expectedImage, 0, 0, actualImage.getWidth(), actualImage.getHeight(), Color.WHITE, null);
         graphics2D.dispose();
 
-
+        File actualTest = new File("src/test/resources/static/img/actualTest.jpg");
+        File expectedTest = new File("src/test/resources/static/img/expectedTest.jpg");
         try {
-            boolean check1 = ImageIO.write(actualImage, "png", actualTest);
-            boolean check2 = ImageIO.write(resizedImage, "png", expectedTest);
-            System.err.println("Written" + check1 + check2);
+            ImageIO.write(actualImage, "png", actualTest);
+            ImageIO.write(resizedExpectedImage, "png", expectedTest);
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-
         ImageDiffer imgDiff = new ImageDiffer();
-        ImageDiff diff = imgDiff.makeDiff(actualImage, resizedImage).withDiffSizeTrigger((int) (actualImage.getHeight() * actualImage.getWidth() * 0.5));
-
-        System.err.println(diff.hasDiff());
-        System.err.println(actualImage.getHeight() * actualImage.getWidth());
+        double PHOTO_TOLERANCE_MULTIPLIER = 0.7;
+        ImageDiff diff = imgDiff.makeDiff(actualImage, resizedExpectedImage).withDiffSizeTrigger(
+                (int) (actualImage.getHeight() * actualImage.getWidth() * PHOTO_TOLERANCE_MULTIPLIER));
         return !diff.hasDiff();
     }
 
@@ -115,12 +108,6 @@ public class ProfilePhotoStepDefs {
 
     @Given("My profile photo is not the default photo")
     public void myProfilePhotoIsNotTheDefaultPhoto() {
-//        try {
-////            myProfilePhotoIsTheDefaultPhoto();
-//            iUploadAProfilePhoto();
-//        } catch (AssertionFailedError e) {
-//            // Profile photo is not the default photo so step passes
-//        }
         if (profilePhotoIsSameAsImageFromPath(webDriver.findElement(By.id("uploadPreview")),
                 "src/main/resources/static/img/default.jpg")) {
             iUploadAProfilePhoto();
@@ -134,7 +121,7 @@ public class ProfilePhotoStepDefs {
         webDriver.findElement(By.id("save-btn")).click();
         wait.until(ExpectedConditions.elementToBeClickable(By.id("removeUpdateAlert")));
         assertTrue(profilePhotoIsSameAsImageFromPath(webDriver.findElement(By.id("uploadPreview")),
-                "src/test/resources/static/img/T100Logo.jpg"));
+                "src/main/resources/static/img/userImage.jpg"));
     }
 
     @Then("My small version of my profile photo is displayed in the header of the page")
