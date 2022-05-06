@@ -49,11 +49,6 @@ public class UserModelServiceTests {
     @Before
     public void setUp(){
         MockitoAnnotations.openMocks(this);
-        Roles student = new Roles(0,"STUDENT");
-        Roles teacher = new Roles(1,"TEACHER");
-        Roles administrator = new Roles(2, "COURSE ADMINISTRATOR");
-        rolesRepository.save(student);
-        when(rolesRepository.save(any(Roles.class))).thenReturn(student);
 
         userModelService = new UserModelService(userModelRepository, rolesRepository);
 
@@ -78,7 +73,6 @@ public class UserModelServiceTests {
         userModelRepository.save(user);
         when(userModelRepository.save(any(UserModel.class))).thenReturn(user);
         UserModel newUser = userModelService.addUser(user);
-        System.out.println(userModelRepository.findAll());
 
         assertThat(newUser.getUserId()).isSameAs(user.getUserId());
         assertThat(newUser.getUsername()).isSameAs(user.getUsername());
@@ -113,12 +107,12 @@ public class UserModelServiceTests {
     @Test
     public void testWhenAddUser_ThenReturnDefaultStudentRole() {
         UserModel user = new UserModel();
-        user.setEmail("123@gmail.com");
         Roles studentRole = new Roles(0, "STUDENT");
         when(rolesRepository.findByRoleName("STUDENT")).thenReturn(studentRole);
         // userModelRepository is mocked so that when it is called to save a user, it returns the user that was given
         when(userModelRepository.save(any(UserModel.class))).then(returnsFirstArg());
         UserModel newUser = userModelService.addUser(user);
+
         assertEquals(Set.of(studentRole), newUser.getRoles());
     }
 
@@ -151,21 +145,22 @@ public class UserModelServiceTests {
         user.setEmail("test@test.com");
         user.setBio("bio");
         user.setPersonalPronouns("Unknown");
-        when(userModelRepository.save(any(UserModel.class))).thenReturn(user);
+        when(userModelRepository.findByUsername(any(String.class))).then(returnsFirstArg());
         UserModel newUser = userModelService.addUser(user);
-
         UserModel testUser = userModelService.getUserByUsername("username");
 
-//        assertThat(testUser.getUserId()).isSameAs(user.getUserId());
-//        assertThat(testUser.getUsername()).isSameAs(user.getUsername());
-//        assertThat(testUser.getPassword()).isSameAs(user.getPassword());
-//        assertThat(testUser.getFirstName()).isSameAs(user.getFirstName());
-//        assertThat(testUser.getMiddleName()).isSameAs(user.getMiddleName());
-//        assertThat(testUser.getLastName()).isSameAs(user.getLastName());
-//        assertThat(testUser.getNickname()).isSameAs(user.getNickname());
-//        assertThat(testUser.getEmail()).isSameAs(user.getEmail());
-//        assertThat(testUser.getBio()).isSameAs(user.getBio());
-//        assertThat(testUser.getPersonalPronouns()).isSameAs(user.getPersonalPronouns());
+
+//        assertThat(newUser.getUserId()).isSameAs(testUser.getUserId());
+//        assertThat(newUser.getUsername()).isSameAs(testUser.getUsername());
+//        assertThat(newUser.getPassword()).isSameAs(testUser.getPassword());
+//        assertThat(newUser.getFirstName()).isSameAs(testUser.getFirstName());
+//        assertThat(newUser.getMiddleName()).isSameAs(testUser.getMiddleName());
+//        assertThat(newUser.getLastName()).isSameAs(testUser.getLastName());
+//        assertThat(newUser.getNickname()).isSameAs(testUser.getNickname());
+//        assertThat(newUser.getEmail()).isSameAs(testUser.getEmail());
+//        assertThat(newUser.getBio()).isSameAs(testUser.getBio());
+//        assertThat(newUser.getPersonalPronouns()).isSameAs(testUser.getPersonalPronouns());
+
     }
 
 }
