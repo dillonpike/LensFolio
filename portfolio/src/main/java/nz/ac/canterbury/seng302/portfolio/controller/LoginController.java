@@ -61,7 +61,7 @@ public class LoginController {
         try {
             loginReply = authenticateClientService.authenticate(username, password);
         } catch (StatusRuntimeException e) {
-            model.addAttribute("loginMessage", "Error connecting to Identity Provider...");
+            model.addAttribute("loginMessage", e);
             return "redirect:login?error";
         }
         if (loginReply.getSuccess()) {
