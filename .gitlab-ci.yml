@@ -107,6 +107,7 @@ deploy-production-identityprovider:
     - touch deploy
     - echo "MARIADB_USERNAME=$MARIADB_USERNAME" >> deploy
     - echo "MARIADB_PASSWORD=$MARIADB_PASSWORD" >> deploy
+    - cp deploy /home/gitlab-runner/deploy
     - sudo systemctl restart production-identityprovider
   artifacts:
     paths:
@@ -129,6 +130,7 @@ deploy-production-portfolio:
     - touch deploy
     - echo "MARIADB_USERNAME=$MARIADB_USERNAME" >> deploy
     - echo "MARIADB_PASSWORD=$MARIADB_PASSWORD" >> deploy
+    - cp deploy /home/gitlab-runner/deploy
     - sudo systemctl restart production-portfolio
   artifacts:
     paths:
