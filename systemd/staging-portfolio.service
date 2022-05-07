@@ -5,7 +5,7 @@ StartLimitBurst=5
 
 [Service]
 Type=simple
-EnvironmentFile=-/home/gitlab-runner/builds/w8vCrrxQ/0/seng302-2022/team-100/portfolio/deploy
+EnvironmentFile=-/home/gitlab-runner/deploy
 Restart=always
 RestartSec=30
 User=gitlab-runner
