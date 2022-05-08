@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import nz.ac.canterbury.seng302.shared.identityprovider.*;
 import org.springframework.security.crypto.password.Pbkdf2PasswordEncoder;
 
+import java.util.Objects;
 import java.util.Set;
 
 import java.util.List;
@@ -98,11 +99,11 @@ public class UserAccountServerService extends UserAccountServiceGrpc.UserAccount
                     Blob imageBlob = user.getPhoto();
                     File imageFile = new File("src/main/resources/Images/profileImage");
                     FileOutputStream imageOutput = new FileOutputStream(imageFile);
-                    if  (imageBlob != null) {
+                    if  (imageBlob.length() == 0) {
+                        profileImagePath = "";
+                    } else {
                         imageOutput.write(imageBlob.getBytes(1, (int) imageBlob.length()));
                         profileImagePath = imageFile.getAbsolutePath();
-                    } else {
-                        profileImagePath = "";
                     }
                     imageOutput.close();
                 } catch (SQLException | IOException e) {
@@ -259,7 +260,7 @@ public class UserAccountServerService extends UserAccountServiceGrpc.UserAccount
             public void onCompleted() {
                 FileUploadStatusResponse.Builder reply = FileUploadStatusResponse.newBuilder();
 
-                //  Somehow call the function below (savePhotoToUser)
+                //  Call the function savePhotoToUser to save the photo
                 Blob blob = new MariaDbBlob(imageArray.toByteArray());
                 boolean wasSaved = false;
                 if (!byteFailed) {
@@ -319,7 +320,7 @@ public class UserAccountServerService extends UserAccountServiceGrpc.UserAccount
         try {
             UserModel user = userModelService.getUserById(request.getUserId());
             if (user != null) {
-                user.setPhoto(new MariaDbBlob());
+                user.setPhoto(null);
                 wasDeleted = userModelService.saveEditedUser(user);
                 message = "Photo deleted successfully";
             }
