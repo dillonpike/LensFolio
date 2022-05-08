@@ -216,18 +216,11 @@ public class EditAccountController {
 
     @PostMapping("/saveAccountPhoto")
     public String savePhoto(
-            @RequestParam(value = "userId") String userIdStr,
+            @ModelAttribute("userId") int userId,
             RedirectAttributes rm,
             @RequestParam("avatar") MultipartFile multipartFile,
             Model model
     ) {
-        int userId;
-        try {
-            // Seems that multiple ids are added to we select the first valid id
-            userId = Integer.parseInt(userIdStr.substring(0,1));
-        } catch (Exception e) {
-            return "500InternalServer";
-        }
 
         if (multipartFile.isEmpty()) {
             rm.addFlashAttribute("message", "Please select a file to upload.");
