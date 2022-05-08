@@ -5,7 +5,6 @@ StartLimitBurst=5
 
 [Service]
 Type=simple
-EnvironmentFile=-/home/gitlab-runner/deploy
 Restart=always
 RestartSec=30
 User=gitlab-runner
