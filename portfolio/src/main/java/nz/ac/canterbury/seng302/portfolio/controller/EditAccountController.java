@@ -10,20 +10,35 @@ import nz.ac.canterbury.seng302.shared.identityprovider.DeleteUserProfilePhotoRe
 import nz.ac.canterbury.seng302.shared.identityprovider.EditUserResponse;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.web.util.UrlUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.filter.OncePerRequestFilter;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartResolver;
+import org.springframework.web.multipart.commons.CommonsMultipartResolver;
+import org.springframework.web.servlet.HandlerExceptionResolver;
+import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import javax.naming.SizeLimitExceededException;
+import javax.servlet.FilterChain;
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.io.*;
+import java.util.HashMap;
+import java.util.Map;
 
 @Controller
+
 public class EditAccountController {
 
     @Autowired
@@ -201,18 +216,26 @@ public class EditAccountController {
 
     @PostMapping("/saveAccountPhoto")
     public String savePhoto(
-            @ModelAttribute("userId") int userId,
+            @RequestParam(value = "userId") String userIdStr,
             RedirectAttributes rm,
             @RequestParam("avatar") MultipartFile multipartFile,
             Model model
     ) {
+        int userId;
+        try {
+            // Seems that multiple ids are added to we select the first valid id
+            userId = Integer.parseInt(userIdStr.substring(0,1));
+        } catch (Exception e) {
+            return "500InternalServer";
+        }
+
         if (multipartFile.isEmpty()) {
             rm.addFlashAttribute("message", "Please select a file to upload.");
+            rm.addFlashAttribute("isUpdateSuccess", false);
             return "redirect:editAccount";
         }
         boolean wasSaved = false;
         try {
-            // TODO Needs to get the image from the model
 
             File imageFile = new File("src/main/resources/static/img/userImage.jpg");
             FileOutputStream fos = new FileOutputStream( imageFile );
@@ -236,5 +259,6 @@ public class EditAccountController {
         rm.addAttribute("userId", userId);
         return "redirect:editAccount";
     }
+
 
 }
