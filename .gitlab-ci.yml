@@ -59,11 +59,11 @@ deploy-staging-identityprovider:
     - cp -r ./build/libs /home/gitlab-runner/staging-identityprovider
     - cp ../runner/staging-identityprovider.sh /home/gitlab-runner/staging-identityprovider.sh
     - chmod u+x /home/gitlab-runner/staging-identityprovider.sh
-    - rm deploy || true
-    - touch deploy
-    - echo "MARIADB_USERNAME=$MARIADB_USERNAME" >> deploy
-    - echo "MARIADB_PASSWORD=$MARIADB_PASSWORD" >> deploy
-    - cp deploy /home/gitlab-runner/deploy
+    - rm deploy.env || true
+    - touch deploy.env
+    - echo "export MARIADB_USERNAME=$MARIADB_USERNAME" >> deploy.env
+    - echo "export MARIADB_PASSWORD=$MARIADB_PASSWORD" >> deploy.env
+    - cp deploy.env /home/gitlab-runner/deploy.env
     - sudo systemctl restart staging-identityprovider
   artifacts:
     paths:
@@ -81,11 +81,11 @@ deploy-staging-portfolio:
     - cp -r ./build/libs /home/gitlab-runner/staging-portfolio
     - cp ../runner/staging-portfolio.sh /home/gitlab-runner/staging-portfolio.sh
     - chmod u+x /home/gitlab-runner/staging-portfolio.sh
-    - rm deploy || true
-    - touch deploy
-    - echo "MARIADB_USERNAME=$MARIADB_USERNAME" >> deploy
-    - echo "MARIADB_PASSWORD=$MARIADB_PASSWORD" >> deploy
-    - cp deploy /home/gitlab-runner/deploy
+    - rm deploy.env || true
+    - touch deploy.env
+    - echo "export MARIADB_USERNAME=$MARIADB_USERNAME" >> deploy.env
+    - echo "export MARIADB_PASSWORD=$MARIADB_PASSWORD" >> deploy.env
+    - cp deploy.env /home/gitlab-runner/deploy.env
     - sudo systemctl restart staging-portfolio
   artifacts:
     paths:
