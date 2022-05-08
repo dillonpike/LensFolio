@@ -24,7 +24,7 @@
     <div class="row ">
       <div class="col-md-7 col-lg-4 mb-5 mb-lg-0">
         <div class="card border-4 shadow">
-          <img th:src="@{/src/main/resources/static/img/userImage.jpg}" id="uploadPreview" alt="mdo" width="300" height="300" class="rounded-circle" style ="margin-left: 60px; margin-top:20px">
+          <img th:src="@{/src/main/resources/static/img/userImage}" id="uploadPreview" alt="mdo" width="300" height="300" class="rounded-circle" style ="margin-left: 60px; margin-top:20px">
           <label for="avatar" style="text-align:center">Update profile picture: </label>
 
           <form th:action="@{/saveAccountPhoto(userId=${userId})}" method="post" enctype="multipart/form-data">

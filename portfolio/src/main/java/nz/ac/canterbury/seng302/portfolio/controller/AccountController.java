@@ -88,7 +88,7 @@ public class AccountController {
                 } else {
                     imageFile = new File("src/main/resources/static/img/default.jpg");
                 }
-                File usedImageFile = new File("src/main/resources/static/img/userImage.jpg");
+                File usedImageFile = new File("src/main/resources/static/img/userImage");
                 FileOutputStream imageOutput = new FileOutputStream(usedImageFile);
                 FileInputStream imageInput = new FileInputStream(imageFile);
                 imageOutput.write(imageInput.readAllBytes());

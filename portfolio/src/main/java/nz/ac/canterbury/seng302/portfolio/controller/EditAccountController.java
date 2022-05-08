@@ -190,10 +190,10 @@ public class EditAccountController {
             wasDeleted = reply.getIsSuccess();
             if (wasDeleted) {
 //                Path src = Paths.get("src/main/resources/static/img/default.jpg");
-//                Path dest = Paths.get("src/main/resources/static/img/userImage.jpg");
+//                Path dest = Paths.get("src/main/resources/static/img/userImage");
 //                Files.copy(src, dest, StandardCopyOption.REPLACE_EXISTING);
                 File imageFile = new File("src/main/resources/static/img/default.jpg");
-                File usedImageFile = new File("src/main/resources/static/img/userImage.jpg");
+                File usedImageFile = new File("src/main/resources/static/img/userImage");
                 FileOutputStream imageOutput = new FileOutputStream(usedImageFile);
                 FileInputStream imageInput = new FileInputStream(imageFile);
                 imageOutput.write(imageInput.readAllBytes());
@@ -237,12 +237,12 @@ public class EditAccountController {
         boolean wasSaved = false;
         try {
 
-            File imageFile = new File("src/main/resources/static/img/userImage.jpg");
+            File imageFile = new File("src/main/resources/static/img/userImage");
             FileOutputStream fos = new FileOutputStream( imageFile );
             fos.write( multipartFile.getBytes() );
             fos.close();
 
-            registerClientService.UploadUserProfilePhoto(userId, new File("src/main/resources/static/img/userImage.jpg"));
+            registerClientService.UploadUserProfilePhoto(userId, new File("src/main/resources/static/img/userImage"));
             // You cant tell if it saves correctly with the above method as it returns nothing
             wasSaved = true;
             if (wasSaved) {
