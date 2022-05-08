@@ -95,6 +95,7 @@ deploy-production-identityprovider:
     - cp -r ./build/libs /home/gitlab-runner/production-identityprovider
     - cp ../runner/production-identityprovider.sh /home/gitlab-runner/production-identityprovider.sh
     - chmod u+x /home/gitlab-runner/production-identityprovider.sh
+    - (echo "export MARIADB_USERNAME=$MARIADB_USERNAME" & echo "export MARIADB_PASSWORD=$MARIADB_PASSWORD") > /home/gitlab-runner/production-identityprovider/env.sh
     - sudo systemctl restart production-identityprovider
   artifacts:
     paths:
@@ -113,6 +114,7 @@ deploy-production-portfolio:
     - cp -r ./build/libs /home/gitlab-runner/production-portfolio
     - cp ../runner/production-portfolio.sh /home/gitlab-runner/production-portfolio.sh
     - chmod u+x /home/gitlab-runner/production-portfolio.sh
+    - (echo "export MARIADB_USERNAME=$MARIADB_USERNAME" & echo "export MARIADB_PASSWORD=$MARIADB_PASSWORD") > /home/gitlab-runner/production-portfolio/env.sh
     - sudo systemctl restart production-portfolio
   artifacts:
     paths:
