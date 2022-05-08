@@ -53,8 +53,7 @@ deploy-staging-identityprovider:
   stage: deploy
   script:
     - cd identityprovider
-    - echo "MARIADB_USERNAME=$MARIADB_USERNAME" > src/main/resources/.env
-    - echo "MARIADB_PASSWORD=$MARIADB_PASSWORD" >> src/main/resources/.env
+    - echo ("MARIADB_USERNAME=$MARIADB_USERNAME" & "MARIADB_PASSWORD=$MARIADB_PASSWORD") > src/main/resources/.env
     - ./gradlew bootJar
     - rm -rf /home/gitlab-runner/staging-identityprovider/ || true
     - mkdir /home/gitlab-runner/staging-identityprovider/
@@ -72,8 +71,7 @@ deploy-staging-portfolio:
   stage: deploy
   script:
     - cd portfolio
-    - echo "MARIADB_USERNAME=$MARIADB_USERNAME" > src/main/resources/.env
-    - echo "MARIADB_PASSWORD=$MARIADB_PASSWORD" >> src/main/resources/.env
+    - echo ("MARIADB_USERNAME=$MARIADB_USERNAME" & "MARIADB_PASSWORD=$MARIADB_PASSWORD") > src/main/resources/.env
     - ./gradlew bootJar
     - rm -rf /home/gitlab-runner/staging-portfolio/ || true
     - mkdir /home/gitlab-runner/staging-portfolio/
