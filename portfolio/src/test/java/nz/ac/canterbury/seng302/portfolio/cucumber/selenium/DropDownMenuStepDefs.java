@@ -10,6 +10,9 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 public class DropDownMenuStepDefs {
 
     /**
@@ -42,29 +45,36 @@ public class DropDownMenuStepDefs {
 
     @When("I click on the photo icon")
     public void iClickOnThePhotoIcon() {
-        Asser
+        assertTrue(webDriver.findElement(By.id("dropdownUser1")).isDisplayed());
         webDriver.findElement(By.id("dropdownUser1")).click();
-        wait.until(ExpectedConditions.elementToBeClickable(By.id("signOutButton")));
-        webDriver.findElement(By.id("signOutButton")).click();
-        wait.until(ExpectedConditions.elementToBeClickable(By.id("usernameLogin")));
     }
 
     @Then("A menu is displayed")
     public void aMenuIsDisplayed() {
-
+        assertTrue(webDriver.findElement(By.id("dropDownMenu")).isDisplayed());
     }
 
     @And("There is a logout option")
     public void thereIsALogoutOption() {
-
+        assertTrue(webDriver.findElement(By.id("signOutButton")).isDisplayed());
     }
 
     @When("I click on the logout button")
     public void iClickOnTheLogoutButton() {
-
+        iClickOnThePhotoIcon();
+        assertTrue(webDriver.findElement(By.id("signOutButton")).isDisplayed());
+        webDriver.findElement(By.id("signOutButton")).click();
     }
 
     @When("I try and access my account")
     public void iTryAndAccessMyAccount() {
+        webDriver.navigate().back();
+    }
+
+    @Then("I am taken to login page")
+    public void iAmTakenToLoginPage() {
+        String actualURL = webDriver.getCurrentUrl();
+        String expectedURL = "http://localhost:9000/login";
+        assertEquals(expectedURL, actualURL);
     }
 }

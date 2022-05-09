@@ -47,7 +47,7 @@
                 <a href="#" class="d-block link-dark text-decoration-none dropdown-toggle" id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false" >
                     <img id="userIconSmall" th:src="@{/src/main/resources/static/img/userImage.jpg}" alt="mdo" width="32" height="32" class="rounded-circle">
                 </a>
-                <ul class="dropdown-menu text-small" aria-labelledby="dropdownUser1">
+                <ul class="dropdown-menu text-small" id="dropDownMenu" aria-labelledby="dropdownUser1">
                     <li><form th:action="@{/backToAccountPage}" method="post">
                         <div>
                             <input type="hidden" th:value="${userId}" name="userId">
