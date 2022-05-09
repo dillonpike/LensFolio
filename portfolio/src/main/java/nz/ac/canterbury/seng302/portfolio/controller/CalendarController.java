@@ -12,6 +12,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 
 import java.util.*;
 
+/***
+ * Controller receives HTTP GET, POST, PUT, DELETE calls for Calendar page
+ */
 @Controller
 public class CalendarController {
 

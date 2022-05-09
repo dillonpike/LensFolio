@@ -22,6 +22,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 
+/***
+ * Controller receive HTTP GET, POST, PUT, DELETE calls for edit account page
+ */
 @Controller
 public class EditAccountController {
 

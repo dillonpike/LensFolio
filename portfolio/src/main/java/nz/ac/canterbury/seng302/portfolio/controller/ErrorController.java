@@ -14,6 +14,9 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.http.HttpServletRequest;
 
+/***
+ * Controller receive HTTP GET, POST, PUT, DELETE calls for error page
+ */
 @Controller
 public class ErrorController implements org.springframework.boot.web.servlet.error.ErrorController {
 

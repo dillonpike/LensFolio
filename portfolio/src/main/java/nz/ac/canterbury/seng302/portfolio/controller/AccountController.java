@@ -18,6 +18,9 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+/***
+ * Controller receives HTTP GET, POST, PUT, DELETE calls for account page
+ */
 @Controller
 public class AccountController {
 
