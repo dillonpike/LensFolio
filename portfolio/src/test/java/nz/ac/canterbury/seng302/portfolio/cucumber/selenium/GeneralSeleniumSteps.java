@@ -69,6 +69,11 @@ public class GeneralSeleniumSteps {
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//h2[contains(., 'Profile')]")));
     }
 
+    @When("I browse to the project page")
+    public void iBrowseToTheProjectPage() {
+        webDriver.findElement(By.id("projectsHeaderButton")).click();
+    }
+
     @Given("I am logged in as {string}")
     public void iAmLoggedInAsUsername(String username) {
         webDriver.navigate().to("http://localhost:9000/login");

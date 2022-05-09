@@ -37,3 +37,18 @@ Feature: UUi Registering and logging into a user account
     |"pointy"   |"False"                |"Successful registration"                |"True"          |
     |"rlh89"    |"True"                 |"Invalid registration, username taken"   |"False"         |
     |"rlh88"    |"False"                |"Successful registration"                |"True"          |
+
+  Scenario: AC3 part 1 - Error message should be displayed on the login screen when login details are not correct
+    Given I am on the login page
+    When I login with a  wrong username "wrongusername"
+    And I login with any password
+    Then username error message should be displayed
+
+  Scenario: AC3 part 1 - Error message should be displayed on the login screen when login details are not correct
+    Given I am on the login page
+    When I login with a  right username "admin"
+    And I login with wrong password "wrongpassword"
+    Then password error message should be displayed
+
+
+
