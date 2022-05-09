@@ -46,7 +46,7 @@ public class ErrorController implements org.springframework.boot.web.servlet.err
         if (status != null) {
             Integer statusCode = Integer.valueOf(status.toString());
             if (statusCode == HttpStatus.FORBIDDEN.value()) {
-                return "403Forbidden";
+                return "redirect:login?forbidden";
             }
 
             Integer id = userAccountClientService.getUserIDFromAuthState(principal);
