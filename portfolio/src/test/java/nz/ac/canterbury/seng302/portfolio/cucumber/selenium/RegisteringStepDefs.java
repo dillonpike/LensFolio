@@ -140,4 +140,41 @@ public class RegisteringStepDefs {
         }
         assertEquals(reg, loggedIn);
     }
+
+    @When("I login with a  wrong username {string}")
+    public void iLoginWithAWrongUsername(String username) {
+        wait.until(ExpectedConditions.elementToBeClickable(By.id("usernameLogin")));
+        webDriver.findElement(By.id("usernameLogin")).sendKeys(username);
+    }
+
+    @And("I login with any password")
+    public void iLoginWithAnyPassword() throws InterruptedException {
+        webDriver.findElement(By.id("passwordLogin")).sendKeys("anyPassword");
+        webDriver.findElement(By.id("signIn")).click();
+        Thread.sleep(2000);
+    }
+
+    @Then("username error message should be displayed")
+    public void usernameErrorMessageShouldBeDisplayed() {
+        assertTrue(webDriver.findElement(By.id("usernameInvalidMessage")).isDisplayed());
+    }
+
+    @When("I login with a  right username {string}")
+    public void iLoginWithARightUsername(String username) {
+        wait.until(ExpectedConditions.elementToBeClickable(By.id("usernameLogin")));
+        webDriver.findElement(By.id("usernameLogin")).sendKeys(username);
+    }
+
+    @And("I login with wrong password {string}")
+    public void iLoginWithWrongPassword(String password) throws InterruptedException {
+        webDriver.findElement(By.id("passwordLogin")).sendKeys(password);
+        webDriver.findElement(By.id("signIn")).click();
+        Thread.sleep(2000);
+
+    }
+
+    @Then("password error message should be displayed")
+    public void passwordErrorMessageShouldBeDisplayed() {
+        assertTrue(webDriver.findElement(By.id("passwordInvalidMessage")).isDisplayed());
+    }
 }
