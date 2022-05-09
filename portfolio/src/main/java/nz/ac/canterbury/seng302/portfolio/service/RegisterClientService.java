@@ -16,6 +16,9 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Iterator;
 
+/***
+ * Contains methods to communicate with Idp(identity provider)
+ */
 @Service
 public class RegisterClientService {
 
