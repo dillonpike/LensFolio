@@ -76,16 +76,21 @@ public class ProjectDetailsStepDefs {
         String threeMonthsTime = dtf.format(threeMonthsAfterNow);
 
         webDriver.findElement(By.className("edit-project-button")).click();
+        webDriver.findElement(By.id("projectName")).clear();
         webDriver.findElement(By.id("projectName")).sendKeys("test project");
+        webDriver.findElement(By.id("projectEndDate")).clear();
         webDriver.findElement(By.id("projectStartDate")).sendKeys(today);
+        webDriver.findElement(By.id("projectEndDate")).clear();
         webDriver.findElement(By.id("projectEndDate")).sendKeys(threeMonthsTime);
+        webDriver.findElement(By.id("projectDescription")).clear();
         webDriver.findElement(By.id("projectDescription")).sendKeys("test project desc");
 
+        webDriver.findElement(By.id("projectName")).click();
         webDriver.findElement(By.id("saveButton")).click();
 
-        //assertTrue(webDriver.findElement(By.className("title")).isDisplayed());
-        assertTrue(webDriver.findElement(By.className("project-desc")).getText().equalsIgnoreCase("test project desc"));
-        //assertTrue(webDriver.findElement(By.className("sprint-block")).isDisplayed());
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.className("title-name")));
+        assertEquals(webDriver.findElement(By.className("title-name")).getText(),"test project");
+        assertEquals(webDriver.findElement(By.className("project-desc")).getText(),"test project desc");
     }
 
     @When("I browse to the project page")
