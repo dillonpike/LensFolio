@@ -1,6 +1,7 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
 import nz.ac.canterbury.seng302.portfolio.service.ElementService;
+import nz.ac.canterbury.seng302.portfolio.service.PhotoService;
 import nz.ac.canterbury.seng302.portfolio.service.RegisterClientService;
 import nz.ac.canterbury.seng302.portfolio.service.UserAccountClientService;
 import nz.ac.canterbury.seng302.portfolio.utility.Utility;
@@ -17,6 +18,9 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+/***
+ * Controller receives HTTP GET, POST, PUT, DELETE calls for edit password page
+ */
 @Controller
 public class EditPasswordController {
 
@@ -28,6 +32,9 @@ public class EditPasswordController {
 
     @Autowired
     private ElementService elementService;
+
+    @Autowired
+    private PhotoService photoService;
 
     /***
      * GET Method
@@ -54,6 +61,7 @@ public class EditPasswordController {
             model.addAttribute("dateAdded", Utility.getDateAddedString(getUserByIdReply.getCreated()));
             model.addAttribute("monthsSinceAdded", Utility.getDateSinceAddedString(getUserByIdReply.getCreated()));
             model.addAttribute("userId", id);
+            photoService.savePhotoToPortfolio(getUserByIdReply.getProfileImagePath());
         } catch(Exception e) {
             model.addAttribute("loginMessage", "Error connecting to Identity Provider...");
             e.printStackTrace();

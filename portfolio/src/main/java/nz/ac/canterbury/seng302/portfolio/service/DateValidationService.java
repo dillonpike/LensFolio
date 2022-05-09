@@ -8,6 +8,9 @@ import org.springframework.stereotype.Service;
 
 import java.util.Date;
 
+/***
+ * Contains help methods to check the validation for date
+ */
 @Service
 public class DateValidationService {
     @Autowired

@@ -2,10 +2,8 @@ package nz.ac.canterbury.seng302.portfolio.controller;
 
 
 import nz.ac.canterbury.seng302.portfolio.service.ElementService;
-import nz.ac.canterbury.seng302.portfolio.service.RegisterClientService;
 import nz.ac.canterbury.seng302.portfolio.service.UserAccountClientService;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
-import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -16,6 +14,9 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.http.HttpServletRequest;
 
+/***
+ * Controller receive HTTP GET, POST, PUT, DELETE calls for error page
+ */
 @Controller
 public class ErrorController implements org.springframework.boot.web.servlet.error.ErrorController {
 
@@ -46,7 +47,7 @@ public class ErrorController implements org.springframework.boot.web.servlet.err
         if (status != null) {
             Integer statusCode = Integer.valueOf(status.toString());
             if (statusCode == HttpStatus.FORBIDDEN.value()) {
-                return "403Forbidden";
+                return "redirect:login?forbidden";
             }
 
             Integer id = userAccountClientService.getUserIDFromAuthState(principal);

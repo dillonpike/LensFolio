@@ -13,7 +13,7 @@
     <h1 class="h1 mb-0 fs-1">500: Internal Server Error</h1>
     <p> Invalid URL</p>
 </div>
-<form th:action="@{/backToAccountPage}" method="post">
+<form th:action="@{backToAccountPage}" method="post">
     <div>
         <input type="hidden" th:value="${userId}" name="userId" id="userId" th:name="userId">
         <button type="submit" class="btn btn-danger" style="margin-right: 10px">Back to Profile Page</button>

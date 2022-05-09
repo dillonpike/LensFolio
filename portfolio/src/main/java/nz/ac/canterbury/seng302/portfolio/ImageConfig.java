@@ -1,7 +1,5 @@
 package nz.ac.canterbury.seng302.portfolio;
 
-import java.nio.file.Path;
-import java.nio.file.Paths;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;

@@ -36,7 +36,10 @@ public class UserAccountClientService {
                 .orElse("NOT FOUND");
     }
 
-
+    /***
+     * Method to retrieve all users from database
+     * @return all users
+     */
     public PaginatedUsersResponse getAllUsers() {
         GetPaginatedUsersRequest response = GetPaginatedUsersRequest.newBuilder()
                 .build();

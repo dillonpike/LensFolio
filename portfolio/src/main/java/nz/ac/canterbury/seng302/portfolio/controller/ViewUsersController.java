@@ -18,6 +18,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
+/***
+ * Controller receive HTTP GET, POST, PUT, DELETE calls for view user page
+ */
 @Controller
 public class ViewUsersController {
 
