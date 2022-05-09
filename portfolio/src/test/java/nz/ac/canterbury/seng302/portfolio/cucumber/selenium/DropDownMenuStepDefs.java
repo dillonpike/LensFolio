@@ -45,6 +45,7 @@ public class DropDownMenuStepDefs {
 
     @When("I click on the photo icon")
     public void iClickOnThePhotoIcon() {
+        wait.until(ExpectedConditions.elementToBeClickable(By.id("dropdownUser1")));
         assertTrue(webDriver.findElement(By.id("dropdownUser1")).isDisplayed());
         webDriver.findElement(By.id("dropdownUser1")).click();
     }
@@ -62,6 +63,7 @@ public class DropDownMenuStepDefs {
     @When("I click on the logout button")
     public void iClickOnTheLogoutButton() {
         iClickOnThePhotoIcon();
+        wait.until(ExpectedConditions.elementToBeClickable(By.id("signOutButton")));
         assertTrue(webDriver.findElement(By.id("signOutButton")).isDisplayed());
         webDriver.findElement(By.id("signOutButton")).click();
     }
