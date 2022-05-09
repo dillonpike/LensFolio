@@ -12,20 +12,7 @@ Feature: UUi Registering and logging into a user account
     When I am on the register page
     Then Mandatory fields are marked
 
-  Scenario Outline: AC2 Part 1 - If I try to register an account with a username that is already registered,
-  the system should not create the account but let me know.
-    Given I am on the register page
-    When I register with a username <Username>
-    And Username is already registered <isAlreadyRegistered>
-    Then <Outcome> message occurs
-    And Username is registered <isRegistered>
-    Examples:
-    |Username   |isAlreadyRegistered    |Outcome                         |isRegistered    |
-    |"rlh89"    |"False"                |"Registered"                    |"True"          |
-    |"rlh89"    |"True"                 |"Username already registered"   |"False"         |
-    |"rlh88"    |"False"                |"Registered"                    |"True"          |
-
-  Scenario Outline: AC2 Part 2 - If I try to log in with a
+  Scenario Outline: AC2 Part 1 - If I try to log in with a
   username that has not been registered, the system should let me know.
     Given I am on the login page
     When I login with a username <Username>
@@ -33,8 +20,20 @@ Feature: UUi Registering and logging into a user account
     Then <Outcome> message occurs
     And Username is logged in <isLoggedIn>
     Examples:
-      |Username   |isAlreadyRegistered    |Outcome                         |isLoggedIn    |
-      |"rlh89"    |"False"                |"Username not registered"       |"False"       |
-      |"rlh89"    |"True"                 |"Logged in"                     |"True"        |
-      |"rlh88"    |"False"                |"Username not registered"       |"False"       |
+    |Username   |isAlreadyRegistered    |Outcome                                    |isLoggedIn    |
+    |"pointy"   |"False"                |"Invalid username, please try again"       |"False"       |
+    |"rlh89"    |"True"                 |"Logged in"                                |"True"        |
+    |"rlh88"    |"False"                |"Invalid username, please try again"       |"False"       |
 
+  Scenario Outline: AC2 Part 2 - If I try to register an account with a username that is already registered,
+  the system should not create the account but let me know.
+    Given I am on the register page
+    When I register with a username <Username>
+    And Username is already registered <isAlreadyRegistered>
+    Then <Outcome> message occurs
+    And Username is registered <isRegistered>
+    Examples:
+    |Username   |isAlreadyRegistered    |Outcome                                  |isRegistered    |
+    |"pointy"   |"False"                |"Successful registration"                |"True"          |
+    |"rlh89"    |"True"                 |"Invalid registration, username taken"   |"False"         |
+    |"rlh88"    |"False"                |"Successful registration"                |"True"          |

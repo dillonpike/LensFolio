@@ -1,6 +1,7 @@
 package nz.ac.canterbury.seng302.portfolio.cucumber.selenium;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -13,6 +14,7 @@ import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import java.util.Objects;
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -85,8 +87,18 @@ public class RegisteringStepDefs {
     public void iRegisterWithAUsernameUsername(String username) {
         address = "http://localhost:9000/register";
         webDriver.navigate().to(address);
-        wait.until(ExpectedConditions.elementToBeClickable(By.id("signUp")));
+        wait.until(ExpectedConditions.elementToBeClickable(By.id("username")));
         webDriver.findElement(By.id("username")).sendKeys(username);
+        webDriver.findElement(By.id("firstName")).sendKeys("Admin");
+        webDriver.findElement(By.id("lastName")).sendKeys("Admin");
+        webDriver.findElement(By.id("email")).sendKeys("name@example.com");
+        webDriver.findElement(By.id("passwordLogin")).sendKeys("Admin");
+        webDriver.findElement(By.id("confirmPassword")).sendKeys("Admin");
+        WebElement ele = webDriver.findElement(By.id("signUp"));
+        JavascriptExecutor jse = (JavascriptExecutor)webDriver;
+        jse.executeScript("arguments[0].click()", ele);
+        //wait.until(ExpectedConditions.elementToBeClickable(By.id("signUp")));
+        //webDriver.findElement(By.id("signUp")).click();
     }
 
     @And("Username is already registered {string}")
@@ -94,22 +106,32 @@ public class RegisteringStepDefs {
         if (Objects.equals(alreadyReg, "True")) {
             alreadyRegistered = true;
             if (Objects.equals(address, "http://localhost:9000/register")) {
-                outcome = "Username already registered";
+                outcome = "Invalid registration, username taken";
             } else {
                 outcome = "Logged in";
             }
         } else {
             if (Objects.equals(address, "http://localhost:9000/register")) {
-                outcome = "Registered";
+                outcome = "Successful registration";
             } else {
-                outcome = "Username not registered";
+                outcome = "Invalid username, please try again";
             }
         }
     }
 
     @Then("{string} message occurs")
     public void outcomeMessageOccurs(String outcomeMessage) {
-        assertEquals(outcome, outcomeMessage);
+        if (Objects.equals(outcome, "Invalid registration, username taken")){
+            Boolean outcomeMes = webDriver.findElement(By.id("usernameTaken")).isDisplayed();
+            assertNotNull(outcomeMes);
+        } else if (Objects.equals(outcome, "Successful registration")) {
+            String actualURL = webDriver.getCurrentUrl();
+            assertNotEquals("http://localhost:9000/register?registerError", actualURL);
+        } else if (Objects.equals(outcome, "Invalid username, please try again")) {
+            Boolean outcomeMes = webDriver.findElement(By.id("invalidUsername")).isDisplayed();
+            assertNotNull(outcomeMes);
+        }
+
     }
 
     @And("Username is registered {string}")
@@ -134,10 +156,9 @@ public class RegisteringStepDefs {
 
     @And("Username is logged in {string}")
     public void usernameIsLoggedInIsLoggedIn(String loggedIn) {
-        String reg = "False";
         if (alreadyRegistered) {
-            reg = "True";
+            String actualURL = webDriver.getCurrentUrl();
+            assertNotEquals("http://localhost:9000/login", actualURL);
         }
-        assertEquals(reg, loggedIn);
     }
 }

@@ -17,7 +17,7 @@
                         <div th:if="${param.passwordError}" class="alert alert-danger">
                             Invalid password, please try again
                         </div>
-                        <div th:if="${param.usernameError}" class="alert alert-danger">
+                        <div id="invalidUsername" th:if="${param.usernameError}" class="alert alert-danger">
                             Invalid username, please try again
                         </div>
                         <form th:action="@{login}" class="row g-3 needs-validation" novalidate method="post">
