@@ -128,7 +128,7 @@ public class RegisteringStepDefs {
             String actualURL = webDriver.getCurrentUrl();
             assertNotEquals("http://localhost:9000/register?registerError", actualURL);
         } else if (Objects.equals(outcome, "Invalid username, please try again")) {
-            Boolean outcomeMes = webDriver.findElement(By.id("invalidUsername")).isDisplayed();
+            Boolean outcomeMes = webDriver.findElement(By.id("usernameInvalidMessage")).isDisplayed();
             assertNotNull(outcomeMes);
         }
 
