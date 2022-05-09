@@ -17,7 +17,7 @@
     </div>
 </div>
 <div class="content">
-    <form th:action="@{/edit-sprint/{id} (id=${sprintId})}"
+    <form th:action="@{edit-sprint/{id} (id=${sprintId})}"
           method="post">
         <label for="sprintName">Sprint Name</label> <br/>
         <input id="sprintName" type="text" th:name="sprintName" th:value="*{sprintName}">
