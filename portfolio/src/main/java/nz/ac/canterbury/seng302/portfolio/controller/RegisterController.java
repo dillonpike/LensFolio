@@ -109,6 +109,7 @@ public class RegisterController {
             return "redirect:account";
         } else {
             model.addAttribute("err", "Something went wrong");
+            rm.addAttribute("defaultUsername", username);
             rm.addAttribute("defaultFirstName", firstName);
             rm.addAttribute("defaultMiddleName", middleName);
             rm.addAttribute("defaultLastName", lastName);
