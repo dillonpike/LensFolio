@@ -50,6 +50,7 @@ public class AccountController {
         UserResponse getUserByIdReply;
         Integer id = userAccountClientService.getUserIDFromAuthState(principal);
         elementService.addHeaderAttributes(model, id);
+        elementService.addUpdateMessage(model, request);
         try {
             int userId = Integer.parseInt(userIdInput);
             if(id == userId){

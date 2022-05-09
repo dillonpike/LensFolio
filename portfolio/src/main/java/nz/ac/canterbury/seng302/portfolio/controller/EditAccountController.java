@@ -164,7 +164,7 @@ public class EditAccountController {
 
         rm.addAttribute("userId", userId);
 
-        return "redirect:editAccount";
+        return "redirect:account";
     }
 
     @PostMapping("/deleteAccountPhoto")
