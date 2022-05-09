@@ -102,8 +102,8 @@ public class ProjectDetailsStepDefs {
 
     @When("I browse to the add sprint page")
     public void iBrowseToTheAddSprintPage() {
-        wait.until(ExpectedConditions.elementToBeClickable(By.id("addSprintButton")));
         webDriver.findElement(By.id("addSprintButton")).click();
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[contains(., 'Add Sprint')]")));
     }
 
     @And("There are {int} sprints")
@@ -158,13 +158,22 @@ public class ProjectDetailsStepDefs {
         assertEquals(expectedEndDate, sprintEndDate);
     }
 
+    /**
+     * Increases the date in the given input element by the given number of days.
+     * @param inputElement input element with the date to be increased
+     * @param numDays number of days to increase by (negative to decrease)
+     */
+    private void addToSprintInput(WebElement inputElement, int numDays) {
+        String sprintStartDate = inputElement.getAttribute("value");
+        String newStartDate = addToDateString(sprintStartDate, Calendar.DATE, numDays);
+        inputElement.clear();
+        inputElement.sendKeys(newStartDate);
+        webDriver.findElement(By.id("sprintName")).click();
+    }
+
     @And("I move the start date back by {int} day")
     public void iMoveTheStartDateBackByDay(int numDays) {
-        String sprintStartDate = webDriver.findElement(By.id("sprintStartDate")).getAttribute("value");
-        String newStartDate = addToDateString(sprintStartDate, Calendar.DATE, -numDays);
-        webDriver.findElement(By.id("sprintStartDate")).clear();
-        webDriver.findElement(By.id("sprintStartDate")).sendKeys(newStartDate);
-        webDriver.findElement(By.id("sprintName")).click();
+        addToSprintInput(webDriver.findElement(By.id("sprintStartDate")), -numDays);
     }
 
     @Then("The following error is displayed: {string}")
@@ -173,5 +182,16 @@ public class ProjectDetailsStepDefs {
         String actualErrorMessage = webDriver.findElement(By.id("sprintDateError")).getText();
         System.err.println(actualErrorMessage);
         assertTrue(actualErrorMessage.contains(expectedErrorMessage));
+    }
+
+    @When("I browse to the edit sprint page for sprint {int}")
+    public void iBrowseToTheEditSprintPageForSprint(int sprintNum) {
+        webDriver.findElements(By.id("editSprintButton")).get(sprintNum-1).click();
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[contains(., 'Edit Sprint')]")));
+    }
+
+    @And("I move the end date forward by {int} day")
+    public void iMoveTheEndDateForwardByDay(int numDays) {
+        addToSprintInput(webDriver.findElement(By.id("sprintEndDate")), numDays);
     }
 }
