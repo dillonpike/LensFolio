@@ -3,7 +3,6 @@ package nz.ac.canterbury.seng302.portfolio.service;
 import nz.ac.canterbury.seng302.portfolio.model.Sprint;
 import nz.ac.canterbury.seng302.portfolio.model.SprintRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
