@@ -8,6 +8,7 @@ import io.cucumber.java.en.When;
 import nz.ac.canterbury.seng302.portfolio.model.Project;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
@@ -15,6 +16,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -37,7 +39,7 @@ public class ProjectDetailsStepDefs {
     /**
      * End date of the last sprint.
      */
-    private Date lastSprintEndDate;
+    private String lastSprintEndDate;
 
     /**
      * Sets up for scenario by getting a web driver and WebDriverWait object.
@@ -104,14 +106,17 @@ public class ProjectDetailsStepDefs {
         webDriver.findElement(By.id("addSprintButton")).click();
     }
 
-    @And("There is a sprint")
-    public void thereIsASprint() {
+    @And("There are {int} sprints")
+    public void thereAreSprints(int numSprints) {
         while (!webDriver.findElements(By.id("deleteSprintButton")).isEmpty()) {
             webDriver.findElement(By.id("deleteSprintButton")).click();
         }
-        iAddASprint();
-        String dateString = webDriver.findElement(By.className("sprint-date")).getText();
-        lastSprintEndDate = Project.stringToDate(dateString.substring(dateString.indexOf("-")+2));
+        for (int i = 0; i < numSprints; i++) {
+            iAddASprint();
+        }
+        List<WebElement> sprintDates = webDriver.findElements(By.className("sprint-date"));
+        String dateString = sprintDates.get(sprintDates.size()-1).getText();
+        lastSprintEndDate = dateString.substring(dateString.indexOf("-")+2);
     }
 
     @And("I add a sprint")
@@ -122,13 +127,25 @@ public class ProjectDetailsStepDefs {
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//span[contains(., 'Project Description')]")));
     }
 
-    @Then("The start date should be one day after the end date of the previous sprint")
-    public void theStartDateShouldBeOneDayAfterTheEndDateOfThePreviousSprint() {
-        String sprintStartDate = webDriver.findElement(By.id("sprintStartDate")).getAttribute("value");
+    /**
+     * Adds dateString to a calendar and adds the given amount of time from the given calendar field.
+     * Returns the updated date as a string.
+     * @param dateString string of the date to be added to
+     * @param field the calendar field
+     * @param amount amount of date or time to be added to the field
+     * @return updated date as a string
+     */
+    private String addToDateString(String dateString, int field, int amount) {
         Calendar calendar = Calendar.getInstance();
-        calendar.setTime(lastSprintEndDate);
-        calendar.add(Calendar.DATE, 1);
-        String expectedStartDate = Project.dateToString(calendar.getTime());
+        calendar.setTime(Project.stringToDate(dateString));
+        calendar.add(field, amount);
+        return Project.dateToString(calendar.getTime());
+    }
+
+    @Then("The start date should be {int} day after the end date of the previous sprint")
+    public void theStartDateShouldBeOneDayAfterTheEndDateOfThePreviousSprint(int numDays) {
+        String sprintStartDate = webDriver.findElement(By.id("sprintStartDate")).getAttribute("value");
+        String expectedStartDate = addToDateString(lastSprintEndDate, Calendar.DATE, numDays);
         assertEquals(expectedStartDate, sprintStartDate);
     }
 
@@ -136,11 +153,25 @@ public class ProjectDetailsStepDefs {
     public void theEndDateShouldBeWeeksAfterTheStartDate(int numWeeks) {
         String sprintStartDate = webDriver.findElement(By.id("sprintStartDate")).getAttribute("value");
         String sprintEndDate = webDriver.findElement(By.id("sprintEndDate")).getAttribute("value");
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(Project.stringToDate(sprintStartDate));
-        calendar.add(Calendar.WEEK_OF_MONTH, 3);
-        calendar.add(Calendar.DATE, -1);
-        String expectedEndDate = Project.dateToString(calendar.getTime());
+        String expectedEndDate = addToDateString(sprintStartDate, Calendar.DATE, -1);
+        expectedEndDate = addToDateString(expectedEndDate, Calendar.WEEK_OF_MONTH, numWeeks);
         assertEquals(expectedEndDate, sprintEndDate);
+    }
+
+    @And("I move the start date back by {int} day")
+    public void iMoveTheStartDateBackByDay(int numDays) {
+        String sprintStartDate = webDriver.findElement(By.id("sprintStartDate")).getAttribute("value");
+        String newStartDate = addToDateString(sprintStartDate, Calendar.DATE, -numDays);
+        webDriver.findElement(By.id("sprintStartDate")).clear();
+        webDriver.findElement(By.id("sprintStartDate")).sendKeys(newStartDate);
+        webDriver.findElement(By.id("sprintName")).click();
+    }
+
+    @Then("The following error is displayed: {string}")
+    public void theFollowingErrorIsDisplayed(String expectedErrorMessage) {
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("sprintDateError")));
+        String actualErrorMessage = webDriver.findElement(By.id("sprintDateError")).getText();
+        System.err.println(actualErrorMessage);
+        assertTrue(actualErrorMessage.contains(expectedErrorMessage));
     }
 }

@@ -15,7 +15,15 @@ Feature: UPi Project Details
     Default sprint end date is 3 weeks after the default start date.
     Given I am logged in as "teacher"
     And I am on the project page
-    And There is a sprint
+    And There are 2 sprints
     When I browse to the add sprint page
-    Then The start date should be one day after the end date of the previous sprint
+    Then The start date should be 1 day after the end date of the previous sprint
     And The end date should be 3 weeks after the start date
+
+  Scenario: AC10 - Sprints never overlap in dates.
+    Given I am logged in as "teacher"
+    And I am on the project page
+    And There are 2 sprints
+    When I browse to the add sprint page
+    And I move the start date back by 1 day
+    Then The following error is displayed: "Dates must not overlap"
