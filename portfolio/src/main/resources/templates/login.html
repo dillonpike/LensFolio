@@ -14,10 +14,10 @@
                 <div class="card shadow-2-strong" style="border-radius: 1rem;">
                     <div class="card-body p-5 text-center">
                         <h3 class="mb-5">Sign in </h3>
-                        <div th:if="${param.passwordError}" class="alert alert-danger">
+                        <div th:if="${param.passwordError}" class="alert alert-danger" id="passwordInvalidMessage">
                             Invalid password, please try again
                         </div>
-                        <div th:if="${param.usernameError}" class="alert alert-danger">
+                        <div th:if="${param.usernameError}" class="alert alert-danger" id="usernameInvalidMessage">
                             Invalid username, please try again
                         </div>
                         <div th:if="${param.forbidden}" class="alert alert-danger">

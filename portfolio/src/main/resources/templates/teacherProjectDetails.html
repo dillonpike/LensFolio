@@ -13,7 +13,7 @@
 <div class="project-header">
     <div class="title">
         <p class="title-name" th:text="${project.getName}" />
-        <span class="badge rounded-pill bg-custom text-dark" th:text="${project.getStartDateString} + ' - ' + ${project.getEndDateString}"></span>
+        <span id="project-date" class="badge rounded-pill bg-custom text-dark" th:text="${project.getStartDateString} + ' - ' + ${project.getEndDateString}"></span>
     </div>
     <a class="project-button-link" th:href="@{edit-project}">
         <button class="edit-project-button">
