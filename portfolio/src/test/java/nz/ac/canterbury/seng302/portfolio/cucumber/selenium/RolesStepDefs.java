@@ -1,6 +1,6 @@
 package nz.ac.canterbury.seng302.portfolio.cucumber.selenium;
 
-import io.cucumber.datatable.DataTable;
+
 import io.cucumber.java.After;
 import io.cucumber.java.Before;
 import io.cucumber.java.en.Then;

@@ -1,12 +1,10 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.protobuf.Timestamp;
 import nz.ac.canterbury.seng302.portfolio.service.ElementService;
 import nz.ac.canterbury.seng302.portfolio.service.PhotoService;
 import nz.ac.canterbury.seng302.portfolio.service.RegisterClientService;
 import nz.ac.canterbury.seng302.portfolio.service.UserAccountClientService;
-import nz.ac.canterbury.seng302.portfolio.utility.Utility;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import nz.ac.canterbury.seng302.shared.identityprovider.ClaimDTO;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
@@ -25,18 +23,21 @@ import org.springframework.security.web.authentication.preauth.PreAuthenticatedA
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+/**
+ * Junit testing to test the Account Controller
+ */
 @ExtendWith(SpringExtension.class)
 @WebMvcTest(controllers = AccountController.class)
 @AutoConfigureMockMvc(addFilters = false)
 class AccountControllerTest {
+    /**
+     * AuthState object to be used when we mock security context
+     */
     public AuthState validAuthState = AuthState.newBuilder()
             .setIsAuthenticated(true)
             .setNameClaimType("name")
@@ -47,6 +48,9 @@ class AccountControllerTest {
             .setName("validtesttoken")
             .build();
 
+    /**
+     * Mocked user response which contains the data of the user
+     */
     private UserResponse mockUser = UserResponse.newBuilder()
             .setBio("default bio")
             .setCreated(Timestamp.newBuilder().setSeconds(55))
@@ -80,6 +84,10 @@ class AccountControllerTest {
         mockMvc = MockMvcBuilders.standaloneSetup(AccountController.class).build();
     }
 
+    /**
+     * unit testing to test the get method when calling "/account"
+     * Expect to return 200 status code and account page with some user's information in the model
+     */
     @Test
     void showAccountPage_whenLoggedIn_return200StatusCode_andAccountPage() throws Exception {
         SecurityContext mockedSecurityContext = Mockito.mock(SecurityContext.class);
@@ -115,9 +123,4 @@ class AccountControllerTest {
                 .andExpect(model().attribute("bio", bio));
     }
 
-
-    @Test
-    void editAccount_whenForbidden_return403StatusCode() throws Exception {
-        mockMvc.perform(post("/backToAccountPage")).andExpect(status().isForbidden());
-    }
 }
