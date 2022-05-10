@@ -195,7 +195,7 @@ public class EditAccountController {
         try {
             DeleteUserProfilePhotoResponse reply = registerClientService.deleteUserProfilePhoto(userId);
             wasDeleted = reply.getIsSuccess();
-            message = reply.getMessage();
+            message = String.valueOf(reply.getMessage());
             if (wasDeleted) {
                 new File("src/main/resources/static/img").mkdirs();
                 File imageFile = new File("src/main/resources/static/img/default.jpg");
