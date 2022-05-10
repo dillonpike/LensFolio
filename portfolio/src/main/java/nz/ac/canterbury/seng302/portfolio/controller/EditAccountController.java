@@ -95,6 +95,7 @@ public class EditAccountController {
             model.addAttribute("userId", id);
             model.addAttribute("dateAdded", Utility.getDateAddedString(getUserByIdReply.getCreated()));
             model.addAttribute("monthsSinceAdded", Utility.getDateSinceAddedString(getUserByIdReply.getCreated()));
+            photoService.savePhotoToPortfolio(getUserByIdReply.getProfileImagePath());
         } catch (StatusRuntimeException e) {
             model.addAttribute("loginMessage", "Error connecting to Identity Provider...");
             e.printStackTrace();
@@ -194,7 +195,7 @@ public class EditAccountController {
         try {
             DeleteUserProfilePhotoResponse reply = registerClientService.deleteUserProfilePhoto(userId);
             wasDeleted = reply.getIsSuccess();
-            message = reply.getMessage();
+            message = String.valueOf(reply.getMessage());
             if (wasDeleted) {
                 new File("src/main/resources/static/img").mkdirs();
                 File imageFile = new File("src/main/resources/static/img/default.jpg");
