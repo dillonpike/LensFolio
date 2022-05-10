@@ -330,7 +330,7 @@ public class UserAccountServerService extends UserAccountServiceGrpc.UserAccount
         }
 
         reply.setIsSuccess(wasDeleted);
-        // reply.setMessage(message)  Not setting a message as the message is a boolean in the contracts (seems like an error).
+        reply.setMessage(message);
         responseObserver.onNext(reply.build());
         responseObserver.onCompleted();
     }
