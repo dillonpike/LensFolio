@@ -117,17 +117,19 @@ public class ProfilePhotoStepDefs {
     @When("I upload a profile photo")
     public void iUploadAProfilePhoto() {
         webDriver.findElement(By.id("avatar")).sendKeys(new File("src/test/resources/static/img/T100Logo.jpg").getAbsolutePath());
+        wait.until(ExpectedConditions.elementToBeClickable(By.id("crop-btn")));
+        webDriver.findElement(By.id("crop-btn")).click();
         wait.until(ExpectedConditions.elementToBeClickable(By.id("save-btn")));
         webDriver.findElement(By.id("save-btn")).click();
         wait.until(ExpectedConditions.elementToBeClickable(By.id("removeUpdateAlert")));
         assertTrue(profilePhotoIsSameAsImageFromPath(webDriver.findElement(By.id("uploadPreview")),
-                "src/main/resources/static/img/userImage.jpg"));
+                "src/main/resources/static/img/userImage"));
     }
 
     @Then("My small version of my profile photo is displayed in the header of the page")
     public void mySmallVersionOfMyProfilePhotoIsDisplayedInTheHeaderOfThePage() {
         assertTrue(webDriver.findElement(By.id("userIconSmall")).isDisplayed());
         assertTrue(profilePhotoIsSameAsImageFromPath(webDriver.findElement(By.id("userIconSmall")),
-                "src/main/resources/static/img/userImage.jpg"));
+                "src/main/resources/static/img/userImage"));
     }
 }
