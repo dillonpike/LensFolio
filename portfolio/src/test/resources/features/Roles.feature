@@ -12,6 +12,6 @@ Feature: UUiv Roles (read)
       | course_admin | course administrator                   |
 
   Scenario: AC2 - When a new account is registered, a user is given the “student” role.
-    Given I register with a username "roles_test"
+    Given I can login or register with a username "roles_test"
     When I browse to the account page
     Then My account page displays the following roles: "student"
