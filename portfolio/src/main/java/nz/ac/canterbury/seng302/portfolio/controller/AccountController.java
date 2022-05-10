@@ -80,7 +80,8 @@ public class AccountController {
             model.addAttribute("userId", id);
             model.addAttribute("dateAdded", Utility.getDateAddedString(getUserByIdReply.getCreated()));
             model.addAttribute("monthsSinceAdded", Utility.getDateSinceAddedString(getUserByIdReply.getCreated()));
-            photoService.savePhotoToPortfolio(getUserByIdReply.getProfileImagePath());
+            String portfolioAbsolutePath = photoService.savePhotoToPortfolio(getUserByIdReply.getProfileImagePath());
+            model.addAttribute("uploadPreview", portfolioAbsolutePath);
         } catch (StatusRuntimeException e) {
             model.addAttribute("loginMessage", "Error connecting to Identity Provider...");
             e.printStackTrace();

@@ -17,7 +17,8 @@ public class PhotoService {
      * Saves the photo from the given path to the portfolio module for loading into the HTML.
      * @param photoPath path of the photo
      */
-    public void savePhotoToPortfolio(String photoPath) {
+    public String savePhotoToPortfolio(String photoPath) {
+        String finalPath = "img/userImage";
         try {
             File imageFile;
             new File("src/main/resources/static/img").mkdirs();
@@ -36,10 +37,13 @@ public class PhotoService {
             FileOutputStream imageOutput = new FileOutputStream(usedImageFile);
             FileInputStream imageInput = new FileInputStream(imageFile);
             imageOutput.write(imageInput.readAllBytes());
+            System.out.println(imageInput.readAllBytes() + "<All bytes length");
+            finalPath = usedImageFile.getAbsolutePath();
             imageInput.close();
             imageOutput.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
+        return finalPath;
     }
 }
