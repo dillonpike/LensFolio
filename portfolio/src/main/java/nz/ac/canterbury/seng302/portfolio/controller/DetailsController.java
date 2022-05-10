@@ -1,11 +1,7 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
 import com.google.protobuf.Timestamp;
-import nz.ac.canterbury.seng302.portfolio.service.ProjectService;
-import nz.ac.canterbury.seng302.portfolio.service.RegisterClientService;
-import nz.ac.canterbury.seng302.portfolio.service.SprintService;
-import nz.ac.canterbury.seng302.portfolio.service.UserAccountService;
-import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
+import nz.ac.canterbury.seng302.portfolio.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -36,10 +32,10 @@ public class DetailsController {
     private SprintService sprintService;
 
     @Autowired
-    private RegisterClientService registerClientService;
+    private UserAccountClientService userAccountClientService;
 
     @Autowired
-    private UserAccountService userAccountService;
+    private ElementService elementService;
 
     /***
      * GET request method, followed by the request URL(../details)
@@ -83,11 +79,8 @@ public class DetailsController {
         List<Sprint> sprintList = sprintService.getAllSprintsOrdered();
         model.addAttribute("sprints", sprintList);
 
-        UserResponse getUserByIdReplyHeader;
-        Integer id = userAccountService.getUserIDFromAuthState(principal);
-        getUserByIdReplyHeader = registerClientService.getUserData(id);
-        String fullNameHeader = getUserByIdReplyHeader.getFirstName() + " " + getUserByIdReplyHeader.getMiddleName() + " " + getUserByIdReplyHeader.getLastName();
-        model.addAttribute("headerFullName", fullNameHeader);
+        Integer id = userAccountClientService.getUserIDFromAuthState(principal);
+        elementService.addHeaderAttributes(model, id);
         model.addAttribute("userId", id);
 
         // Below code is just begging to be added as a method somewhere...

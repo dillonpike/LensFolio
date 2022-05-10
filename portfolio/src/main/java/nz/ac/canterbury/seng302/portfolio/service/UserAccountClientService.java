@@ -1,10 +1,14 @@
 package nz.ac.canterbury.seng302.portfolio.service;
 
+import net.devh.boot.grpc.client.inject.GrpcClient;
 import nz.ac.canterbury.seng302.shared.identityprovider.*;
 import org.springframework.stereotype.Service;
 
 @Service
-public class UserAccountService {
+public class UserAccountClientService {
+
+    @GrpcClient(value = "identity-provider-grpc-server")
+    private UserAccountServiceGrpc.UserAccountServiceBlockingStub userAccountStub;
 
     /**
      * Returns the user id from the given AuthState.
@@ -30,5 +34,15 @@ public class UserAccountService {
                 .findFirst()
                 .map(ClaimDTO::getValue)
                 .orElse("NOT FOUND");
+    }
+
+    /***
+     * Method to retrieve all users from database
+     * @return all users
+     */
+    public PaginatedUsersResponse getAllUsers() {
+        GetPaginatedUsersRequest response = GetPaginatedUsersRequest.newBuilder()
+                .build();
+        return userAccountStub.getPaginatedUsers(response);
     }
 }

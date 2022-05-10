@@ -1,27 +1,34 @@
 package nz.ac.canterbury.seng302.portfolio.service;
 
+import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 import org.springframework.web.servlet.support.RequestContextUtils;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.Map;
+import java.util.*;
 
+/**
+ * Contains methods that add attributes to the page's model, so they can be displayed on the page.
+ */
 @Service
 public class ElementService {
 
+    @Autowired
+    private RegisterClientService registerClientService;
+
     /**
-     * Returns an updated version of the given model to with an updateMessage attribute.
+     * Updates the given model with an updateMessage attribute.
      *
      * If isUpdateSuccess in the request is true, updateMessage will be set to successMessage from the request, or a
      * default success message if successMessage doesn't exist. If isUpdateSuccess is false, updateMessage will be set
      * to failureMessage from the request, or a default failure message if failureMessage doesn't exist.
      *
-     * @param model model from controller method
+     * @param model model from controller method that attributes will be added to
      * @param request HTTP request from controller method
-     * @return updated model
      */
-    public Model addUpdateMessage(Model model, HttpServletRequest request) {
+    public void addUpdateMessage(Model model, HttpServletRequest request) {
         Map<String, ?> inputFlashMap = RequestContextUtils.getInputFlashMap(request);
         if (inputFlashMap != null) {
             boolean isUpdateSuccess = (boolean) inputFlashMap.get("isUpdateSuccess");
@@ -37,6 +44,31 @@ public class ElementService {
                 model.addAttribute("updateMessage", message);
             }
         }
-        return model;
+    }
+
+    /**
+     * Updates the given model with the user's full name for display in the header.
+     * @param model model from controller method that attributes will be added to
+     * @param userId id of the currently signed on user
+     */
+    public void addHeaderAttributes(Model model, int userId) {
+        UserResponse userData = registerClientService.getUserData(userId);
+        String fullNameHeader = userData.getFirstName() + " " + userData.getMiddleName() + " " + userData.getLastName();
+        model.addAttribute("headerFullName", fullNameHeader);
+    }
+
+    /**
+     * Updates the given model with the user's roles.
+     * @param model model from controller method that attributes will be added to
+     * @param userData UserResponse object of the currently signed on user
+     */
+    public void addRoles(Model model, UserResponse userData) {
+        ArrayList<String> rolesList = new ArrayList<String>();
+        for (int i = 0; i< userData.getRolesCount(); i++){
+            String role = userData.getRoles(i).toString();
+            rolesList.add(role.replace("_", " "));
+        }
+        Collections.sort(rolesList);
+        model.addAttribute("rolesList", rolesList);
     }
 }

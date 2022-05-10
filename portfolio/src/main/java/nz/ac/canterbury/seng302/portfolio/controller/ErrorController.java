@@ -1,29 +1,30 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
 
-import nz.ac.canterbury.seng302.portfolio.service.RegisterClientService;
-import nz.ac.canterbury.seng302.portfolio.service.UserAccountService;
+import nz.ac.canterbury.seng302.portfolio.service.ElementService;
+import nz.ac.canterbury.seng302.portfolio.service.UserAccountClientService;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
-import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.http.HttpServletRequest;
 
+/***
+ * Controller receive HTTP GET, POST, PUT, DELETE calls for error page
+ */
 @Controller
 public class ErrorController implements org.springframework.boot.web.servlet.error.ErrorController {
 
     @Autowired
-    private UserAccountService userAccountService;
+    private UserAccountClientService userAccountClientService;
 
     @Autowired
-    private RegisterClientService registerClientService;
+    private ElementService elementService;
 
     /***
      * Request Mapping Method
@@ -46,15 +47,11 @@ public class ErrorController implements org.springframework.boot.web.servlet.err
         if (status != null) {
             Integer statusCode = Integer.valueOf(status.toString());
             if (statusCode == HttpStatus.FORBIDDEN.value()) {
-                return "403Forbidden";
+                return "redirect:login?forbidden";
             }
 
-            UserResponse getUserByIdReplyHeader;
-
-            Integer id = userAccountService.getUserIDFromAuthState(principal);
-            getUserByIdReplyHeader = registerClientService.getUserData(id);
-            String fullNameHeader = getUserByIdReplyHeader.getFirstName() + " " + getUserByIdReplyHeader.getMiddleName() + " " + getUserByIdReplyHeader.getLastName();
-            model.addAttribute("headerFullName", fullNameHeader);
+            Integer id = userAccountClientService.getUserIDFromAuthState(principal);
+            elementService.addHeaderAttributes(model, id);
             model.addAttribute("userId", id);
 
             if (statusCode == HttpStatus.INTERNAL_SERVER_ERROR.value()) {

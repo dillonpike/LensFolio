@@ -2,33 +2,58 @@ package nz.ac.canterbury.seng302.portfolio.controller;
 
 import io.grpc.StatusRuntimeException;
 import nz.ac.canterbury.seng302.portfolio.service.ElementService;
+import nz.ac.canterbury.seng302.portfolio.service.PhotoService;
 import nz.ac.canterbury.seng302.portfolio.service.RegisterClientService;
-import nz.ac.canterbury.seng302.portfolio.service.UserAccountService;
+import nz.ac.canterbury.seng302.portfolio.service.UserAccountClientService;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import nz.ac.canterbury.seng302.portfolio.utility.Utility;
+import nz.ac.canterbury.seng302.shared.identityprovider.DeleteUserProfilePhotoResponse;
 import nz.ac.canterbury.seng302.shared.identityprovider.EditUserResponse;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.web.util.UrlUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.filter.OncePerRequestFilter;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartResolver;
+import org.springframework.web.multipart.commons.CommonsMultipartResolver;
+import org.springframework.web.servlet.HandlerExceptionResolver;
+import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import javax.naming.SizeLimitExceededException;
+import javax.servlet.FilterChain;
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.*;
+import java.util.HashMap;
+import java.util.Map;
 
+/***
+ * Controller receive HTTP GET, POST, PUT, DELETE calls for edit account page
+ */
 @Controller
+
 public class EditAccountController {
 
     @Autowired
     private RegisterClientService registerClientService;
 
     @Autowired
-    private UserAccountService userAccountService;
+    private UserAccountClientService userAccountClientService;
 
     @Autowired
     private ElementService elementService;
+
+    @Autowired
+    private PhotoService photoService;
 
     /***
      * GET method to generate the edit account page which let user edit info/attributes
@@ -44,13 +69,10 @@ public class EditAccountController {
             @RequestParam(value = "userId") String userIdInput,
             @AuthenticationPrincipal AuthState principal
     ) {
-        UserResponse getUserByIdReplyHeader;
-        Integer id = userAccountService.getUserIDFromAuthState(principal);
-        getUserByIdReplyHeader = registerClientService.getUserData(id);
-        String fullNameHeader = getUserByIdReplyHeader.getFirstName() + " " + getUserByIdReplyHeader.getMiddleName() + " " + getUserByIdReplyHeader.getLastName();
-        model.addAttribute("headerFullName", fullNameHeader);
+        Integer id = userAccountClientService.getUserIDFromAuthState(principal);
+        elementService.addHeaderAttributes(model, id);
         UserResponse getUserByIdReply;
-        model = elementService.addUpdateMessage(model, request);
+        elementService.addUpdateMessage(model, request);
         try {
             int userId = Integer.parseInt(userIdInput);
             if(id == userId){
@@ -59,6 +81,7 @@ public class EditAccountController {
                 model.addAttribute("isAuthorised", false);
             }
             getUserByIdReply = registerClientService.getUserData(id);
+            elementService.addRoles(model, getUserByIdReply);
             model.addAttribute("firstName", getUserByIdReply.getFirstName());
             model.addAttribute("nickName", getUserByIdReply.getNickname());
             model.addAttribute("lastName", getUserByIdReply.getLastName());
@@ -157,7 +180,83 @@ public class EditAccountController {
 
         rm.addAttribute("userId", userId);
 
+        return "redirect:account";
+    }
+
+    @PostMapping("/deleteAccountPhoto")
+    public String deletePhoto(
+            @ModelAttribute("userId") int userId,
+            RedirectAttributes rm,
+            Model model
+    ) {
+        boolean wasDeleted = false;
+        try {
+            DeleteUserProfilePhotoResponse reply = registerClientService.DeleteUserProfilePhoto(userId);
+            wasDeleted = reply.getIsSuccess();
+            if (wasDeleted) {
+//                Path src = Paths.get("src/main/resources/static/img/default.jpg");
+//                Path dest = Paths.get("src/main/resources/static/img/userImage");
+//                Files.copy(src, dest, StandardCopyOption.REPLACE_EXISTING);
+                File imageFile = new File("src/main/resources/static/img/default.jpg");
+                File usedImageFile = new File("src/main/resources/static/img/userImage");
+                FileOutputStream imageOutput = new FileOutputStream(usedImageFile);
+                FileInputStream imageInput = new FileInputStream(imageFile);
+                imageOutput.write(imageInput.readAllBytes());
+                imageInput.close();
+                imageOutput.close();
+
+                rm.addFlashAttribute("isUpdateSuccess", true);
+            } else {
+                rm.addFlashAttribute("isUpdateSuccess", false);
+                rm.addFlashAttribute("message", "Photo failed to delete");
+            }
+
+        } catch (Exception e) {
+            System.err.println("Something went wrong requesting to delete the photo");
+            e.printStackTrace();
+        }
+        rm.addAttribute("userId", userId);
         return "redirect:editAccount";
     }
+
+    @PostMapping("/saveAccountPhoto")
+    public String savePhoto(
+            @ModelAttribute("userId") int userId,
+            RedirectAttributes rm,
+            @RequestParam("avatar") MultipartFile multipartFile,
+            Model model
+    ) {
+
+        if (multipartFile.isEmpty()) {
+            rm.addFlashAttribute("message", "Please select a file to upload.");
+            rm.addFlashAttribute("isUpdateSuccess", false);
+            return "redirect:editAccount";
+        }
+        boolean wasSaved = false;
+        try {
+
+            File imageFile = new File("src/main/resources/static/img/userImage");
+            FileOutputStream fos = new FileOutputStream( imageFile );
+            fos.write( multipartFile.getBytes() );
+            fos.close();
+
+            registerClientService.UploadUserProfilePhoto(userId, new File("src/main/resources/static/img/userImage"));
+            // You cant tell if it saves correctly with the above method as it returns nothing
+            wasSaved = true;
+            if (wasSaved) {
+                rm.addFlashAttribute("isUpdateSuccess", true);
+            } else {
+                rm.addFlashAttribute("isUpdateSuccess", false);
+                rm.addFlashAttribute("message", "Photo failed to save");
+            }
+
+        } catch (Exception e) {
+            System.err.println("Something went wrong requesting to save the photo");
+        }
+
+        rm.addAttribute("userId", userId);
+        return "redirect:editAccount";
+    }
+
 
 }

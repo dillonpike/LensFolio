@@ -15,7 +15,4 @@ public interface UserModelRepository extends CrudRepository<UserModel, Integer> 
     boolean existsByUserId(int userId);
 
     List<UserModel> findByUsername(String username);
-
-
-
 }

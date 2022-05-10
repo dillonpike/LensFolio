@@ -3,7 +3,6 @@ package nz.ac.canterbury.seng302.portfolio.service;
 import nz.ac.canterbury.seng302.portfolio.model.Sprint;
 import nz.ac.canterbury.seng302.portfolio.model.SprintRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -11,6 +10,9 @@ import java.util.Optional;
 
 // more info here https://codebun.com/spring-boot-crud-application-using-thymeleaf-and-spring-data-jpa/
 
+/***
+ * Contains methods for saving, deleting, updating and retrieving sprint objects to the database.
+ */
 @Service
 public class SprintService {
 
@@ -36,9 +38,7 @@ public class SprintService {
         Optional<Sprint> sprint = repository.findById(id);
         if(sprint.isPresent()) {
             return sprint.get();
-        }
-        else
-        {
+        } else {
             throw new Exception("Project not found");
         }
     }
@@ -51,7 +51,7 @@ public class SprintService {
     public Sprint updateSprint(Sprint sprint) {
         Optional<Sprint> sOptional = repository.findById((Integer) sprint.getId());
 
-        if(sOptional.isPresent()) {
+        if (sOptional.isPresent()) {
             Sprint sprintUpdate = sOptional.get();
             sprintUpdate.setDescription(sprint.getDescription());
             sprintUpdate.setStartDate(sprint.getStartDate());
@@ -60,8 +60,7 @@ public class SprintService {
 
             sprintUpdate = repository.save(sprintUpdate);
             return sprintUpdate;
-        }
-        else {
+        } else {
             sprint = repository.save(sprint);
             return sprint;
         }

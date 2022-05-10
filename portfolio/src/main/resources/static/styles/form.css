@@ -1,5 +1,5 @@
 label {
-    color: #5e0202;
+    color: #000000;
 }
 
 input {
@@ -38,12 +38,24 @@ button {
     min-width: 50px;
 }
 
-.cancel {
-    background-color: #444444;
-    color: white;
-}
+/* Form Editing and Creating Buttons */
 
 .save {
-    background-color: #5e0202;
     color: white;
+    border-radius: 20px;
+    background-color: #366aa4;
+}
+
+.save:hover {
+    background-color: #24496e
+}
+
+.cancel {
+    color: white;
+    border-radius: 20px;
+    background-color: #e73e66;
+}
+
+.cancel:hover{
+    background-color: #d3254c
 }

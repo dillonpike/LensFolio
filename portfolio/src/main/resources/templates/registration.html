@@ -21,9 +21,9 @@
                         <div th:if="${param.successfulRegister}" class="alert alert-success">
                             Successful registration, <a href="/login" class="alert-link">click here</a> to login
                         </div>
-                        <form class="row g-3 needs-validation" novalidate th:action="@{/register}" method="post">
+                        <form class="row g-3 needs-validation" novalidate th:action="@{register}" method="post">
                             <div class="form-floating mb-3">
-                                <input type="text" class="form-control" id="username" placeholder="username" th:name="username" required>
+                                <input type="text" class="form-control" id="username" placeholder="username" th:name="username" th:value="${defaultUsername}" required>
                                 <label for="username">Username(*)</label>
                                 <div class="invalid-feedback">
                                     Please enter your username.
@@ -31,25 +31,25 @@
                             </div>
 
                             <div class="form-floating mb-3">
-                                <input type="text" class="form-control" id="firstName" placeholder="first name" th:name="firstName" required>
+                                <input type="text" class="form-control" id="firstName" placeholder="first name" th:name="firstName" th:value="${defaultFirstName}" required>
                                 <label for="firstName">First name(*)</label>
                                 <div class="invalid-feedback">
                                     Please enter your first name.
                                 </div>
                             </div>
                             <div class="form-floating mb-3">
-                                <input type="text" class="form-control" id="middleName" placeholder="middle name" th:name="middleName" >
+                                <input type="text" class="form-control" id="middleName" placeholder="middle name" th:name="middleName" th:value="${defaultMiddleName}" >
                                 <label for="middleName">Middle name(Not required)</label>
                             </div>
                             <div class="form-floating mb-3">
-                                <input type="text" class="form-control" id="lastName"  placeholder="last name" th:name="lastName" required>
+                                <input type="text" class="form-control" id="lastName"  placeholder="last name" th:name="lastName" th:value="${defaultLastName}" required>
                                 <label for="lastName">Last name(*)</label>
                                 <div class="invalid-feedback">
                                     Please enter your last name.
                                 </div>
                             </div>
                             <div class="form-floating mb-3">
-                                <input type="email" class="form-control" id="email"  placeholder="email" th:name="email" required>
+                                <input type="email" class="form-control" id="email"  placeholder="email" th:name="email" th:value="${defaultEmail}" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z0-9.-]+$" required>
                                 <label for="email">Email(*)</label>
                                 <div class="invalid-feedback">
                                     Please enter your email correctly. E.g. name@example.com.
@@ -70,15 +70,14 @@
                                 </div>
                             </div>
                             <div class="d-grid gap-2 col-6 mx-auto">
-                                <button class="btn btn-primary" type="submit" id="signIn">Sign up</button>
+                                <button id="signUp" class="btn btn-primary" type="submit">Sign up</button>
                             </div>
-                            <!--Error message TODO when login fail. display error message -->
                             <div style="display: none;" id="errorMessage">
                                 <p style="color:red;">Invalid login, please try again</p>
                             </div>
                         </form>
                         <hr class="my-4">
-                        Already have an account? <a href="/login">Log in here</a>
+                        Already have an account? <a th:href="@{login}">Log in here</a>
                     </div>
                 </div>
             </div>

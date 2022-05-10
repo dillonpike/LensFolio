@@ -4,14 +4,17 @@ import com.google.protobuf.Timestamp;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
+import java.io.Serializable;
+import java.sql.Blob;
 import java.sql.Date;
 import java.sql.Time;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
-public class UserModel {
+public class UserModel implements Serializable {
     @Id
     private int userId;
 
@@ -25,6 +28,30 @@ public class UserModel {
     private String bio;
     private String personalPronouns;
     private Timestamp dateAdded;
+    private Blob photo;
+
+
+
+
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
+    @JoinTable(name = "user_to_role",
+            joinColumns =
+                    @JoinColumn(name = "User_Id"),
+            inverseJoinColumns =
+                    @JoinColumn(name = "Role_Id")
+    )
+    private Set<Roles> roles = new HashSet<>();
+
+    public void addRoles(Roles role) {
+        this.roles.add(role);
+    }
+
+    public Set<Roles> getRoles() {
+        return roles;
+    }
+    public void setRoles(Set<Roles> roles) {
+        this.roles = roles;
+    }
 
     public UserModel() {}
 
@@ -138,6 +165,14 @@ public class UserModel {
         } else {
             return null;
         }
+    }
+
+    public void setPhoto(Blob photo) {
+        this.photo = photo;
+    }
+
+    public Blob getPhoto() {
+        return photo;
     }
 
     @Override

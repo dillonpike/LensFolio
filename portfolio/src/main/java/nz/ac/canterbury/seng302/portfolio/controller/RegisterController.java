@@ -17,6 +17,9 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+/***
+ * Controller receive HTTP GET, POST, PUT, DELETE calls for register page
+ */
 @Controller
 public class RegisterController {
 
@@ -31,9 +34,22 @@ public class RegisterController {
      * @return the registration page(registration.html)
      */
     @GetMapping("/register")
-    public String registration() {
+    public String registration(
+            @RequestParam(value = "defaultFirstName", required = false) String firstName,
+            @RequestParam(value = "defaultMiddleName", required = false) String middleName,
+            @RequestParam(value = "defaultLastName", required = false) String lastName,
+            @RequestParam(value = "defaultEmail", required = false) String email,
+            @RequestParam(value = "defaultUsername", required = false) String username,
+            Model model) {
+
+        model.addAttribute("defaultFirstName", firstName);
+        model.addAttribute("defaultMiddleName", middleName);
+        model.addAttribute("defaultLastName", lastName);
+        model.addAttribute("defaultEmail", email);
+        model.addAttribute("defaultUsername", username);
         return "registration";
     }
+
 
     /***
      * POST method to send attributes values to Register Client Service to check validation.
@@ -68,6 +84,11 @@ public class RegisterController {
         AuthenticateResponse loginReply;
         UserRegisterResponse registrationReply;
         if (!password.equals(confirmPassword)) {
+            rm.addAttribute("defaultUsername", username);
+            rm.addAttribute("defaultFirstName", firstName);
+            rm.addAttribute("defaultMiddleName", middleName);
+            rm.addAttribute("defaultLastName", lastName);
+            rm.addAttribute("defaultEmail", email);
             return "redirect:register?passwordError";
         }
         try {
@@ -91,6 +112,11 @@ public class RegisterController {
             return "redirect:account";
         } else {
             model.addAttribute("err", "Something went wrong");
+            rm.addAttribute("defaultUsername", username);
+            rm.addAttribute("defaultFirstName", firstName);
+            rm.addAttribute("defaultMiddleName", middleName);
+            rm.addAttribute("defaultLastName", lastName);
+            rm.addAttribute("defaultEmail", email);
             return "redirect:register?registerError";
         }
     }

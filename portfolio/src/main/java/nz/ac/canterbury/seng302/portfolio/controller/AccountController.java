@@ -1,9 +1,11 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
 import io.grpc.StatusRuntimeException;
+import nz.ac.canterbury.seng302.portfolio.service.ElementService;
+import nz.ac.canterbury.seng302.portfolio.service.PhotoService;
 import nz.ac.canterbury.seng302.portfolio.service.RegisterClientService;
 import nz.ac.canterbury.seng302.portfolio.utility.Utility;
-import nz.ac.canterbury.seng302.portfolio.service.UserAccountService;
+import nz.ac.canterbury.seng302.portfolio.service.UserAccountClientService;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +18,9 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+/***
+ * Controller receives HTTP GET, POST, PUT, DELETE calls for account page
+ */
 @Controller
 public class AccountController {
 
@@ -23,7 +28,13 @@ public class AccountController {
     private RegisterClientService registerClientService;
 
     @Autowired
-    private UserAccountService userAccountService;
+    private UserAccountClientService userAccountClientService;
+
+    @Autowired
+    private ElementService elementService;
+
+    @Autowired
+    private PhotoService photoService;
 
     /***
      * GET method for account controller to generate user's info
@@ -40,11 +51,9 @@ public class AccountController {
             @RequestParam(value = "userId") String userIdInput
     ) {
         UserResponse getUserByIdReply;
-        UserResponse getUserByIdReplyHeader;
-        Integer id = userAccountService.getUserIDFromAuthState(principal);
-        getUserByIdReplyHeader = registerClientService.getUserData(id);
-        String fullNameHeader = getUserByIdReplyHeader.getFirstName() + " " + getUserByIdReplyHeader.getMiddleName() + " " + getUserByIdReplyHeader.getLastName();
-        model.addAttribute("headerFullName", fullNameHeader);
+        Integer id = userAccountClientService.getUserIDFromAuthState(principal);
+        elementService.addHeaderAttributes(model, id);
+        elementService.addUpdateMessage(model, request);
         try {
             int userId = Integer.parseInt(userIdInput);
             if(id == userId){
@@ -57,6 +66,7 @@ public class AccountController {
                 model.addAttribute("userId", id);
                 return "404NotFound";
             }
+            elementService.addRoles(model, getUserByIdReply);
             model.addAttribute("firstName", getUserByIdReply.getFirstName());
             model.addAttribute("lastName", getUserByIdReply.getLastName());
             model.addAttribute("username", getUserByIdReply.getUsername());
@@ -70,6 +80,7 @@ public class AccountController {
             model.addAttribute("userId", id);
             model.addAttribute("dateAdded", Utility.getDateAddedString(getUserByIdReply.getCreated()));
             model.addAttribute("monthsSinceAdded", Utility.getDateSinceAddedString(getUserByIdReply.getCreated()));
+            photoService.savePhotoToPortfolio(getUserByIdReply.getProfileImagePath());
         } catch (StatusRuntimeException e) {
             model.addAttribute("loginMessage", "Error connecting to Identity Provider...");
             e.printStackTrace();
