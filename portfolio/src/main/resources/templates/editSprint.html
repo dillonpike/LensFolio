@@ -17,7 +17,7 @@
     </div>
 </div>
 <div class="content">
-    <form th:action="@{/edit-sprint/{id} (id=${sprintId})}"
+    <form th:action="@{edit-sprint/{id} (id=${sprintId})}"
           method="post">
         <label for="sprintName">Sprint Name</label> <br/>
         <input id="sprintName" type="text" th:name="sprintName" th:value="*{sprintName}">
@@ -54,7 +54,7 @@
             <textarea class="description-input" id="sprintDescription" th:name="sprintDescription" th:text="*{sprintDescription}"></textarea>
         </div>
         <br/>
-        <a th:href="@{/details}"><button class="cancel" type="button">Cancel</button></a>
+        <a th:href="@{../details}"><button class="cancel" type="button">Cancel</button></a>
         <button id="saveButton" class="save" type="submit">Save</button>
     </form>
 </div>
