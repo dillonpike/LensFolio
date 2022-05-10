@@ -75,6 +75,9 @@ public class ProjectDetailsStepDefs {
         String today = dtf.format(now);
         String threeMonthsTime = dtf.format(threeMonthsAfterNow);
 
+        DateTimeFormatter projectdtf = DateTimeFormatter.ofPattern("dd/MMM/yyyy");
+        String projectToday = projectdtf.format(now);
+
         webDriver.findElement(By.className("edit-project-button")).click();
         webDriver.findElement(By.id("projectName")).clear();
         webDriver.findElement(By.id("projectName")).sendKeys("test project");
@@ -91,6 +94,8 @@ public class ProjectDetailsStepDefs {
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.className("title-name")));
         assertEquals(webDriver.findElement(By.className("title-name")).getText(),"test project");
         assertEquals(webDriver.findElement(By.className("project-desc")).getText(),"test project desc");
+        assertEquals(webDriver.findElement(By.id("project-date")).getText(), projectdtf.format(now) + " - "
+                + projectdtf.format(threeMonthsAfterNow));
     }
 
     @When("I browse to the project page")
