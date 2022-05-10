@@ -20,14 +20,18 @@ public class PhotoService {
     public void savePhotoToPortfolio(String photoPath) {
         try {
             File imageFile;
+            new File("src/main/resources/static/img").mkdirs();
+            System.out.println(photoPath + "<-- Photo path from IDP");
             if (!photoPath.equals("")) {
                 imageFile = new File(photoPath);
+                System.out.println(imageFile.length() + "<-- File length of file in filepath");
                 if (imageFile.length() == 0) {
                     imageFile = new File("src/main/resources/static/img/default.jpg");
                 }
             } else {
                 imageFile = new File("src/main/resources/static/img/default.jpg");
             }
+            System.out.println(imageFile.getAbsolutePath() + "<-- Absolute file path chosen");
             File usedImageFile = new File("src/main/resources/static/img/userImage");
             FileOutputStream imageOutput = new FileOutputStream(usedImageFile);
             FileInputStream imageInput = new FileInputStream(imageFile);

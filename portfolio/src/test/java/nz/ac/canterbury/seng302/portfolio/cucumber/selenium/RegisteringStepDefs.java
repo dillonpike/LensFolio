@@ -1,6 +1,7 @@
 package nz.ac.canterbury.seng302.portfolio.cucumber.selenium;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -13,6 +14,7 @@ import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import java.util.Objects;
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -25,6 +27,8 @@ public class RegisteringStepDefs {
     private Boolean alreadyRegistered = false;
     private String outcome = "";
     private String address = "http://localhost:9000/login";
+
+    private int userId;
 
     @Before
     public void setUp() {
@@ -85,8 +89,18 @@ public class RegisteringStepDefs {
     public void iRegisterWithAUsernameUsername(String username) {
         address = "http://localhost:9000/register";
         webDriver.navigate().to(address);
-        wait.until(ExpectedConditions.elementToBeClickable(By.id("signUp")));
+        wait.until(ExpectedConditions.elementToBeClickable(By.id("username")));
         webDriver.findElement(By.id("username")).sendKeys(username);
+        webDriver.findElement(By.id("firstName")).sendKeys("Admin");
+        webDriver.findElement(By.id("lastName")).sendKeys("Admin");
+        webDriver.findElement(By.id("email")).sendKeys("name@example.com");
+        webDriver.findElement(By.id("passwordLogin")).sendKeys("Admin");
+        webDriver.findElement(By.id("confirmPassword")).sendKeys("Admin");
+        WebElement ele = webDriver.findElement(By.id("signUp"));
+        JavascriptExecutor jse = (JavascriptExecutor)webDriver;
+        jse.executeScript("arguments[0].click()", ele);
+        //wait.until(ExpectedConditions.elementToBeClickable(By.id("signUp")));
+        //webDriver.findElement(By.id("signUp")).click();
     }
 
     @And("Username is already registered {string}")
@@ -94,22 +108,32 @@ public class RegisteringStepDefs {
         if (Objects.equals(alreadyReg, "True")) {
             alreadyRegistered = true;
             if (Objects.equals(address, "http://localhost:9000/register")) {
-                outcome = "Username already registered";
+                outcome = "Invalid registration, username taken";
             } else {
                 outcome = "Logged in";
             }
         } else {
             if (Objects.equals(address, "http://localhost:9000/register")) {
-                outcome = "Registered";
+                outcome = "Successful registration";
             } else {
-                outcome = "Username not registered";
+                outcome = "Invalid username, please try again";
             }
         }
     }
 
     @Then("{string} message occurs")
     public void outcomeMessageOccurs(String outcomeMessage) {
-        assertEquals(outcome, outcomeMessage);
+        if (Objects.equals(outcome, "Invalid registration, username taken")){
+            Boolean outcomeMes = webDriver.findElement(By.id("usernameTaken")).isDisplayed();
+            assertNotNull(outcomeMes);
+        } else if (Objects.equals(outcome, "Successful registration")) {
+            String actualURL = webDriver.getCurrentUrl();
+            assertNotEquals("http://localhost:9000/register?registerError", actualURL);
+        } else if (Objects.equals(outcome, "Invalid username, please try again")) {
+            Boolean outcomeMes = webDriver.findElement(By.id("usernameInvalidMessage")).isDisplayed();
+            assertNotNull(outcomeMes);
+        }
+
     }
 
     @And("Username is registered {string}")
@@ -130,14 +154,70 @@ public class RegisteringStepDefs {
         webDriver.findElement(By.id("usernameLogin")).sendKeys(username);
         webDriver.findElement(By.id("passwordLogin")).sendKeys("password");
         webDriver.findElement(By.id("signIn")).click();
+        try {
+            WebDriverWait customWait = new WebDriverWait(webDriver, 2); // 2 second wait time
+            customWait.until(ExpectedConditions.elementToBeClickable(By.id("editProfileButton")));
+            userId = Integer.parseInt(webDriver.findElement(By.id("userId")).getAttribute("value"));
+        } catch (Exception e) {
+            userId = -1;
+        }
     }
 
     @And("Username is logged in {string}")
     public void usernameIsLoggedInIsLoggedIn(String loggedIn) {
-        String reg = "False";
         if (alreadyRegistered) {
-            reg = "True";
+            String actualURL = webDriver.getCurrentUrl();
+            assertNotEquals("http://localhost:9000/login", actualURL);
         }
-        assertEquals(reg, loggedIn);
+    }
+
+    @When("I login with a  wrong username {string}")
+    public void iLoginWithAWrongUsername(String username) {
+        wait.until(ExpectedConditions.elementToBeClickable(By.id("usernameLogin")));
+        webDriver.findElement(By.id("usernameLogin")).sendKeys(username);
+    }
+
+    @And("I login with any password")
+    public void iLoginWithAnyPassword() throws InterruptedException {
+        webDriver.findElement(By.id("passwordLogin")).sendKeys("anyPassword");
+        webDriver.findElement(By.id("signIn")).click();
+        Thread.sleep(2000);
+    }
+
+    @Then("username error message should be displayed")
+    public void usernameErrorMessageShouldBeDisplayed() {
+        assertTrue(webDriver.findElement(By.id("usernameInvalidMessage")).isDisplayed());
+    }
+
+    @When("I login with a  right username {string}")
+    public void iLoginWithARightUsername(String username) {
+        wait.until(ExpectedConditions.elementToBeClickable(By.id("usernameLogin")));
+        webDriver.findElement(By.id("usernameLogin")).sendKeys(username);
+    }
+
+    @And("I login with wrong password {string}")
+    public void iLoginWithWrongPassword(String password) throws InterruptedException {
+        webDriver.findElement(By.id("passwordLogin")).sendKeys(password);
+        webDriver.findElement(By.id("signIn")).click();
+        Thread.sleep(2000);
+
+    }
+
+    @Then("password error message should be displayed")
+    public void passwordErrorMessageShouldBeDisplayed() {
+        assertTrue(webDriver.findElement(By.id("passwordInvalidMessage")).isDisplayed());
+    }
+
+    @Then("I am taken to my account page")
+    public void iAmTakenToMyAccountPage() {
+        String actualURL = webDriver.getCurrentUrl();
+        assertNotEquals("http://localhost:9000/login", actualURL);
+    }
+
+    @And("I can view my details")
+    public void iCanViewMyDetails() {
+        assertTrue(webDriver.findElement(By.id("firstName")).isDisplayed());
+        assertTrue(webDriver.findElement(By.id("lastNameInput")).isDisplayed());
+        assertEquals(userId, Integer.parseInt(webDriver.findElement(By.id("userId")).getAttribute("value")));
     }
 }
