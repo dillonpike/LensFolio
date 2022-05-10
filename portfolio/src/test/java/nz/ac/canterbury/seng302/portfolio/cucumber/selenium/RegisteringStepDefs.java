@@ -28,6 +28,8 @@ public class RegisteringStepDefs {
     private String outcome = "";
     private String address = "http://localhost:9000/login";
 
+    private int userId;
+
     @Before
     public void setUp() {
         webDriver = SeleniumService.getWebDriver();
@@ -152,6 +154,13 @@ public class RegisteringStepDefs {
         webDriver.findElement(By.id("usernameLogin")).sendKeys(username);
         webDriver.findElement(By.id("passwordLogin")).sendKeys("password");
         webDriver.findElement(By.id("signIn")).click();
+        try {
+            WebDriverWait customWait = new WebDriverWait(webDriver, 2); // 2 second wait time
+            customWait.until(ExpectedConditions.elementToBeClickable(By.id("editProfileButton")));
+            userId = Integer.parseInt(webDriver.findElement(By.id("userId")).getAttribute("value"));
+        } catch (Exception e) {
+            userId = -1;
+        }
     }
 
     @And("Username is logged in {string}")
@@ -207,14 +216,8 @@ public class RegisteringStepDefs {
 
     @And("I can view my details")
     public void iCanViewMyDetails() {
-        boolean same = true;
-        String firstname = (webDriver.findElement(By.id("firstName")).getAttribute("value"));
-        String lastname = (webDriver.findElement(By.id("lastNameInput")).getAttribute("value"));
-        String expectedFirst = "Harper";
-        String expectedLast = "Liu";
-        if (!Objects.equals(firstname, expectedFirst) || !Objects.equals(lastname, expectedLast)) {
-            same = false;
-        }
-        assertTrue(same);
+        assertTrue(webDriver.findElement(By.id("firstName")).isDisplayed());
+        assertTrue(webDriver.findElement(By.id("lastNameInput")).isDisplayed());
+        assertEquals(userId, Integer.parseInt(webDriver.findElement(By.id("userId")).getAttribute("value")));
     }
 }
