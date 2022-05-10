@@ -174,9 +174,11 @@ public class EditAccountController {
             Model model
     ) {
         boolean wasDeleted = false;
+        String message = "Error occured, caught on portfolio side. ";
         try {
-            DeleteUserProfilePhotoResponse reply = registerClientService.DeleteUserProfilePhoto(userId);
+            DeleteUserProfilePhotoResponse reply = registerClientService.deleteUserProfilePhoto(userId);
             wasDeleted = reply.getIsSuccess();
+            message = reply.getMessage();
             if (wasDeleted) {
 //                Path src = Paths.get("src/main/resources/static/img/default.jpg");
 //                Path dest = Paths.get("src/main/resources/static/img/userImage.jpg");
@@ -197,6 +199,7 @@ public class EditAccountController {
 
         } catch (Exception e) {
             System.err.println("Something went wrong requesting to delete the photo");
+            System.err.println("Message: " + message);
             e.printStackTrace();
         }
         rm.addAttribute("userId", userId);
@@ -223,7 +226,7 @@ public class EditAccountController {
             fos.write( multipartFile.getBytes() );
             fos.close();
 
-            registerClientService.UploadUserProfilePhoto(userId, new File("src/main/resources/static/img/userImage.jpg"));
+            registerClientService.uploadUserProfilePhoto(userId, new File("src/main/resources/static/img/userImage.jpg"));
             // You cant tell if it saves correctly with the above method as it returns nothing
             wasSaved = true;
             if (wasSaved) {
