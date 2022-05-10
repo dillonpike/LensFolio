@@ -97,6 +97,7 @@ public class UserAccountServerService extends UserAccountServiceGrpc.UserAccount
                 String profileImagePath = "";
                 try {
                     Blob imageBlob = user.getPhoto();
+                    new File("src/main/resources/Images").mkdirs();
                     File imageFile = new File("src/main/resources/Images/profileImage");
                     FileOutputStream imageOutput = new FileOutputStream(imageFile);
                     if  (imageBlob.length() == 0) {
