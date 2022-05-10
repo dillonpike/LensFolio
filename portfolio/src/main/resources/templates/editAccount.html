@@ -33,7 +33,7 @@
                   <input type="hidden" th:value="${userId}" name="userId">
                   <button th:id="save-btn" th:hidden="true" type="submit" class="btn btn-primary" style="margin-top: 10px">Save Photo</button>
                   <input type="hidden" th:value="${userId}" name="userId">
-                  <button type="submit" id="deletePhotoButton" class="btn btn-danger" style="margin-left: 10px; margin-top: 10px" th:formaction="@{/deleteAccountPhoto}">Delete Photo</button>
+                  <button type="submit" id="deletePhotoButton" class="btn btn-danger" style="margin-left: 10px; margin-top: 10px" th:formaction="@{deleteAccountPhoto}">Delete Photo</button>
               </div>
             </div>
           </form>

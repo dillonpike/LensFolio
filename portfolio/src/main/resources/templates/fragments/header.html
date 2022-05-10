@@ -21,14 +21,14 @@
                 <li><form>
                     <div>
                         <input type="hidden" th:value="${userId}" name="userId">
-                        <button type="submit" class="btn btn-link" id="projectsHeaderButton" style="color:black;text-decoration: none;" >  <a th:href="@{/details}" class="nav-link px-2 link-secondary">Projects</a>
+                        <button type="submit" class="btn btn-link" id="projectsHeaderButton" style="color:black;text-decoration: none;" >  <a th:href="@{details}" class="nav-link px-2 link-secondary">Projects</a>
                         </button>
                     </div>
                 </form></li>
                 <li><form>
                     <div>
                         <input type="hidden" th:value="${userId}" name="userId">
-                        <button type="submit" class="btn btn-link" id="usersHeaderButton" style="color:black;text-decoration: none;" >  <a th:href="@{/viewUsers}" class="nav-link px-2 link-secondary">Users</a>
+                        <button type="submit" class="btn btn-link" id="usersHeaderButton" style="color:black;text-decoration: none;" >  <a th:href="@{viewUsers}" class="nav-link px-2 link-secondary">Users</a>
                         </button>
                     </div>
                 </form></li>
@@ -48,14 +48,14 @@
                     <img id="userIconSmall" th:src="@{/src/main/resources/static/img/userImage}" alt="mdo" width="32" height="32" class="rounded-circle">
                 </a>
                 <ul class="dropdown-menu text-small" aria-labelledby="dropdownUser1">
-                    <li><form th:action="@{/backToAccountPage}" method="post">
+                    <li><form th:action="@{backToAccountPage}" method="post">
                         <div>
                             <input type="hidden" th:value="${userId}" name="userId">
                             <button id="profileButton" type="submit" class="btn btn-link" style="color:black;text-decoration: none;" >Profile</button>
                         </div>
                     </form></li>
                     <li><hr class="dropdown-divider"></li>
-                    <li><a id="signOutButton" class="dropdown-item" th:href="@{/logout}">Sign out</a></li>
+                    <li><a id="signOutButton" class="dropdown-item" th:href="@{logout}">Sign out</a></li>
                 </ul>
             </div>
         </div>
