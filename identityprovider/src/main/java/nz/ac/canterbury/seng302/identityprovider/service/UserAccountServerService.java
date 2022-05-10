@@ -110,7 +110,6 @@ public class UserAccountServerService extends UserAccountServiceGrpc.UserAccount
                 } catch (SQLException | IOException e) {
                     e.printStackTrace();
                 }
-                System.out.println(profileImagePath + "<-- Absolute Image Path");
 
                 reply
                         .setEmail(user.getEmail())

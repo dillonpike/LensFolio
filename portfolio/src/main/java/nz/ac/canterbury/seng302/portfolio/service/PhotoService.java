@@ -17,33 +17,26 @@ public class PhotoService {
      * Saves the photo from the given path to the portfolio module for loading into the HTML.
      * @param photoPath path of the photo
      */
-    public String savePhotoToPortfolio(String photoPath) {
-        String finalPath = "src/main/resources/static/img/userImage";
+    public void savePhotoToPortfolio(String photoPath) {
         try {
             File imageFile;
             new File("src/main/resources/static/img").mkdirs();
-            System.out.println(photoPath + "<-- Photo path from IDP");
             if (!photoPath.equals("")) {
                 imageFile = new File(photoPath);
-                System.out.println(imageFile.length() + "<-- File length of file in filepath");
                 if (imageFile.length() == 0) {
                     imageFile = new File("src/main/resources/static/img/default.jpg");
                 }
             } else {
                 imageFile = new File("src/main/resources/static/img/default.jpg");
             }
-            System.out.println(imageFile.getAbsolutePath() + "<-- Absolute file path chosen");
             File usedImageFile = new File("src/main/resources/static/img/userImage");
             FileOutputStream imageOutput = new FileOutputStream(usedImageFile);
             FileInputStream imageInput = new FileInputStream(imageFile);
             imageOutput.write(imageInput.readAllBytes());
-            System.out.println(imageInput.readAllBytes() + "<All bytes length");
-            finalPath = usedImageFile.getAbsolutePath();
             imageInput.close();
             imageOutput.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return finalPath;
     }
 }
