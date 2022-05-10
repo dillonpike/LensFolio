@@ -198,4 +198,23 @@ public class RegisteringStepDefs {
     public void passwordErrorMessageShouldBeDisplayed() {
         assertTrue(webDriver.findElement(By.id("passwordInvalidMessage")).isDisplayed());
     }
+
+    @Then("I am taken to my account page")
+    public void iAmTakenToMyAccountPage() {
+        String actualURL = webDriver.getCurrentUrl();
+        assertNotEquals("http://localhost:9000/login", actualURL);
+    }
+
+    @And("I can view my details")
+    public void iCanViewMyDetails() {
+        boolean same = true;
+        String firstname = (webDriver.findElement(By.id("firstName")).getAttribute("value"));
+        String lastname = (webDriver.findElement(By.id("lastNameInput")).getAttribute("value"));
+        String expectedFirst = "Harper";
+        String expectedLast = "Liu";
+        if (!Objects.equals(firstname, expectedFirst) || !Objects.equals(lastname, expectedLast)) {
+            same = false;
+        }
+        assertTrue(same);
+    }
 }

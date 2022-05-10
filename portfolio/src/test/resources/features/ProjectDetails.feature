@@ -11,6 +11,14 @@ Feature: UPi Project Details
     When I browse to the project page
     Then I can create and add all details for a project
 
+  Scenario: AC3 - A teacher can start a project up to a year ago
+    Given I am logged in as "teacher"
+    And I am on the project page
+    And I browse to edit project page
+    When I edit the start date to  more than a year ago
+    Then I should not be able to save the edit
+    And start date error message should be displayed
+
   Scenario: AC7 - Default sprint start date is day after the previous sprint end.
     Default sprint end date is 3 weeks after the default start date.
     Given I am logged in as "teacher"
