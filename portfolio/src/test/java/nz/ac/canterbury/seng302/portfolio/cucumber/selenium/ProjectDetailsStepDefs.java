@@ -221,7 +221,7 @@ public class ProjectDetailsStepDefs {
 //        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[@id='cancelEditProjectButton']")));
 //        wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("")));
         webDriver.findElement(By.id("projectStartDate")).click();
-        for(int i = 0; i < 15; i++) {
+        for(int i = 0; i < 20; i++) {
             webDriver.findElement(By.xpath("//th[contains(., '«')]")).click();
             Thread.sleep(100);
         }
