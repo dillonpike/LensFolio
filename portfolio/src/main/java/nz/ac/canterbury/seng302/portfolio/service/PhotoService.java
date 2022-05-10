@@ -18,7 +18,7 @@ public class PhotoService {
      * @param photoPath path of the photo
      */
     public String savePhotoToPortfolio(String photoPath) {
-        String finalPath = "img/userImage";
+        String finalPath = "src/main/resources/static/img/userImage";
         try {
             File imageFile;
             new File("src/main/resources/static/img").mkdirs();
