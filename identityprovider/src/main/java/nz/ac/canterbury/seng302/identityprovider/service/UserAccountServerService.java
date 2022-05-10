@@ -100,11 +100,11 @@ public class UserAccountServerService extends UserAccountServiceGrpc.UserAccount
                     new File("src/main/resources/Images").mkdirs();
                     File imageFile = new File("src/main/resources/Images/profileImage");
                     FileOutputStream imageOutput = new FileOutputStream(imageFile);
-                    if  (imageBlob.length() == 0) {
-                        profileImagePath = "";
-                    } else {
+                    if  (imageBlob != null) {
                         imageOutput.write(imageBlob.getBytes(1, (int) imageBlob.length()));
                         profileImagePath = imageFile.getAbsolutePath();
+                    } else {
+                        profileImagePath = "";
                     }
                     imageOutput.close();
                 } catch (SQLException | IOException e) {
@@ -124,8 +124,8 @@ public class UserAccountServerService extends UserAccountServiceGrpc.UserAccount
                 Set<Roles> roles = user.getRoles();
                 Roles[] rolesArray = roles.toArray(new Roles[roles.size()]);
 
-                for(int i = 0; i< rolesArray.length; i++){
-                    reply.addRolesValue(rolesArray[i].getId());
+                for (Roles value : rolesArray) {
+                    reply.addRolesValue(value.getId());
                 }
             }
 
@@ -332,7 +332,7 @@ public class UserAccountServerService extends UserAccountServiceGrpc.UserAccount
         }
 
         reply.setIsSuccess(wasDeleted);
-        reply.setMessage(message);
+//        reply.setMessage(message);
         responseObserver.onNext(reply.build());
         responseObserver.onCompleted();
     }
