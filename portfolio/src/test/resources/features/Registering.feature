@@ -50,5 +50,13 @@ Feature: UUi Registering and logging into a user account
     And I login with wrong password "wrongpassword"
     Then password error message should be displayed
 
+  Scenario: AC8 part 1 - On successful log-in or registration, I am taken to my own account page within the system.
+    Given I am on the login page
+    When I login with a username "admin"
+    Then I am taken to my account page
 
-
+  Scenario: AC8 part 2 - Currently, the account page simply displays all my profile info/attributes formatted to be easily readable.
+    Given I am on the login page
+    When I login with a username "admin"
+    Then I am taken to my account page
+    And I can view my details
