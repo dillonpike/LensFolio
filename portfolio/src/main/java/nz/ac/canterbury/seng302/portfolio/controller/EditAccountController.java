@@ -194,9 +194,7 @@ public class EditAccountController {
             DeleteUserProfilePhotoResponse reply = registerClientService.DeleteUserProfilePhoto(userId);
             wasDeleted = reply.getIsSuccess();
             if (wasDeleted) {
-//                Path src = Paths.get("src/main/resources/static/img/default.jpg");
-//                Path dest = Paths.get("src/main/resources/static/img/userImage");
-//                Files.copy(src, dest, StandardCopyOption.REPLACE_EXISTING);
+                new File("src/main/resources/static/img").mkdirs();
                 File imageFile = new File("src/main/resources/static/img/default.jpg");
                 File usedImageFile = new File("src/main/resources/static/img/userImage");
                 FileOutputStream imageOutput = new FileOutputStream(usedImageFile);
@@ -235,6 +233,7 @@ public class EditAccountController {
         boolean wasSaved = false;
         try {
 
+            new File("src/main/resources/static/img").mkdirs();
             File imageFile = new File("src/main/resources/static/img/userImage");
             FileOutputStream fos = new FileOutputStream( imageFile );
             fos.write( multipartFile.getBytes() );
