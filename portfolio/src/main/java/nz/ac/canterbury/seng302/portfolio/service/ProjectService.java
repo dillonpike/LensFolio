@@ -10,6 +10,9 @@ import java.util.Optional;
 
 // more info here https://codebun.com/spring-boot-crud-application-using-thymeleaf-and-spring-data-jpa/
 
+/***
+ * Contains methods for saving, deleting, updating and retrieving project objects to the database.
+ */
 @Service
 public class ProjectService {
 

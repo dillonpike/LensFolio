@@ -2,6 +2,7 @@ package nz.ac.canterbury.seng302.portfolio.controller;
 
 import io.grpc.StatusRuntimeException;
 import nz.ac.canterbury.seng302.portfolio.service.ElementService;
+import nz.ac.canterbury.seng302.portfolio.service.PhotoService;
 import nz.ac.canterbury.seng302.portfolio.service.RegisterClientService;
 import nz.ac.canterbury.seng302.portfolio.service.UserAccountClientService;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
@@ -31,12 +32,13 @@ import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
 
+/***
+ * Controller receive HTTP GET, POST, PUT, DELETE calls for edit account page
+ */
 @Controller
 
 public class EditAccountController {
@@ -49,6 +51,9 @@ public class EditAccountController {
 
     @Autowired
     private ElementService elementService;
+
+    @Autowired
+    private PhotoService photoService;
 
     /***
      * GET method to generate the edit account page which let user edit info/attributes
@@ -175,7 +180,7 @@ public class EditAccountController {
 
         rm.addAttribute("userId", userId);
 
-        return "redirect:editAccount";
+        return "redirect:account";
     }
 
     @PostMapping("/deleteAccountPhoto")

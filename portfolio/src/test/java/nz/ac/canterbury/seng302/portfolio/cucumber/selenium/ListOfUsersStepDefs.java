@@ -13,19 +13,37 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+/**
+ * Selenium Cucumber step definitions for the list of users feature.
+ */
 public class ListOfUsersStepDefs {
 
+    /**
+     * Webdriver used during tests.
+     */
     private WebDriver webDriver;
+
+    /**
+     * WebDriverWait object that is used to wait until some criteria is met, for example an element to be visible.
+     */
     private WebDriverWait wait;
 
+    /**
+     * Sets up for scenario by getting a web driver and WebDriverWait object.
+     */
     @Before
     public void setUp() {
         webDriver = SeleniumService.getWebDriver();
         wait = SeleniumService.getWait();
     }
 
+    /**
+     * Tears down after running scenario by quitting the web driver (thus closing the browser) and setting the web
+     * driver to null.
+     */
     @After
     public void tearDown() {
         SeleniumService.tearDownWebDriver();
@@ -65,8 +83,14 @@ public class ListOfUsersStepDefs {
     @Then("The list of users has the following columns:")
     public void theListOfUsersHasTheFollowingColumns(DataTable dataTableColumns) {
         for (String expectedColumn : dataTableColumns.asList()) {
-            assertTrue(webDriver.findElement(By.xpath("//thead/tr/th[translate(text(), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'," +
-                    " 'abcdefghijklmnopqrstuvwxyz')='" + expectedColumn.toLowerCase() + "']")).isDisplayed());
+            assertTrue(webDriver.findElement(By.xpath("//thead/tr/th[" + SeleniumService.XPATH_LOWER_CASE_TEXT + "='" +
+                    expectedColumn.toLowerCase() + "']")).isDisplayed());
         }
+    }
+
+    @Then("The list of users is separated into multiple pages")
+    public void theListOfUsersIsSeparatedIntoMultiplePages() {
+        String nextButtonClass = webDriver.findElement(By.id("sortTable_next")).getAttribute("class");
+        assertNotNull(nextButtonClass);
     }
 }

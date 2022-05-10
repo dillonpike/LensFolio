@@ -21,7 +21,7 @@
                 <li><form>
                     <div>
                         <input type="hidden" th:value="${userId}" name="userId">
-                        <button type="submit" class="btn btn-link" id="projectsHeaderButton" style="color:black;text-decoration: none;" >  <a href="/details" class="nav-link px-2 link-secondary">Projects</a>
+                        <button type="submit" class="btn btn-link" id="projectsHeaderButton" style="color:black;text-decoration: none;" >  <a th:href="@{'details'}" class="nav-link px-2 link-secondary">Projects</a>
                         </button>
                     </div>
                 </form></li>
@@ -45,7 +45,7 @@
             <div class="dropdown text-end" style="display: flex; flex-direction: row; align-items: center;">
                 <h6 th:text="${headerFullName}" style="margin-right: 5px;padding-top: 5px"></h6>
                 <a href="#" class="d-block link-dark text-decoration-none dropdown-toggle" id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false" >
-                    <img th:src="@{/src/main/resources/static/img/userImage}" alt="mdo" width="32" height="32" class="rounded-circle">
+                    <img id="userIconSmall" th:src="@{/src/main/resources/static/img/userImage}" alt="mdo" width="32" height="32" class="rounded-circle">
                 </a>
                 <ul class="dropdown-menu text-small" aria-labelledby="dropdownUser1">
                     <li><form th:action="@{/backToAccountPage}" method="post">

@@ -44,6 +44,13 @@
         <div class="ps-lg-1-6 ps-xl-5">
           <div class="mb-5">
 
+            <div class="alert alert-warning alert-dismissible fade show" role="alert" id="alertBanner" th:if="${isUpdateSuccess != null}">
+              <div style="display: flex; justify-content: space-between;flex-direction: row; align-items: center">
+                <strong th:text="${updateMessage}"></strong>
+                <button id="removeUpdateAlert" type="button" class="btn btn-outline-warning" onclick="removeAlertBanner()">X</button>
+              </div>
+            </div>
+
             <div class="text-start mb-1-6">
               <h2 class="h1 mb-0 fs-1">Profile</h2>
             </div>
@@ -88,10 +95,10 @@
               </div>
             </form>
 <!--          end form-->
-            <form th:action="@{/editAccountLoad}" method="post" th:if="${isAuthorised} == true">
+            <form th:action="@{editAccountLoad}" method="post" th:if="${isAuthorised} == true">
               <div style="display:flex; justify-content: end" class="mt-3">
                 <input type="hidden" th:value="${userId}" name="userId">
-                <button type="submit" class="btn btn-primary">Edit Profile</button>
+                <button type="submit" id="editProfileButton" class="btn btn-primary">Edit Profile</button>
               </div>
             </form>
         </div>
