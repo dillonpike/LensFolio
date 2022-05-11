@@ -1,6 +1,7 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
 import io.grpc.StatusRuntimeException;
+import nz.ac.canterbury.seng302.portfolio.PortfolioApplication;
 import nz.ac.canterbury.seng302.portfolio.service.ElementService;
 import nz.ac.canterbury.seng302.portfolio.service.PhotoService;
 import nz.ac.canterbury.seng302.portfolio.service.RegisterClientService;
@@ -197,9 +198,9 @@ public class EditAccountController {
             wasDeleted = reply.getIsSuccess();
             message = String.valueOf(reply.getMessage());
             if (wasDeleted) {
-                new File("src/main/resources/static/img").mkdirs();
-                File imageFile = new File("src/main/resources/static/img/default.jpg");
-                File usedImageFile = new File("src/main/resources/static/img/userImage");
+                new File(PortfolioApplication.IMAGE_DIR).mkdirs();
+                File imageFile = new File(PortfolioApplication.IMAGE_DIR + "/default.jpg");
+                File usedImageFile = new File(PortfolioApplication.IMAGE_DIR + "/userImage");
                 FileOutputStream imageOutput = new FileOutputStream(usedImageFile);
                 FileInputStream imageInput = new FileInputStream(imageFile);
                 imageOutput.write(imageInput.readAllBytes());
@@ -237,13 +238,13 @@ public class EditAccountController {
         boolean wasSaved = false;
         try {
 
-            new File("src/main/resources/static/img").mkdirs();
-            File imageFile = new File("src/main/resources/static/img/userImage");
+            new File(PortfolioApplication.IMAGE_DIR).mkdirs();
+            File imageFile = new File(PortfolioApplication.IMAGE_DIR + "/userImage");
             FileOutputStream fos = new FileOutputStream( imageFile );
             fos.write( multipartFile.getBytes() );
             fos.close();
 
-            registerClientService.uploadUserProfilePhoto(userId, new File("src/main/resources/static/img/userImage"));
+            registerClientService.uploadUserProfilePhoto(userId, new File(PortfolioApplication.IMAGE_DIR + "/userImage"));
             // You cant tell if it saves correctly with the above method as it returns nothing
             wasSaved = true;
             if (wasSaved) {
