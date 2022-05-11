@@ -1,13 +1,12 @@
 package nz.ac.canterbury.seng302.identityprovider.service;
 
 import nz.ac.canterbury.seng302.identityprovider.model.Roles;
-import nz.ac.canterbury.seng302.identityprovider.model.RolesRepository;
+import nz.ac.canterbury.seng302.identityprovider.repository.RolesRepository;
 import nz.ac.canterbury.seng302.identityprovider.model.UserModel;
-import nz.ac.canterbury.seng302.identityprovider.model.UserModelRepository;
+import nz.ac.canterbury.seng302.identityprovider.repository.UserModelRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.sql.Blob;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;

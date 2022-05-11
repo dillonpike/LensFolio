@@ -48,7 +48,30 @@ gradlew publishToMavenLocal
 
 *Note: The `gradle clean` step is usually only necessary if there have been changes since the last publishToMavenLocal.*
 
-### 3 - Identity Provider (IdP) Module
+### 3 - Source to the env variable
+Before running the application you should source a file which contains the the variable about the credentials so that the application would be able to acces the database
+
+It is recommended to have the file named as ".env" and in that file you should write the variable as following:
+```
+export VARIABLE_NAME={VARIABLE_VALUE}
+export ANOTHE_VARIABLE_NAME={ANOTHER_VARIABLE_VALUE}
+...
+```
+
+The following is how to sourve the .env file
+On Linux:
+```
+source {path to the the .env file}/.env
+```
+
+On Windows:
+It is recomemded to use git bash, since 'source' command is a bash command.
+And inside the git bash terminal execute
+```
+source {path to the the .env file}/.env
+```
+
+### 4 - Identity Provider (IdP) Module
 Assuming we are starting in the root directory...
 
 On Linux:
@@ -65,7 +88,7 @@ gradlew bootRun
 
 By default, the IdP will run on local port 9002 (`http://localhost:9002`).
 
-### 4 - Portfolio Module
+### 5 - Portfolio Module
 Now that the IdP is up and running, we will be able to use the Portfolio module (note: it is entirely possible to start it up without the IdP running, you just won't be able to get very far).
 
 From the root directory (and likely in a second terminal tab / window)...

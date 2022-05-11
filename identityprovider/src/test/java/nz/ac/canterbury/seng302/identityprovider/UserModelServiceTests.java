@@ -2,9 +2,9 @@ package nz.ac.canterbury.seng302.identityprovider;
 
 
 import nz.ac.canterbury.seng302.identityprovider.model.Roles;
-import nz.ac.canterbury.seng302.identityprovider.model.RolesRepository;
+import nz.ac.canterbury.seng302.identityprovider.repository.RolesRepository;
 import nz.ac.canterbury.seng302.identityprovider.model.UserModel;
-import nz.ac.canterbury.seng302.identityprovider.model.UserModelRepository;
+import nz.ac.canterbury.seng302.identityprovider.repository.UserModelRepository;
 import nz.ac.canterbury.seng302.identityprovider.service.UserModelService;
 import org.junit.Before;
 import org.junit.Test;
