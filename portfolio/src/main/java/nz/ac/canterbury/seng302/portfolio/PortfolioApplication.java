@@ -10,7 +10,7 @@ import java.io.IOException;
 public class PortfolioApplication {
     static public String IMAGE_DIR;
     public static void main(String[] args) throws IOException {
-        IMAGE_DIR = new File(".").getCanonicalPath() + "/src/main/resources/static/img/";
+        IMAGE_DIR = new File(".").getCanonicalPath() + "/img/";
         System.out.println(IMAGE_DIR);
         SpringApplication.run(PortfolioApplication.class, args);
     }
