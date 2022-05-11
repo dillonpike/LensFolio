@@ -117,7 +117,7 @@ public class UserModelService {
 
 
     /***
-     * Get the user's highest role
+     * Method to get the user's highest role
      * @param user current user
      * @return highest role
      */

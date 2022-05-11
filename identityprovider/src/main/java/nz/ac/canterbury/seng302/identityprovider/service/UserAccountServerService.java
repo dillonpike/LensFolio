@@ -333,11 +333,16 @@ public class UserAccountServerService extends UserAccountServiceGrpc.UserAccount
         }
 
         reply.setIsSuccess(wasDeleted);
-//        reply.setMessage(message);
+        reply.setMessage(message);
         responseObserver.onNext(reply.build());
         responseObserver.onCompleted();
     }
 
+    /***
+     * Method to communicate with IDP to get all users from database
+     * @param request GetPaginatedUsersRequest
+     * @param responseObserver
+     */
     @Override
     public void getPaginatedUsers(GetPaginatedUsersRequest request, StreamObserver<PaginatedUsersResponse> responseObserver) {
         PaginatedUsersResponse.Builder reply = PaginatedUsersResponse.newBuilder();
@@ -349,6 +354,11 @@ public class UserAccountServerService extends UserAccountServiceGrpc.UserAccount
         responseObserver.onCompleted();
     }
 
+    /***
+     * Help method to get user's information as a User Model
+     * @param user User model
+     * @return User model
+     */
     private UserResponse getUserInfo(UserModel user) {
         UserResponse.Builder response = UserResponse.newBuilder();
         response.setUsername(user.getUsername())
@@ -364,8 +374,4 @@ public class UserAccountServerService extends UserAccountServiceGrpc.UserAccount
         return response.build();
     }
 
-//    public void addRoleToUser(ModifyRoleOfUserRequest request) {
-//        UserRoleChangeResponse.Builder reply = UserRoleChangeResponse.newBuilder();
-//        reply.
-//    }
 }
