@@ -241,7 +241,7 @@
     settingmenu.classList.toggle('setting-menu-height');
     settingmenu.addEventListener('click',function(){event.stopPropagation()})
   }
-
+  // Updates the inputs when the information entered is incorrect
   document.getElementById("confirmPasswordInput").onkeyup = function() {
     if(document.getElementById("newPasswordInput").value !== document.getElementById("confirmPasswordInput").value) {
       document.getElementById("newPasswordInput").style.borderColor = "red";
@@ -251,7 +251,7 @@
       document.getElementById("confirmPasswordInput").style.borderColor = "green";
     }
   }
-
+  // Removes the alert banner
   function removeAlertBanner() {
     document.getElementById("alertBanner").style.display = "none";
   }
@@ -268,7 +268,7 @@
     const $select = document.querySelector('#personalPronouns')
     $select.value = pronoun;
   }
-
+    // Sets the preview image being uploaded.
     function PreviewImage() {
     var oFReader = new FileReader();
 

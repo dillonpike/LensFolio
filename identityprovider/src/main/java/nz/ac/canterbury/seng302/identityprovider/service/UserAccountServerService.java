@@ -14,7 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import nz.ac.canterbury.seng302.shared.identityprovider.*;
 import org.springframework.security.crypto.password.Pbkdf2PasswordEncoder;
 
-import java.util.Objects;
 import java.util.Set;
 
 import java.util.List;

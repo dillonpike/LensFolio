@@ -1,7 +1,6 @@
-package nz.ac.canterbury.seng302.identityprovider.model;
+package nz.ac.canterbury.seng302.identityprovider.repository;
 
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
+import nz.ac.canterbury.seng302.identityprovider.model.UserModel;
 import org.springframework.stereotype.Repository;
 import org.springframework.data.repository.CrudRepository;
 
