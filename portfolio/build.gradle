@@ -4,6 +4,8 @@ plugins {
     id 'org.springframework.boot' version '2.6.3'
     id 'io.spring.dependency-management' version '1.0.11.RELEASE'
     id 'java'
+    id 'jacoco'
+    id "org.sonarqube" version "3.3"
     id 'se.thinkcode.cucumber-runner' version '0.0.8'
 }
 
@@ -71,12 +73,7 @@ dependencies {
     // https://mvnrepository.com/artifact/ru.yandex.qatools.ashot/ashot
     testImplementation group: 'ru.yandex.qatools.ashot', name: 'ashot', version: '1.5.4'
 
-
 }
-
-//tasks.named('test') {
-//    useJUnitPlatform()
-//}
 
 configurations {
     cucumberRuntime {
@@ -105,10 +102,36 @@ cucumber {
 
 test {
     useJUnitPlatform()
-
+    finalizedBy jacocoTestReport
     testLogging {
         events TestLogEvent.FAILED, TestLogEvent.PASSED, TestLogEvent.SKIPPED
     }
 
     systemProperties(project.gradle.startParameter.systemPropertiesArgs)
+}
+
+// Jacoco test coverage configuration
+jacoco {
+    toolVersion = "0.8.7"
+}
+
+// select what reports Jacoco generates and where to put them
+jacocoTestReport {
+    reports {
+        xml.enabled true
+        xml.destination file("${buildDir}/jacoco/test-report.xml")
+        csv.enabled false
+        html.destination file("${buildDir}/jacoco/html")
+    }
+}
+
+// Sonarqube specific configuration (task)
+sonarqube {
+    properties {
+        property "sonar.projectKey", "team-100-portfolio"
+        property "sonar.projectName", "team 100-portfolio"
+        property "sonar.sourceEncoding", "UTF-8"
+        property "sonar.host.url", "http://sonarqube.csse.canterbury.ac.nz:9000"
+        property "sonar.login", System.getenv("SONARQUBE_API_KEY")
+    }
 }
