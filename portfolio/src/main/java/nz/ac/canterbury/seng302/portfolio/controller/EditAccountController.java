@@ -257,7 +257,6 @@ public class EditAccountController {
         } catch (Exception e) {
             System.err.println("Something went wrong requesting to save the photo");
         }
-
         rm.addAttribute("userId", userId);
         return "redirect:editAccount";
     }
