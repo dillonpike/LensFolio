@@ -41,7 +41,7 @@
 <body>
     <div class="header">
         <h2 class="title" th:text="${projectName}"/>
-        <span class="badge rounded-pill title-date text-dark align-middle" th:text="${projectStartDateString} + ' - ' + ${projectEndDateString}" />
+        <span class="badge rounded-pill title-date align-middle" th:text="${projectStartDateString} + ' - ' + ${projectEndDateString}" />
     </div>
 
     <div class='calendar' id='calendar'></div>
