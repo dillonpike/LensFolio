@@ -60,6 +60,10 @@
 </div>
 </body>
 <script>
+    /**
+     * Checks the entered sprint dates in the input fields and displays an error message if there's a related error.
+     * Disables the save button if there is an error.
+     */
     function updateSprintDateError() {
         const data = {
             id: document.getElementById("title").getAttribute("data"),
@@ -73,9 +77,12 @@
         });
     }
 
+    // Runs updateSprintDateError function whenever the entered dates change
     document.getElementById("sprintStartDate").onchange = updateSprintDateError;
     document.getElementById("sprintEndDate").onchange = updateSprintDateError;
 
+    // Initial run of updateSprintDateError function in case initial values are invalid
+    updateSprintDateError();
 </script>
 <script type="text/javascript">
     $(function() {

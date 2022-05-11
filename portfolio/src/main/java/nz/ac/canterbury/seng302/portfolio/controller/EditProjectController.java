@@ -87,7 +87,8 @@ public class EditProjectController {
     ) {
         model.addAttribute("projectStartDateError",
                 dateValidationService.validateStartDateNotAfterEndDate(projectStartDate, projectEndDate) + " " +
-                        dateValidationService.validateDateNotOverAYearAgo(projectStartDate));
+                        dateValidationService.validateDateNotOverAYearAgo(projectStartDate) + " " +
+                        dateValidationService.validateProjectDatesContainSprints(projectStartDate, projectEndDate));
         return "editProject :: #projectStartDateError";
     }
 

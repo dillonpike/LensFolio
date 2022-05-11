@@ -1,5 +1,6 @@
 package nz.ac.canterbury.seng302.portfolio.service;
 
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 import nz.ac.canterbury.seng302.portfolio.model.Project;
 import nz.ac.canterbury.seng302.portfolio.model.Sprint;
@@ -103,6 +104,30 @@ public class DateValidationService {
     }
 
     /**
+     * Validates the given project date range based on the dates of the sprints, ensuring that the date range contains
+     * all the current sprints.
+     * @param projectStartDateString start date of the project
+     * @param projectEndDateString end date of the project
+     * @return Message giving an error if the project date range doesn't contain all sprints, empty otherwise
+     */
+    public String validateProjectDatesContainSprints(String projectStartDateString, String projectEndDateString) {
+        String message = "";
+        Date projectStartDate = Project.stringToDate(projectStartDateString);
+        Date projectEndDate = Project.stringToDate(projectEndDateString);
+        if (projectStartDate != null && projectEndDate != null) {
+            List<Sprint> orderedSprints = sprintService.getAllSprintsOrdered();
+            Sprint firstSprint = orderedSprints.get(0);
+            Sprint lastSprint = orderedSprints.get(orderedSprints.size()-1);
+            if (projectStartDate.after(firstSprint.getStartDate()) || projectEndDate.before(lastSprint.getEndDate())) {
+                message = "Start date must be on or before the start date of the first sprint (" +
+                        firstSprint.getStartDateString() + ") and end date must be on or after the end date of " +
+                        "the last sprint (" + lastSprint.getEndDateString() + ").";
+            }
+        }
+        return message;
+    }
+
+    /**
      * Returns the time difference from now to the given date in days. Returns a positive value if the date is in the
      * past, and a negative value of the date is in the future.
      * @param date date to get the time difference from
@@ -115,7 +140,7 @@ public class DateValidationService {
     }
 
     /**
-     * Checks to se if a given date exists in the calendar, checking for days such as February 29th in certain years, and
+     * Checks to see if a given date exists in the calendar, checking for days such as February 29th in certain years, and
      * month lengths.
      * @param date Given date to check
      * @return Message if the date is invalid and why, empty otherwise
