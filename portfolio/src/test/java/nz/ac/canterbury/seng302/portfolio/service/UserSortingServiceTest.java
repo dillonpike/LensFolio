@@ -1,7 +1,7 @@
 package nz.ac.canterbury.seng302.portfolio.service;
 
 import nz.ac.canterbury.seng302.portfolio.model.UserSorting;
-import nz.ac.canterbury.seng302.portfolio.model.UserSortingRepository;
+import nz.ac.canterbury.seng302.portfolio.repository.UserSortingRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
