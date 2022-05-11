@@ -130,6 +130,8 @@ public class EditAccountController {
             RedirectAttributes rm,
             Model model
     ) {
+        UserResponse getUserByIdReply = registerClientService.getUserData(userId);
+        photoService.savePhotoToPortfolio(getUserByIdReply.getProfileImagePath());
         rm.addAttribute("userId", userId);
         return "redirect:editAccount";
     }
@@ -257,7 +259,8 @@ public class EditAccountController {
         } catch (Exception e) {
             System.err.println("Something went wrong requesting to save the photo");
         }
-
+        UserResponse getUserByIdReply = registerClientService.getUserData(userId);
+        photoService.savePhotoToPortfolio(getUserByIdReply.getProfileImagePath());
         rm.addAttribute("userId", userId);
         return "redirect:editAccount";
     }
