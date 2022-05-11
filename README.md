@@ -55,10 +55,10 @@ It is recommended to have the file named as ".env" and in that file you should w
 ```
 export VARIABLE_NAME={VARIABLE_VALUE}
 export ANOTHE_VARIABLE_NAME={ANOTHER_VARIABLE_VALUE}
-...
 ```
 
 The following is how to sourve the .env file
+
 On Linux:
 ```
 source {path to the the .env file}/.env
