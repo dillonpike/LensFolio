@@ -257,9 +257,10 @@ public class EditAccountController {
         } catch (Exception e) {
             System.err.println("Something went wrong requesting to save the photo");
         }
-
+        UserResponse getUserByIdReply = registerClientService.getUserData(userId);
+        photoService.savePhotoToPortfolio(getUserByIdReply.getProfileImagePath());
         rm.addAttribute("userId", userId);
-        return "redirect:editAccount";
+        return "redirect:account";
     }
 
 
