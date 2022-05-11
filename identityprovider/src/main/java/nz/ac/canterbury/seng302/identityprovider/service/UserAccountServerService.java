@@ -26,6 +26,7 @@ import java.io.IOException;
 import java.sql.Blob;
 import java.sql.SQLException;
 
+import static nz.ac.canterbury.seng302.identityprovider.IdentityProviderApplication.IMAGE_DIR;
 import static nz.ac.canterbury.seng302.shared.util.FileUploadStatus.*;
 
 
@@ -97,8 +98,8 @@ public class UserAccountServerService extends UserAccountServiceGrpc.UserAccount
                 String profileImagePath = "";
                 try {
                     Blob imageBlob = user.getPhoto();
-                    new File("src/main/resources/Images").mkdirs();
-                    File imageFile = new File("src/main/resources/Images/profileImage");
+                    new File(IMAGE_DIR).mkdirs();
+                    File imageFile = new File(IMAGE_DIR + "/profileImage");
                     FileOutputStream imageOutput = new FileOutputStream(imageFile);
                     if  (imageBlob != null) {
                         imageOutput.write(imageBlob.getBytes(1, (int) imageBlob.length()));
