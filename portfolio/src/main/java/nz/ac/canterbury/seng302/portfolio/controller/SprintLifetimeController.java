@@ -51,7 +51,7 @@ public class SprintLifetimeController {
      * @param model For adding the sprint and errors
      */
     @GetMapping("/add-sprint")
-    public String sprintAddForm(Model model) {
+    public String sprintAddForm(Model model) throws Exception {
 
         Sprint blankSprint = new Sprint();
         List<Sprint> sprints = sprintService.getAllSprintsOrdered();
@@ -67,13 +67,32 @@ public class SprintLifetimeController {
                 blankSprint.setEndDate(getUpdatedDate(now, 0, 3));
             }
         } else {
+            Project project;
+            try {
+                project = projectService.getProjectById(0);
+            } catch (Exception e) {
+                int id = sprints.get(sprints.size() - 1).getParentProjectId();
+                try {
+                    project = projectService.getProjectById(id);
+                } catch (Exception e2) {
+                    return "404NotFound";
+                }
+            }
+
             blankSprint.setName("Sprint " + (sprints.size() + 1));
-
             Sprint lastSprint = sprints.get(sprints.size() - 1);
-            blankSprint.setStartDate(getUpdatedDate(lastSprint.getEndDate(), 1, 0));
-            blankSprint.setEndDate(getUpdatedDate(lastSprint.getEndDate(), 0, 3));
+            if (!getUpdatedDate(lastSprint.getEndDate(), 1, 0).after(project.getEndDate())) { // not at end of project
+                blankSprint.setStartDate(getUpdatedDate(lastSprint.getEndDate(), 1, 0));
+                if (getUpdatedDate(lastSprint.getEndDate(), 0, 3).after(project.getEndDate())) { // sprint end not at end of project
+                    blankSprint.setEndDate(project.getEndDate());
+                } else {
+                    blankSprint.setEndDate(getUpdatedDate(lastSprint.getEndDate(), 0, 3));
+                }
+            } else {
+                blankSprint.setStartDate(lastSprint.getEndDate());
+                blankSprint.setEndDate(lastSprint.getEndDate());
+            }
         }
-
 
         model.addAttribute("sprint", blankSprint);
         model.addAttribute("sprintDateError", "");
@@ -91,7 +110,6 @@ public class SprintLifetimeController {
             @ModelAttribute("sprint") Sprint sprint,
             Model model
     ) {
-
         sprint.setStartDateString(sprint.getStartDateString());
         sprint.setEndDateString(sprint.getEndDateString());
         sprintService.addSprint(sprint);
