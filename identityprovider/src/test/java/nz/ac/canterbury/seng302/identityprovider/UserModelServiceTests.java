@@ -15,6 +15,7 @@ import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import java.util.List;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -145,21 +146,19 @@ public class UserModelServiceTests {
         user.setEmail("test@test.com");
         user.setBio("bio");
         user.setPersonalPronouns("Unknown");
-        when(userModelRepository.findByUsername(any(String.class))).then(returnsFirstArg());
-        UserModel newUser = userModelService.addUser(user);
+        when(userModelRepository.findByUsername(any(String.class))).thenReturn(List.of(user));
         UserModel testUser = userModelService.getUserByUsername("username");
 
-
-//        assertThat(newUser.getUserId()).isSameAs(testUser.getUserId());
-//        assertThat(newUser.getUsername()).isSameAs(testUser.getUsername());
-//        assertThat(newUser.getPassword()).isSameAs(testUser.getPassword());
-//        assertThat(newUser.getFirstName()).isSameAs(testUser.getFirstName());
-//        assertThat(newUser.getMiddleName()).isSameAs(testUser.getMiddleName());
-//        assertThat(newUser.getLastName()).isSameAs(testUser.getLastName());
-//        assertThat(newUser.getNickname()).isSameAs(testUser.getNickname());
-//        assertThat(newUser.getEmail()).isSameAs(testUser.getEmail());
-//        assertThat(newUser.getBio()).isSameAs(testUser.getBio());
-//        assertThat(newUser.getPersonalPronouns()).isSameAs(testUser.getPersonalPronouns());
+        assertThat(user.getUserId()).isSameAs(testUser.getUserId());
+        assertThat(user.getUsername()).isSameAs(testUser.getUsername());
+        assertThat(user.getPassword()).isSameAs(testUser.getPassword());
+        assertThat(user.getFirstName()).isSameAs(testUser.getFirstName());
+        assertThat(user.getMiddleName()).isSameAs(testUser.getMiddleName());
+        assertThat(user.getLastName()).isSameAs(testUser.getLastName());
+        assertThat(user.getNickname()).isSameAs(testUser.getNickname());
+        assertThat(user.getEmail()).isSameAs(testUser.getEmail());
+        assertThat(user.getBio()).isSameAs(testUser.getBio());
+        assertThat(user.getPersonalPronouns()).isSameAs(testUser.getPersonalPronouns());
 
     }
 

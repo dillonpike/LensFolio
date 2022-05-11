@@ -3,7 +3,6 @@ package nz.ac.canterbury.seng302.portfolio.cucumber.selenium;
 import io.cucumber.java.After;
 import io.cucumber.java.Before;
 import io.cucumber.java.en.And;
-import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import nz.ac.canterbury.seng302.portfolio.model.Project;
@@ -16,7 +15,6 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
@@ -210,21 +208,13 @@ public class ProjectDetailsStepDefs {
 
     @And("I browse to edit project page")
     public void iBrowseToEditProjectPage() throws InterruptedException {
-//        webDriver.findElement(By.id("projectsHeaderButton")).click();
-//        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//span[contains(., 'Project Description')]")));
-//        webDriver.findElement(By.id("editProjectButton")).click();
-//        Thread.sleep(2000);
-//        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//span[contains(., 'Edit Project')]")));
         webDriver.findElement(By.id("editProjectButton")).click();
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[contains(., 'Edit Project')]")));
     }
 
     @When("I edit the start date to more than a year ago")
     public void iEditTheStartDateToMoreThanAYearAgo() throws InterruptedException {
-//        webDriver.findElement(By.id("projectStartDate")).sendKeys("09/May/1971");
         wait.until(ExpectedConditions.elementToBeClickable(By.id("saveButton")));
-//        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[@id='cancelEditProjectButton']")));
-//        wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("")));
         webDriver.findElement(By.id("projectStartDate")).click();
         for(int i = 0; i < 20; i++) {
             webDriver.findElement(By.xpath("//th[contains(., '«')]")).click();

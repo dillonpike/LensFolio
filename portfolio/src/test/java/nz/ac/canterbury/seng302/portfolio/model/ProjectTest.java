@@ -24,7 +24,7 @@ class ProjectTest {
         Date date = new Date();
         date.setTime(-43200000);
         String stringDate = "01/Jan/1970";
-        Date testDate = project.stringToDate(stringDate);
+        Date testDate = Project.stringToDate(stringDate);
         assertEquals(date, testDate);
     }
 
@@ -33,7 +33,7 @@ class ProjectTest {
         Date date = new Date();
         date.setTime(-43200000);
         String expectedStringDate = "01/Jan/1970";
-        String testDate = project.dateToString(date);
+        String testDate = Project.dateToString(date);
         assertEquals(expectedStringDate, testDate);
     }
 }

@@ -5,7 +5,6 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import io.cucumber.datatable.DataTable;
 import io.cucumber.java.After;
 import io.cucumber.java.Before;
 import io.cucumber.java.en.And;
@@ -99,8 +98,6 @@ public class RegisteringStepDefs {
         WebElement ele = webDriver.findElement(By.id("signUp"));
         JavascriptExecutor jse = (JavascriptExecutor)webDriver;
         jse.executeScript("arguments[0].click()", ele);
-        //wait.until(ExpectedConditions.elementToBeClickable(By.id("signUp")));
-        //webDriver.findElement(By.id("signUp")).click();
     }
 
     @And("Username is already registered {string}")
