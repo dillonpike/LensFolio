@@ -15,4 +15,4 @@ Feature: UUi Registering and logging into a user account
     Given I am logged in as admin
     And I log out
     When I try and access my account
-    Then I am taken to login page
+    Then I am taken to login page with forbidden error

@@ -52,7 +52,7 @@ public class DropDownMenuStepDefs {
 
     @Then("A menu is displayed")
     public void aMenuIsDisplayed() {
-        assertTrue(webDriver.findElement(By.id("dropDownMenu")).isDisplayed());
+        assertTrue(webDriver.findElement(By.id("dropdownUser1")).isDisplayed());
     }
 
     @And("There is a logout option")
@@ -79,4 +79,12 @@ public class DropDownMenuStepDefs {
         String expectedURL = "http://localhost:9000/login";
         assertEquals(expectedURL, actualURL);
     }
+
+    @Then("I am taken to login page with forbidden error")
+    public void iAmTakenToLoginPageWithForbiddenError() {
+        String actualURL = webDriver.getCurrentUrl();
+        String expectedURL = "http://localhost:9000/login?forbidden";
+        assertEquals(expectedURL, actualURL);
+    }
+
 }
