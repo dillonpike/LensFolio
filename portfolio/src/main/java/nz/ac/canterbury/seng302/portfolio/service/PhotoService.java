@@ -20,6 +20,7 @@ public class PhotoService {
     public void savePhotoToPortfolio(String photoPath) {
         try {
             File imageFile;
+            new File("src/main/resources/static/img").mkdirs();
             if (!photoPath.equals("")) {
                 imageFile = new File(photoPath);
                 if (imageFile.length() == 0) {

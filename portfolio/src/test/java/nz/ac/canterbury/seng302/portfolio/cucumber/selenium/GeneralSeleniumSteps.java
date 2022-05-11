@@ -76,7 +76,7 @@ public class GeneralSeleniumSteps {
         webDriver.findElement(By.id("usernameLogin")).sendKeys(username);
         webDriver.findElement(By.id("passwordLogin")).sendKeys("password");
         webDriver.findElement(By.id("signIn")).click();
-        wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//h2[contains(., 'Profile')]")));
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//h2[contains(., 'Profile')]")));
     }
 
     @And("I am on the edit account page")

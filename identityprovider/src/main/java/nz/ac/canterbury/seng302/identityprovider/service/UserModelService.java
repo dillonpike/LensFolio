@@ -9,6 +9,8 @@ import org.springframework.stereotype.Service;
 
 import java.sql.Blob;
 import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 
 @Service
 public class UserModelService {
@@ -20,11 +22,15 @@ public class UserModelService {
     @Autowired
     RolesRepository rolesRepository;
 
+    @Autowired
+    UserModelRepository userModelRepository;
+
     private static int userIdCount = 1;
 
     public UserModelService(UserModelRepository userModelRepository, RolesRepository rolesRepository) {
         this.repository = userModelRepository;
         this.rolesRepository = rolesRepository;
+        this.userModelRepository = userModelRepository;
     }
 
     /**
@@ -102,12 +108,29 @@ public class UserModelService {
     }
 
     /***
-     *
-     * @return
+     * Retrieves every user from database
+     * @return all user
      */
     public List<UserModel> findAllUser() {
         return (List<UserModel>) repository.findAll();
     }
 
+
+    /***
+     * Method to get the user's highest role
+     * @param user current user
+     * @return highest role
+     */
+    public String getHighestRole(UserModel user) {
+        Set<Roles> roles = user.getRoles();
+        for (Roles role : roles) {
+            if (Objects.equals(role.getRoleName(), "TEACHER")) {
+                return "teacher";
+            } else if (Objects.equals(role.getRoleName(), "COURSE ADMINISTRATOR")) {
+                return "admin";
+            }
+        }
+        return "student";
+    }
 
 }

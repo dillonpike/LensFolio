@@ -97,18 +97,20 @@ public class UserAccountServerService extends UserAccountServiceGrpc.UserAccount
                 String profileImagePath = "";
                 try {
                     Blob imageBlob = user.getPhoto();
+                    new File("src/main/resources/Images").mkdirs();
                     File imageFile = new File("src/main/resources/Images/profileImage");
                     FileOutputStream imageOutput = new FileOutputStream(imageFile);
-                    if  (imageBlob.length() == 0) {
-                        profileImagePath = "";
-                    } else {
+                    if  (imageBlob != null) {
                         imageOutput.write(imageBlob.getBytes(1, (int) imageBlob.length()));
                         profileImagePath = imageFile.getAbsolutePath();
+                    } else {
+                        profileImagePath = "";
                     }
                     imageOutput.close();
                 } catch (SQLException | IOException e) {
                     e.printStackTrace();
                 }
+
                 reply
                         .setEmail(user.getEmail())
                         .setFirstName(user.getFirstName())
@@ -123,8 +125,8 @@ public class UserAccountServerService extends UserAccountServiceGrpc.UserAccount
                 Set<Roles> roles = user.getRoles();
                 Roles[] rolesArray = roles.toArray(new Roles[roles.size()]);
 
-                for(int i = 0; i< rolesArray.length; i++){
-                    reply.addRolesValue(rolesArray[i].getId());
+                for (Roles value : rolesArray) {
+                    reply.addRolesValue(value.getId());
                 }
             }
 
@@ -331,11 +333,16 @@ public class UserAccountServerService extends UserAccountServiceGrpc.UserAccount
         }
 
         reply.setIsSuccess(wasDeleted);
-        // reply.setMessage(message)  Not setting a message as the message is a boolean in the contracts (seems like an error).
+        reply.setMessage(message);
         responseObserver.onNext(reply.build());
         responseObserver.onCompleted();
     }
 
+    /***
+     * Method to communicate with IDP to get all users from database
+     * @param request GetPaginatedUsersRequest
+     * @param responseObserver
+     */
     @Override
     public void getPaginatedUsers(GetPaginatedUsersRequest request, StreamObserver<PaginatedUsersResponse> responseObserver) {
         PaginatedUsersResponse.Builder reply = PaginatedUsersResponse.newBuilder();
@@ -347,6 +354,11 @@ public class UserAccountServerService extends UserAccountServiceGrpc.UserAccount
         responseObserver.onCompleted();
     }
 
+    /***
+     * Help method to get user's information as a User Model
+     * @param user User model
+     * @return User model
+     */
     private UserResponse getUserInfo(UserModel user) {
         UserResponse.Builder response = UserResponse.newBuilder();
         response.setUsername(user.getUsername())
@@ -362,8 +374,4 @@ public class UserAccountServerService extends UserAccountServiceGrpc.UserAccount
         return response.build();
     }
 
-//    public void addRoleToUser(ModifyRoleOfUserRequest request) {
-//        UserRoleChangeResponse.Builder reply = UserRoleChangeResponse.newBuilder();
-//        reply.
-//    }
 }
