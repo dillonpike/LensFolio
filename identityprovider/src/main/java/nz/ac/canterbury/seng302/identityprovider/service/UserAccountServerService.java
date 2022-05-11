@@ -99,7 +99,7 @@ public class UserAccountServerService extends UserAccountServiceGrpc.UserAccount
                 try {
                     Blob imageBlob = user.getPhoto();
                     new File(IMAGE_DIR).mkdirs();
-                    File imageFile = new File(IMAGE_DIR + "/profileImage");
+                    File imageFile = new File(IMAGE_DIR + "/default.jpg");
                     FileOutputStream imageOutput = new FileOutputStream(imageFile);
                     if  (imageBlob != null) {
                         imageOutput.write(imageBlob.getBytes(1, (int) imageBlob.length()));
