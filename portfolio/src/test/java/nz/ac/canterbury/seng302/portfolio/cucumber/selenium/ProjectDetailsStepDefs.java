@@ -219,7 +219,7 @@ public class ProjectDetailsStepDefs {
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[contains(., 'Edit Project')]")));
     }
 
-    @When("I edit the start date to  more than a year ago")
+    @When("I edit the start date to more than a year ago")
     public void iEditTheStartDateToMoreThanAYearAgo() throws InterruptedException {
 //        webDriver.findElement(By.id("projectStartDate")).sendKeys("09/May/1971");
         wait.until(ExpectedConditions.elementToBeClickable(By.id("saveButton")));
@@ -231,6 +231,7 @@ public class ProjectDetailsStepDefs {
             Thread.sleep(100);
         }
         webDriver.findElement(By.xpath("//td[contains(., '1')]")).click();
+        webDriver.findElement(By.id("projectName")).click();
     }
 
     @Then("I should not be able to save the edit")

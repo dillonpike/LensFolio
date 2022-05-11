@@ -15,7 +15,7 @@ Feature: UPi Project Details
     Given I am logged in as "teacher"
     And I am on the project page
     And I browse to edit project page
-    When I edit the start date to  more than a year ago
+    When I edit the start date to more than a year ago
     Then I should not be able to save the edit
     And start date error message should be displayed
 

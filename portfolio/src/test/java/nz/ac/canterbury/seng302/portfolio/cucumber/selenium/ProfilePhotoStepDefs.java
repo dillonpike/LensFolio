@@ -83,8 +83,8 @@ public class ProfilePhotoStepDefs {
         graphics2D.drawImage(expectedImage, 0, 0, actualImage.getWidth(), actualImage.getHeight(), Color.WHITE, null);
         graphics2D.dispose();
 
-        File actualTest = new File("src/test/resources/static/img/actualTest.jpg");
-        File expectedTest = new File("src/test/resources/static/img/expectedTest.jpg");
+        File actualTest = new File("src/test/resources/static/images/actualTest.jpg");
+        File expectedTest = new File("src/test/resources/static/images/expectedTest.jpg");
         try {
             ImageIO.write(actualImage, "png", actualTest);
             ImageIO.write(resizedExpectedImage, "png", expectedTest);
@@ -103,33 +103,33 @@ public class ProfilePhotoStepDefs {
     public void myProfilePhotoIsTheDefaultPhoto() {
         assertTrue(webDriver.findElement(By.id("uploadPreview")).isDisplayed());
         assertTrue(profilePhotoIsSameAsImageFromPath(webDriver.findElement(By.id("uploadPreview")),
-                "src/main/resources/static/img/default.jpg"));
+                "src/main/resources/static/images/default.jpg"));
     }
 
     @Given("My profile photo is not the default photo")
     public void myProfilePhotoIsNotTheDefaultPhoto() {
         if (profilePhotoIsSameAsImageFromPath(webDriver.findElement(By.id("uploadPreview")),
-                "src/main/resources/static/img/default.jpg")) {
+                "src/main/resources/static/images/default.jpg")) {
             iUploadAProfilePhoto();
         }
     }
 
     @When("I upload a profile photo")
     public void iUploadAProfilePhoto() {
-        webDriver.findElement(By.id("avatar")).sendKeys(new File("src/test/resources/static/img/T100Logo.jpg").getAbsolutePath());
+        webDriver.findElement(By.id("avatar")).sendKeys(new File("src/test/resources/static/images/T100Logo.jpg").getAbsolutePath());
         wait.until(ExpectedConditions.elementToBeClickable(By.id("crop-btn")));
         webDriver.findElement(By.id("crop-btn")).click();
         wait.until(ExpectedConditions.elementToBeClickable(By.id("save-btn")));
         webDriver.findElement(By.id("save-btn")).click();
         wait.until(ExpectedConditions.elementToBeClickable(By.id("removeUpdateAlert")));
         assertTrue(profilePhotoIsSameAsImageFromPath(webDriver.findElement(By.id("uploadPreview")),
-                "src/main/resources/static/img/userImage"));
+                "src/main/resources/static/images/userImage"));
     }
 
     @Then("My small version of my profile photo is displayed in the header of the page")
     public void mySmallVersionOfMyProfilePhotoIsDisplayedInTheHeaderOfThePage() {
         assertTrue(webDriver.findElement(By.id("userIconSmall")).isDisplayed());
         assertTrue(profilePhotoIsSameAsImageFromPath(webDriver.findElement(By.id("userIconSmall")),
-                "src/main/resources/static/img/userImage"));
+                "src/main/resources/static/images/userImage"));
     }
 }
