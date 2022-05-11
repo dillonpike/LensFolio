@@ -48,7 +48,7 @@
 <script th:inline="javascript">
 
     const table = $('#sortTable');
-
+    // Saves the sorting of the table so that it is persistent
     function saveSort() {
         const data = {
             columnIndex: table.dataTable().fnSettings().aaSorting[0][0],
