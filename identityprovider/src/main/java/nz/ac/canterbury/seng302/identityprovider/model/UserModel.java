@@ -8,7 +8,6 @@ import javax.persistence.*;
 import java.io.Serializable;
 import java.sql.Blob;
 import java.sql.Date;
-import java.sql.Time;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.util.HashSet;
