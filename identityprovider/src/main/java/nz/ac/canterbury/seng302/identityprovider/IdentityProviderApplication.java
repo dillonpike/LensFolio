@@ -11,7 +11,6 @@ public class IdentityProviderApplication {
     static public String IMAGE_DIR;
     public static void main(String[] args) throws IOException {
         IMAGE_DIR = new File(".").getCanonicalPath() + "/img/";
-        System.out.println(IMAGE_DIR);
         SpringApplication.run(IdentityProviderApplication.class, args);
     }
 
