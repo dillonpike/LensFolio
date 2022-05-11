@@ -130,8 +130,6 @@ public class EditAccountController {
             RedirectAttributes rm,
             Model model
     ) {
-        UserResponse getUserByIdReply = registerClientService.getUserData(userId);
-        photoService.savePhotoToPortfolio(getUserByIdReply.getProfileImagePath());
         rm.addAttribute("userId", userId);
         return "redirect:editAccount";
     }
@@ -262,7 +260,7 @@ public class EditAccountController {
         UserResponse getUserByIdReply = registerClientService.getUserData(userId);
         photoService.savePhotoToPortfolio(getUserByIdReply.getProfileImagePath());
         rm.addAttribute("userId", userId);
-        return "redirect:editAccount";
+        return "redirect:account";
     }
 
 
