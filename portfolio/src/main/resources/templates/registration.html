@@ -1,3 +1,4 @@
+<!--HTML PAGE FOR REGISTRATION-->
 <!DOCTYPE HTML>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
@@ -84,6 +85,7 @@
         </div>
     </div>
     <script>
+        // Function to check if all the input valid and put warning box and error message if there is any input is invalid
         (function () {
             'use strict'
 
@@ -106,6 +108,7 @@
 
     </script>
     <script>
+        // Create/remove warning box to the confirm password and password box. It will be triggered when something change in the input box
         function  checkPassword() {
             if (document.getElementById("passwordLogin").value === '' && document.getElementById("confirmPassword").value === '') {
                 document.getElementById("passwordLogin").style.borderColor = null;
