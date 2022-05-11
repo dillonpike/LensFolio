@@ -77,21 +77,11 @@ public class DetailsControllerTest {
     @Before
     public void setup() {
         mockMvc = MockMvcBuilders.standaloneSetup(AccountController.class).build();
-        int currentYear = Calendar.getInstance().get(Calendar.YEAR);
-        Instant time = Instant.now();
-        Timestamp dateAdded = Timestamp.newBuilder().setSeconds(time.getEpochSecond()).build();
-        LocalDate endDate = time.atZone(ZoneId.systemDefault()).toLocalDate();
-        Date date8Months = java.sql.Date.valueOf(endDate.plusMonths(8));  // 8 months after the current date
-        mockedProject = new Project(
-                "Project " + currentYear,
-                "Default Project",
-                new Date(dateAdded.getSeconds() * 1000),
-                date8Months
-        );
-        mockedProject.setId(0);
     }
 
-
+    /***
+     * Test to check if project page return 200 status code when send GET method
+     */
     @Test
     void showProjectPage_whenLoggedIn_return200StatusCode() throws Exception {
         SecurityContext mockedSecurityContext = Mockito.mock(SecurityContext.class);
@@ -116,6 +106,9 @@ public class DetailsControllerTest {
         mockMvc.perform(get("/details")).andExpect(status().isOk()); // Whether to return the status "200 OK"
     }
 
+    /***
+     * Test to check if model attribute(project, sprint) has been added to project page successfully
+     */
     @Test
     void showProjectPage_whenLoggedIn_returnProjectAndSprintExist() throws Exception {
         SecurityContext mockedSecurityContext = Mockito.mock(SecurityContext.class);
