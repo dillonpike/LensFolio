@@ -1,6 +1,7 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
 import io.grpc.StatusRuntimeException;
+import nz.ac.canterbury.seng302.portfolio.PortfolioApplication;
 import nz.ac.canterbury.seng302.portfolio.service.ElementService;
 import nz.ac.canterbury.seng302.portfolio.service.PhotoService;
 import nz.ac.canterbury.seng302.portfolio.service.RegisterClientService;
@@ -95,6 +96,7 @@ public class EditAccountController {
             model.addAttribute("userId", id);
             model.addAttribute("dateAdded", Utility.getDateAddedString(getUserByIdReply.getCreated()));
             model.addAttribute("monthsSinceAdded", Utility.getDateSinceAddedString(getUserByIdReply.getCreated()));
+            photoService.savePhotoToPortfolio(getUserByIdReply.getProfileImagePath());
         } catch (StatusRuntimeException e) {
             model.addAttribute("loginMessage", "Error connecting to Identity Provider...");
             e.printStackTrace();
@@ -190,15 +192,15 @@ public class EditAccountController {
             Model model
     ) {
         boolean wasDeleted = false;
+        String message = "Error occured, caught on portfolio side. ";
         try {
-            DeleteUserProfilePhotoResponse reply = registerClientService.DeleteUserProfilePhoto(userId);
+            DeleteUserProfilePhotoResponse reply = registerClientService.deleteUserProfilePhoto(userId);
             wasDeleted = reply.getIsSuccess();
+            message = String.valueOf(reply.getMessage());
             if (wasDeleted) {
-//                Path src = Paths.get("src/main/resources/static/img/default.jpg");
-//                Path dest = Paths.get("src/main/resources/static/img/userImage");
-//                Files.copy(src, dest, StandardCopyOption.REPLACE_EXISTING);
-                File imageFile = new File("src/main/resources/static/img/default.jpg");
-                File usedImageFile = new File("src/main/resources/static/img/userImage");
+                new File(PortfolioApplication.IMAGE_DIR).mkdirs();
+                File imageFile = new File(PortfolioApplication.IMAGE_DIR + "/default.jpg");
+                File usedImageFile = new File(PortfolioApplication.IMAGE_DIR + "/userImage");
                 FileOutputStream imageOutput = new FileOutputStream(usedImageFile);
                 FileInputStream imageInput = new FileInputStream(imageFile);
                 imageOutput.write(imageInput.readAllBytes());
@@ -213,6 +215,7 @@ public class EditAccountController {
 
         } catch (Exception e) {
             System.err.println("Something went wrong requesting to delete the photo");
+            System.err.println("Message: " + message);
             e.printStackTrace();
         }
         rm.addAttribute("userId", userId);
@@ -235,12 +238,13 @@ public class EditAccountController {
         boolean wasSaved = false;
         try {
 
-            File imageFile = new File("src/main/resources/static/img/userImage");
+            new File(PortfolioApplication.IMAGE_DIR).mkdirs();
+            File imageFile = new File(PortfolioApplication.IMAGE_DIR + "/userImage");
             FileOutputStream fos = new FileOutputStream( imageFile );
             fos.write( multipartFile.getBytes() );
             fos.close();
 
-            registerClientService.UploadUserProfilePhoto(userId, new File("src/main/resources/static/img/userImage"));
+            registerClientService.uploadUserProfilePhoto(userId, new File(PortfolioApplication.IMAGE_DIR + "/userImage"));
             // You cant tell if it saves correctly with the above method as it returns nothing
             wasSaved = true;
             if (wasSaved) {
@@ -253,7 +257,6 @@ public class EditAccountController {
         } catch (Exception e) {
             System.err.println("Something went wrong requesting to save the photo");
         }
-
         rm.addAttribute("userId", userId);
         return "redirect:editAccount";
     }

@@ -1,5 +1,6 @@
 package nz.ac.canterbury.seng302.portfolio.service;
 
+import nz.ac.canterbury.seng302.portfolio.PortfolioApplication;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
@@ -20,15 +21,16 @@ public class PhotoService {
     public void savePhotoToPortfolio(String photoPath) {
         try {
             File imageFile;
+            new File(PortfolioApplication.IMAGE_DIR).mkdirs();
             if (!photoPath.equals("")) {
                 imageFile = new File(photoPath);
                 if (imageFile.length() == 0) {
-                    imageFile = new File("src/main/resources/static/img/default.jpg");
+                    imageFile = new File(PortfolioApplication.IMAGE_DIR + "/default.jpg");
                 }
             } else {
-                imageFile = new File("src/main/resources/static/img/default.jpg");
+                imageFile = new File(PortfolioApplication.IMAGE_DIR + "/default.jpg");
             }
-            File usedImageFile = new File("src/main/resources/static/img/userImage");
+            File usedImageFile = new File(PortfolioApplication.IMAGE_DIR + "/userImage");
             FileOutputStream imageOutput = new FileOutputStream(usedImageFile);
             FileInputStream imageInput = new FileInputStream(imageFile);
             imageOutput.write(imageInput.readAllBytes());

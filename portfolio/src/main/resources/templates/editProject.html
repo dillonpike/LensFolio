@@ -14,7 +14,7 @@
 <body>
 <div class="project-header">
     <div class="title">
-        <div class="title-name">Edit Project</div>
+        <div class="title-name" id="editProjectTitlePage"><span>Edit Project</span></div>
     </div>
 </div>
 <div class="content">
@@ -63,6 +63,10 @@
 </body>
 
 <script>
+    /**
+     * Checks the entered project dates in the input fields and displays an error message if there's a related error.
+     * Disables the save button if there is an error.
+     */
     function updateProjectDateError() {
         const data = {
             projectStartDate: document.getElementById("projectStartDate").value,
@@ -71,12 +75,16 @@
         $.post("edit-project/error?" + new URLSearchParams(data)).done(function (fragment) {
             console.log(fragment);
             $("#projectStartDateError").replaceWith(fragment);
-            document.getElementById("saveButton").disabled = document.getElementById("projectStartDateError").textContent.length > 0;
+            document.getElementById("saveButton").disabled = document.getElementById("projectStartDateError").textContent.length > 2;
         });
     }
 
+    // Runs updateProjectDateError function whenever the entered dates change
     document.getElementById("projectStartDate").onchange = updateProjectDateError;
     document.getElementById("projectEndDate").onchange = updateProjectDateError;
+
+    // Initial run of updateProjectDateError function in case initial values are invalid
+    updateSprintDateError();
 </script>
 <script type="text/javascript">
     $(function() {

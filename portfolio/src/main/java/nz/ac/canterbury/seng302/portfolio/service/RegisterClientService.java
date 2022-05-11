@@ -116,12 +116,14 @@ public class RegisterClientService {
         return pbkdf2PasswordEncoder.encode(password);
     }
 
+
+
     /**
      * Uploads a new profile photo to the idp using a bi-directional stream connection.
      * @param userId Id of the user that is having its photo changed
      * @param imageFile File object of new image
      */
-    public void UploadUserProfilePhoto(int userId, File imageFile) {
+    public void uploadUserProfilePhoto(int userId, File imageFile) {
 
         byte[] imageArray = new byte[0];
         boolean imageFoundCorrectly = true;
@@ -215,7 +217,7 @@ public class RegisterClientService {
         }
     }
 
-    public DeleteUserProfilePhotoResponse DeleteUserProfilePhoto(int userId) {
+    public DeleteUserProfilePhotoResponse deleteUserProfilePhoto(int userId) {
         DeleteUserProfilePhotoRequest.Builder request = DeleteUserProfilePhotoRequest.newBuilder();
         return userAccountStub.deleteUserProfilePhoto(request.setUserId(userId).build());
     }
