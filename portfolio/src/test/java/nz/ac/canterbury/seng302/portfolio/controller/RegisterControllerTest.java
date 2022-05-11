@@ -37,7 +37,7 @@ class RegisterControllerTest {
     private UserAccountClientService userAccountClientService;
 
     /**
-     * create mock MVS object which then will be used to perform http request
+     * create mock MVC object which then will be used to perform http request
      */
     @Before
     public void setup() {
