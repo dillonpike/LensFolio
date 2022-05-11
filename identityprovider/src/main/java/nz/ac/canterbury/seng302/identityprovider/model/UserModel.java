@@ -2,6 +2,7 @@ package nz.ac.canterbury.seng302.identityprovider.model;
 
 import com.google.protobuf.Timestamp;
 import org.hibernate.annotations.GenericGenerator;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.persistence.*;
 import java.io.Serializable;

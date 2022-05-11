@@ -52,7 +52,7 @@ public class AuthenticateServerService extends AuthenticationServiceImplBase {
                     .setToken("");
         } else if (user.getUsername().equals(request.getUsername()) && pbkdf2PasswordEncoder.matches( request.getPassword(),  user.getPassword())) {
             String token = jwtTokenService.generateTokenForUser(user.getUsername(), user.getUserId(),
-                    user.getFirstName() + user.getMiddleName() + user.getLastName(), ROLE_OF_USER);
+                    user.getFirstName() + user.getMiddleName() + user.getLastName(), userModelService.getHighestRole(user));
             reply
                     .setEmail(user.getEmail())
                     .setFirstName(user.getFirstName())
