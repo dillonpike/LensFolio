@@ -81,9 +81,10 @@ public class EditSprintController {
                                           @RequestParam(value="sprintEndDate") String sprintEndDate,
                                           Model model) {
         model.addAttribute("sprintDateError",
+                dateValidationService.validateDateRangeNotEmpty(sprintStartDate, sprintEndDate) + " " +
                 dateValidationService.validateStartDateNotAfterEndDate(sprintStartDate, sprintEndDate) + " " +
-                        dateValidationService.validateSprintDateRange(sprintStartDate, sprintEndDate, id) + " " +
-                        dateValidationService.validateSprintInProjectDateRange(sprintStartDate, sprintEndDate));
+                dateValidationService.validateSprintDateRange(sprintStartDate, sprintEndDate, id) + " " +
+                dateValidationService.validateSprintInProjectDateRange(sprintStartDate, sprintEndDate));
         return "editSprint :: #sprintDateError";
     }
 }

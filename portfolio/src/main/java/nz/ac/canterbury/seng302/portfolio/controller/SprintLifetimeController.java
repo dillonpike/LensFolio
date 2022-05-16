@@ -135,9 +135,10 @@ public class SprintLifetimeController {
                                           @RequestParam(value="sprintEndDate") String sprintEndDate,
                                           Model model) {
         model.addAttribute("sprintDateError",
+                dateValidationService.validateDateRangeNotEmpty(sprintStartDate, sprintEndDate) + " " +
                 dateValidationService.validateStartDateNotAfterEndDate(sprintStartDate, sprintEndDate) + " " +
-                        dateValidationService.validateSprintDateRange(sprintStartDate, sprintEndDate, -1) + " " +
-                        dateValidationService.validateSprintInProjectDateRange(sprintStartDate, sprintEndDate));
+                dateValidationService.validateSprintDateRange(sprintStartDate, sprintEndDate, -1) + " " +
+                dateValidationService.validateSprintInProjectDateRange(sprintStartDate, sprintEndDate));
         return "addSprint :: #sprintDateError";
     }
 }

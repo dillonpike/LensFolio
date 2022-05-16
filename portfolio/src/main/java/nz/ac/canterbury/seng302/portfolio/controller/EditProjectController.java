@@ -20,8 +20,10 @@ import org.springframework.web.bind.annotation.RequestParam;
  */
 @Controller
 public class EditProjectController {
+
     @Autowired
     private ProjectService projectService;
+
     @Autowired
     private DateValidationService dateValidationService;
 
@@ -86,9 +88,10 @@ public class EditProjectController {
             Model model
     ) {
         model.addAttribute("projectStartDateError",
+                dateValidationService.validateDateRangeNotEmpty(projectStartDate, projectEndDate) + " " +
                 dateValidationService.validateStartDateNotAfterEndDate(projectStartDate, projectEndDate) + " " +
-                        dateValidationService.validateDateNotOverAYearAgo(projectStartDate) + " " +
-                        dateValidationService.validateProjectDatesContainSprints(projectStartDate, projectEndDate));
+                dateValidationService.validateDateNotOverAYearAgo(projectStartDate) + " " +
+                dateValidationService.validateProjectDatesContainSprints(projectStartDate, projectEndDate));
         return "editProject :: #projectStartDateError";
     }
 
