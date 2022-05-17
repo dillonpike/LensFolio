@@ -1,25 +1,23 @@
 package nz.ac.canterbury.seng302.portfolio.service;
 
 import nz.ac.canterbury.seng302.portfolio.model.Project;
-import nz.ac.canterbury.seng302.portfolio.repository.ProjectRepository;
-import nz.ac.canterbury.seng302.portfolio.repository.UserSortingRepository;
-import org.junit.Before;
+import nz.ac.canterbury.seng302.portfolio.model.Sprint;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
+import static nz.ac.canterbury.seng302.portfolio.DateTestHelper.addToDate;
+import static nz.ac.canterbury.seng302.portfolio.DateTestHelper.addToDateString;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.when;
 
@@ -36,22 +34,46 @@ public class DateValidationServiceTest {
     private ProjectService projectService = new ProjectService();
 
     /**
+     * Mocked SprintService object.
+     */
+    @Mock
+    private SprintService sprintService = new SprintService();
+
+    /**
      * DateValidationService object.
      */
     @InjectMocks
     private DateValidationService dateValidationService = new DateValidationService();
 
+    /**
+     * Project used for tests.
+     */
     private static Project testProject;
 
+    /**
+     * List of sprints used for tests.
+     */
+    private static List<Sprint> testSprints;
+
+    /**
+     * Calendar object used for tests.
+     */
     private static final Calendar calendar = Calendar.getInstance();
 
     @BeforeAll
     public static void setup() {
         Date today = new Date();
         calendar.setTime(today);
-        calendar.add(Calendar.MONTH, 3);
-        Date threeMonthsFromNow = calendar.getTime();
-        testProject = new Project("Test Project", "", today, threeMonthsFromNow);
+        ArrayList<Date> monthsFromNow = new ArrayList<>(List.of(today));
+        for (int i = 0; i < 5; i++) {
+            calendar.add(Calendar.MONTH, 1);
+            monthsFromNow.add(calendar.getTime());
+        }
+        testProject = new Project("Test Project", "", monthsFromNow.get(0), monthsFromNow.get(5));
+
+        Sprint testSprint1 = new Sprint(testProject.getId(), "Test Sprint", "1", "", monthsFromNow.get(1), monthsFromNow.get(2));
+        Sprint testSprint2 = new Sprint(testProject.getId(), "Test Sprint", "2", "", monthsFromNow.get(3), monthsFromNow.get(4));
+        testSprints = List.of(testSprint1, testSprint2);
     }
 
     /**
@@ -63,7 +85,6 @@ public class DateValidationServiceTest {
         String startDate = "01/Jan/2022";
         String endDate = "01/Jan/2022";
         String output = dateValidationService.validateStartDateNotAfterEndDate(startDate, endDate);
-
         assertEquals(0, output.length());
     }
 
@@ -76,7 +97,6 @@ public class DateValidationServiceTest {
         String startDate = "02/Jan/2022";
         String endDate = "01/Jan/2022";
         String output = dateValidationService.validateStartDateNotAfterEndDate(startDate, endDate);
-
         assertTrue(output.length() > 0);
     }
 
@@ -85,14 +105,8 @@ public class DateValidationServiceTest {
      */
     @Test
     public void givenFutureDate_whenGetDaysFromNow_thenReturnNegativeTime() {
-        Date today = new Date();
-        calendar.setTime(today);
-        calendar.add(Calendar.DAY_OF_MONTH, 5);
-
-        Date future = calendar.getTime();
-
+        Date future = addToDate(new Date(), Calendar.DAY_OF_MONTH, 5);
         long difference = dateValidationService.getDaysFromNow(future);
-
         assertTrue(difference < 0);
     }
 
@@ -101,14 +115,8 @@ public class DateValidationServiceTest {
      */
     @Test
     public void givenPastDate_whenGetDaysFromNow_thenReturnPositiveTime() {
-        Date today = new Date();
-        calendar.setTime(today);
-        calendar.add(Calendar.DAY_OF_MONTH, -5);
-
-        Date past = calendar.getTime();
-
+        Date past = addToDate(new Date(), Calendar.DAY_OF_MONTH, -5);
         long difference = dateValidationService.getDaysFromNow(past);
-
         assertTrue(difference > 0);
     }
 
@@ -118,15 +126,8 @@ public class DateValidationServiceTest {
      */
     @Test
     public void givenProjectStartDateAYearAndADayAgo_whenValidateDateNotOverAYearAgo_thenOutputWithMessage() {
-        Date today = new Date();
-        calendar.setTime(today);
-        calendar.add(Calendar.DAY_OF_YEAR, -1);
-        calendar.add(Calendar.YEAR, -1);
-
-        Date oneYearOneDayAgo = calendar.getTime();
-
+        Date oneYearOneDayAgo = addToDate(addToDate(new Date(), Calendar.DAY_OF_YEAR, -1), Calendar.YEAR, -1);
         String output = dateValidationService.validateDateNotOverAYearAgo(Project.dateToString(oneYearOneDayAgo));
-
         assertTrue(output.length() > 0);
     }
 
@@ -182,10 +183,7 @@ public class DateValidationServiceTest {
     @Test
     public void givenInvalidStartDate_whenValidateSprintInProjectDateRange_thenOutputWithMessage() throws Exception {
         when(projectService.getProjectById(anyInt())).thenReturn(testProject);
-        Date startDate = testProject.getStartDate();
-        calendar.setTime(startDate);
-        calendar.add(Calendar.DAY_OF_YEAR, -1);
-        String startDateString = Project.dateToString(calendar.getTime());
+        String startDateString = addToDateString(testProject.getStartDateString(), Calendar.DAY_OF_YEAR, -1);
         String output = dateValidationService.validateSprintInProjectDateRange(startDateString,
                 testProject.getEndDateString());
         assertTrue(output.length() > 0);
@@ -198,13 +196,64 @@ public class DateValidationServiceTest {
     @Test
     public void givenInvalidEndDate_whenValidateSprintInProjectDateRange_thenOutputWithMessage() throws Exception {
         when(projectService.getProjectById(anyInt())).thenReturn(testProject);
-        Date endDate = testProject.getEndDate();
-        calendar.setTime(endDate);
-        calendar.add(Calendar.DAY_OF_YEAR, 1);
-        String endDateString = Project.dateToString(calendar.getTime());
+        String endDateString = addToDateString(testProject.getEndDateString(), Calendar.DAY_OF_YEAR, 1);
         String output = dateValidationService.validateSprintInProjectDateRange(testProject.getStartDateString(),
                 endDateString);
         assertTrue(output.length() > 0);
+    }
+
+    /**
+     * Checks that validateSprintDateRange gives an error message when the given end date is the same as the start
+     * date of an already existing sprint (boundary case).
+     */
+    @Test
+    public void givenOverlappingWithStartDate_whenValidateSprintDateRange_thenOutputWithMessage() {
+        when(sprintService.getAllSprints()).thenReturn(testSprints);
+        Sprint testSprint = testSprints.get(0);
+        String output = dateValidationService.validateSprintDateRange(
+                addToDateString(testSprint.getStartDateString(), Calendar.DAY_OF_YEAR, -1),
+                testSprint.getStartDateString(), -1);
+        assertTrue(output.length() > 0);
+    }
+
+    /**
+     * Checks that validateSprintDateRange gives an error message when the given start date is the same as the end
+     * date of an already existing sprint (boundary case).
+     */
+    @Test
+    public void givenOverlappingWithEndDate_whenValidateSprintDateRange_thenOutputWithMessage() {
+        when(sprintService.getAllSprints()).thenReturn(testSprints);
+        Sprint testSprint = testSprints.get(1);
+        String output = dateValidationService.validateSprintDateRange(testSprint.getEndDateString(),
+                addToDateString(testSprint.getEndDateString(), Calendar.DAY_OF_YEAR, 1), -1);
+        assertTrue(output.length() > 0);
+    }
+
+    /**
+     * Checks that validateSprintDateRange gives a blank output when the given dates do not overlap with any
+     * existing sprints (boundary case).
+     */
+    @Test
+    public void givenValidDates_whenValidateSprintDateRange_thenBlankOutput() {
+        when(sprintService.getAllSprints()).thenReturn(testSprints);
+        Sprint testSprint = testSprints.get(0);
+        String output = dateValidationService.validateSprintDateRange(
+                addToDateString(testSprint.getEndDateString(), Calendar.DAY_OF_YEAR, 1),
+                addToDateString(testSprint.getEndDateString(), Calendar.DAY_OF_YEAR, 2), -1);
+        assertEquals(0, output.length());
+    }
+
+    /**
+     * Checks that validateSprintDateRange gives a blank output when the given dates overlap with its own stored sprint.
+     * This is for editing, so the dates of the sprint currently being edited are ignored.
+     */
+    @Test
+    public void givenOverlappingDatesWithCurrentSprint_whenValidateSprintDateRange_thenBlankOutput() {
+        when(sprintService.getAllSprints()).thenReturn(testSprints);
+        Sprint testSprint = testSprints.get(1);
+        String output = dateValidationService.validateSprintDateRange(testSprint.getStartDateString(),
+                testSprint.getEndDateString(), testSprint.getId());
+        assertEquals(0, output.length());
     }
 
 }

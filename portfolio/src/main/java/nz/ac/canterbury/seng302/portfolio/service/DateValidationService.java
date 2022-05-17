@@ -67,9 +67,12 @@ public class DateValidationService {
             Date sprintStartDate = Project.stringToDate(sprintStartDateString);
             Date sprintEndDate = Project.stringToDate(sprintEndDateString);
             for (Sprint sprint : sprintService.getAllSprints()) {
+                // Get date from the string to ignore time
+                Date startDate = Project.stringToDate(sprint.getStartDateString());
+                Date endDate = Project.stringToDate(sprint.getEndDateString());
                 if (sprint.getId() != sprintId && !(
-                        sprintStartDate.before(sprint.getStartDate()) && sprintEndDate.before(sprint.getStartDate()) ||
-                                sprintStartDate.after(sprint.getEndDate()) && sprintEndDate.after(sprint.getEndDate())
+                        sprintStartDate.before(startDate) && sprintEndDate.before(startDate) ||
+                                sprintStartDate.after(endDate) && sprintEndDate.after(endDate)
                 )) {
                     message = "Dates must not overlap with " + sprint.getName() + "'s dates (" +
                             sprint.getStartDateString() + " - " + sprint.getEndDateString() + ").";
