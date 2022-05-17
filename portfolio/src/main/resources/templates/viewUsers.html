@@ -37,7 +37,10 @@
                 <td><span th:text="${user.nickname}"> Alias </span></td>
                 <td>
                     <div th:each="role : ${user.rolesList}">
-                            <span class="badge position-relative"><span style="background: #0a64ff; border-radius: 10px;padding:3px 10px 3px 10px;margin-right: 10px;margin-top: 5px;" th:text="${role}"></span>
+                            <span class="badge rounded-pill bg-primary"><span style="background: #0a64ff; border-radius: 10px;padding:3px 10px 3px 10px;margin-right: 10px;margin-top: 5px;" th:text="${role}"></span>
+                                <button class="position-absolute top-10 start-5 translate-middle badge rounded-pill bg-danger">
+                                    X
+                                </button>
                             </span>
                     </div>
                 </td>
