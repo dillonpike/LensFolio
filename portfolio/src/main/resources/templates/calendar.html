@@ -13,8 +13,10 @@
     <script th:inline="javascript">
         /*<![CDATA[*/
         document.addEventListener('DOMContentLoaded', function() {
+
             let calendarEl = document.getElementById('calendar');
             let calendar = new FullCalendar.Calendar(calendarEl, {
+                editable: true,
                 themeSystem: 'bootstrap5',
                 initialView: 'dayGridMonth',
                 buttonText: {
@@ -28,7 +30,30 @@
                 },
                 events: [
                     /*[(${sprints})]*/ null
-                ]
+                ],
+                eventClick: function(info) {
+                    // change the border color just for fun
+                    let event = calendar.getEventById(info.event.id);
+                    if (event.borderColor === 'red') {
+                        event.setProp("borderColor", null);
+                    } else {
+                        event.setProp("borderColor", "red");
+                    }
+                },
+                eventMouseEnter: function(info) {
+                    // change the border color just for fun
+                    let event = calendar.getEventById(info.event.id);
+                    if (event.borderColor !== 'red') {
+                        event.setProp("borderColor", "black");
+                    }
+                },
+                eventMouseLeave: function(info) {
+                    // change the border color just for fun
+                    let event = calendar.getEventById(info.event.id);
+                    if (event.borderColor !== 'red') {
+                        event.setProp("borderColor", null);
+                    }
+                }
             });
             calendar.render();
         });
