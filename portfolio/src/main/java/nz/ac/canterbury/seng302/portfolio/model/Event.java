@@ -14,7 +14,6 @@ public class Event {
     private int id;
     private int parentProjectId;
     private String eventName;
-    private String eventLabel;
     private String eventDescription;
     private Date eventStartDate;
     private Date eventEndDate;
