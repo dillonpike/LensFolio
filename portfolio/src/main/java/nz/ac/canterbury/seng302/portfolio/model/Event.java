@@ -14,7 +14,6 @@ public class Event {
     private int id;
     private int parentProjectId;
     private String eventName;
-    private String eventDescription;
     private Date eventStartDate;
     private Date eventEndDate;
 
@@ -24,7 +23,6 @@ public class Event {
         this.id = id;
         this.parentProjectId = parentProjectId;
         this.eventName = eventName;
-        this.eventDescription = eventDescription;
         this.eventStartDate = eventStartDate;
         this.eventEndDate = eventEndDate;
     }
@@ -33,7 +31,7 @@ public class Event {
     public String toString() {
         return String.format(
                 "event[id=%d, parentProjectId='%d', eventName='%s', eventLabel='%s', eventStartDate='%s', eventEndDate='%s', eventDescription='%s']",
-                id, parentProjectId, eventName, eventStartDate, eventEndDate, eventDescription);
+                id, parentProjectId, eventName, eventStartDate, eventEndDate);
     }
 
     public int getId() {
@@ -58,14 +56,6 @@ public class Event {
 
     public void setEventName(String eventName) {
         this.eventName = eventName;
-    }
-
-    public String getEventDescription() {
-        return eventDescription;
-    }
-
-    public void setEventDescription(String eventDescription) {
-        this.eventDescription = eventDescription;
     }
 
     public Date getEventStartDate() {
