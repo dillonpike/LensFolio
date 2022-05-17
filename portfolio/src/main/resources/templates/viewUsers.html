@@ -50,8 +50,8 @@
                             +
                         </button>
                         <div class="dropdown-menu">
-                            <a class="dropdown-item" href="#" th:if="${}">Student</a>
-                            <a class="dropdown-item" href="#">Teacher</a>
+                            <a class="dropdown-item" href="#" th:if="${!user.rolesList.contains(studentRole)}">Student</a>
+                            <a class="dropdown-item" href="#" th:if="${!user.rolesList.contains(teacherRole)}">Teacher</a>
                             <a class="dropdown-item" href="#" th:if="${currentUserRole == 'admin'}">Course Administrator</a>
 
                         </div>

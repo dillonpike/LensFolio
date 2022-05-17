@@ -5,10 +5,7 @@ import nz.ac.canterbury.seng302.portfolio.service.ElementService;;
 import nz.ac.canterbury.seng302.portfolio.service.RegisterClientService;
 import nz.ac.canterbury.seng302.portfolio.service.UserAccountClientService;
 import nz.ac.canterbury.seng302.portfolio.service.UserSortingService;
-import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
-import nz.ac.canterbury.seng302.shared.identityprovider.ClaimDTO;
-import nz.ac.canterbury.seng302.shared.identityprovider.PaginatedUsersResponse;
-import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
+import nz.ac.canterbury.seng302.shared.identityprovider.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
@@ -18,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import javax.management.relation.Role;
 import java.util.List;
 
 /***
@@ -65,7 +63,9 @@ public class ViewUsersController {
         model.addAttribute("userId", id);
 
 
-
+        model.addAttribute("studentRole", UserRole.STUDENT);
+        model.addAttribute("teacherRole", UserRole.TEACHER);
+        System.out.println(role);
         PaginatedUsersResponse response = userAccountClientService.getAllUsers();
         userResponseList = response.getUsersList();
         model.addAttribute("users", userResponseList);
