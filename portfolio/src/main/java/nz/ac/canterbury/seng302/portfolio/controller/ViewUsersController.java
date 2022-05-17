@@ -2,6 +2,7 @@ package nz.ac.canterbury.seng302.portfolio.controller;
 
 import nz.ac.canterbury.seng302.portfolio.model.UserSorting;
 import nz.ac.canterbury.seng302.portfolio.service.ElementService;;
+import nz.ac.canterbury.seng302.portfolio.service.RegisterClientService;
 import nz.ac.canterbury.seng302.portfolio.service.UserAccountClientService;
 import nz.ac.canterbury.seng302.portfolio.service.UserSortingService;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
@@ -25,6 +26,9 @@ import java.util.List;
 public class ViewUsersController {
 
     @Autowired
+    private RegisterClientService registerClientService;
+
+    @Autowired
     private UserAccountClientService userAccountClientService;
 
     @Autowired
@@ -46,9 +50,13 @@ public class ViewUsersController {
             Model model,
             @AuthenticationPrincipal AuthState principal
     ) {
+        UserResponse getUserByIdReply;
         Integer id = userAccountClientService.getUserIDFromAuthState(principal);
         elementService.addHeaderAttributes(model, id);
+        getUserByIdReply = registerClientService.getUserData(id);
+        model.addAttribute("currentUsername", getUserByIdReply.getUsername());
         model.addAttribute("userId", id);
+
 
         PaginatedUsersResponse response = userAccountClientService.getAllUsers();
         userResponseList = response.getUsersList();

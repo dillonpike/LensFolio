@@ -123,9 +123,9 @@ public class UserModelService {
     public String getHighestRole(UserModel user) {
         Set<Roles> roles = user.getRoles();
         for (Roles role : roles) {
-            if (Objects.equals(role.getRoleName(), "TEACHER")) {
+            if (Objects.equals(role.getRoleName(), "COURSE ADMINISTRATOR")) {
                 return "teacher";
-            } else if (Objects.equals(role.getRoleName(), "COURSE ADMINISTRATOR")) {
+            } else if (Objects.equals(role.getRoleName(), "TEACHER")) {
                 return "admin";
             }
         }
