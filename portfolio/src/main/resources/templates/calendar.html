@@ -35,7 +35,7 @@
                     // change the border color just for fun
                     let event = calendar.getEventById(info.event.id);
                     if (event.borderColor === 'red') {
-                        event.setProp("borderColor", null);
+                        event.setProp("borderColor", event.backgroundColor);
                     } else {
                         event.setProp("borderColor", "red");
                     }
@@ -51,7 +51,7 @@
                     // change the border color just for fun
                     let event = calendar.getEventById(info.event.id);
                     if (event.borderColor !== 'red') {
-                        event.setProp("borderColor", null);
+                        event.setProp("borderColor", event.backgroundColor);
                     }
                 }
             });
