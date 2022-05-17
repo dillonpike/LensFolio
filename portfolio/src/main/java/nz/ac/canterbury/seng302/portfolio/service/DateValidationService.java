@@ -9,13 +9,15 @@ import org.springframework.stereotype.Service;
 
 import java.util.Date;
 
-/***
+/**
  * Contains help methods to check the validation for date
  */
 @Service
 public class DateValidationService {
+
     @Autowired
     private SprintService sprintService;
+
     @Autowired
     private ProjectService projectService;
 
@@ -97,8 +99,11 @@ public class DateValidationService {
                 System.err.println("No project exists");
                 return message;
             }
-            if (sprintStartDate.before(project.getStartDate()) || sprintStartDate.after(project.getEndDate()) ||
-                    sprintEndDate.before(project.getStartDate()) || sprintEndDate.after(project.getEndDate())) {
+            // Get date from the string to ignore time
+            Date projectStartDate = Project.stringToDate(project.getStartDateString());
+            Date projectEndDate = Project.stringToDate(project.getEndDateString());
+            if (sprintStartDate.before(projectStartDate) || sprintStartDate.after(projectEndDate) ||
+                    sprintEndDate.before(projectStartDate) || sprintEndDate.after(projectEndDate)) {
                 message = "Sprint dates must be within the project's date range (" +
                         project.getStartDateString() + " - " + project.getEndDateString() + ").";
             }
@@ -157,31 +162,5 @@ public class DateValidationService {
         Date today = new Date();
         long diffInMs = today.getTime() - date.getTime();
         return TimeUnit.DAYS.convert(diffInMs, TimeUnit.MILLISECONDS);
-    }
-
-    /**
-     * Checks to see if a given date exists in the calendar, checking for days such as February 29th in certain years, and
-     * month lengths.
-     * @param date Given date to check
-     * @return Message if the date is invalid and why, empty otherwise
-     */
-    public String isDateValid(String date) {
-        String message = "";
-        int day = Integer.parseInt(date.substring(0, 2));
-        String month = date.substring(3, 6);
-        int year = Integer.parseInt(date.substring(7, 11));
-
-
-        if ("Feb".equals(month) && (day == 30 || day == 31)) {
-            message = "This is an invalid date for February";
-        }
-        if (year % 4 != 0 && "Feb".equals(month) && day == 29) {
-            message = String.format("This is an invalid date for February in the year %d", year);
-        }
-        if (day == 31 && ("Apr".equals(month) || "Jun".equals(month) || "Sep".equals(month) || "Nov".equals(month))) {
-            message = "There is no 31st of the chosen month";
-        }
-
-        return message;
     }
 }
