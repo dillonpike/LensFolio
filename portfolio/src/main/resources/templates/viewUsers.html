@@ -45,14 +45,15 @@
                                 </button>
                             </span>
                     </div>
-                    <div class="btn-group" style="margin-left: 5px">
+                    <div class="btn-group" style="margin-left: 5px" th:if="${currentUserRole != 'student'}">
                         <button style ="padding:0 10px" type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             +
                         </button>
                         <div class="dropdown-menu">
-                            <a class="dropdown-item" href="#">Student</a>
+                            <a class="dropdown-item" href="#" th:if="${}">Student</a>
                             <a class="dropdown-item" href="#">Teacher</a>
-                            <a class="dropdown-item" href="#">Course Administrator</a>
+                            <a class="dropdown-item" href="#" th:if="${currentUserRole == 'admin'}">Course Administrator</a>
+
                         </div>
                     </div>
                 </td>
