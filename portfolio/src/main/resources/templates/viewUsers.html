@@ -39,7 +39,7 @@
                     <div th:each="role : ${user.rolesList}" style="margin:5px">
 
                             <span class="badge bg-primary"><span style="background: #0a64ff; border-radius: 10px;padding:3px 10px 3px 10px;margin: 5px 10px 5px 5px;" th:text="${role}"></span>
-                                <button th:if="${user.username != currentUsername}"
+                                <button th:if="${currentUserRole != 'student' && user.username != currentUsername }"
                                         class="position-absolute top-10 start-5 translate-middle badge rounded-pill bg-danger">
                                     X
                                 </button>
