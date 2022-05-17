@@ -65,6 +65,8 @@ public class ViewUsersController {
 
         model.addAttribute("studentRole", UserRole.STUDENT);
         model.addAttribute("teacherRole", UserRole.TEACHER);
+        model.addAttribute("adminRole", UserRole.COURSE_ADMINISTRATOR);
+
         System.out.println(role);
         PaginatedUsersResponse response = userAccountClientService.getAllUsers();
         userResponseList = response.getUsersList();

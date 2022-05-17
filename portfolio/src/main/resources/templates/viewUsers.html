@@ -50,9 +50,21 @@
                             +
                         </button>
                         <div class="dropdown-menu">
-                            <a class="dropdown-item" href="#" th:if="${!user.rolesList.contains(studentRole)}">Student</a>
-                            <a class="dropdown-item" href="#" th:if="${!user.rolesList.contains(teacherRole)}">Teacher</a>
-                            <a class="dropdown-item" href="#" th:if="${currentUserRole == 'admin'}">Course Administrator</a>
+                            <a class="dropdown-item" th:if="${!user.rolesList.contains(studentRole)}">
+                                <form>
+                                    <button type="submit" class="btn btn-link" style="color:black;text-decoration: none;" >Student</button>
+                                </form>
+                            </a>
+                            <a class="dropdown-item" th:if="${!user.rolesList.contains(teacherRole)}">
+                                <form>
+                                    <button type="submit" class="btn btn-link" style="color:black;text-decoration: none;" >Teacher</button>
+                                </form>
+                            </a>
+                            <a class="dropdown-item" th:if="${currentUserRole == 'admin' && !user.rolesList.contains(adminRole)}">
+                                <form>
+                                    <button type="submit" class="btn btn-link" style="color:black;text-decoration: none;" >Course Administrator</button>
+                                </form>
+                            </a>
 
                         </div>
                     </div>
