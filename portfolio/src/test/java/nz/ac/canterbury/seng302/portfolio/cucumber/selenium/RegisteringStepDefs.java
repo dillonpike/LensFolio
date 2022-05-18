@@ -120,18 +120,20 @@ public class RegisteringStepDefs {
 
     @Then("{string} message occurs")
     public void outcomeMessageOccurs(String outcomeMessage) {
-        if (Objects.equals(outcome, "Invalid registration, username taken")){
+        if (Objects.equals(outcomeMessage, "Invalid registration, username taken")){
             Boolean outcomeMes = webDriver.findElement(By.id("usernameTaken")).isDisplayed();
             assertNotNull(outcomeMes);
-        } else if (Objects.equals(outcome, "Successful registration")) {
+        } else if (Objects.equals(outcomeMessage, "Successful registration")) {
             String actualURL = webDriver.getCurrentUrl();
             assertNotEquals("http://localhost:9000/register?registerError", actualURL);
-        } else if (Objects.equals(outcome, "Invalid username, please try again")) {
+        } else if (Objects.equals(outcomeMessage, "Invalid username, please try again")) {
             Boolean outcomeMes = webDriver.findElement(By.id("usernameInvalidMessage")).isDisplayed();
             assertNotNull(outcomeMes);
-        } else if (Objects.equals(outcome, "First name can not contain numbers or special characters")) {
+        } else if (Objects.equals(outcomeMessage, "First name can not contain numbers or special characters")) {
             Boolean outcomeMes = webDriver.findElement(By.id("firstNameInvalid")).isDisplayed();
             assertNotNull(outcomeMes);
+        } else {
+            assertNotNull(null);
         }
 
     }
@@ -225,7 +227,10 @@ public class RegisteringStepDefs {
   public void iRegisterWithAFirstNameFirstName(String firstName) {
       webDriver.findElement(By.id("username")).sendKeys("adminTests");
       webDriver.findElement(By.id("firstName")).sendKeys(firstName);
-      webDriver.findElement(By.id("lastName")).sendKeys("admin");
+      webDriver.findElement(By.id("lastName")).sendKeys("Admin");
+      webDriver.findElement(By.id("email")).sendKeys("name@example.com");
+      webDriver.findElement(By.id("passwordLogin")).sendKeys("Admin123");
+      webDriver.findElement(By.id("confirmPassword")).sendKeys("Admin123");
       WebElement ele = webDriver.findElement(By.id("signUp"));
       JavascriptExecutor jse = (JavascriptExecutor)webDriver;
       jse.executeScript("arguments[0].click()", ele);

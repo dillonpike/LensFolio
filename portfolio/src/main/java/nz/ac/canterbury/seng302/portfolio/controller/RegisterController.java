@@ -102,6 +102,9 @@ public class RegisterController {
         Pattern p = Pattern.compile("[^A-Za-z]");
         Matcher m = p.matcher(firstName);
         boolean b = m.find();
+        if (firstName.length() < 2) {
+            b = true;
+        }
         if (b) {
             rm.addAttribute(defaultUsername, username);
             rm.addAttribute(defaultFirstName, firstName);
@@ -114,6 +117,9 @@ public class RegisterController {
         Pattern p2 = Pattern.compile("[^A-Za-z]");
         Matcher m2 = p2.matcher(lastName);
         boolean b2 = m2.find();
+        if (lastName.length() < 2) {
+            b2 = true;
+        }
         if (b2) {
             rm.addAttribute(defaultUsername, username);
             rm.addAttribute(defaultFirstName, firstName);
