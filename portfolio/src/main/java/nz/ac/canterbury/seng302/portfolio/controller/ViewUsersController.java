@@ -127,6 +127,6 @@ public class ViewUsersController {
             roleChangeResponse = userAccountClientService.deleteRoleFromUser(userId, UserRole.COURSE_ADMINISTRATOR);
         }
         System.out.println("reach here");
-        return "redirect:/viewUsers";
+        return "redirect:viewUsers";
     }
 }

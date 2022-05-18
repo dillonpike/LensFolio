@@ -40,8 +40,8 @@
 
                             <span class="badge bg-primary">
                                 <span style="background: #0a64ff; border-radius: 10px;padding:3px 10px 3px 10px;margin: 5px 10px 5px 5px;" th:text="${role}"></span>
-                                <button th:if="${currentUserRole != 'student' && user.username != currentUsername }" th:attr="onclick=|deleteUserRole('${user.id}','${role}')|"
-                                        class="position-absolute top-10 start-5 translate-middle badge rounded-pill bg-danger">
+                                <button th:if="${currentUserRole != 'student' && user.username != currentUsername && user.rolesList.size() > 1 }" th:attr="onclick=|deleteUserRole('${user.id}','${role}')|"
+                                        class="position-absolute top-10 start-5 translate-middle badge rounded-pill bg-danger" >
                                     X
                                 </button>
                             </span>
@@ -87,6 +87,7 @@
         console.log(role);
         const url = "delete_role?userId="+id+"&deletedRole="+role;
         console.log(url)
+        window.location.reload();
         $.post(url);
     }
 
