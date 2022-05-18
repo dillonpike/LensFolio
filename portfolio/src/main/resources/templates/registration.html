@@ -16,7 +16,7 @@
                         <h3 class="mb-5">Registration</h3>
                         <div th:if="${param.passwordError}" class="alert alert-danger">
                             Passwords do not match, please try again</div>
-                        <div id="usernameTaken" th:if="${param.registerError}" class="alert alert-danger">
+                        <div id="usernameTaken" th:if="${param.usernameError}" class="alert alert-danger">
                             Invalid registration, username taken
                         </div>
                         <div id="firstNameInvalid" th:if="${param.firstNameError}" class="alert alert-danger">
@@ -24,6 +24,12 @@
                         </div>
                         <div id="lastNameInvalid" th:if="${param.lastNameError}" class="alert alert-danger">
                             Last name can not contain numbers or special characters
+                        </div>
+                        <div id="registerError" th:if="${param.registerError}" class="alert alert-danger">
+                            Invalid registration, something went wrong
+                        </div>
+                        <div id="idpConnectionError" th:if="${param.idpConnectionError}" class="alert alert-danger">
+                            Something is wrong on our side. Cannot connect to the Identity Provider
                         </div>
                         <div th:if="${param.successfulRegister}" class="alert alert-success">
                             Successful registration, <a id="successful" href="/login" class="alert-link">click here</a> to login

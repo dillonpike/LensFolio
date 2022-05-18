@@ -129,7 +129,7 @@ public class RegisterController {
             registrationReply = registerClientService.receiveConformation(username, password, firstName, middleName, lastName, email);
         } catch (Exception e) {
             model.addAttribute("err", "Error connecting to Identity Provider...");
-            return "login";
+            return "redirect:register?idpConnectionError";
         }
         if (registrationReply.getIsSuccess()) {
             loginReply = authenticateClientService.authenticate(username, password);
@@ -145,13 +145,24 @@ public class RegisterController {
             rm.addAttribute("userId", (int)loginReply.getUserId());
             return "redirect:account";
         } else {
-            model.addAttribute("err", "Something went wrong");
-            rm.addAttribute(defaultUsername, username);
-            rm.addAttribute(defaultFirstName, firstName);
-            rm.addAttribute(defaultMiddleName, middleName);
-            rm.addAttribute(defaultLastName, lastName);
-            rm.addAttribute(defaultEmail, email);
-            return "redirect:register?registerError";
+            if (registrationReply.getMessage().equals("Username taken")) {
+                model.addAttribute("err", "Username Taken");
+                rm.addAttribute(defaultUsername, username);
+                rm.addAttribute(defaultFirstName, firstName);
+                rm.addAttribute(defaultMiddleName, middleName);
+                rm.addAttribute(defaultLastName, lastName);
+                rm.addAttribute(defaultEmail, email);
+                return "redirect:register?usernameError";
+            } else {
+                model.addAttribute("err", "Something went wrong");
+                rm.addAttribute(defaultUsername, username);
+                rm.addAttribute(defaultFirstName, firstName);
+                rm.addAttribute(defaultMiddleName, middleName);
+                rm.addAttribute(defaultLastName, lastName);
+                rm.addAttribute(defaultEmail, email);
+                return "redirect:register?registerError";
+            }
+
         }
     }
 }
