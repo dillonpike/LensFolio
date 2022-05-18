@@ -1,10 +1,5 @@
 package nz.ac.canterbury.seng302.portfolio.cucumber.selenium;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import io.cucumber.java.After;
 import io.cucumber.java.Before;
 import io.cucumber.java.en.And;
@@ -18,6 +13,8 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 public class RegisteringStepDefs {
 
@@ -133,7 +130,7 @@ public class RegisteringStepDefs {
             Boolean outcomeMes = webDriver.findElement(By.id("firstNameInvalid")).isDisplayed();
             assertNotNull(outcomeMes);
         } else {
-            assertNotNull(null);
+            fail();
         }
 
     }
