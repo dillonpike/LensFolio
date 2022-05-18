@@ -101,6 +101,9 @@ public class RegisterController {
         }
 
         boolean firstNameMatchesPattern = Pattern.compile("[^A-Za-z]").matcher(firstName).find();
+        if (firstName.length() < 2) {
+            firstNameMatchesPattern = true;
+        }
         if (firstNameMatchesPattern) {
             rm.addAttribute(defaultUsername, username);
             rm.addAttribute(defaultFirstName, firstName);
@@ -111,6 +114,9 @@ public class RegisterController {
         }
 
         boolean lastNameMatchesPattern = Pattern.compile("[^A-Za-z]").matcher(lastName).find();
+        if (lastName.length() < 2) {
+            lastNameMatchesPattern = true;
+        }
         if (lastNameMatchesPattern) {
             rm.addAttribute(defaultUsername, username);
             rm.addAttribute(defaultFirstName, firstName);

@@ -20,7 +20,7 @@ Feature: UUi Registering and logging into a user account
     Examples:
       |FirstName  |Outcome                                                    |
       |"Rach3l"   |"First name can not contain numbers or special characters" |
-      |"d"        |"First name can not contain numbers or special characters" |
+      |"d33"      |"First name can not contain numbers or special characters" |
       |"dd."      |"First name can not contain numbers or special characters" |
 
   Scenario Outline: AC2 Part 1 - If I try to log in with a
