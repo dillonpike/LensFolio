@@ -38,8 +38,9 @@
                 <td>
                     <div th:each="role : ${user.rolesList}" style="margin:5px">
 
-                            <span class="badge bg-primary"><span style="background: #0a64ff; border-radius: 10px;padding:3px 10px 3px 10px;margin: 5px 10px 5px 5px;" th:text="${role}"></span>
-                                <button th:if="${currentUserRole != 'student' && user.username != currentUsername }"
+                            <span class="badge bg-primary">
+                                <span style="background: #0a64ff; border-radius: 10px;padding:3px 10px 3px 10px;margin: 5px 10px 5px 5px;" th:text="${role}"></span>
+                                <button th:if="${currentUserRole != 'student' && user.username != currentUsername }" th:attr="onclick=|deleteUserRole('${user.id}','${role}')|"
                                         class="position-absolute top-10 start-5 translate-middle badge rounded-pill bg-danger">
                                     X
                                 </button>
@@ -77,6 +78,14 @@
     </table>
 </div>
 <script th:inline="javascript">
+
+    function  deleteUserRole(id, role){
+        console.log(id);
+        console.log(role);
+        const url = "delete_role?userId="+id+"&deletedRole="+role;
+        console.log(url)
+        $.post(url);
+    }
 
     const table = $('#sortTable');
     // Saves the sorting of the table so that it is persistent

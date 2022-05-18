@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.management.relation.Role;
 import java.util.List;
+import java.util.Objects;
 
 /***
  * Controller receive HTTP GET, POST, PUT, DELETE calls for view user page
@@ -108,5 +109,23 @@ public class ViewUsersController {
                 return "redirect:viewUsers";
         }
         return "viewUsers";
+    }
+
+    @RequestMapping(value="/delete_role", method=RequestMethod.POST)
+    public String deleteRole(Model model,
+                              @AuthenticationPrincipal AuthState principal,
+                              @RequestParam(value = "deletedRole") String role,
+                              @RequestParam(value = "userId") int userId
+    ) {
+        UserRoleChangeResponse roleChangeResponse;
+        if(Objects.equals(role, "STUDENT")){
+            roleChangeResponse = userAccountClientService.deleteRoleFromUser(userId, UserRole.STUDENT);
+        } else if(Objects.equals(role, "TEACHER")){
+            roleChangeResponse = userAccountClientService.deleteRoleFromUser(userId, UserRole.TEACHER);
+        } else {
+            roleChangeResponse = userAccountClientService.deleteRoleFromUser(userId, UserRole.COURSE_ADMINISTRATOR);
+        }
+        System.out.println("reach here");
+        return "redirect:/viewUsers";
     }
 }

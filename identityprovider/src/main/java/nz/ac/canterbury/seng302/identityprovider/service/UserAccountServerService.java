@@ -400,4 +400,39 @@ public class UserAccountServerService extends UserAccountServiceGrpc.UserAccount
 
     }
 
+    @Override
+    public void removeRoleFromUser(ModifyRoleOfUserRequest request, StreamObserver<UserRoleChangeResponse> responseObserver) {
+        UserRoleChangeResponse.Builder reply = UserRoleChangeResponse.newBuilder();
+        System.out.println("Enter remove rolein idp");
+        try {
+            UserModel user = userModelService.getUserById(request.getUserId());
+            UserRole role = request.getRole();
+            if (user != null) {
+                if (role.getNumber() == 0) {
+                    Roles studentRole = rolesRepository.findByRoleName("STUDENT");
+                    user.deleteRole(studentRole);
+                    System.out.println(user.getRoles());
+                    userModelService.saveEditedUser(user);
+                    reply.setIsSuccess(true);
+                }else if (role.getNumber() == 1) {
+                    Roles teacherRole = rolesRepository.findByRoleName("TEACHER");
+                    user.deleteRole(teacherRole);
+                    userModelService.saveEditedUser(user);
+                    reply.setIsSuccess(true);
+                } else {
+                    Roles adminRole = rolesRepository.findByRoleName("COURSE ADMINISTRATOR");
+                    user.deleteRole(adminRole);
+                    userModelService.saveEditedUser(user);
+                    reply.setIsSuccess(true);
+                }
+            }
+        } catch (Exception e) {
+            System.err.println("Something went wrong");
+            reply.setIsSuccess(false);
+        }
+        responseObserver.onNext(reply.build());
+        responseObserver.onCompleted();
+
+    }
+
 }

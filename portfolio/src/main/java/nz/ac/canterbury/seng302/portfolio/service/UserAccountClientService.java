@@ -53,4 +53,12 @@ public class UserAccountClientService {
                 .build();
         return userAccountStub.addRoleToUser(response);
     }
+
+    public UserRoleChangeResponse deleteRoleFromUser(int userId, UserRole role) {
+        ModifyRoleOfUserRequest request = ModifyRoleOfUserRequest.newBuilder()
+                .setUserId(userId)
+                .setRole(role)
+                .build();
+        return userAccountStub.removeRoleFromUser(request);
+    }
 }
