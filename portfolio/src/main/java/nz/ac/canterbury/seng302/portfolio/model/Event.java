@@ -19,7 +19,7 @@ public class Event {
 
     public Event() {}
 
-    public Event(int id, int parentProjectId, String eventName, String eventDescription, Date eventStartDate, Date eventEndDate) {
+    public Event(int id, int parentProjectId, String eventName, Date eventStartDate, Date eventEndDate) {
         this.id = id;
         this.parentProjectId = parentProjectId;
         this.eventName = eventName;
@@ -30,7 +30,7 @@ public class Event {
     @Override
     public String toString() {
         return String.format(
-                "event[id=%d, parentProjectId='%d', eventName='%s', eventLabel='%s', eventStartDate='%s', eventEndDate='%s', eventDescription='%s']",
+                "event[id=%d, parentProjectId='%d', eventName='%s', eventStartDate='%s', eventEndDate='%s']",
                 id, parentProjectId, eventName, eventStartDate, eventEndDate);
     }
 
@@ -73,4 +73,23 @@ public class Event {
     public void setEventEndDate(Date eventEndDate) {
         this.eventEndDate = eventEndDate;
     }
+
+
+
+    public void setStartDateString(String date) {
+        this.eventStartDate = Project.stringToDate(date);
+    }
+
+    public String getStartDateString() {
+        return Project.dateToString(this.eventEndDate);
+    }
+
+    public void setEndDateString(String date) {
+        this.eventStartDate = Project.stringToDate(date);
+    }
+
+    public String getEndDateString() {
+        return Project.dateToString(this.eventEndDate);
+    }
+
 }

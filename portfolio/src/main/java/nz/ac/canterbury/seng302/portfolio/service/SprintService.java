@@ -39,7 +39,7 @@ public class SprintService {
         if(sprint.isPresent()) {
             return sprint.get();
         } else {
-            throw new Exception("Project not found");
+            throw new Exception("Sprint not found");
         }
     }
 
