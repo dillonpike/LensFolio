@@ -4,6 +4,7 @@ import io.grpc.stub.StreamObserver;
 import net.devh.boot.grpc.server.service.GrpcService;
 import nz.ac.canterbury.seng302.identityprovider.model.Roles;
 import nz.ac.canterbury.seng302.identityprovider.model.UserModel;
+import nz.ac.canterbury.seng302.identityprovider.repository.RolesRepository;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserAccountServiceGrpc;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserRegisterRequest;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserRegisterResponse;
@@ -36,6 +37,9 @@ public class UserAccountServerService extends UserAccountServiceGrpc.UserAccount
 
     @Autowired
     private UserModelService userModelService;
+
+    @Autowired
+    private RolesRepository rolesRepository;
 
     /***
      * Attempts to register a user with a given username, password, first name, middle name, last name, email.
@@ -364,7 +368,8 @@ public class UserAccountServerService extends UserAccountServiceGrpc.UserAccount
         response.setUsername(user.getUsername())
                 .setFirstName(user.getFirstName())
                 .setLastName(user.getLastName())
-                .setNickname(user.getNickname());
+                .setNickname(user.getNickname())
+                .setId(user.getUserId());
         Set<Roles> roles = user.getRoles();
         Roles[] rolesArray = roles.toArray(new Roles[roles.size()]);
 
@@ -376,17 +381,23 @@ public class UserAccountServerService extends UserAccountServiceGrpc.UserAccount
 
     @Override
     public void addRoleToUser(ModifyRoleOfUserRequest request, StreamObserver<UserRoleChangeResponse> responseObserver) {
-        UserRoleChangeResponse.Builder builder = UserRoleChangeResponse.newBuilder();
+        UserRoleChangeResponse.Builder reply = UserRoleChangeResponse.newBuilder();
 
         try {
             UserModel user = userModelService.getUserById(request.getUserId());
             UserRole role = request.getRole();
             if (user != null) {
-//                user.addRoles(role);
+                if (role.getNumber() == 0) {
+                    Roles studentRole = rolesRepository.findByRoleName("STUDENT");
+                    user.addRoles(studentRole);
+                    userModelService.saveEditedUser(user);
+                    reply.setIsSuccess(true);
+                }
             }
         } catch (Exception e) {
             System.err.println("Something went wrong");
         }
+
     }
 
 }

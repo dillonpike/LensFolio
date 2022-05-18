@@ -98,9 +98,15 @@ public class ViewUsersController {
     public String updateTable(Model model,
                               @AuthenticationPrincipal AuthState principal,
                               @RequestParam(value = "role") String role,
-                              @RequestParam(value = "username") String username
+                              @RequestParam(value = "username") String username,
+                              @RequestParam(value = "userId") int userId
     ) {
 
+        switch (role) {
+            case "student":
+                UserRoleChangeResponse roleChangeResponse = userAccountClientService.addRoleToUser(userId, UserRole.STUDENT);
+                return "redirect:viewUsers";
+        }
         return "viewUsers";
     }
 }
