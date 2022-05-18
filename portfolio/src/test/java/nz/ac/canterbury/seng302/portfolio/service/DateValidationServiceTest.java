@@ -256,4 +256,54 @@ public class DateValidationServiceTest {
         assertEquals(0, output.length());
     }
 
+    /**
+     * Checks that validateProjectDatesContainSprints gives a blank output when the given dates start on the same day
+     * as the first sprint and end on the same day as the last sprint (boundary valid case).
+     */
+    @Test
+    public void givenValidBoundaryDates_whenValidateProjectDatesContainSprints_thenBlankOutput() {
+        when(sprintService.getAllSprintsOrdered()).thenReturn(testSprints);
+        String output = dateValidationService.validateProjectDatesContainSprints(
+                testProject.getStartDateString(), testProject.getEndDateString());
+        assertEquals(0, output.length());
+    }
+
+    /**
+     * Checks that validateProjectDatesContainSprints gives an error message when the start date is the day after the
+     * start date of the first sprint (boundary invalid case).
+     */
+    @Test
+    public void givenInvalidStartDate_whenValidateProjectDatesContainSprints_thenBlankOutput() {
+        when(sprintService.getAllSprintsOrdered()).thenReturn(testSprints);
+        String output = dateValidationService.validateProjectDatesContainSprints(
+                addToDateString(testSprints.get(0).getStartDateString(), Calendar.DAY_OF_YEAR, 1),
+                testProject.getEndDateString());
+        assertTrue(output.length() > 0);
+    }
+
+    /**
+     * Checks that validateProjectDatesContainSprints gives an error message when the end date is the day before the
+     * end date of the last sprint (boundary invalid case).
+     */
+    @Test
+    public void givenInvalidEndDate_whenValidateProjectDatesContainSprints_thenBlankOutput() {
+        when(sprintService.getAllSprintsOrdered()).thenReturn(testSprints);
+        String output = dateValidationService.validateProjectDatesContainSprints(
+                testProject.getStartDateString(),
+                addToDateString(testSprints.get(1).getEndDateString(), Calendar.DAY_OF_YEAR, -1));
+        assertTrue(output.length() > 0);
+    }
+
+    /**
+     * Checks that validateProjectDatesContainSprints gives an error message when the dates given are between two
+     * sprints (invalid case).
+     */
+    @Test
+    public void givenInvalidDates_whenValidateProjectDatesContainSprints_thenBlankOutput() {
+        when(sprintService.getAllSprintsOrdered()).thenReturn(testSprints);
+        String output = dateValidationService.validateProjectDatesContainSprints(
+                addToDateString(testSprints.get(0).getEndDateString(), Calendar.DAY_OF_YEAR, 1),
+                addToDateString(testSprints.get(1).getStartDateString(), Calendar.DAY_OF_YEAR, -1));
+        assertTrue(output.length() > 0);
+    }
 }
