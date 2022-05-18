@@ -90,8 +90,8 @@ public class RegisteringStepDefs {
         webDriver.findElement(By.id("firstName")).sendKeys("Admin");
         webDriver.findElement(By.id("lastName")).sendKeys("Admin");
         webDriver.findElement(By.id("email")).sendKeys("name@example.com");
-        webDriver.findElement(By.id("passwordLogin")).sendKeys("Admin");
-        webDriver.findElement(By.id("confirmPassword")).sendKeys("Admin");
+        webDriver.findElement(By.id("passwordLogin")).sendKeys("Adminlong");
+        webDriver.findElement(By.id("confirmPassword")).sendKeys("Adminlong");
         WebElement ele = webDriver.findElement(By.id("signUp"));
         JavascriptExecutor jse = (JavascriptExecutor)webDriver;
         jse.executeScript("arguments[0].click()", ele);
@@ -117,7 +117,7 @@ public class RegisteringStepDefs {
 
     @Then("{string} message occurs")
     public void outcomeMessageOccurs(String outcomeMessage) {
-        if (Objects.equals(outcomeMessage, "Invalid registration, username taken")){
+        if (Objects.equals(outcomeMessage, "Invalid registration, username taken")) {
             Boolean outcomeMes = webDriver.findElement(By.id("usernameTaken")).isDisplayed();
             assertNotNull(outcomeMes);
         } else if (Objects.equals(outcomeMessage, "Successful registration")) {
@@ -126,6 +126,11 @@ public class RegisteringStepDefs {
         } else if (Objects.equals(outcomeMessage, "Invalid username, please try again")) {
             Boolean outcomeMes = webDriver.findElement(By.id("usernameInvalidMessage")).isDisplayed();
             assertNotNull(outcomeMes);
+        } else if(Objects.equals(outcomeMessage, "Logged in")) {
+            Boolean hasFirstName = webDriver.findElement(By.id("firstName")).isDisplayed();
+            Boolean hasLastName = webDriver.findElement(By.id("lastNameInput")).isDisplayed();
+            assertNotNull(hasFirstName);
+            assertNotNull(hasLastName);
         } else if (Objects.equals(outcomeMessage, "First name can not contain numbers or special characters")) {
             Boolean outcomeMes = webDriver.findElement(By.id("firstNameInvalid")).isDisplayed();
             assertNotNull(outcomeMes);

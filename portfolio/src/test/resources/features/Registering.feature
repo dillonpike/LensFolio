@@ -31,10 +31,10 @@ Feature: UUi Registering and logging into a user account
     Then <Outcome> message occurs
     And Username is logged in <isLoggedIn>
     Examples:
-    |Username   |isAlreadyRegistered    |Outcome                                    |isLoggedIn    |
-    |"pointy"   |"False"                |"Invalid username, please try again"       |"False"       |
-    |"rlh89"    |"True"                 |"Logged in"                                |"True"        |
-    |"rlh88"    |"False"                |"Invalid username, please try again"       |"False"       |
+    |Username            |isAlreadyRegistered    |Outcome                                    |isLoggedIn    |
+    |"pointy"            |"False"                |"Invalid username, please try again"       |"False"       |
+    |"TestAccount"       |"True"                 |"Logged in"                                |"True"        |
+    |"NotARealUsername"  |"False"                |"Invalid username, please try again"       |"False"       |
 
   Scenario Outline: AC2 Part 2 - If I try to register an account with a username that is already registered,
   the system should not create the account but let me know.
@@ -44,10 +44,10 @@ Feature: UUi Registering and logging into a user account
     Then <Outcome> message occurs
     And Username is registered <isRegistered>
     Examples:
-    |Username   |isAlreadyRegistered    |Outcome                                  |isRegistered    |
-    |"pointy"   |"False"                |"Successful registration"                |"True"          |
-    |"rlh89"    |"True"                 |"Invalid registration, username taken"   |"False"         |
-    |"rlh88"    |"False"                |"Successful registration"                |"True"          |
+    |Username       |isAlreadyRegistered    |Outcome                                  |isRegistered    |
+    |"pointy"       |"False"                |"Successful registration"                |"True"          |
+    |"TestAccount"  |"True"                 |"Invalid registration, username taken"   |"False"         |
+    |"rlh88"        |"False"                |"Successful registration"                |"True"          |
 
   Scenario: AC3 part 1 - Error message should be displayed on the login screen when login details are not correct
     Given I am on the login page
