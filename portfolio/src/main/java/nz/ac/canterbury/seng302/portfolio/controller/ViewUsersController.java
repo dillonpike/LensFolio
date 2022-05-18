@@ -55,16 +55,15 @@ public class ViewUsersController {
                 .findFirst()
                 .map(ClaimDTO::getValue)
                 .orElse("NOT FOUND");
+
+
         model.addAttribute("currentUserRole", role);
         model.addAttribute("currentUsername", getUserByIdReply.getUsername());
         model.addAttribute("userId", id);
-
-
         model.addAttribute("studentRole", UserRole.STUDENT);
         model.addAttribute("teacherRole", UserRole.TEACHER);
         model.addAttribute("adminRole", UserRole.COURSE_ADMINISTRATOR);
 
-        System.out.println(role);
         PaginatedUsersResponse response = userAccountClientService.getAllUsers();
         userResponseList = response.getUsersList();
         model.addAttribute("users", userResponseList);
