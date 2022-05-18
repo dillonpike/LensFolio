@@ -99,10 +99,9 @@ public class RegisterController {
             rm.addAttribute(defaultEmail, email);
             return "redirect:register?passwordError";
         }
-        Pattern p = Pattern.compile("[^A-Za-z]");
-        Matcher m = p.matcher(firstName);
-        boolean b = m.find();
-        if (b) {
+
+        boolean firstNameMatchesPattern = Pattern.compile("[^A-Za-z]").matcher(firstName).find();
+        if (firstNameMatchesPattern) {
             rm.addAttribute(defaultUsername, username);
             rm.addAttribute(defaultFirstName, firstName);
             rm.addAttribute(defaultMiddleName, middleName);
@@ -111,10 +110,8 @@ public class RegisterController {
             return "redirect:register?firstNameError";
         }
 
-        Pattern p2 = Pattern.compile("[^A-Za-z]");
-        Matcher m2 = p2.matcher(lastName);
-        boolean b2 = m2.find();
-        if (b2) {
+        boolean lastNameMatchesPattern = Pattern.compile("[^A-Za-z]").matcher(lastName).find();
+        if (lastNameMatchesPattern) {
             rm.addAttribute(defaultUsername, username);
             rm.addAttribute(defaultFirstName, firstName);
             rm.addAttribute(defaultMiddleName, middleName);
