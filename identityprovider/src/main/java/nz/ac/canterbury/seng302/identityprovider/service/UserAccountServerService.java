@@ -374,4 +374,19 @@ public class UserAccountServerService extends UserAccountServiceGrpc.UserAccount
         return response.build();
     }
 
+    @Override
+    public void addRoleToUser(ModifyRoleOfUserRequest request, StreamObserver<UserRoleChangeResponse> responseObserver) {
+        UserRoleChangeResponse.Builder builder = UserRoleChangeResponse.newBuilder();
+
+        try {
+            UserModel user = userModelService.getUserById(request.getUserId());
+            UserRole role = request.getRole();
+            if (user != null) {
+//                user.addRoles(role);
+            }
+        } catch (Exception e) {
+            System.err.println("Something went wrong");
+        }
+    }
+
 }

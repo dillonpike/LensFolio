@@ -45,4 +45,12 @@ public class UserAccountClientService {
                 .build();
         return userAccountStub.getPaginatedUsers(response);
     }
+
+    public UserRoleChangeResponse addRoleToUser(int userId, UserRole role) {
+        ModifyRoleOfUserRequest response = ModifyRoleOfUserRequest.newBuilder()
+                .setUserId(userId)
+                .setRole(role)
+                .build();
+        return userAccountStub.addRoleToUser(response);
+    }
 }
