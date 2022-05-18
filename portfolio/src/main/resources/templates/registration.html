@@ -19,6 +19,12 @@
                         <div id="usernameTaken" th:if="${param.registerError}" class="alert alert-danger">
                             Invalid registration, username taken
                         </div>
+                        <div id="firstNameInvalid" th:if="${param.firstNameError}" class="alert alert-danger">
+                            First name can not contain numbers or special characters
+                        </div>
+                        <div id="lastNameInvalid" th:if="${param.lastNameError}" class="alert alert-danger">
+                            Last name can not contain numbers or special characters
+                        </div>
                         <div th:if="${param.successfulRegister}" class="alert alert-success">
                             Successful registration, <a id="successful" href="/login" class="alert-link">click here</a> to login
                         </div>
@@ -32,10 +38,10 @@
                             </div>
 
                             <div class="form-floating mb-3">
-                                <input type="text" class="form-control" id="firstName" placeholder="first name" th:name="firstName" th:value="${defaultFirstName}" required>
+                                <input type="text" class="form-control" id="firstName" placeholder="first name" th:name="firstName" th:value="${defaultFirstName}" minlength="2" maxlength="20" pattern="[a-zA-Z].{2,}" required>
                                 <label for="firstName">First name(*)</label>
                                 <div class="invalid-feedback">
-                                    Please enter your first name.
+                                    Please enter your first name. Between 2 and 20 characters. No numbers or special characters.
                                 </div>
                             </div>
                             <div class="form-floating mb-3">
@@ -43,10 +49,10 @@
                                 <label for="middleName">Middle name(Not required)</label>
                             </div>
                             <div class="form-floating mb-3">
-                                <input type="text" class="form-control" id="lastName"  placeholder="last name" th:name="lastName" th:value="${defaultLastName}" required>
+                                <input type="text" class="form-control" id="lastName"  placeholder="last name" th:name="lastName" th:value="${defaultLastName}"  minlength="2" maxlength="20" pattern="[A-Za-z]+.{2,}" required>
                                 <label for="lastName">Last name(*)</label>
                                 <div class="invalid-feedback">
-                                    Please enter your last name.
+                                    Please enter your last name. Between 2 and 20 characters. No numbers or special characters.
                                 </div>
                             </div>
                             <div class="form-floating mb-3">
@@ -57,7 +63,7 @@
                                 </div>
                             </div>
                             <div class="form-floating mb-3">
-                                <input type="password" class="form-control" id="passwordLogin"  placeholder="password" th:name="password" required>
+                                <input type="password" class="form-control" id="passwordLogin"  placeholder="password" th:name="password" minlength="8" required>
                                 <label for="passwordLogin">Password(*)</label>
                                 <div class="invalid-feedback">
                                     Please enter your password. Min length 8 characters.

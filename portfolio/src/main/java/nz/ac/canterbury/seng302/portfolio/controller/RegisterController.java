@@ -1,5 +1,7 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import nz.ac.canterbury.seng302.portfolio.authentication.CookieUtil;
 import nz.ac.canterbury.seng302.portfolio.service.AuthenticateClientService;
 import nz.ac.canterbury.seng302.portfolio.service.RegisterClientService;
@@ -28,6 +30,12 @@ public class RegisterController {
 
     @Autowired
     private AuthenticateClientService authenticateClientService;
+
+    String defaultUsername = "defaultUsername";
+    String defaultFirstName = "defaultFirstName";
+    String defaultMiddleName = "defaultMiddleName";
+    String defaultLastName = "defaultLastName";
+    String defaultEmail = "defaultEmail";
 
     /***
      *  GET method to return registration web page
@@ -84,12 +92,35 @@ public class RegisterController {
         AuthenticateResponse loginReply;
         UserRegisterResponse registrationReply;
         if (!password.equals(confirmPassword)) {
-            rm.addAttribute("defaultUsername", username);
-            rm.addAttribute("defaultFirstName", firstName);
-            rm.addAttribute("defaultMiddleName", middleName);
-            rm.addAttribute("defaultLastName", lastName);
-            rm.addAttribute("defaultEmail", email);
+            rm.addAttribute(defaultUsername, username);
+            rm.addAttribute(defaultFirstName, firstName);
+            rm.addAttribute(defaultMiddleName, middleName);
+            rm.addAttribute(defaultLastName, lastName);
+            rm.addAttribute(defaultEmail, email);
             return "redirect:register?passwordError";
+        }
+        Pattern p = Pattern.compile("[^A-Za-z]");
+        Matcher m = p.matcher(firstName);
+        boolean b = m.find();
+        if (b) {
+            rm.addAttribute(defaultUsername, username);
+            rm.addAttribute(defaultFirstName, firstName);
+            rm.addAttribute(defaultMiddleName, middleName);
+            rm.addAttribute(defaultLastName, lastName);
+            rm.addAttribute(defaultEmail, email);
+            return "redirect:register?firstNameError";
+        }
+
+        Pattern p2 = Pattern.compile("[^A-Za-z]");
+        Matcher m2 = p2.matcher(lastName);
+        boolean b2 = m2.find();
+        if (b2) {
+            rm.addAttribute(defaultUsername, username);
+            rm.addAttribute(defaultFirstName, firstName);
+            rm.addAttribute(defaultMiddleName, middleName);
+            rm.addAttribute(defaultLastName, lastName);
+            rm.addAttribute(defaultEmail, email);
+            return "redirect:register?lastNameError";
         }
         try {
             registrationReply = registerClientService.receiveConformation(username, password, firstName, middleName, lastName, email);
@@ -112,11 +143,11 @@ public class RegisterController {
             return "redirect:account";
         } else {
             model.addAttribute("err", "Something went wrong");
-            rm.addAttribute("defaultUsername", username);
-            rm.addAttribute("defaultFirstName", firstName);
-            rm.addAttribute("defaultMiddleName", middleName);
-            rm.addAttribute("defaultLastName", lastName);
-            rm.addAttribute("defaultEmail", email);
+            rm.addAttribute(defaultUsername, username);
+            rm.addAttribute(defaultFirstName, firstName);
+            rm.addAttribute(defaultMiddleName, middleName);
+            rm.addAttribute(defaultLastName, lastName);
+            rm.addAttribute(defaultEmail, email);
             return "redirect:register?registerError";
         }
     }
