@@ -129,6 +129,9 @@ public class RegisteringStepDefs {
         } else if (Objects.equals(outcome, "Invalid username, please try again")) {
             Boolean outcomeMes = webDriver.findElement(By.id("usernameInvalidMessage")).isDisplayed();
             assertNotNull(outcomeMes);
+        } else if (Objects.equals(outcome, "First name can not contain numbers or special characters")) {
+            Boolean outcomeMes = webDriver.findElement(By.id("firstNameInvalid")).isDisplayed();
+            assertNotNull(outcomeMes);
         }
 
     }
@@ -217,4 +220,14 @@ public class RegisteringStepDefs {
         assertTrue(webDriver.findElement(By.id("lastNameInput")).isDisplayed());
         assertEquals(userId, Integer.parseInt(webDriver.findElement(By.id("userId")).getAttribute("value")));
     }
+
+  @When("I register with a first name {string}")
+  public void iRegisterWithAFirstNameFirstName(String firstName) {
+      webDriver.findElement(By.id("username")).sendKeys("adminTests");
+      webDriver.findElement(By.id("firstName")).sendKeys(firstName);
+      webDriver.findElement(By.id("lastName")).sendKeys("admin");
+      WebElement ele = webDriver.findElement(By.id("signUp"));
+      JavascriptExecutor jse = (JavascriptExecutor)webDriver;
+      jse.executeScript("arguments[0].click()", ele);
+  }
 }

@@ -12,6 +12,17 @@ Feature: UUi Registering and logging into a user account
     When I am on the register page
     Then Mandatory fields are marked
 
+  Scenario Outline: AC1 Part 3 - If I try to register an account with an invalid first name (or last name),
+  the system should not create the account but let me know.
+    Given I am on the register page
+    When I register with a first name <FirstName>
+    Then <Outcome> message occurs
+    Examples:
+      |FirstName  |Outcome                                                    |
+      |"Rach3l"   |"First name can not contain numbers or special characters" |
+      |"d"        |"First name can not contain numbers or special characters" |
+      |"dd."      |"First name can not contain numbers or special characters" |
+
   Scenario Outline: AC2 Part 1 - If I try to log in with a
   username that has not been registered, the system should let me know.
     Given I am on the login page
