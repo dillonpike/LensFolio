@@ -98,15 +98,16 @@ public class ViewUsersController {
     public String updateTable(Model model,
                               @AuthenticationPrincipal AuthState principal,
                               @RequestParam(value = "role") String role,
-                              @RequestParam(value = "username") String username,
                               @RequestParam(value = "userId") int userId
     ) {
 
-        switch (role) {
-            case "student":
-                UserRoleChangeResponse roleChangeResponse = userAccountClientService.addRoleToUser(userId, UserRole.STUDENT);
-                return "redirect:viewUsers";
+        if (role.equals("student")) {
+            UserRoleChangeResponse roleChangeResponse = userAccountClientService.addRoleToUser(userId, UserRole.STUDENT);
+        } else if (role.equals("teacher")) {
+            UserRoleChangeResponse roleChangeResponse = userAccountClientService.addRoleToUser(userId, UserRole.TEACHER);
+        } else {
+            UserRoleChangeResponse roleChangeResponse = userAccountClientService.addRoleToUser(userId, UserRole.COURSE_ADMINISTRATOR);
         }
-        return "viewUsers";
+        return "redirect:viewUsers";
     }
 }
