@@ -392,12 +392,23 @@ public class UserAccountServerService extends UserAccountServiceGrpc.UserAccount
                     user.addRoles(studentRole);
                     userModelService.saveEditedUser(user);
                     reply.setIsSuccess(true);
+                } else if (role.getNumber() == 1) {
+                    Roles studentRole = rolesRepository.findByRoleName("TEACHER");
+                    user.addRoles(studentRole);
+                    userModelService.saveEditedUser(user);
+                    reply.setIsSuccess(true);
+                } else if (role.getNumber() == 2) {
+                    Roles studentRole = rolesRepository.findByRoleName("COURSE ADMINISTRATOR");
+                    user.addRoles(studentRole);
+                    userModelService.saveEditedUser(user);
+                    reply.setIsSuccess(true);
                 }
             }
         } catch (Exception e) {
             System.err.println("Something went wrong");
         }
-
+        responseObserver.onNext(reply.build());
+        responseObserver.onCompleted();
     }
 
     @Override
