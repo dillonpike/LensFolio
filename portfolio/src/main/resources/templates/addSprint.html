@@ -26,7 +26,7 @@
             <div class="horizontal-group-element" >
                 <label for="sprintStartDate">Sprint Start Date</label> <br/>
                 <div class="input-group date" id="sprintStart">
-                    <input type="text" class="form-control" id="sprintStartDate" th:name="sprintStartDate" th:field="*{startDateString}">
+                    <input onkeydown="return checkDateKeys(event)" type="text" class="form-control" id="sprintStartDate" th:name="sprintStartDate" th:field="*{startDateString}">
                     <span class="input-group-append">
                             <span class="input-group-text bg-white">
                                 <i class="bi bi-calendar"></i>
@@ -38,7 +38,7 @@
             <div class="horizontal-group-element" >
                 <label for="sprintEndDate">Sprint End Date</label> <br/>
                 <div class="input-group date" id="sprintEnd">
-                    <input type="text" class="form-control" id="sprintEndDate" th:name="sprintEndDate" th:field="*{endDateString}">
+                    <input onkeydown="return checkDateKeys(event)"type="text" class="form-control" id="sprintEndDate" th:name="sprintEndDate" th:field="*{endDateString}">
                     <span class="input-group-append">
                             <span class="input-group-text bg-white">
                                 <i class="bi bi-calendar"></i>
@@ -58,6 +58,7 @@
     </form>
 </div>
 </body>
+<script src="../js/project.js"></script>
 <script>
     /**
      * Checks the entered sprint dates in the input fields and displays an error message if there's a related error.
