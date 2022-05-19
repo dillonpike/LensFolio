@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import nz.ac.canterbury.seng302.portfolio.model.Project;
 import nz.ac.canterbury.seng302.portfolio.model.Sprint;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -20,6 +22,8 @@ public class DateValidationService {
 
     @Autowired
     private ProjectService projectService;
+
+    private static final Logger logger = LoggerFactory.getLogger(DateValidationService.class);
 
     /**
      * Returns an error message if a given date is empty or null, otherwise returns a blank message.
@@ -99,7 +103,7 @@ public class DateValidationService {
             try {
                 project = projectService.getProjectById(0);
             } catch (Exception e) {
-                System.err.println("No project exists");
+                logger.debug("Project doesn't exist during date validation");
                 return message;
             }
             // Get date from the string to ignore time
