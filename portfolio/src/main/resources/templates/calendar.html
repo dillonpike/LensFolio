@@ -39,6 +39,7 @@
                     } else {
                         event.setProp("borderColor", "red");
                     }
+                    event.setAllDay(true);
                 },
                 eventMouseEnter: function(info) {
                     // change the border color just for fun
@@ -53,6 +54,15 @@
                     if (event.borderColor !== 'red') {
                         event.setProp("borderColor", event.backgroundColor);
                     }
+                },
+                eventOverlap: function(stillEvent, movingEvent) {
+                    return false;
+                },
+                eventResizableFromStart: function(info) {
+                    return true;
+                },
+                eventResize: function(info) {
+                    let sprint = calendar.getEventById(info.event.id);
                 }
             });
             calendar.render();
