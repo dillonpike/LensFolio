@@ -72,7 +72,7 @@
         $.post("add-sprint/error?" + new URLSearchParams(data)).done(function (fragment) {
             console.log(fragment);
             $("#sprintDateError").replaceWith(fragment);
-            document.getElementById("saveButton").disabled = document.getElementById("sprintDateError").textContent.length > 2;
+            document.getElementById("saveButton").disabled = document.getElementById("sprintDateError").textContent.trim().length > 0;
         });
     }
 
