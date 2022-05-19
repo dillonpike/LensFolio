@@ -112,9 +112,15 @@ public class ViewUsersController {
         return "redirect:viewUsers";
     }
 
+    /***
+     * POST method request handler when the url is "/delete_role"
+     * It checks what role that need to be deleted from a user(indicated by the user id) and call delete role service
+     * @param role a String object indicating the user role that will be deleted
+     * @param userId an Integer indicating the user id of a user that a role will be deleted from
+     * @return viewUsers html page. If delete role failed create error Message model which contains the error message
+     */
     @RequestMapping(value="/delete_role", method=RequestMethod.POST)
     public String deleteRole(Model model,
-                              @AuthenticationPrincipal AuthState principal,
                               @RequestParam(value = "deletedRole") String role,
                               @RequestParam(value = "userId") int userId
     ) {
@@ -126,7 +132,12 @@ public class ViewUsersController {
         } else {
             roleChangeResponse = userAccountClientService.deleteRoleFromUser(userId, UserRole.COURSE_ADMINISTRATOR);
         }
-        System.out.println("reach here");
-        return "redirect:viewUsers";
+        if(roleChangeResponse.getIsSuccess()){
+            return "redirect:viewUsers";
+        } else {
+            model.addAttribute("errorMessage", "Error deleting user");
+            return "redirect:error";
+        }
+
     }
 }

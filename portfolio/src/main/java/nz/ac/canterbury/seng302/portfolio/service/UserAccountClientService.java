@@ -54,6 +54,12 @@ public class UserAccountClientService {
         return userAccountStub.addRoleToUser(response);
     }
 
+    /**
+     * Call removeRoleFromUser function in the IDP to delete the role from a user
+     * @param role a UserRole object indicating the user role that will be deleted
+     * @param userId an Integer indicating the user id of a user that a role will be deleted from
+     * @return UserRoleChangeResponse which contains information whether deleting a role from user was done successfully in the idp
+     */
     public UserRoleChangeResponse deleteRoleFromUser(int userId, UserRole role) {
         ModifyRoleOfUserRequest request = ModifyRoleOfUserRequest.newBuilder()
                 .setUserId(userId)
