@@ -27,7 +27,7 @@
             <div class="horizontal-group-element" >
                 <label for="eventStartDate">Event Start Date</label> <br/>
                 <div class="input-group date" id="eventStart">
-                    <input type="text" class="form-control" th:field="*{eventStartDate}" id="eventStartDate">
+                    <input type="text" class="form-control" th:field="*{startDateString}" id="eventStartDate">
                     <span class="input-group-append">
                             <span class="input-group-text bg-white">
                                 <i class="bi bi-calendar"></i>
@@ -38,7 +38,7 @@
             <div class="horizontal-group-element" >
                 <label for="eventEndDate">Event End Date</label> <br/>
                 <div class="input-group date" id="eventEnd">
-                    <input type="text" class="form-control" th:field="*{eventEndDate}" id="eventEndDate">
+                    <input type="text" class="form-control" th:field="*{endDateString}" id="eventEndDate">
                     <span class="input-group-append">
                             <span class="input-group-text bg-white">
                                 <i class="bi bi-calendar"></i>
@@ -58,4 +58,17 @@
 </div>
 
 </body>
+
+<script type="text/javascript">
+    // fills in the date pickers
+    $(function() {
+        $('#eventStart').datepicker({format: 'dd/M/yyyy'});
+    });
+</script>
+<script type="text/javascript">
+    $(function() {
+        $('#eventEnd').datepicker({format: 'dd/M/yyyy'});
+    });
+</script>
+
 </html>

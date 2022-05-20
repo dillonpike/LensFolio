@@ -81,11 +81,11 @@ public class Event {
     }
 
     public String getStartDateString() {
-        return Project.dateToString(this.eventEndDate);
+        return Project.dateToString(this.eventStartDate);
     }
 
     public void setEndDateString(String date) {
-        this.eventStartDate = Project.stringToDate(date);
+        this.eventEndDate = Project.stringToDate(date);
     }
 
     public String getEndDateString() {

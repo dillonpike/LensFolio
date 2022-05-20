@@ -1,5 +1,6 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
+import com.google.type.DateTime;
 import nz.ac.canterbury.seng302.portfolio.model.Event;
 import nz.ac.canterbury.seng302.portfolio.model.Project;
 import nz.ac.canterbury.seng302.portfolio.service.DateValidationService;
@@ -63,6 +64,19 @@ public class EventLifetimeController {
         event.setEndDateString(event.getEndDateString());
         eventService.addEvent(event);
         return "redirect:/details";
+    }
+
+    private boolean validateDatesInsideProject(Date startDate, Date endDate) throws Exception {
+        boolean checker = true;
+
+        Project project = projectService.getProjectById(0);
+
+        if (startDate.before(project.getStartDate())) {
+            checker = false;
+        } else if (endDate.after(project.getEndDate())) {
+            checker = false;
+        }
+        return checker;
     }
 
 }
