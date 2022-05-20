@@ -15,6 +15,7 @@
         document.addEventListener('DOMContentLoaded', function() {
 
             let calendarEl = document.getElementById('calendar');
+            let selectedId = -1;
             let calendar = new FullCalendar.Calendar(calendarEl, {
                 editable: true,
                 themeSystem: 'bootstrap5',
@@ -33,13 +34,23 @@
                 ],
                 eventClick: function(info) {
                     // change the border color just for fun
-                    let event = calendar.getEventById(info.event.id);
-                    if (event.borderColor === 'red') {
-                        event.setProp("borderColor", event.backgroundColor);
+                    let newEvent = calendar.getEventById(info.event.id);
+                    // let newEventId = calendar.getEventById(info.event.id);
+                    let selectedEvent = calendar.getEventById(selectedId);
+                    // console.log(newEvent.id === selectedEvent.id);
+                    if (selectedId === -1) {
+                        newEvent.setProp("borderColor", "red");
+                        selectedId = info.event.id;
                     } else {
-                        event.setProp("borderColor", "red");
+                        if (newEvent.id === selectedEvent.id) {
+                            newEvent.setProp("borderColor", newEvent.backgroundColor);
+                            selectedId = -1;
+                        } else {
+                            selectedEvent.setProp("borderColor", selectedEvent.backgroundColor)
+                            newEvent.setProp("borderColor", "red");
+                            selectedId = info.event.id;
+                        }
                     }
-                    event.setAllDay(true);
                 },
                 eventMouseEnter: function(info) {
                     // change the border color just for fun
