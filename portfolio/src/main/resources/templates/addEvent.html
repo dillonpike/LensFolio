@@ -19,7 +19,7 @@
 
 
 <div class="content">
-    <form method="post" th:action="@{add-event}" th:object="${event}">
+    <form method="post" onsubmit="return validateName();" th:action="@{add-event}" th:object="${event}">
         <label for="eventName">Event Name</label> <br/>
         <input id="eventName" type="text" th:name="eventName" th:field="*{eventName}">
         <br/>
@@ -27,7 +27,7 @@
             <div class="horizontal-group-element" >
                 <label for="eventStartDate">Event Start Date</label> <br/>
                 <div class="input-group date" id="eventStart">
-                    <input type="text" class="form-control" th:field="*{startDateString}" id="eventStartDate">
+                    <input onkeydown="return checkDateKeys(event)" type="text" class="form-control" th:field="*{startDateString}" id="eventStartDate">
                     <span class="input-group-append">
                             <span class="input-group-text bg-white">
                                 <i class="bi bi-calendar"></i>
@@ -38,7 +38,7 @@
             <div class="horizontal-group-element" >
                 <label for="eventEndDate">Event End Date</label> <br/>
                 <div class="input-group date" id="eventEnd">
-                    <input type="text" class="form-control" th:field="*{endDateString}" id="eventEndDate">
+                    <input onkeydown="return checkDateKeys(event)" type="text" class="form-control" th:field="*{endDateString}" id="eventEndDate">
                     <span class="input-group-append">
                             <span class="input-group-text bg-white">
                                 <i class="bi bi-calendar"></i>
@@ -47,8 +47,9 @@
                 </div>
             </div>
         </div>
-        <span id="eventDateError" style="color:red"></span>
-
+        <span id="eventDateError" style="color:red" th:text="${eventDateError}"></span>
+        <br>
+        <span id="eventNameError" style="color:red" th:hidden = "true">Invalid event name. Must be between 1 and 50 characters</span>
         <!-- add event times to the date picker -->
 
         <br/>
@@ -58,6 +59,48 @@
 </div>
 
 </body>
+<script src="../js/project.js"></script>
+<script>
+    /**
+     * Checks the entered event dates in the input fields and displays an error message if there's a related error.
+     * Disables the save button if there is an error.
+     */
+    function updateEventDateError() {
+        document.getElementById("saveButton").disabled = false;
+        const data = {
+            eventStartDate: document.getElementById("eventStartDate").value,
+            eventEndDate: document.getElementById("eventEndDate").value
+        }
+        $.post("add-event/error?" + new URLSearchParams(data)).done(function (fragment) {
+            console.log(fragment);
+            $("#eventDateError").replaceWith(fragment);
+            document.getElementById("saveButton").disabled = document.getElementById("eventDateError").textContent.trim().length > 0;
+        });
+    }
+
+
+
+    // Runs updateEventDateError function whenever the entered dates change
+    document.getElementById("eventStartDate").onchange = updateEventDateError;
+    document.getElementById("eventEndDate").onchange = updateEventDateError;
+
+    // Initial run of updateEventDateError function in case initial values are invalid
+    updateEventDateError();
+</script>
+
+
+<script>
+    // Checks whether the name is too long or null
+    function validateName() {
+        document.getElementById("eventNameError").hidden = true;
+        if (document.getElementById('eventName').value.length === 0 || document.getElementById('eventName').value.length > 50 ) {
+            document.getElementById("eventNameError").hidden = false;
+            return false
+        }
+        return true
+    }
+    document.getElementById("eventName").onchange = validateName;
+</script>
 
 <script type="text/javascript">
     // fills in the date pickers

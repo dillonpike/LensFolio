@@ -1,24 +1,14 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
-import com.google.type.DateTime;
 import nz.ac.canterbury.seng302.portfolio.model.Event;
-import nz.ac.canterbury.seng302.portfolio.model.Project;
 import nz.ac.canterbury.seng302.portfolio.service.DateValidationService;
 import nz.ac.canterbury.seng302.portfolio.service.EventService;
 import nz.ac.canterbury.seng302.portfolio.service.ProjectService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.*;
 
-import java.time.Instant;
-import java.time.LocalDate;
-import java.util.Date;
-import java.util.List;
-
-import static nz.ac.canterbury.seng302.portfolio.controller.SprintLifetimeController.getUpdatedDate;
 
 /**
  * Controller for the add event page
@@ -59,24 +49,23 @@ public class EventLifetimeController {
     public String projectSave(
             @ModelAttribute("event") Event event,
             Model model
-    ) {
+    ) throws Exception {
         event.setStartDateString(event.getStartDateString());
         event.setEndDateString(event.getEndDateString());
         eventService.addEvent(event);
         return "redirect:/details";
     }
 
-    private boolean validateDatesInsideProject(Date startDate, Date endDate) throws Exception {
-        boolean checker = true;
-
-        Project project = projectService.getProjectById(0);
-
-        if (startDate.before(project.getStartDate())) {
-            checker = false;
-        } else if (endDate.after(project.getEndDate())) {
-            checker = false;
-        }
-        return checker;
+    @RequestMapping(value="/add-event/error", method= RequestMethod.POST)
+    public String updateEventRangeErrors(@RequestParam(value="eventStartDate") String eventStartDate,
+                                          @RequestParam(value="eventEndDate") String eventEndDate,
+                                          Model model) {
+        model.addAttribute("eventDateError",
+                dateValidationService.validateDateRangeNotEmpty(eventStartDate, eventEndDate) + " " +
+                        dateValidationService.validateStartDateNotAfterEndDate(eventStartDate, eventEndDate) + " " +
+                        dateValidationService.validateSprintInProjectDateRange(eventStartDate, eventEndDate));
+        System.out.println("JERE");
+        return "addEvent :: #eventDateError";
     }
 
 }
