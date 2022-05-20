@@ -1,6 +1,7 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
 import nz.ac.canterbury.seng302.portfolio.model.Event;
+import nz.ac.canterbury.seng302.portfolio.model.Project;
 import nz.ac.canterbury.seng302.portfolio.service.DateValidationService;
 import nz.ac.canterbury.seng302.portfolio.service.EventService;
 import nz.ac.canterbury.seng302.portfolio.service.ProjectService;
@@ -10,6 +11,13 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+
+import java.time.Instant;
+import java.time.LocalDate;
+import java.util.Date;
+import java.util.List;
+
+import static nz.ac.canterbury.seng302.portfolio.controller.SprintLifetimeController.getUpdatedDate;
 
 /**
  * Controller for the add event page
@@ -30,8 +38,13 @@ public class EventLifetimeController {
      * Navigates to the add event page and saves new event
      * @param model For adding the event and error handling
      */
-    @GetMapping("add-event")
+    @GetMapping("/add-event")
     public String eventAddForm(Model model) throws Exception {
+
+        Event blankEvent = new Event();
+
+        model.addAttribute("event", blankEvent);
+        model.addAttribute("eventDateError", "");
 
         return "addEvent";
 

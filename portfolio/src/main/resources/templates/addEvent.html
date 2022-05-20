@@ -19,15 +19,15 @@
 
 
 <div class="content">
-    <form method="post">
+    <form method="post" th:action="@{add-event}" th:object="${event}">
         <label for="eventName">Event Name</label> <br/>
-        <input id="eventName" type="text">
+        <input id="eventName" type="text" th:name="eventName" th:field="*{eventName}">
         <br/>
         <div class="horizontal-group">
             <div class="horizontal-group-element" >
                 <label for="eventStartDate">Event Start Date</label> <br/>
                 <div class="input-group date" id="eventStart">
-                    <input type="text" class="form-control" id="eventStartDate">
+                    <input type="text" class="form-control" th:field="*{eventStartDate}" id="eventStartDate">
                     <span class="input-group-append">
                             <span class="input-group-text bg-white">
                                 <i class="bi bi-calendar"></i>
@@ -38,7 +38,7 @@
             <div class="horizontal-group-element" >
                 <label for="eventEndDate">Event End Date</label> <br/>
                 <div class="input-group date" id="eventEnd">
-                    <input type="text" class="form-control" id="eventEndDate">
+                    <input type="text" class="form-control" th:field="*{eventEndDate}" id="eventEndDate">
                     <span class="input-group-append">
                             <span class="input-group-text bg-white">
                                 <i class="bi bi-calendar"></i>

@@ -2,6 +2,7 @@ package nz.ac.canterbury.seng302.portfolio.service;
 
 
 import nz.ac.canterbury.seng302.portfolio.model.Event;
+import nz.ac.canterbury.seng302.portfolio.model.Sprint;
 import nz.ac.canterbury.seng302.portfolio.repository.EventRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -86,5 +87,13 @@ public class EventService {
             Event eventUpdate = sOptional.get();
             repository.deleteById(eventUpdate.getId());
         }
+    }
+
+    /**
+     * Get list of all events
+     * @return List of events
+     */
+    public List<Event> getAllEventsOrdered() {
+        return repository.findAllByOrderByEventStartDate();
     }
 }

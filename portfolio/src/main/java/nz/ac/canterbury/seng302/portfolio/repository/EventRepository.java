@@ -12,4 +12,6 @@ public interface EventRepository extends CrudRepository<Event, Integer> {
     Event findById(int id);
     List<Event> findByParentProjectId(int parentProjectId);
     void deleteById(int id);
+
+    List<Event> findAllByOrderByEventStartDate();
 }
