@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 public class UserAccountClientService {
 
     @GrpcClient(value = "identity-provider-grpc-server")
-    private UserAccountServiceGrpc.UserAccountServiceBlockingStub userAccountStub;
+    UserAccountServiceGrpc.UserAccountServiceBlockingStub userAccountStub;
 
     /**
      * Returns the user id from the given AuthState.
