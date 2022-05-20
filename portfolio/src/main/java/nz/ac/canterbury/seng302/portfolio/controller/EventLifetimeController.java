@@ -64,7 +64,6 @@ public class EventLifetimeController {
                 dateValidationService.validateDateRangeNotEmpty(eventStartDate, eventEndDate) + " " +
                         dateValidationService.validateStartDateNotAfterEndDate(eventStartDate, eventEndDate) + " " +
                         dateValidationService.validateSprintInProjectDateRange(eventStartDate, eventEndDate));
-        System.out.println("JERE");
         return "addEvent :: #eventDateError";
     }
 
