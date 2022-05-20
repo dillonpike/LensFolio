@@ -52,7 +52,7 @@ public class UserAccountServerService extends UserAccountServiceGrpc.UserAccount
         try {
             // Any empty fields are because you can't add those fields when you create an account initially.
             if (uniqueUser != null) {
-                responseObserver.onNext(reply.setIsSuccess(false).build());
+                responseObserver.onNext(reply.setIsSuccess(false).setMessage("Username taken").build());
                 responseObserver.onCompleted();
                 return;
             }
@@ -73,9 +73,9 @@ public class UserAccountServerService extends UserAccountServiceGrpc.UserAccount
             System.err.println("Failed to create and add new user to database");
         }
         if (wasAdded) {
-            responseObserver.onNext(reply.setNewUserId(createdUser.getUserId()).setIsSuccess(true).build());
+            responseObserver.onNext(reply.setNewUserId(createdUser.getUserId()).setMessage("Successful").setIsSuccess(true).build());
         } else {
-            responseObserver.onNext(reply.setIsSuccess(false).build());
+            responseObserver.onNext(reply.setIsSuccess(false).setMessage("Unsuccessful").build());
         }
         responseObserver.onCompleted();
     }

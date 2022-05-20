@@ -17,6 +17,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 import java.util.List;
 
+import static nz.ac.canterbury.seng302.portfolio.DateTestHelper.addToDateString;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -137,21 +138,6 @@ public class ProjectDetailsStepDefs {
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//span[contains(., 'Project Description')]")));
     }
 
-    /**
-     * Adds dateString to a calendar and adds the given amount of time from the given calendar field.
-     * Returns the updated date as a string.
-     * @param dateString string of the date to be added to
-     * @param field the calendar field
-     * @param amount amount of date or time to be added to the field
-     * @return updated date as a string
-     */
-    private String addToDateString(String dateString, int field, int amount) {
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(Project.stringToDate(dateString));
-        calendar.add(field, amount);
-        return Project.dateToString(calendar.getTime());
-    }
-
     @Then("The start date should be {int} day after the end date of the previous sprint")
     public void theStartDateShouldBeOneDayAfterTheEndDateOfThePreviousSprint(int numDays) {
         String sprintStartDate = webDriver.findElement(By.id("sprintStartDate")).getAttribute("value");
@@ -207,7 +193,7 @@ public class ProjectDetailsStepDefs {
 
 
     @And("I browse to edit project page")
-    public void iBrowseToEditProjectPage() throws InterruptedException {
+    public void iBrowseToEditProjectPage() {
         webDriver.findElement(By.id("editProjectButton")).click();
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[contains(., 'Edit Project')]")));
     }
@@ -225,7 +211,7 @@ public class ProjectDetailsStepDefs {
     }
 
     @Then("I should not be able to save the edit")
-    public void iShouldNotBeAbleToSaveTheEdit() throws InterruptedException {
+    public void iShouldNotBeAbleToSaveTheEdit() {
         assertFalse(webDriver.findElement(By.id("saveButton")).isEnabled());
     }
 
