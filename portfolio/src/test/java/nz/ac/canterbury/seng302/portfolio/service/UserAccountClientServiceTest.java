@@ -48,7 +48,7 @@ class UserAccountClientServiceTest {
      * Expect that removeRoleFromUSer() method to be called
      */
     @Test
-    void callDeleteRoleFromUSerMethod_expectRoleFromUserMethodTobeCalled() {
+    void callDeleteRoleFromUserMethod_expectRoleFromUserMethodTobeCalled() {
         UserRoleChangeResponse response = UserRoleChangeResponse.newBuilder().setIsSuccess(true).build();
         ModifyRoleOfUserRequest req = ModifyRoleOfUserRequest.newBuilder().setUserId(1).setRole(UserRole.STUDENT).build();
         when(userAccountServiceBlockingStub.removeRoleFromUser(req)).thenReturn(response);
