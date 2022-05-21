@@ -95,9 +95,14 @@ public class ViewUsersController {
         return "viewUsers";
     }
 
+    /***
+     * Post method request handler for adding user role
+     * @param role The role object indicating the added role(request)
+     * @param userId The current user id of the edited user
+     * @return list of users page(html)
+     */
     @RequestMapping(value="/add_role", method=RequestMethod.POST)
-    public String updateTable(Model model,
-                              @AuthenticationPrincipal AuthState principal,
+    public String addRole(
                               @RequestParam(value = "role") String role,
                               @RequestParam(value = "userId") int userId
     ) {

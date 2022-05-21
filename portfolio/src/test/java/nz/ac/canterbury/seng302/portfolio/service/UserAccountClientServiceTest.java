@@ -56,4 +56,18 @@ class UserAccountClientServiceTest {
         Assertions.assertEquals(true, actual.getIsSuccess());
         Mockito.verify(userAccountServiceBlockingStub).removeRoleFromUser(req);
     }
+
+    /***
+     * Test to check the addRoleToUser method in User account client service
+     * Expect addRoleToUser method is called
+     */
+    @Test
+    void callAddRoleFromUserMethod_expectRoleFromUserMethodTobeCalled() {
+        UserRoleChangeResponse response = UserRoleChangeResponse.newBuilder().setIsSuccess(true).build();
+        ModifyRoleOfUserRequest req = ModifyRoleOfUserRequest.newBuilder().setUserId(1).setRole(UserRole.STUDENT).build();
+        when(userAccountServiceBlockingStub.addRoleToUser(req)).thenReturn(response);
+        UserRoleChangeResponse actual = userAccountClientService.addRoleToUser(1,UserRole.STUDENT);
+        Assertions.assertEquals(true, actual.getIsSuccess());
+        Mockito.verify(userAccountServiceBlockingStub).addRoleToUser(req);
+    }
 }

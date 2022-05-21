@@ -188,4 +188,24 @@ public class ViewUsersControllerTest {
                 .andExpect(redirectedUrl("viewUsers"));
     }
 
+    /***
+     * Junit test to check if current user log in as a course administrator and request add role request to other user
+     */
+    @Test
+    void callAddRoleRequest_whenLoggedInAsCourseAdministrator_returnViewUserTemplate() throws Exception {
+        SecurityContext mockedSecurityContext = Mockito.mock(SecurityContext.class);
+        when(mockedSecurityContext.getAuthentication()).thenReturn(new PreAuthenticatedAuthenticationToken(validAuthState, ""));
+
+        SecurityContextHolder.setContext(mockedSecurityContext);
+
+        UserRoleChangeResponse response = UserRoleChangeResponse.newBuilder()
+                .setIsSuccess(true)
+                .build();
+
+        when(userAccountClientService.deleteRoleFromUser(any(Integer.class),any(UserRole.class))).thenReturn(response);
+        mockMvc.perform(post("/add_role").param("userId","1").param("role","STUDENT"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("viewUsers"));
+    }
+
 }
