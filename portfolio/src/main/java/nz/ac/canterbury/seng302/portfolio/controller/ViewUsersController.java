@@ -2,7 +2,6 @@ package nz.ac.canterbury.seng302.portfolio.controller;
 
 import nz.ac.canterbury.seng302.portfolio.model.Group;
 import nz.ac.canterbury.seng302.portfolio.model.UserSorting;
-import nz.ac.canterbury.seng302.portfolio.model.UserToGroup;
 import nz.ac.canterbury.seng302.portfolio.service.ElementService;;
 import nz.ac.canterbury.seng302.portfolio.service.GroupService;
 import nz.ac.canterbury.seng302.portfolio.service.UserAccountClientService;
@@ -54,9 +53,10 @@ public class ViewUsersController {
     ) {
         try {
             Group group = groupService.getGroupById(1);
+            groupService.addMember(2, group);
             System.out.println(group.getGroupId());
             System.out.println(group.getShortName());
-            for (Integer id: group.getMemberIds()) {
+            for (int id: group.getMemberIds()) {
                 System.out.println(id);
             }
         } catch (Exception e) {

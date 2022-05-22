@@ -1,26 +1,24 @@
 package nz.ac.canterbury.seng302.portfolio.model;
 
 import javax.persistence.*;
-import java.io.Serializable;
 
 @Entity
-@IdClass(UserToGroupId.class)
 public class UserToGroup {
 
-    @Id
-    private int userId;
-
-    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
-    @JoinColumn(name = "Group_Id")
-    private Group group;
+    @EmbeddedId
+    private UserToGroupId id;
 
     public UserToGroup() {}
 
-    public int getUserId() {
-        return userId;
+    public UserToGroup(int userId, int groupId) {
+        this.id = new UserToGroupId(userId, groupId);
     }
 
-    public void setUserId(int userId) {
-        this.userId = userId;
+    public UserToGroupId getId() {
+        return id;
+    }
+
+    public void setId(UserToGroupId id) {
+        this.id = id;
     }
 }

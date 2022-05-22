@@ -4,7 +4,9 @@ import nz.ac.canterbury.seng302.portfolio.model.UserToGroup;
 import nz.ac.canterbury.seng302.portfolio.model.UserToGroupId;
 import org.springframework.data.repository.CrudRepository;
 
-public interface UserToGroupRepository extends CrudRepository<UserToGroup, Integer> {
-    UserToGroup findById(int id);
-    void deleteById(int id);
+import java.util.Optional;
+
+public interface UserToGroupRepository extends CrudRepository<UserToGroup, UserToGroupId> {
+    Optional<UserToGroup> findById(UserToGroupId id);
+    void deleteById(UserToGroupId id);
 }

@@ -27,7 +27,7 @@ public class Group {
 
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
     @JoinColumn(name = "Group_Id")
-    private Set<UserToGroup> memberIds = new HashSet<>();
+    private Set<UserToGroup> members = new HashSet<>();
 
     public Group() {}
 
@@ -71,10 +71,10 @@ public class Group {
     }
 
     public Set<Integer> getMemberIds() {
-        return memberIds.stream().map(UserToGroup::getUserId).collect(Collectors.toSet());
+        return members.stream().map(x -> x.getId().getUserId()).collect(Collectors.toSet());
     }
 
-    public void setMemberIds(Set<UserToGroup> memberIds) {
-        this.memberIds = memberIds;
+    public void setMembers(Set<UserToGroup> members) {
+        this.members = members;
     }
 }
