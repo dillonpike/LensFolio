@@ -1,7 +1,10 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
+import nz.ac.canterbury.seng302.portfolio.model.Group;
 import nz.ac.canterbury.seng302.portfolio.model.UserSorting;
+import nz.ac.canterbury.seng302.portfolio.model.UserToGroup;
 import nz.ac.canterbury.seng302.portfolio.service.ElementService;;
+import nz.ac.canterbury.seng302.portfolio.service.GroupService;
 import nz.ac.canterbury.seng302.portfolio.service.UserAccountClientService;
 import nz.ac.canterbury.seng302.portfolio.service.UserSortingService;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
@@ -33,6 +36,9 @@ public class ViewUsersController {
     @Autowired
     private UserSortingService userSortingService;
 
+    @Autowired
+    private GroupService groupService;
+
     private List<UserResponse> userResponseList;
 
     /***
@@ -46,6 +52,16 @@ public class ViewUsersController {
             Model model,
             @AuthenticationPrincipal AuthState principal
     ) {
+        try {
+            Group group = groupService.getGroupById(1);
+            System.out.println(group.getGroupId());
+            System.out.println(group.getShortName());
+            for (Integer id: group.getMemberIds()) {
+                System.out.println(id);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         Integer id = userAccountClientService.getUserIDFromAuthState(principal);
         elementService.addHeaderAttributes(model, id);
         model.addAttribute("userId", id);
