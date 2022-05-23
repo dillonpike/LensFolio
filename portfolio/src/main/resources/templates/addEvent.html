@@ -47,11 +47,6 @@
                 </div>
             </div>
         </div>
-        <span id="eventDateError" style="color:red" th:text="${eventDateError}"></span>
-        <br>
-        <span id="eventNameError" style="color:red" th:hidden = "true">Invalid event name. Must be between 1 and 50 characters</span>
-        <!-- add event times to the date picker -->
-
         <div class="horizontal-group">
             <div class="horizontal-group-element" >
                 <label for="eventStartTime">Event Start Time</label> <br/>
@@ -62,11 +57,13 @@
             <div class="horizontal-group-element" >
                 <label for="eventEndTime">Event End Time</label> <br/>
                 <div class="input-group date" id="eventTimeEnd">
-                    <input type="time" class="form-control" th:field="*{endTimeString}" id="eventEndtime">
+                    <input type="time" class="form-control" th:field="*{endTimeString}" id="eventEndTime">
                 </div>
             </div>
         </div>
-
+        <span id="eventDateError" style="color:red" th:text="${eventDateError}"></span>
+        <br>
+        <span id="eventNameError" style="color:red" th:hidden = "true">Invalid event name. Must be between 1 and 50 characters</span>
         <br/>
         <a th:href="@{details}"><button class="cancel" type="button">Cancel</button></a>
         <button id="saveButton" class="save" type="submit">Save</button>
@@ -83,7 +80,9 @@
         document.getElementById("saveButton").disabled = false;
         const data = {
             eventStartDate: document.getElementById("eventStartDate").value,
-            eventEndDate: document.getElementById("eventEndDate").value
+            eventEndDate: document.getElementById("eventEndDate").value,
+            eventStartTime: document.getElementById("eventStartTime").value,
+            eventEndTime: document.getElementById("eventEndTime").value
         }
         $.post("add-event/error?" + new URLSearchParams(data)).done(function (fragment) {
             console.log(fragment);
@@ -97,6 +96,8 @@
     // Runs updateEventDateError function whenever the entered dates change
     document.getElementById("eventStartDate").onchange = updateEventDateError;
     document.getElementById("eventEndDate").onchange = updateEventDateError;
+    document.getElementById("eventStartTime").onchange = updateEventDateError;
+    document.getElementById("eventEndTime").onchange = updateEventDateError;
 
     // Initial run of updateEventDateError function in case initial values are invalid
     updateEventDateError();

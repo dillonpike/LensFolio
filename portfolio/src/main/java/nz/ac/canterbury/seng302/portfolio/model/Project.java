@@ -89,19 +89,18 @@ public class Project {
     }
 
     /**
-     * Gets the string form of the given date in
-     *
+     * Gets the string form of the given time
      * @param time the date to convert
      * @return the given date, as a string in format 01/Jan/2000
      */
     public static String timeToString(LocalTime time) {
-        // Returns date in format unless its null which it then makes a new Date object.
+        // Returns time in format unless its null which it then makes a new Date object.
         String newTime = null;
         try {
             DateTimeFormatter myFormatObj = DateTimeFormatter.ofPattern("HH:mm:ss");
             newTime = time.format(myFormatObj);
         } catch (Exception e) {
-            System.err.println("Error parsing date: " + e.getMessage());
+            System.err.println("Error parsing time to string: " + e.getMessage());
         }
         return newTime;
 

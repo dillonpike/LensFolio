@@ -61,11 +61,14 @@ public class EventLifetimeController {
     @RequestMapping(value="/add-event/error", method= RequestMethod.POST)
     public String updateEventRangeErrors(@RequestParam(value="eventStartDate") String eventStartDate,
                                           @RequestParam(value="eventEndDate") String eventEndDate,
+                                          @RequestParam(value="eventStartTime") String eventStartTime,
+                                         @RequestParam(value="eventEndTime") String eventEndTime,
                                           Model model) {
         model.addAttribute("eventDateError",
                 dateValidationService.validateDateRangeNotEmpty(eventStartDate, eventEndDate) + " " +
                         dateValidationService.validateStartDateNotAfterEndDate(eventStartDate, eventEndDate) + " " +
-                        dateValidationService.validateSprintInProjectDateRange(eventStartDate, eventEndDate));
+                        dateValidationService.validateSprintInProjectDateRange(eventStartDate, eventEndDate) + " " +
+                        dateValidationService.validateStartTimeNotAfterEndTime(eventStartTime, eventEndTime));
         return "addEvent :: #eventDateError";
     }
 
