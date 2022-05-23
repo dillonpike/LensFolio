@@ -36,6 +36,9 @@
                 events: [
                     /*[(${sprints})]*/ null
                 ],
+                eventDidMount: function(info) {
+                    info.event.setProp("classNames", "event-border");
+                },
                 eventClick: function(info) {
                     // change the border color just for fun
                     let newEvent = calendar.getEventById(info.event.id);
