@@ -1,5 +1,6 @@
 package nz.ac.canterbury.seng302.portfolio.model;
 
+import java.time.LocalTime;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -16,22 +17,26 @@ public class Event {
     private String eventName;
     private Date eventStartDate;
     private Date eventEndDate;
+    private LocalTime eventStartTime;
+    private LocalTime eventEndTime;
 
     public Event() {}
 
-    public Event(int id, int parentProjectId, String eventName, Date eventStartDate, Date eventEndDate) {
+    public Event(int id, int parentProjectId, String eventName, Date eventStartDate, Date eventEndDate, LocalTime startTime, LocalTime endTime) {
         this.id = id;
         this.parentProjectId = parentProjectId;
         this.eventName = eventName;
         this.eventStartDate = eventStartDate;
         this.eventEndDate = eventEndDate;
+        this.eventStartTime = startTime;
+        this.eventEndTime = endTime;
     }
 
     @Override
     public String toString() {
         return String.format(
-                "event[id=%d, parentProjectId='%d', eventName='%s', eventStartDate='%s', eventEndDate='%s']",
-                id, parentProjectId, eventName, eventStartDate, eventEndDate);
+                "event[id=%d, parentProjectId='%d', eventName='%s', eventStartDate='%s', eventEndDate='%s', eventStartTime='%s', eventEndTime='%s']",
+                id, parentProjectId, eventName, eventStartDate, eventEndDate, eventStartTime, eventEndTime);
     }
 
     public int getId() {
@@ -74,6 +79,22 @@ public class Event {
         this.eventEndDate = eventEndDate;
     }
 
+    public LocalTime getEventStartTime() {
+        return eventStartTime;
+    }
+
+    public void setEventStartTime(LocalTime eventStartTime) {
+        this.eventStartTime = eventStartTime;
+    }
+
+    public LocalTime getEventEndTime() {
+        return eventEndTime;
+    }
+
+    public void setEventEndTime(LocalTime eventEndTime) {
+        this.eventEndTime = eventEndTime;
+    }
+
 
 
     public void setStartDateString(String date) {
@@ -90,6 +111,22 @@ public class Event {
 
     public String getEndDateString() {
         return Project.dateToString(this.eventEndDate);
+    }
+
+    public void setStartTimeString(String time) {
+        this.eventStartTime = Project.stringToTime(time);
+    }
+
+    public String getStartTimeString() {
+        return Project.timeToString(this.eventStartTime);
+    }
+
+    public void setEndTimeString(String time) {
+        this.eventEndTime = Project.stringToTime(time);
+    }
+
+    public String getEndTimeString() {
+        return Project.timeToString(this.eventEndTime);
     }
 
 }

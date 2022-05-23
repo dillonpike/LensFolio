@@ -1,5 +1,7 @@
 package nz.ac.canterbury.seng302.portfolio.model;
 
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -7,6 +9,7 @@ import javax.persistence.Id;
 import java.util.Date;
 import java.text.SimpleDateFormat;
 import java.util.Objects;
+import org.springframework.format.annotation.DateTimeFormat;
 
 @Entity // this is an entity, assumed to be in a table called Project
 public class Project {
@@ -68,6 +71,42 @@ public class Project {
         return new SimpleDateFormat("dd/MMM/yyyy").format(Objects.requireNonNullElseGet(date, Date::new));
     }
 
+
+    /**
+     * Gets the date form of the given date string
+     *
+     * @param timeString the string to read as a date in format 01/Jan/2000
+     * @return the given date, as a date object
+     */
+    public static LocalTime stringToTime(String timeString) {
+        LocalTime time = null;
+        try {
+            time = LocalTime.parse(timeString);
+        } catch (Exception e) {
+            System.err.println("Error parsing time: " + e.getMessage());
+        }
+        return time;
+    }
+
+    /**
+     * Gets the string form of the given date in
+     *
+     * @param time the date to convert
+     * @return the given date, as a string in format 01/Jan/2000
+     */
+    public static String timeToString(LocalTime time) {
+        // Returns date in format unless its null which it then makes a new Date object.
+        String newTime = null;
+        try {
+            DateTimeFormatter myFormatObj = DateTimeFormatter.ofPattern("HH:mm:ss");
+            newTime = time.format(myFormatObj);
+        } catch (Exception e) {
+            System.err.println("Error parsing date: " + e.getMessage());
+        }
+        return newTime;
+
+        //return new SimpleDateFormat("dd/MMM/yyyy").format(Objects.requireNonNullElseGet(date, Date::new));
+    }
     /* Getters/Setters */
 
     public int getId(){

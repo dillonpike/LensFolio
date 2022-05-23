@@ -52,12 +52,26 @@
         <span id="eventNameError" style="color:red" th:hidden = "true">Invalid event name. Must be between 1 and 50 characters</span>
         <!-- add event times to the date picker -->
 
+        <div class="horizontal-group">
+            <div class="horizontal-group-element" >
+                <label for="eventStartTime">Event Start Time</label> <br/>
+                <div class="input-group date" id="eventTimeStart">
+                    <input type="time" class="form-control" th:field="*{startTimeString}" id="eventStartTime">
+                </div>
+            </div>
+            <div class="horizontal-group-element" >
+                <label for="eventEndTime">Event End Time</label> <br/>
+                <div class="input-group date" id="eventTimeEnd">
+                    <input type="time" class="form-control" th:field="*{endTimeString}" id="eventEndtime">
+                </div>
+            </div>
+        </div>
+
         <br/>
         <a th:href="@{details}"><button class="cancel" type="button">Cancel</button></a>
         <button id="saveButton" class="save" type="submit">Save</button>
     </form>
 </div>
-
 </body>
 <script src="../js/project.js"></script>
 <script>

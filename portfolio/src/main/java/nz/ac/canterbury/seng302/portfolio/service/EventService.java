@@ -56,6 +56,8 @@ public class EventService {
             eventUpdate.setEventStartDate(event.getEventStartDate());
             eventUpdate.setEventEndDate(event.getEventEndDate());
             eventUpdate.setEventName(event.getEventName());
+            eventUpdate.setEventStartTime(event.getEventStartTime());
+            eventUpdate.setEventEndTime(event.getEventEndTime());
 
             eventUpdate = repository.save(eventUpdate);
             return eventUpdate;
