@@ -1,5 +1,6 @@
 package nz.ac.canterbury.seng302.identityprovider.service;
 
+import com.google.common.annotations.VisibleForTesting;
 import io.grpc.stub.StreamObserver;
 import net.devh.boot.grpc.server.service.GrpcService;
 import nz.ac.canterbury.seng302.identityprovider.model.Roles;
@@ -413,8 +414,17 @@ public class UserAccountServerService extends UserAccountServiceGrpc.UserAccount
 
     @Override
     public void removeRoleFromUser(ModifyRoleOfUserRequest request, StreamObserver<UserRoleChangeResponse> responseObserver) {
+
+        UserRoleChangeResponse reply = removeRoleFromUserHelper(request);
+
+        responseObserver.onNext(reply);
+        responseObserver.onCompleted();
+
+    }
+
+    @VisibleForTesting
+    UserRoleChangeResponse removeRoleFromUserHelper (ModifyRoleOfUserRequest request){
         UserRoleChangeResponse.Builder reply = UserRoleChangeResponse.newBuilder();
-        System.out.println("Enter remove rolein idp");
         try {
             UserModel user = userModelService.getUserById(request.getUserId());
             UserRole role = request.getRole();
@@ -422,7 +432,6 @@ public class UserAccountServerService extends UserAccountServiceGrpc.UserAccount
                 if (role.getNumber() == 0) {
                     Roles studentRole = rolesRepository.findByRoleName("STUDENT");
                     user.deleteRole(studentRole);
-                    System.out.println(user.getRoles());
                     userModelService.saveEditedUser(user);
                     reply.setIsSuccess(true);
                 }else if (role.getNumber() == 1) {
@@ -437,12 +446,12 @@ public class UserAccountServerService extends UserAccountServiceGrpc.UserAccount
                     reply.setIsSuccess(true);
                 }
             }
+            return reply.build();
         } catch (Exception e) {
             System.err.println("Something went wrong");
             reply.setIsSuccess(false);
+            return reply.build();
         }
-        responseObserver.onNext(reply.build());
-        responseObserver.onCompleted();
 
     }
 
