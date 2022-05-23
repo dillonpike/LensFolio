@@ -71,41 +71,6 @@ public class Project {
         return new SimpleDateFormat("dd/MMM/yyyy").format(Objects.requireNonNullElseGet(date, Date::new));
     }
 
-
-    /**
-     * Gets the date form of the given date string
-     *
-     * @param timeString the string to read as a date in format 01/Jan/2000
-     * @return the given date, as a date object
-     */
-    public static LocalTime stringToTime(String timeString) {
-        LocalTime time = null;
-        try {
-            time = LocalTime.parse(timeString);
-        } catch (Exception e) {
-            System.err.println("Error parsing time: " + e.getMessage());
-        }
-        return time;
-    }
-
-    /**
-     * Gets the string form of the given time
-     * @param time the date to convert
-     * @return the given date, as a string in format 01/Jan/2000
-     */
-    public static String timeToString(LocalTime time) {
-        // Returns time in format unless its null which it then makes a new Date object.
-        String newTime = null;
-        try {
-            DateTimeFormatter myFormatObj = DateTimeFormatter.ofPattern("HH:mm:ss");
-            newTime = time.format(myFormatObj);
-        } catch (Exception e) {
-            System.err.println("Error parsing time to string: " + e.getMessage());
-        }
-        return newTime;
-
-        //return new SimpleDateFormat("dd/MMM/yyyy").format(Objects.requireNonNullElseGet(date, Date::new));
-    }
     /* Getters/Setters */
 
     public int getId(){

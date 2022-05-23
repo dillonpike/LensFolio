@@ -5,6 +5,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 
 @Entity
@@ -37,6 +38,41 @@ public class Event {
         return String.format(
                 "event[id=%d, parentProjectId='%d', eventName='%s', eventStartDate='%s', eventEndDate='%s', eventStartTime='%s', eventEndTime='%s']",
                 id, parentProjectId, eventName, eventStartDate, eventEndDate, eventStartTime, eventEndTime);
+    }
+
+    /**
+     * Gets the time form of the given time string
+     *
+     * @param timeString the string to read as a date in format 11:45:30
+     * @return the given time, as a time object
+     */
+    public static LocalTime stringToTime(String timeString) {
+        LocalTime time = null;
+        try {
+            time = LocalTime.parse(timeString);
+        } catch (Exception e) {
+            System.err.println("Error parsing time: " + e.getMessage());
+        }
+        return time;
+    }
+
+    /**
+     * Gets the string form of the given time
+     * @param time the date to convert
+     * @return the given date, as a string in format 11:45:30
+     */
+    public static String timeToString(LocalTime time) {
+        // Returns time in format unless its null which it then makes a new Date object.
+        String newTime = "";
+        if (time != null) {
+            try {
+                DateTimeFormatter myFormatObj = DateTimeFormatter.ofPattern("HH:mm:ss");
+                newTime = time.format(myFormatObj);
+            } catch (Exception e) {
+                System.err.println("Error parsing time to string: " + e.getMessage());
+            }
+        }
+        return newTime;
     }
 
     public int getId() {
@@ -114,19 +150,19 @@ public class Event {
     }
 
     public void setStartTimeString(String time) {
-        this.eventStartTime = Project.stringToTime(time);
+        this.eventStartTime = Event.stringToTime(time);
     }
 
     public String getStartTimeString() {
-        return Project.timeToString(this.eventStartTime);
+        return Event.timeToString(this.eventStartTime);
     }
 
     public void setEndTimeString(String time) {
-        this.eventEndTime = Project.stringToTime(time);
+        this.eventEndTime = Event.stringToTime(time);
     }
 
     public String getEndTimeString() {
-        return Project.timeToString(this.eventEndTime);
+        return Event.timeToString(this.eventEndTime);
     }
 
 }

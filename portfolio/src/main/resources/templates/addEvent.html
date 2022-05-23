@@ -51,13 +51,13 @@
             <div class="horizontal-group-element" >
                 <label for="eventStartTime">Event Start Time</label> <br/>
                 <div class="input-group date" id="eventTimeStart">
-                    <input type="time" class="form-control" th:field="*{startTimeString}" id="eventStartTime">
+                    <input type="time" class="form-control" th:value="*{startTimeString}" id="eventStartTime">
                 </div>
             </div>
             <div class="horizontal-group-element" >
                 <label for="eventEndTime">Event End Time</label> <br/>
                 <div class="input-group date" id="eventTimeEnd">
-                    <input type="time" class="form-control" th:field="*{endTimeString}" id="eventEndTime">
+                    <input type="time" class="form-control" th:value="*{endTimeString}" id="eventEndTime">
                 </div>
             </div>
         </div>
@@ -126,6 +126,11 @@
     $(function() {
         $('#eventEnd').datepicker({format: 'dd/M/yyyy'});
     });
+</script>
+<script>
+    // Sets default values for the time picker
+    document.getElementById("eventStartTime").defaultValue = "12:00";
+    document.getElementById("eventEndTime").defaultValue = "13:00";
 </script>
 
 </html>
