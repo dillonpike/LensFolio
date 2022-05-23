@@ -62,8 +62,7 @@
             </div>
         </div>
         <span id="eventDateError" style="color:red" th:text="${eventDateError}"></span>
-        <br>
-        <span id="eventNameError" style="color:red" th:hidden = "true">Invalid event name. Must be between 1 and 50 characters</span>
+        <span id="eventNameError" style="color:red" th:hidden = "true"> Invalid event name. Must be between 1 and 50 characters.</span>
         <br/>
         <a th:href="@{details}"><button class="cancel" type="button">Cancel</button></a>
         <button id="saveButton" class="save" type="submit">Save</button>
