@@ -380,10 +380,10 @@ public class UserAccountServerService extends UserAccountServiceGrpc.UserAccount
         return response.build();
     }
 
-    @Override
-    public void addRoleToUser(ModifyRoleOfUserRequest request, StreamObserver<UserRoleChangeResponse> responseObserver) {
-        UserRoleChangeResponse.Builder reply = UserRoleChangeResponse.newBuilder();
 
+    @VisibleForTesting
+    UserRoleChangeResponse addRoleToUserHelper (ModifyRoleOfUserRequest request) {
+        UserRoleChangeResponse.Builder reply = UserRoleChangeResponse.newBuilder();
         try {
             UserModel user = userModelService.getUserById(request.getUserId());
             UserRole role = request.getRole();
@@ -392,23 +392,31 @@ public class UserAccountServerService extends UserAccountServiceGrpc.UserAccount
                     Roles studentRole = rolesRepository.findByRoleName("STUDENT");
                     user.addRoles(studentRole);
                     userModelService.saveEditedUser(user);
-                    reply.setIsSuccess(true);
                 } else if (role.getNumber() == 1) {
                     Roles studentRole = rolesRepository.findByRoleName("TEACHER");
                     user.addRoles(studentRole);
                     userModelService.saveEditedUser(user);
-                    reply.setIsSuccess(true);
                 } else if (role.getNumber() == 2) {
                     Roles studentRole = rolesRepository.findByRoleName("COURSE ADMINISTRATOR");
                     user.addRoles(studentRole);
                     userModelService.saveEditedUser(user);
-                    reply.setIsSuccess(true);
                 }
             }
+            reply.setIsSuccess(true);
+            return reply.build();
         } catch (Exception e) {
             System.err.println("Something went wrong");
+            reply.setIsSuccess(false);
+            return reply.build();
         }
-        responseObserver.onNext(reply.build());
+    }
+
+
+    @Override
+    public void addRoleToUser(ModifyRoleOfUserRequest request, StreamObserver<UserRoleChangeResponse> responseObserver) {
+        UserRoleChangeResponse reply = addRoleToUserHelper(request);
+
+        responseObserver.onNext(reply);
         responseObserver.onCompleted();
     }
 

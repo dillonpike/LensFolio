@@ -37,8 +37,78 @@ class UserAccountServerServiceTest {
         MockitoAnnotations.openMocks(this); // This is required for Mockito annotations to work
     }
 
+
     @Test
-    void removeRoleFromUser() {
+    void addStudentRoleToUser() {
+        ModifyRoleOfUserRequest request = ModifyRoleOfUserRequest.newBuilder()
+                .setRole(UserRole.STUDENT).setUserId(1).build();
+
+        UserModel mockUserModel = Mockito.mock(UserModel.class);
+        Roles theRole = new Roles();
+        theRole.setRoleName("STUDENT");
+        theRole.setId(0);
+        when(rolesRepository.findByRoleName("STUDENT")).thenReturn(theRole);
+        when(userModelService.getUserById(1)).thenReturn(mockUserModel);
+        when(userModelService.saveEditedUser(any(UserModel.class))).thenReturn(true);
+        doNothing().when(mockUserModel).addRoles(any(Roles.class));
+
+        ArgumentCaptor<Roles> roleAdded = ArgumentCaptor.forClass(Roles.class);
+        ArgumentCaptor<UserModel> addedUserModel = ArgumentCaptor.forClass(UserModel.class);
+
+        UserRoleChangeResponse reply = userAccountServerService.addRoleToUserHelper(request);
+        Assertions.assertEquals(true,reply.getIsSuccess());
+        Mockito.verify(mockUserModel).addRoles(roleAdded.capture());
+        Mockito.verify(userModelService).saveEditedUser(addedUserModel.capture());
+    }
+
+    @Test
+    void addTeacherRoleToUser() {
+        ModifyRoleOfUserRequest request = ModifyRoleOfUserRequest.newBuilder()
+                .setRole(UserRole.STUDENT).setUserId(1).build();
+
+        UserModel mockUserModel = Mockito.mock(UserModel.class);
+        Roles theRole = new Roles();
+        theRole.setRoleName("TEACHER");
+        theRole.setId(0);
+        when(rolesRepository.findByRoleName("TEACHER")).thenReturn(theRole);
+        when(userModelService.getUserById(1)).thenReturn(mockUserModel);
+        when(userModelService.saveEditedUser(any(UserModel.class))).thenReturn(true);
+        doNothing().when(mockUserModel).addRoles(any(Roles.class));
+
+        ArgumentCaptor<Roles> roleAdded = ArgumentCaptor.forClass(Roles.class);
+        ArgumentCaptor<UserModel> addedUserModel = ArgumentCaptor.forClass(UserModel.class);
+
+        UserRoleChangeResponse reply = userAccountServerService.addRoleToUserHelper(request);
+        Assertions.assertEquals(true,reply.getIsSuccess());
+        Mockito.verify(mockUserModel).addRoles(roleAdded.capture());
+        Mockito.verify(userModelService).saveEditedUser(addedUserModel.capture());
+    }
+
+    @Test
+    void addAdminRoleToUser() {
+        ModifyRoleOfUserRequest request = ModifyRoleOfUserRequest.newBuilder()
+                .setRole(UserRole.STUDENT).setUserId(1).build();
+
+        UserModel mockUserModel = Mockito.mock(UserModel.class);
+        Roles theRole = new Roles();
+        theRole.setRoleName("COURSE ADMINISTRATOR");
+        theRole.setId(0);
+        when(rolesRepository.findByRoleName("COURSE ADMINISTRATOR")).thenReturn(theRole);
+        when(userModelService.getUserById(1)).thenReturn(mockUserModel);
+        when(userModelService.saveEditedUser(any(UserModel.class))).thenReturn(true);
+        doNothing().when(mockUserModel).addRoles(any(Roles.class));
+
+        ArgumentCaptor<Roles> roleAdded = ArgumentCaptor.forClass(Roles.class);
+        ArgumentCaptor<UserModel> addedUserModel = ArgumentCaptor.forClass(UserModel.class);
+
+        UserRoleChangeResponse reply = userAccountServerService.addRoleToUserHelper(request);
+        Assertions.assertEquals(true,reply.getIsSuccess());
+        Mockito.verify(mockUserModel).addRoles(roleAdded.capture());
+        Mockito.verify(userModelService).saveEditedUser(addedUserModel.capture());
+    }
+
+    @Test
+    void removeStudentRoleFromUser() {
         ModifyRoleOfUserRequest request = ModifyRoleOfUserRequest.newBuilder()
             .setRole(UserRole.STUDENT).setUserId(1).build();
 
@@ -47,6 +117,54 @@ class UserAccountServerServiceTest {
         theRole.setRoleName("STUDENT");
         theRole.setId(0);
         when(rolesRepository.findByRoleName("STUDENT")).thenReturn(theRole);
+        when(userModelService.getUserById(1)).thenReturn(mockUserModel);
+        when(userModelService.saveEditedUser(any(UserModel.class))).thenReturn(true);
+        doNothing().when(mockUserModel).deleteRole(any(Roles.class));
+
+        ArgumentCaptor<Roles> deletedRole = ArgumentCaptor.forClass(Roles.class);
+        ArgumentCaptor<UserModel> deletedRoleModel = ArgumentCaptor.forClass(UserModel.class);
+
+        UserRoleChangeResponse reply = userAccountServerService.removeRoleFromUserHelper(request);
+        Assertions.assertEquals(true,reply.getIsSuccess());
+        Mockito.verify(mockUserModel).deleteRole(deletedRole.capture());
+        Mockito.verify(userModelService).saveEditedUser(deletedRoleModel.capture());
+
+    }
+
+    @Test
+    void removeTeacherRoleFromUser() {
+        ModifyRoleOfUserRequest request = ModifyRoleOfUserRequest.newBuilder()
+                .setRole(UserRole.STUDENT).setUserId(1).build();
+
+        UserModel mockUserModel = Mockito.mock(UserModel.class);
+        Roles theRole = new Roles();
+        theRole.setRoleName("TEACHER");
+        theRole.setId(0);
+        when(rolesRepository.findByRoleName("TEACHER")).thenReturn(theRole);
+        when(userModelService.getUserById(1)).thenReturn(mockUserModel);
+        when(userModelService.saveEditedUser(any(UserModel.class))).thenReturn(true);
+        doNothing().when(mockUserModel).deleteRole(any(Roles.class));
+
+        ArgumentCaptor<Roles> deletedRole = ArgumentCaptor.forClass(Roles.class);
+        ArgumentCaptor<UserModel> deletedRoleModel = ArgumentCaptor.forClass(UserModel.class);
+
+        UserRoleChangeResponse reply = userAccountServerService.removeRoleFromUserHelper(request);
+        Assertions.assertEquals(true,reply.getIsSuccess());
+        Mockito.verify(mockUserModel).deleteRole(deletedRole.capture());
+        Mockito.verify(userModelService).saveEditedUser(deletedRoleModel.capture());
+
+    }
+
+    @Test
+    void removeAdminRoleFromUser() {
+        ModifyRoleOfUserRequest request = ModifyRoleOfUserRequest.newBuilder()
+                .setRole(UserRole.STUDENT).setUserId(1).build();
+
+        UserModel mockUserModel = Mockito.mock(UserModel.class);
+        Roles theRole = new Roles();
+        theRole.setRoleName("COURSE ADMINISTRATOR");
+        theRole.setId(0);
+        when(rolesRepository.findByRoleName("COURSE ADMINISTRATOR")).thenReturn(theRole);
         when(userModelService.getUserById(1)).thenReturn(mockUserModel);
         when(userModelService.saveEditedUser(any(UserModel.class))).thenReturn(true);
         doNothing().when(mockUserModel).deleteRole(any(Roles.class));
