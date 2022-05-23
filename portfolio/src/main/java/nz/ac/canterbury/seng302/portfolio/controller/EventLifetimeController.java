@@ -52,6 +52,8 @@ public class EventLifetimeController {
     ) throws Exception {
         event.setStartDateString(event.getStartDateString());
         event.setEndDateString(event.getEndDateString());
+        event.setStartTimeString(event.getStartTimeString());
+        event.setEndTimeString(event.getEndTimeString());
         eventService.addEvent(event);
         return "redirect:/details";
     }
