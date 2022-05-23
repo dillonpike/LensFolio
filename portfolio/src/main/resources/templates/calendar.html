@@ -14,10 +14,14 @@
         /*<![CDATA[*/
         document.addEventListener('DOMContentLoaded', function() {
 
+            const alternateColour = (colour) => {
+                return "red";
+            }
+
             let calendarEl = document.getElementById('calendar');
             let selectedId = -1;
             let calendar = new FullCalendar.Calendar(calendarEl, {
-                editable: true,
+                editable: false,
                 themeSystem: 'bootstrap5',
                 initialView: 'dayGridMonth',
                 buttonText: {
@@ -39,15 +43,19 @@
                     let selectedEvent = calendar.getEventById(selectedId);
                     // console.log(newEvent.id === selectedEvent.id);
                     if (selectedId === -1) {
-                        newEvent.setProp("borderColor", "red");
+                        newEvent.setProp("borderColor", alternateColour(newEvent.backgroundColor));
+                        newEvent.setProp("editable", true);
                         selectedId = info.event.id;
                     } else {
                         if (newEvent.id === selectedEvent.id) {
                             newEvent.setProp("borderColor", newEvent.backgroundColor);
+                            newEvent.setProp("editable", false);
                             selectedId = -1;
                         } else {
                             selectedEvent.setProp("borderColor", selectedEvent.backgroundColor)
-                            newEvent.setProp("borderColor", "red");
+                            selectedEvent.setProp("editable", false);
+                            newEvent.setProp("borderColor", alternateColour(newEvent.backgroundColor));
+                            newEvent.setProp("editable", true);
                             selectedId = info.event.id;
                         }
                     }
@@ -55,14 +63,14 @@
                 eventMouseEnter: function(info) {
                     // change the border color just for fun
                     let event = calendar.getEventById(info.event.id);
-                    if (event.borderColor !== 'red') {
+                    if (event.borderColor !== alternateColour(event.backgroundColor)) {
                         event.setProp("borderColor", "black");
                     }
                 },
                 eventMouseLeave: function(info) {
                     // change the border color just for fun
                     let event = calendar.getEventById(info.event.id);
-                    if (event.borderColor !== 'red') {
+                    if (event.borderColor !== alternateColour(event.backgroundColor)) {
                         event.setProp("borderColor", event.backgroundColor);
                     }
                 },
