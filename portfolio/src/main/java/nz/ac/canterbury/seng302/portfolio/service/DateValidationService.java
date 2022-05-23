@@ -166,12 +166,13 @@ public class DateValidationService {
      * @param endTimeString end time to be checked
      * @return error message if a given start time is before an end time, otherwise returns a blank message
      */
-    public String validateStartTimeNotAfterEndTime(String startTimeString, String endTimeString) {
+    public String validateStartTimeNotAfterEndTime(String startTimeString, String endTimeString, String startDateString,
+                                                   String endDateString) {
         String message = "";
         if (!startTimeString.equals("") && !endTimeString.equals("")) {
             LocalTime startTime = Project.stringToTime(startTimeString);
             LocalTime endTime = Project.stringToTime(endTimeString);
-            if (startTime.isAfter(endTime)) {
+            if (startTime.isAfter(endTime) && startDateString.equals(endDateString)) {
                 message = "Start time must be on or before the end time.";
             }
         }
