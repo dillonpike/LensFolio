@@ -78,6 +78,8 @@
                     }
                 },
                 eventOverlap: function(stillEvent, movingEvent) {
+                    document.getElementById("overlapError").hidden = false;
+                    setTimeout( function () {document.getElementById("overlapError").hidden = true;}, 5000)
                     return false;
                 },
                 eventResizableFromStart: function(info) {
@@ -102,6 +104,9 @@
     </div>
 
     <div class='calendar' id='calendar'></div>
+    <div class="error">
+        <span id="overlapError" style="color:red" th:hidden="true">Error: sprints cannot overlap</span>
+    </div>
 </body>
 
 <script src="webjars/fullcalendar/5.10.2/main.min.js"></script>
