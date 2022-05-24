@@ -36,7 +36,7 @@ public class CalendarController {
         int colIndex = 0;
         for (Sprint sprint : sprints) {
             Date endDate = SprintLifetimeController.getUpdatedDate(sprint.getEndDate(), 1, 0);
-            json += "{id: '"+sprint.getName()+"', title: '"+sprint.getName()+"', start: '"+sprint.getStartDate()+"', end: '"+endDate.toInstant()+"', allDay: true, color: '"+colours.get(colIndex)+"'},";
+            json += "{id: '"+sprint.getId()+"', title: '"+sprint.getName()+"', start: '"+sprint.getStartDate()+"', end: '"+endDate.toInstant()+"', allDay: true, color: '"+colours.get(colIndex)+"'},";
 
             if (colIndex == (colours.size() - 1)) { // List max
                 colIndex = 0;
@@ -86,6 +86,6 @@ public class CalendarController {
         model.addAttribute("projectStartDateString", project.getStartDateString());
         model.addAttribute("projectEndDateString", project.getEndDateString());
         return "calendar";
-}
+    }
 
 }
