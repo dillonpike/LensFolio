@@ -17,16 +17,16 @@
     </div>
 </div>
 <div class="content">
-    <form th:action="@{../edit-sprint/{id} (id=${sprintId})}"
+    <form th:action="@{../edit-sprint/{id} (id=${sprintId})}" th:object="${sprint}"
           method="post">
         <label for="sprintName">Sprint Name</label> <br/>
-        <input id="sprintName" type="text" th:name="sprintName" th:value="*{sprintName}">
+        <input id="sprintName" type="text" th:name="sprintName" th:field="*{name}">
         <br/>
         <div class="horizontal-group" >
             <div class="horizontal-group-element" >
                 <label for="sprintStartDate">Sprint Start Date</label> <br/>
                 <div class="input-group date" id="sprintStart">
-                    <input onkeydown="return checkDateKeys(event)" type="text" class="form-control" id="sprintStartDate" th:name="sprintStartDate" th:value="*{sprintStartDate}">
+                    <input onkeydown="return checkDateKeys(event)" type="text" class="form-control" id="sprintStartDate" th:name="sprintStartDate" th:field="*{startDateString}">
                     <span class="input-group-append">
                             <span class="input-group-text bg-white">
                                 <i class="bi bi-calendar"></i>
@@ -38,7 +38,7 @@
             <div class="horizontal-group-element" >
                 <label for="sprintEndDate">Sprint End Date</label> <br/>
                 <div class="input-group date" id="sprintEnd">
-                    <input onkeydown="return checkDateKeys(event)" type="text" class="form-control" id="sprintEndDate" th:name="sprintEndDate" th:value="*{sprintEndDate}">
+                    <input onkeydown="return checkDateKeys(event)" type="text" class="form-control" id="sprintEndDate" th:name="sprintEndDate" th:field="*{endDateString}">
                     <span class="input-group-append">
                             <span class="input-group-text bg-white">
                                 <i class="bi bi-calendar"></i>
@@ -48,10 +48,10 @@
 <!--                <input id="sprintEndDate" type="text" th:name="sprintEndDate" th:value="*{sprintEndDate}">-->
             </div>
         </div>
-        <span id="sprintDateError" style="color:red" th:text="*{sprintDateError}"></span>
+        <span id="sprintDateError" style="color:red" th:text="${sprintDateError}"></span>
         <div>
             <label for="sprintDescription">Sprint Description</label> <br/>
-            <textarea class="description-input" id="sprintDescription" th:name="sprintDescription" th:text="*{sprintDescription}"></textarea>
+            <textarea class="description-input" id="sprintDescription" th:name="sprintDescription" th:field="*{description}"></textarea>
         </div>
         <br/>
         <a th:href="@{../details}"><button class="cancel" type="button">Cancel</button></a>
