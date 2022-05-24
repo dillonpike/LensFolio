@@ -60,15 +60,17 @@ public class EditEventController {
         return "redirect:/details";
     }
 
-    @RequestMapping(value="/edit-event/error", method=RequestMethod.POST)
-    public String updateSprintRangeErrors(@RequestParam(value="id") Integer id,
-                                          @ModelAttribute("event") Event event,
-                                          Model model) {
+    @RequestMapping(value="/edit-event/error", method= RequestMethod.POST)
+    public String updateEventRangeErrors(@RequestParam(value="eventStartDate") String eventStartDate,
+                                         @RequestParam(value="eventEndDate") String eventEndDate,
+                                         @RequestParam(value="eventStartTime") String eventStartTime,
+                                         @RequestParam(value="eventEndTime") String eventEndTime,
+                                         Model model) {
         model.addAttribute("eventDateError",
-                dateValidationService.validateDateRangeNotEmpty(event.getStartDateString(), event.getEndDateString()) + " " +
-                        dateValidationService.validateStartDateNotAfterEndDate(event.getStartDateString(), event.getEndDateString()) + " " +
-                        dateValidationService.validateSprintDateRange(event.getStartDateString(), event.getEndDateString(), id) + " " +
-                        dateValidationService.validateSprintInProjectDateRange(event.getStartDateString(), event.getEndDateString()));
-        return "editEvent :: #eventDateError"; //TODO: add errors to be displayed on the edit event screen.
+                dateValidationService.validateDateRangeNotEmpty(eventStartDate, eventEndDate) + " " +
+                        dateValidationService.validateStartDateNotAfterEndDate(eventStartDate, eventEndDate) + " " +
+                        dateValidationService.validateDatesInProjectDateRange(eventStartDate, eventEndDate) + " " +
+                        dateValidationService.validateStartTimeNotAfterEndTime(eventStartTime, eventEndTime, eventStartDate, eventEndDate));
+        return "addEvent :: #eventDateError";
     }
 }
