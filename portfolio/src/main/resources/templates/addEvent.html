@@ -51,18 +51,18 @@
             <div class="horizontal-group-element" >
                 <label for="eventStartTime">Event Start Time</label> <br/>
                 <div class="input-group date" id="eventTimeStart">
-                    <input type="time" class="form-control" th:value="*{startTimeString}" id="eventStartTime">
+                    <input type="time" class="form-control" th:field="*{startTimeString}" id="eventStartTime">
                 </div>
             </div>
             <div class="horizontal-group-element" >
                 <label for="eventEndTime">Event End Time</label> <br/>
                 <div class="input-group date" id="eventTimeEnd">
-                    <input type="time" class="form-control" th:value="*{endTimeString}" id="eventEndTime">
+                    <input type="time" class="form-control" th:field="*{endTimeString}" id="eventEndTime">
                 </div>
             </div>
         </div>
         <span id="eventDateError" style="color:red" th:text="${eventDateError}"></span>
-        <span id="eventNameError" style="color:red" th:hidden = "true"> Invalid event name. Must be between 1 and 50 characters.</span>
+        <span id="eventNameError" style="color:red" th:hidden = "true"> Invalid event name, must be between 1 and 50 characters.</span>
         <br/>
         <a th:href="@{details}"><button class="cancel" type="button">Cancel</button></a>
         <button id="saveButton" class="save" type="submit">Save</button>
@@ -70,6 +70,11 @@
 </div>
 </body>
 <script src="../js/project.js"></script>
+<script>
+    // Sets default values for the time picker
+    document.getElementById("eventStartTime").defaultValue = "12:00";
+    document.getElementById("eventEndTime").defaultValue = "13:00";
+</script>
 <script>
     /**
      * Checks the entered event dates in the input fields and displays an error message if there's a related error.
@@ -126,11 +131,6 @@
     $(function() {
         $('#eventEnd').datepicker({format: 'dd/M/yyyy'});
     });
-</script>
-<script>
-    // Sets default values for the time picker
-    document.getElementById("eventStartTime").defaultValue = "12:00";
-    document.getElementById("eventEndTime").defaultValue = "13:00";
 </script>
 
 </html>
