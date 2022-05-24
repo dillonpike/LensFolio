@@ -142,7 +142,7 @@ public class Group {
      * Adds the user represented by the given user id to the group.
      * @param userId id of user to add to the group
      */
-    public void addMemberId(int userId) {
+    public void addMember(int userId) {
         memberIds.add(userId);
     }
 
@@ -150,7 +150,7 @@ public class Group {
      * Removes the user represented by the given user id from the group.
      * @param userId id of user to remove from the group
      */
-    public void removeMemberId(int userId) {
+    public void removeMember(int userId) {
         memberIds.remove(userId);
     }
 }

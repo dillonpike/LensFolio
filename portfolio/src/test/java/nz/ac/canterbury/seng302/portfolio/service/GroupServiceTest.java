@@ -10,8 +10,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 
@@ -36,7 +35,7 @@ public class GroupServiceTest {
     /**
      * Group object used in tests.
      */
-    private final Group expectedGroup = new Group(1, "shortName", "fullName", 2);
+    private final Group expectedGroup = new Group("shortName", "fullName", 2);
 
     /**
      * Message in exception that should be thrown when a Group object can't be found with the given id.
@@ -71,5 +70,30 @@ public class GroupServiceTest {
         } catch (Exception e) {
             fail();
         }
+    }
+
+    /**
+     * Tests that adding members to groups works as expected.
+     */
+    @Test
+    public void givenMemberNotInGroup_whenAddMember_thenMemberInGroup() {
+        int expectedUserId = 1;
+        Group group = new Group("", "", 1);
+        assertFalse(group.getMemberIds().contains(expectedUserId));
+        groupService.addMember(expectedUserId, group);
+        assertTrue(group.getMemberIds().contains(expectedUserId));
+    }
+
+    /**
+     * Tests that removing members from groups works as expected.
+     */
+    @Test
+    public void givenMemberInGroup_whenRemoveMember_thenMemberNotInGroup() {
+        int expectedUserId = 1;
+        Group group = new Group("", "", 1);
+        groupService.addMember(expectedUserId, group);
+        assertTrue(group.getMemberIds().contains(expectedUserId));
+        groupService.removeMember(expectedUserId, group);
+        assertFalse(group.getMemberIds().contains(expectedUserId));
     }
 }

@@ -39,7 +39,7 @@ public class GroupService {
      * @param group group user is added to
      */
     public void addMember(int userId, Group group) {
-        group.addMemberId(userId);
+        group.addMember(userId);
         groupRepository.save(group);
     }
 
@@ -49,7 +49,7 @@ public class GroupService {
      * @param group group user is removed from
      */
     public void removeMember(int userId, Group group) {
-        group.removeMemberId(userId);
+        group.removeMember(userId);
         groupRepository.save(group);
     }
 }

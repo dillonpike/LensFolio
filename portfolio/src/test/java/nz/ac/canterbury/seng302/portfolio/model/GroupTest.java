@@ -2,6 +2,9 @@ package nz.ac.canterbury.seng302.portfolio.model;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
@@ -14,15 +17,17 @@ public class GroupTest {
      */
     @Test
     void testConstructor() {
-        int expectedGroupId = 5;
+        int expectedGroupId = 0;
         String expectedShortName = "Teaching Staff";
         String expectedLongName = "Users Without Group";
         int expectedCourseId = 3;
-        Group group = new Group(expectedGroupId, expectedShortName, expectedLongName, expectedCourseId);
+        Set<Integer> expectedMemberIds = new HashSet<>();
+        Group group = new Group(expectedShortName, expectedLongName, expectedCourseId);
 
         assertEquals(expectedGroupId, group.getGroupId());
         assertEquals(expectedShortName, group.getShortName());
         assertEquals(expectedLongName, group.getLongName());
         assertEquals(expectedCourseId, group.getCourseId());
+        assertEquals(expectedMemberIds, group.getMemberIds());
     }
 }
