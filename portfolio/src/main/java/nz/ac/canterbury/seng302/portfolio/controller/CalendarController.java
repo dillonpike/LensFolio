@@ -9,6 +9,9 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.*;
 
@@ -88,4 +91,11 @@ public class CalendarController {
         return "calendar";
     }
 
+    @RequestMapping(value="/update-sprint", method= RequestMethod.POST)
+    public String updateSprintRangeErrors(@RequestParam(value="id") String id,
+                                          @RequestParam(value="sprintStartDate") String sprintStartDate,
+                                          @RequestParam(value="sprintEndDate") String sprintEndDate) {
+
+        return "calendar";
+    }
 }
