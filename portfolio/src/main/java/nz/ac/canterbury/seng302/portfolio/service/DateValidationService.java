@@ -1,7 +1,10 @@
 package nz.ac.canterbury.seng302.portfolio.service;
 
+import java.time.LocalTime;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+
+import nz.ac.canterbury.seng302.portfolio.model.Event;
 import nz.ac.canterbury.seng302.portfolio.model.Project;
 import nz.ac.canterbury.seng302.portfolio.model.Sprint;
 import org.slf4j.Logger;
@@ -88,13 +91,13 @@ public class DateValidationService {
     }
 
     /**
-     * Validates the given sprint date range based on the start date and end date of the new sprint, making sure the sprint
+     * Validates the given date range based on the start date and end date used for sprints and events, making sure the
      * dates are within the project dates
-     * @param sprintStartDateString Start date of the sprint
-     * @param sprintEndDateString End date of the sprint
+     * @param sprintStartDateString Start date being checked
+     * @param sprintEndDateString End date being checked
      * @return Message giving an error if the dates are not within the project dates, empty otherwise
      */
-    public String validateSprintInProjectDateRange(String sprintStartDateString, String sprintEndDateString) {
+    public String validateDatesInProjectDateRange(String sprintStartDateString, String sprintEndDateString) {
         String message = "";
         if (!sprintStartDateString.equals("") && !sprintEndDateString.equals("")) {
             Date sprintStartDate = Project.stringToDate(sprintStartDateString);
@@ -154,6 +157,25 @@ public class DateValidationService {
                 message = "Start date must be on or before the start date of the first sprint (" +
                         firstSprint.getStartDateString() + ") and end date must be on or after the end date of " +
                         "the last sprint (" + lastSprint.getEndDateString() + ").";
+            }
+        }
+        return message;
+    }
+
+    /**
+     * Returns an error message if a given time is empty or null, otherwise returns a blank message.
+     * @param startTimeString start time to be checked
+     * @param endTimeString end time to be checked
+     * @return error message if a given start time is before an end time, otherwise returns a blank message
+     */
+    public String validateStartTimeNotAfterEndTime(String startTimeString, String endTimeString, String startDateString,
+                                                   String endDateString) {
+        String message = "";
+        if (!startTimeString.equals("") && !endTimeString.equals("")) {
+            LocalTime startTime = Event.stringToTime(startTimeString);
+            LocalTime endTime = Event.stringToTime(endTimeString);
+            if (startTime.isAfter(endTime) && startDateString.equals(endDateString)) {
+                message = "Start time must be on or before the end time.";
             }
         }
         return message;

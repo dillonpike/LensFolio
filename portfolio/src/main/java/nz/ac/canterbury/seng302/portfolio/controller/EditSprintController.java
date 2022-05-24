@@ -84,7 +84,7 @@ public class EditSprintController {
                 dateValidationService.validateDateRangeNotEmpty(sprintStartDate, sprintEndDate) + " " +
                 dateValidationService.validateStartDateNotAfterEndDate(sprintStartDate, sprintEndDate) + " " +
                 dateValidationService.validateSprintDateRange(sprintStartDate, sprintEndDate, id) + " " +
-                dateValidationService.validateSprintInProjectDateRange(sprintStartDate, sprintEndDate));
+                dateValidationService.validateDatesInProjectDateRange(sprintStartDate, sprintEndDate));
         return "editSprint :: #sprintDateError";
     }
 }

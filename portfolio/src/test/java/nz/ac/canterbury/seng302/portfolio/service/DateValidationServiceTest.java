@@ -165,39 +165,39 @@ public class DateValidationServiceTest {
     }
 
     /**
-     * Checks that validateSprintInProjectDateRange gives a blank output when the given dates are within the project's
+     * Checks that validateDatesInProjectDateRange gives a blank output when the given dates are within the project's
      * dates (boundary case).
      */
     @Test
     public void givenValidBoundaryDates_whenValidateSprintInProjectDateRange_thenBlankOutput() throws Exception {
         when(projectService.getProjectById(anyInt())).thenReturn(testProject);
-        String output = dateValidationService.validateSprintInProjectDateRange(testProject.getStartDateString(),
+        String output = dateValidationService.validateDatesInProjectDateRange(testProject.getStartDateString(),
                 testProject.getEndDateString());
         assertEquals(0, output.length());
     }
 
     /**
-     * Checks that validateSprintInProjectDateRange gives an error message when the given start date is outside the
+     * Checks that validateDatesInProjectDateRange gives an error message when the given start date is outside the
      * project's dates (boundary case).
      */
     @Test
     public void givenInvalidStartDate_whenValidateSprintInProjectDateRange_thenOutputWithMessage() throws Exception {
         when(projectService.getProjectById(anyInt())).thenReturn(testProject);
         String startDateString = addToDateString(testProject.getStartDateString(), Calendar.DAY_OF_YEAR, -1);
-        String output = dateValidationService.validateSprintInProjectDateRange(startDateString,
+        String output = dateValidationService.validateDatesInProjectDateRange(startDateString,
                 testProject.getEndDateString());
         assertTrue(output.length() > 0);
     }
 
     /**
-     * Checks that validateSprintInProjectDateRange gives an error message when the given end date is outside the
+     * Checks that validateDatesInProjectDateRange gives an error message when the given end date is outside the
      * project's dates (boundary case).
      */
     @Test
     public void givenInvalidEndDate_whenValidateSprintInProjectDateRange_thenOutputWithMessage() throws Exception {
         when(projectService.getProjectById(anyInt())).thenReturn(testProject);
         String endDateString = addToDateString(testProject.getEndDateString(), Calendar.DAY_OF_YEAR, 1);
-        String output = dateValidationService.validateSprintInProjectDateRange(testProject.getStartDateString(),
+        String output = dateValidationService.validateDatesInProjectDateRange(testProject.getStartDateString(),
                 endDateString);
         assertTrue(output.length() > 0);
     }
