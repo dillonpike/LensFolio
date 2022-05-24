@@ -380,7 +380,11 @@ public class UserAccountServerService extends UserAccountServiceGrpc.UserAccount
         return response.build();
     }
 
-
+    /***
+     * Helper method to build the UserRoleChangeResponse which the respond of adding role to user process
+     * @param request ModifyRoleOfUserRequest the request which contains the role that will be added to the user
+     * @return UserRoleChangeResponse which contains information whether adding a role to user was done successfully or not
+     */
     @VisibleForTesting
     UserRoleChangeResponse addRoleToUserHelper (ModifyRoleOfUserRequest request) {
         UserRoleChangeResponse.Builder reply = UserRoleChangeResponse.newBuilder();
@@ -411,7 +415,11 @@ public class UserAccountServerService extends UserAccountServiceGrpc.UserAccount
         }
     }
 
-
+    /***
+     * Add role to a user
+     * Call helper function addRoleToUserHelper() to build the respond
+     * @param request ModifyRoleOfUserRequest the request which contains the role that will be added to the user
+     */
     @Override
     public void addRoleToUser(ModifyRoleOfUserRequest request, StreamObserver<UserRoleChangeResponse> responseObserver) {
         UserRoleChangeResponse reply = addRoleToUserHelper(request);
@@ -420,6 +428,11 @@ public class UserAccountServerService extends UserAccountServiceGrpc.UserAccount
         responseObserver.onCompleted();
     }
 
+    /***
+     * Delete a role from a user
+     * Call helper function removeRoleFromUserHelper() to build the respond
+     * @param request ModifyRoleOfUserRequest the request which contains the role that will be deleted from the user
+     */
     @Override
     public void removeRoleFromUser(ModifyRoleOfUserRequest request, StreamObserver<UserRoleChangeResponse> responseObserver) {
 
@@ -430,6 +443,11 @@ public class UserAccountServerService extends UserAccountServiceGrpc.UserAccount
 
     }
 
+    /***
+     * Helper method to build the UserRoleChangeResponse which the respond of deleting role from user process
+     * @param request ModifyRoleOfUserRequest the request which contains the role that will be deleted from the user
+     * @return UserRoleChangeResponse which contains information whether deleting a role to user was done successfully or not
+     */
     @VisibleForTesting
     UserRoleChangeResponse removeRoleFromUserHelper (ModifyRoleOfUserRequest request){
         UserRoleChangeResponse.Builder reply = UserRoleChangeResponse.newBuilder();

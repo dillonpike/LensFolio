@@ -1,7 +1,6 @@
 package nz.ac.canterbury.seng302.identityprovider.service;
 
-import io.grpc.stub.StreamObserver;
-import io.grpc.stub.StreamObservers;
+
 import nz.ac.canterbury.seng302.identityprovider.model.Roles;
 import nz.ac.canterbury.seng302.identityprovider.model.UserModel;
 import nz.ac.canterbury.seng302.identityprovider.repository.RolesRepository;
@@ -12,13 +11,13 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.*;
-import org.springframework.beans.factory.annotation.Autowired;
-
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
+/***
+ * Testing class which contains unit test for methods in UserAccountServerService
+ */
 class UserAccountServerServiceTest {
 
     @Mock
@@ -37,7 +36,12 @@ class UserAccountServerServiceTest {
         MockitoAnnotations.openMocks(this); // This is required for Mockito annotations to work
     }
 
-
+    /***
+     * Test the method to add role to user
+     * Given te added role is Student
+     * Verify that the new role is saved to the database
+     * Expect the return contains success information
+     */
     @Test
     void addStudentRoleToUser() {
         ModifyRoleOfUserRequest request = ModifyRoleOfUserRequest.newBuilder()
@@ -61,6 +65,12 @@ class UserAccountServerServiceTest {
         Mockito.verify(userModelService).saveEditedUser(addedUserModel.capture());
     }
 
+    /***
+     * Test the method to add role to user
+     * Given te added role is Teacher
+     * Verify that the new role is saved to the database
+     * Expect the return contains success information
+     */
     @Test
     void addTeacherRoleToUser() {
         ModifyRoleOfUserRequest request = ModifyRoleOfUserRequest.newBuilder()
@@ -84,6 +94,12 @@ class UserAccountServerServiceTest {
         Mockito.verify(userModelService).saveEditedUser(addedUserModel.capture());
     }
 
+    /***
+     * Test the method to add role to user
+     * Given te added role is Admin
+     * Verify that the new role is saved to the database
+     * Expect the return contains success information
+     */
     @Test
     void addAdminRoleToUser() {
         ModifyRoleOfUserRequest request = ModifyRoleOfUserRequest.newBuilder()
@@ -107,6 +123,12 @@ class UserAccountServerServiceTest {
         Mockito.verify(userModelService).saveEditedUser(addedUserModel.capture());
     }
 
+    /***
+     * Test the method to delete role to user
+     * Given te deleted role is Student
+     * Verify that the role is deleted from the database
+     * Expect the return contains success information
+     */
     @Test
     void removeStudentRoleFromUser() {
         ModifyRoleOfUserRequest request = ModifyRoleOfUserRequest.newBuilder()
@@ -131,6 +153,12 @@ class UserAccountServerServiceTest {
 
     }
 
+    /***
+     * Test the method to delete role to user
+     * Given te deleted role is Teacher
+     * Verify that the role is deleted from the database
+     * Expect the return contains success information
+     */
     @Test
     void removeTeacherRoleFromUser() {
         ModifyRoleOfUserRequest request = ModifyRoleOfUserRequest.newBuilder()
@@ -155,6 +183,12 @@ class UserAccountServerServiceTest {
 
     }
 
+    /***
+     * Test the method to delete role to user
+     * Given te deleted role is Admin
+     * Verify that the role is deleted from the database
+     * Expect the return contains success information
+     */
     @Test
     void removeAdminRoleFromUser() {
         ModifyRoleOfUserRequest request = ModifyRoleOfUserRequest.newBuilder()
