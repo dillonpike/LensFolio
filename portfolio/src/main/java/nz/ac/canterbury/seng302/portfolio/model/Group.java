@@ -11,8 +11,8 @@ import java.util.stream.Collectors;
 @Entity
 @Table(name = "group_model",
         uniqueConstraints={
-        @UniqueConstraint(columnNames = {"Short_Name", "Course_Id"}),
-        @UniqueConstraint(columnNames = {"Long_Name", "Course_Id"})
+        @UniqueConstraint(columnNames = {"short_Name", "course_Id"}),
+        @UniqueConstraint(columnNames = {"long_Name", "course_Id"})
 })
 public class Group {
 
@@ -20,32 +20,34 @@ public class Group {
      * Id of the group.
      */
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int groupId;
 
     /**
      * Short name of the group.
      */
-    @Column(name="Short_Name")
+    @Column(name="short_name", length=15)
     private String shortName;
 
     /**
      * Long name of the group.
      */
-    @Column(name="Long_Name")
+    @Column(name="long_name", length=50)
     private String longName;
 
     /**
      * Id of the course instance the group is a part of.
      */
-    @Column(name="Course_Id")
+    @Column(name="course_id")
     private int courseId;
 
     /**
-     * Set of UserToGroup objects that map users to the group.
+     * Set of user ids of the members of the group.
      */
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
-    @JoinColumn(name = "Group_Id")
-    private Set<UserToGroup> members = new HashSet<>();
+    @ElementCollection
+    @CollectionTable(name="user_to_group", joinColumns=@JoinColumn(name="group_id"))
+    @Column(name="user_id")
+    private Set<Integer> memberIds = new HashSet<>();
 
     /**
      * Empty constructor for JPA.
@@ -54,13 +56,11 @@ public class Group {
 
     /**
      * Constructs a Group object.
-     * @param groupId id of the group
      * @param shortName short name of the group
      * @param longName long name of the group
      * @param courseId Id of the course instance the group is a part of
      */
-    public Group(int groupId, String shortName, String longName, int courseId) {
-        this.groupId = groupId;
+    public Group(String shortName, String longName, int courseId) {
         this.shortName = shortName;
         this.longName = longName;
         this.courseId = courseId;
@@ -135,6 +135,22 @@ public class Group {
      * @return ids of the users a part of the group
      */
     public Set<Integer> getMemberIds() {
-        return members.stream().map(x -> x.getId().getUserId()).collect(Collectors.toSet());
+        return memberIds;
+    }
+
+    /**
+     * Adds the user represented by the given user id to the group.
+     * @param userId id of user to add to the group
+     */
+    public void addMemberId(int userId) {
+        memberIds.add(userId);
+    }
+
+    /**
+     * Removes the user represented by the given user id from the group.
+     * @param userId id of user to remove from the group
+     */
+    public void removeMemberId(int userId) {
+        memberIds.remove(userId);
     }
 }
