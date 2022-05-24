@@ -26,13 +26,12 @@ public class EditEventController {
      * @throws Exception If getting the event from the given id fails
      */
     @GetMapping("/edit-event/{id}")
-    public String sprintForm(@PathVariable("id") Integer id, Model model ) throws Exception {
+    public String eventEditForm(@PathVariable("id") Integer id, Model model ) throws Exception {
         Event event = eventService.getEventById(id);
         /* Add Event details to the model */
         model.addAttribute("eventId", id);
         model.addAttribute("event", event);
         model.addAttribute("EventDateError", "");
-
         /* Return the name of the Thymeleaf template */
         return "editEvent"; //TODO: create the html page for editing an event.
     }
@@ -44,7 +43,7 @@ public class EditEventController {
      * @throws Exception if sprint cannot be found from the given ID or if it cannot be saved.
      */
     @PostMapping("/edit-event/{id}")
-    public String sprintSave(
+    public String eventEditSave(
             @PathVariable("id") Integer id,
             @AuthenticationPrincipal AuthState principal,
             @ModelAttribute("event") Event event,
