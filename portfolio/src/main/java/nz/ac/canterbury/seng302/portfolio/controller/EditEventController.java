@@ -31,10 +31,10 @@ public class EditEventController {
         /* Add Event details to the model */
         model.addAttribute("eventId", id);
         model.addAttribute("event", event);
-        model.addAttribute("EventDateError", "");
+        model.addAttribute("eventDateError", "");
 
         /* Return the name of the Thymeleaf template */
-        return "editEvent"; //TODO: create the html page for editing an event.
+        return "editEvent";
     }
 
     /**
@@ -71,6 +71,6 @@ public class EditEventController {
                         dateValidationService.validateStartDateNotAfterEndDate(eventStartDate, eventEndDate) + " " +
                         dateValidationService.validateDatesInProjectDateRange(eventStartDate, eventEndDate) + " " +
                         dateValidationService.validateStartTimeNotAfterEndTime(eventStartTime, eventEndTime, eventStartDate, eventEndDate));
-        return "addEvent :: #eventDateError";
+        return "editEvent :: #eventDateError";
     }
 }

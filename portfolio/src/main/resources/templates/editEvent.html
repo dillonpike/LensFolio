@@ -16,9 +16,10 @@
         <div id="title" th:data="${eventId}" class="title-name">Edit Sprint</div>
     </div>
 </div>
+
 <div class="content">
-    <form th:action="@{../edit-event/{id} (id=${eventId})}" th:object="${event}"
-          method="post">
+    <form onsubmit="return validateName();" th:action="@{../edit-event/{id} (id=${eventId})}" th:object="${event}"
+          method="post" >
         <label for="eventName">Sprint Name</label> <br/>
         <input id="eventName" type="text" th:name="eventName" th:field="*{eventName}">
         <br/>
@@ -50,51 +51,73 @@
             <div class="horizontal-group-element" >
                 <label for="eventStartTime">Event Start Time</label> <br/>
                 <div class="input-group date" id="eventTimeStart">
-                    <input type="time" class="form-control" th:value="*{startTimeString}" id="eventStartTime">
+                    <input type="time" class="form-control" th:field="*{startTimeString}" id="eventStartTime">
                 </div>
             </div>
             <div class="horizontal-group-element" >
                 <label for="eventEndTime">Event End Time</label> <br/>
                 <div class="input-group date" id="eventTimeEnd">
-                    <input type="time" class="form-control" th:value="*{endTimeString}" id="eventEndTime">
+                    <input type="time" class="form-control" th:field="*{endTimeString}" id="eventEndTime">
                 </div>
             </div>
         </div>
-        <span id="EventDateError" style="color:red" th:text="${EventDateError}"></span>
+        <span id="eventDateError" style="color:red" th:text="${eventDateError}"></span>
+        <span id="eventNameError" style="color:red" th:hidden = "true"> Invalid event name. Must be between 1 and 50 characters.</span>
         <br/>
-        <a th:href="@{../details}"><button class="cancel" type="button">Cancel</button></a>
+        <a th:href="@{details}"><button class="cancel" type="button">Cancel</button></a>
         <button id="saveButton" class="save" type="submit">Save</button>
     </form>
 </div>
 </body>
+<script src="../js/project.js"></script>
 <script>
     /**
-     * Checks the entered sprint dates in the input fields and displays an error message if there's a related error.
+     * Checks the entered event dates in the input fields and displays an error message if there's a related error.
      * Disables the save button if there is an error.
      */
-    function updateSprintDateError() {
+    function updateEventDateError() {
+        document.getElementById("saveButton").disabled = false;
         const data = {
-            id: document.getElementById("title").getAttribute("data"),
             eventStartDate: document.getElementById("eventStartDate").value,
-            eventEndDate: document.getElementById("eventEndDate").value
+            eventEndDate: document.getElementById("eventEndDate").value,
+            eventStartTime: document.getElementById("eventStartTime").value,
+            eventEndTime: document.getElementById("eventEndTime").value
         }
         $.post("edit-event/error?" + new URLSearchParams(data)).done(function (fragment) {
             console.log(fragment);
-            $("#EventDateError").replaceWith(fragment);
-            document.getElementById("saveButton").disabled = document.getElementById("EventDateError").textContent.trim().length > 0;
+            $("#eventDateError").replaceWith(fragment);
+            document.getElementById("saveButton").disabled = document.getElementById("eventDateError").textContent.trim().length > 0;
         });
     }
 
-    // Runs updateSprintDateError function whenever the entered dates change
-    document.getElementById("eventStartDate").onchange = updateSprintDateError;
-    document.getElementById("eventEndDate").onchange = updateSprintDateError;
 
-    // Initial run of updateSprintDateError function in case initial values are invalid
-    updateSprintDateError();
+
+    // Runs updateEventDateError function whenever the entered dates change
+    document.getElementById("eventStartDate").onchange = updateEventDateError;
+    document.getElementById("eventEndDate").onchange = updateEventDateError;
+    document.getElementById("eventStartTime").onchange = updateEventDateError;
+    document.getElementById("eventEndTime").onchange = updateEventDateError;
+
+    // Initial run of updateEventDateError function in case initial values are invalid
+    updateEventDateError();
 </script>
-<script src="../js/project.js"></script>
+
+
+<script>
+    // Checks whether the name is too long or null
+    function validateName() {
+        document.getElementById("eventNameError").hidden = true;
+        if (document.getElementById('eventName').value.length === 0 || document.getElementById('eventName').value.length > 50 ) {
+            document.getElementById("eventNameError").hidden = false;
+            return false
+        }
+        return true
+    }
+    document.getElementById("eventName").onchange = validateName;
+</script>
+
 <script type="text/javascript">
-    // Fills in the date pickers
+    // fills in the date pickers
     $(function() {
         $('#eventStart').datepicker({format: 'dd/M/yyyy'});
     });
@@ -104,4 +127,12 @@
         $('#eventEnd').datepicker({format: 'dd/M/yyyy'});
     });
 </script>
+<script>
+    // Sets default values for the time picker
+    document.getElementById("eventStartTime").defaultValue = "12:00";
+    document.getElementById("eventEndTime").defaultValue = "13:00";
+</script>
+
+
+
 </html>
