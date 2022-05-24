@@ -33,11 +33,8 @@ public class EditSprintController {
     public String sprintForm(@PathVariable("id") Integer id, Model model ) throws Exception {
         Sprint sprint = sprintService.getSprintById(id);
         /* Add sprint details to the model */
+        model.addAttribute("sprint", sprint);
         model.addAttribute("sprintId", id);
-        model.addAttribute("sprintName", sprint.getName());
-        model.addAttribute("sprintStartDate", sprint.getStartDateString());
-        model.addAttribute("sprintEndDate", sprint.getEndDateString());
-        model.addAttribute("sprintDescription", sprint.getDescription());
         model.addAttribute("sprintDateError", "");
 
         /* Return the name of the Thymeleaf template */
@@ -47,28 +44,22 @@ public class EditSprintController {
     /**
      * Tries to save new data to sprint with given sprintId to the database.
      * @param id Id of sprint edited
-     * @param sprintName New sprint name
-     * @param sprintStartDate New sprint start date
-     * @param sprintEndDate New sprint end date
-     * @param sprintDescription New sprint description
+     * @param sprint New sprint object
      * @throws Exception if sprint cannot be found from the given ID or if it cannot be saved.
      */
     @PostMapping("/edit-sprint/{id}")
     public String sprintSave(
             @PathVariable("id") Integer id,
             @AuthenticationPrincipal AuthState principal,
-            @RequestParam(value="sprintName") String sprintName,
-            @RequestParam(value="sprintStartDate") String sprintStartDate,
-            @RequestParam(value="sprintEndDate") String sprintEndDate,
-            @RequestParam(value="sprintDescription") String sprintDescription,
+            @ModelAttribute("sprint") Sprint sprint,
             Model model
     ) throws Exception {
         // Gets the project with id 0 to plonk on the page
         Sprint newSprint = sprintService.getSprintById(id);
-        newSprint.setName(sprintName);
-        newSprint.setStartDateString(sprintStartDate);
-        newSprint.setEndDateString(sprintEndDate);
-        newSprint.setDescription(sprintDescription);
+        newSprint.setName(sprint.getName());
+        newSprint.setStartDateString(sprint.getStartDateString());
+        newSprint.setEndDateString(sprint.getEndDateString());
+        newSprint.setDescription(sprint.getDescription());
 
         sprintService.updateSprint(newSprint);
 
