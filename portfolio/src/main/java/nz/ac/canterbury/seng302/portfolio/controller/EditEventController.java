@@ -1,14 +1,20 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
 import nz.ac.canterbury.seng302.portfolio.model.Event;
+import nz.ac.canterbury.seng302.portfolio.model.EventMessage;
+import nz.ac.canterbury.seng302.portfolio.model.EventResponse;
 import nz.ac.canterbury.seng302.portfolio.service.DateValidationService;
 import nz.ac.canterbury.seng302.portfolio.service.EventService;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.Payload;
+import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.util.HtmlUtils;
 
 @Controller
 public class EditEventController {
@@ -59,7 +65,7 @@ public class EditEventController {
 
         return "redirect:/details";
     }
-
+    /* //TODO Fix validation to use time and date validators.
     @RequestMapping(value="/edit-event/error", method=RequestMethod.POST)
     public String updateSprintRangeErrors(@RequestParam(value="id") Integer id,
                                           @ModelAttribute("event") Event event,
@@ -70,5 +76,11 @@ public class EditEventController {
                         dateValidationService.validateSprintDateRange(event.getStartDateString(), event.getEndDateString(), id) + " " +
                         dateValidationService.validateSprintInProjectDateRange(event.getStartDateString(), event.getEndDateString()));
         return "editEvent :: #eventDateError"; //TODO: add errors to be displayed on the edit event screen.
+    }*/
+
+    @MessageMapping("/updating")
+    @SendTo("/topic/receiving")
+    public EventResponse UpdatingEvent(EventMessage message) throws Exception {
+        return new EventResponse(HtmlUtils.htmlEscape(message.getMessage()));
     }
 }
