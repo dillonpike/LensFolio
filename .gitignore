@@ -6,3 +6,5 @@
 */src/generated/
 */bin/
 .env
+userImage
+profileImage

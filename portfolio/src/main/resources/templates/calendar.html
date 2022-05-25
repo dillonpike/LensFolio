@@ -42,23 +42,25 @@
                     info.event.setProp("classNames", "event-border");
                 },
                 eventClick: function(info) {
-                    // change the border color just for fun
+                    // change the border color
                     let newEvent = calendar.getEventById(info.event.id);
-                    // let newEventId = calendar.getEventById(info.event.id);
                     let selectedEvent = calendar.getEventById(selectedId);
-                    // console.log(newEvent.id === selectedEvent.id);
                     if (selectedId === -1) {
+                        newEvent.setProp("classNames", "event-border");
                         newEvent.setProp("borderColor", alternateColour(newEvent.backgroundColor));
                         newEvent.setProp("editable", true);
                         selectedId = info.event.id;
                     } else {
                         if (newEvent.id === selectedEvent.id) {
+                            newEvent.setProp("classNames", "event-border");
                             newEvent.setProp("borderColor", newEvent.backgroundColor);
                             newEvent.setProp("editable", false);
                             selectedId = -1;
                         } else {
+                            selectedEvent.setProp("classNames", "event-border");
                             selectedEvent.setProp("borderColor", selectedEvent.backgroundColor)
                             selectedEvent.setProp("editable", false);
+                            newEvent.setProp("classNames", "event-border");
                             newEvent.setProp("borderColor", alternateColour(newEvent.backgroundColor));
                             newEvent.setProp("editable", true);
                             selectedId = info.event.id;
@@ -66,20 +68,20 @@
                     }
                 },
                 eventMouseEnter: function(info) {
-                    // change the border color just for fun
+                    // change the border color
                     let event = calendar.getEventById(info.event.id);
                     if (event.borderColor !== alternateColour(event.backgroundColor)) {
-                        event.setProp("borderColor", "black");
+                        event.setProp("classNames", "event-border-hover");
+                        //event.setProp("borderColor", "black");
                     }
-                    // console.log(3)
                 },
                 eventMouseLeave: function(info) {
-                    // change the border color just for fun
+                    // change the border color
                     let event = calendar.getEventById(info.event.id);
                     if (event.borderColor !== alternateColour(event.backgroundColor)) {
-                        event.setProp("borderColor", event.backgroundColor);
+                        event.setProp("classNames", "event-border");
+                        //event.setProp("borderColor", event.backgroundColor);
                     }
-                    // console.log(4)
                 },
                 eventOverlap: function(stillEvent, movingEvent) {
                     document.getElementById("overlapError").hidden = false;

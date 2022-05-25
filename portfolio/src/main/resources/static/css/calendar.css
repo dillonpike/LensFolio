@@ -27,6 +27,17 @@ body {
     border-width: medium !important;
 }
 
+.event-border-hover {
+    border-width: medium !important;
+    border-top-color: black !important;
+    border-bottom-color: black !important;
+}
+
+.event-border-selected {
+    border-width: medium !important;
+    border-color: red !important;
+}
+
 .fc-event-start {
     border-left-width: 10px !important;
 }
