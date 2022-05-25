@@ -39,6 +39,8 @@
                 ],
                 eventDidMount: function(info) {
                     info.event.setProp("classNames", "event-border");
+                    let sprint = calendar.getEventById(info.event.id);
+                    saveSprint(sprint);
                 },
                 eventClick: function(info) {
                     // change the border color just for fun
@@ -70,6 +72,7 @@
                     if (event.borderColor !== alternateColour(event.backgroundColor)) {
                         event.setProp("borderColor", "black");
                     }
+                    // console.log(3)
                 },
                 eventMouseLeave: function(info) {
                     // change the border color just for fun
@@ -77,6 +80,7 @@
                     if (event.borderColor !== alternateColour(event.backgroundColor)) {
                         event.setProp("borderColor", event.backgroundColor);
                     }
+                    // console.log(4)
                 },
                 eventOverlap: function(stillEvent, movingEvent) {
                     document.getElementById("overlapError").hidden = false;
@@ -88,7 +92,6 @@
                 },
                 eventResize: function(info) {
                     let sprint = calendar.getEventById(info.event.id);
-                    console.log(sprint)
                     saveSprint(sprint)
                 }
             });
