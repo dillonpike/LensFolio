@@ -118,7 +118,7 @@
     userSorting.sortOrder = ['asc', 'desc'].includes(userSorting.sortOrder) ? userSorting.sortOrder : 'asc';
 
     const tableOptions = {
-        stateSave: false,
+        stateSave: true,
         "dom": 'rtip',
         order: [userSorting.columnIndex, userSorting.sortOrder]
     };
