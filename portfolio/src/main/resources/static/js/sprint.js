@@ -3,7 +3,7 @@
  */
 function saveSprint(sprint) {
     const data = {
-        id: sprint,
+        id: sprint.id,
         sprintStartDate: sprint.startStr,
         sprintEndDate: sprint.endStr
     }

@@ -92,9 +92,11 @@ public class CalendarController {
     }
 
     @RequestMapping(value="/update-sprint", method= RequestMethod.POST)
-    public String updateSprintRangeErrors(@RequestParam(value="id") String id,
+    public String updateSprintDates(@RequestParam(value="id") Integer id,
                                           @RequestParam(value="sprintStartDate") String sprintStartDate,
                                           @RequestParam(value="sprintEndDate") String sprintEndDate) {
+        System.out.println(id);
+        sprintService.updateSprintDate(id, sprintStartDate, sprintEndDate);
 
         return "calendar";
     }
