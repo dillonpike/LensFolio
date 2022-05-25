@@ -8,10 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
 
@@ -88,15 +85,6 @@ public class CalendarController {
         model.addAttribute("projectName", project.getName());
         model.addAttribute("projectStartDateString", project.getStartDateString());
         model.addAttribute("projectEndDateString", project.getEndDateString());
-        return "calendar";
-    }
-
-    @RequestMapping(value="/update-sprint", method= RequestMethod.POST)
-    public String updateSprintDates(@RequestParam(value="id") Integer id,
-                                          @RequestParam(value="sprintStartDate") String sprintStartDate,
-                                          @RequestParam(value="sprintEndDate") String sprintEndDate) {
-        sprintService.updateSprintDate(id, sprintStartDate, sprintEndDate);
-
         return "calendar";
     }
 }

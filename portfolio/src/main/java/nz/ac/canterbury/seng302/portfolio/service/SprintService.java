@@ -89,7 +89,7 @@ public class SprintService {
     public void removeSprint(Integer id) {
         Optional<Sprint> sOptional = repository.findById(id);
 
-        if(sOptional.isPresent()) {
+        if (sOptional.isPresent()) {
             Sprint sprintUpdate = sOptional.get();
             repository.deleteById(sprintUpdate.getId());
         }
@@ -105,27 +105,30 @@ public class SprintService {
 
 
     /**
-     * Updates a sprint
-     *
-     * @return Newly edited sprint
+     * Updates the sprint identified by the given id with the given dates.
+     * Returns true if update is successful, otherwise false.
+     * @param id id of sprint to update
+     * @param sprintStartDate new start date
+     * @param sprintEndDate new end date
+     * @return true if update is successful, otherwise false
      */
-    public void updateSprintDate(Integer id, String sprintStartDate, String sprintEndDate) {
+    public boolean updateSprintDate(Integer id, String sprintStartDate, String sprintEndDate) {
         Optional<Sprint> sOptional = repository.findById(id);
 
         if (sOptional.isPresent()) {
             Sprint sprintUpdate = sOptional.get();
-
             sprintUpdate.setStartDate(calendarDateStringToDate(sprintStartDate, false));
             sprintUpdate.setEndDate(calendarDateStringToDate(sprintEndDate, true));
-
             repository.save(sprintUpdate);
+            return true;
         }
+        return false;
     }
 
     /**
-     * Gets the date form of the given date string
+     * Converts a date string from the calendar to a date object.
      *
-     * @param dateString the string to read as a date in format 01/Jan/2000
+     * @param dateString the string to read as a date in format 2000/12/30
      * @return the given date, as a date object
      */
     public Date calendarDateStringToDate(String dateString, boolean isEndDate) {
