@@ -3,7 +3,6 @@ package nz.ac.canterbury.seng302.portfolio.model;
 import javax.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * JPA entity that models a group that users can join.

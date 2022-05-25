@@ -2,13 +2,15 @@ package nz.ac.canterbury.seng302.portfolio.service;
 
 import nz.ac.canterbury.seng302.portfolio.model.Group;
 import nz.ac.canterbury.seng302.portfolio.repository.GroupRepository;
+import org.hibernate.ObjectNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
 /**
- * Contains methods for performing operations on Group objects and storing them in the database.
+ * Contains methods for performing operations on Group objects, such as adding and removing group members, and storing
+ * groups in the database.
  */
 @Service
 public class GroupService {
@@ -20,16 +22,17 @@ public class GroupService {
     private GroupRepository groupRepository;
 
     /**
-     * Getting the UserSorting Object based on the given user's id
-     * @param id Integer user's Id
-     * @return a UserSorting object
+     * Returns the group object from the database with the given id.
+     * @param id group id
+     * @return group object from the database with the given id
+     * @throws ObjectNotFoundException when a group with the given id doesn't exist in the database
      */
-    public Group getGroupById(Integer id) throws Exception {
+    public Group getGroupById(Integer id) throws ObjectNotFoundException {
         Optional<Group> group = groupRepository.findById(id);
         if (group.isPresent()) {
             return group.get();
         } else {
-            throw new Exception("Group not found");
+            throw new ObjectNotFoundException(id, "Group");
         }
     }
 

@@ -10,7 +10,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 /**
  * Unit tests for Group class.
  */
-public class GroupTest {
+class GroupTest {
 
     /**
      * Tests that the constructor for the Group class sets each variable correctly.

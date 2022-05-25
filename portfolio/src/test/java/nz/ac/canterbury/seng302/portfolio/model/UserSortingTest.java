@@ -7,7 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 /**
  * Unit tests for UserSorting class.
  */
-public class UserSortingTest {
+class UserSortingTest {
 
     /**
      * Tests that the 'full' constructor for the UserSorting class (one that accepts three variables) sets each

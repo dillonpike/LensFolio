@@ -18,7 +18,7 @@ import static org.mockito.BDDMockito.given;
  * Unit tests for GroupService class.
  */
 @ExtendWith(MockitoExtension.class)
-public class GroupServiceTest {
+class GroupServiceTest {
 
     /**
      * Mocked repository of Group objects.
@@ -47,7 +47,7 @@ public class GroupServiceTest {
      * Exception.
      */
     @Test
-    public void givenNoStoredGroups_whenGetGroupById_thenThrowException() {
+    void givenNoStoredGroups_whenGetGroupById_thenThrowException() {
         given(groupRepository.findById(any(Integer.class))).willReturn(Optional.empty());
         try {
             groupService.getGroupById(1);
@@ -62,7 +62,7 @@ public class GroupServiceTest {
      * expected Group object.
      */
     @Test
-    public void givenStoredGroups_whenGetGroupById_thenReturnExpectedGroup() {
+    void givenStoredGroups_whenGetGroupById_thenReturnExpectedGroup() {
         given(groupRepository.findById(any(Integer.class))).willReturn(Optional.of(expectedGroup));
         try {
             Group group = groupService.getGroupById(1);
@@ -76,7 +76,7 @@ public class GroupServiceTest {
      * Tests that adding members to groups works as expected.
      */
     @Test
-    public void givenMemberNotInGroup_whenAddMember_thenMemberInGroup() {
+    void givenMemberNotInGroup_whenAddMember_thenMemberInGroup() {
         int expectedUserId = 1;
         Group group = new Group("", "", 1);
         assertFalse(group.getMemberIds().contains(expectedUserId));
@@ -88,7 +88,7 @@ public class GroupServiceTest {
      * Tests that removing members from groups works as expected.
      */
     @Test
-    public void givenMemberInGroup_whenRemoveMember_thenMemberNotInGroup() {
+    void givenMemberInGroup_whenRemoveMember_thenMemberNotInGroup() {
         int expectedUserId = 1;
         Group group = new Group("", "", 1);
         groupService.addMember(expectedUserId, group);

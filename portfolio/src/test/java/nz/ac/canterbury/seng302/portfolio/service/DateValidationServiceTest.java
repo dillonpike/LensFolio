@@ -25,7 +25,7 @@ import static org.mockito.Mockito.when;
  * Unit tests for DateValidationService class.
  */
 @ExtendWith(MockitoExtension.class)
-public class DateValidationServiceTest {
+class DateValidationServiceTest {
 
     /**
      * Mocked ProjectService object.
@@ -61,7 +61,7 @@ public class DateValidationServiceTest {
     private static final Calendar calendar = Calendar.getInstance();
 
     @BeforeAll
-    public static void setup() {
+    static void setup() {
         Date today = new Date();
         calendar.setTime(today);
         ArrayList<Date> monthsFromNow = new ArrayList<>(List.of(today));
@@ -81,7 +81,7 @@ public class DateValidationServiceTest {
      * date (valid boundary case).
      */
     @Test
-    public void givenValidBoundaryDates_whenValidateStartDateNotAfterEndDate_thenBlankOutput() {
+    void givenValidBoundaryDates_whenValidateStartDateNotAfterEndDate_thenBlankOutput() {
         String startDate = "01/Jan/2022";
         String endDate = "01/Jan/2022";
         String output = dateValidationService.validateStartDateNotAfterEndDate(startDate, endDate);
@@ -93,7 +93,7 @@ public class DateValidationServiceTest {
      * after the end date (invalid boundary case).
      */
     @Test
-    public void givenInvalidBoundaryDates_whenValidateStartDateNotAfterEndDate_thenOutputWithMessage() {
+    void givenInvalidBoundaryDates_whenValidateStartDateNotAfterEndDate_thenOutputWithMessage() {
         String startDate = "02/Jan/2022";
         String endDate = "01/Jan/2022";
         String output = dateValidationService.validateStartDateNotAfterEndDate(startDate, endDate);
@@ -104,7 +104,7 @@ public class DateValidationServiceTest {
      * Checks that the getDaysFromNow method returns a negative value when given a future date.
      */
     @Test
-    public void givenFutureDate_whenGetDaysFromNow_thenReturnNegativeTime() {
+    void givenFutureDate_whenGetDaysFromNow_thenReturnNegativeTime() {
         Date future = addToDate(new Date(), Calendar.DAY_OF_MONTH, 5);
         long difference = dateValidationService.getDaysFromNow(future);
         assertTrue(difference < 0);
@@ -114,7 +114,7 @@ public class DateValidationServiceTest {
      * Checks that the getDaysFromNow method returns a positive value when given a past date.
      */
     @Test
-    public void givenPastDate_whenGetDaysFromNow_thenReturnPositiveTime() {
+    void givenPastDate_whenGetDaysFromNow_thenReturnPositiveTime() {
         Date past = addToDate(new Date(), Calendar.DAY_OF_MONTH, -5);
         long difference = dateValidationService.getDaysFromNow(past);
         assertTrue(difference > 0);
@@ -125,7 +125,7 @@ public class DateValidationServiceTest {
      * a day ago (invalid boundary case).
      */
     @Test
-    public void givenProjectStartDateAYearAndADayAgo_whenValidateDateNotOverAYearAgo_thenOutputWithMessage() {
+    void givenProjectStartDateAYearAndADayAgo_whenValidateDateNotOverAYearAgo_thenOutputWithMessage() {
         Date oneYearOneDayAgo = addToDate(addToDate(new Date(), Calendar.DAY_OF_YEAR, -1), Calendar.YEAR, -1);
         String output = dateValidationService.validateDateNotOverAYearAgo(Project.dateToString(oneYearOneDayAgo));
         assertTrue(output.length() > 0);
@@ -135,7 +135,7 @@ public class DateValidationServiceTest {
      * Checks that validateDateRangeNotEmpty returns an error message when the given start date is empty.
      */
     @Test
-    public void givenEmptyStartDate_whenValidateDateRangeNotEmpty_thenOutputWithMessage() {
+    void givenEmptyStartDate_whenValidateDateRangeNotEmpty_thenOutputWithMessage() {
         String startDate = "";
         String endDate = Project.dateToString(new Date());
         String output = dateValidationService.validateDateRangeNotEmpty(startDate, endDate);
@@ -146,7 +146,7 @@ public class DateValidationServiceTest {
      * Checks that validateDateRangeNotEmpty returns an error message when the given end date is empty.
      */
     @Test
-    public void givenEmptyEndDate_whenValidateDateRangeNotEmpty_thenOutputWithMessage() {
+    void givenEmptyEndDate_whenValidateDateRangeNotEmpty_thenOutputWithMessage() {
         String startDate = Project.dateToString(new Date());
         String endDate = "";
         String output = dateValidationService.validateDateRangeNotEmpty(startDate, endDate);
@@ -157,7 +157,7 @@ public class DateValidationServiceTest {
      * Checks that validateDateRangeNotEmpty returns an error message when the given end date is empty.
      */
     @Test
-    public void givenNotEmptyDates_whenValidateDateRangeNotEmpty_thenBlankOutput() {
+    void givenNotEmptyDates_whenValidateDateRangeNotEmpty_thenBlankOutput() {
         String startDate = Project.dateToString(new Date());
         String endDate = Project.dateToString(new Date());
         String output = dateValidationService.validateDateRangeNotEmpty(startDate, endDate);
@@ -169,7 +169,7 @@ public class DateValidationServiceTest {
      * dates (boundary case).
      */
     @Test
-    public void givenValidBoundaryDates_whenValidateSprintInProjectDateRange_thenBlankOutput() throws Exception {
+    void givenValidBoundaryDates_whenValidateSprintInProjectDateRange_thenBlankOutput() throws Exception {
         when(projectService.getProjectById(anyInt())).thenReturn(testProject);
         String output = dateValidationService.validateSprintInProjectDateRange(testProject.getStartDateString(),
                 testProject.getEndDateString());
@@ -181,7 +181,7 @@ public class DateValidationServiceTest {
      * project's dates (boundary case).
      */
     @Test
-    public void givenInvalidStartDate_whenValidateSprintInProjectDateRange_thenOutputWithMessage() throws Exception {
+    void givenInvalidStartDate_whenValidateSprintInProjectDateRange_thenOutputWithMessage() throws Exception {
         when(projectService.getProjectById(anyInt())).thenReturn(testProject);
         String startDateString = addToDateString(testProject.getStartDateString(), Calendar.DAY_OF_YEAR, -1);
         String output = dateValidationService.validateSprintInProjectDateRange(startDateString,
@@ -194,7 +194,7 @@ public class DateValidationServiceTest {
      * project's dates (boundary case).
      */
     @Test
-    public void givenInvalidEndDate_whenValidateSprintInProjectDateRange_thenOutputWithMessage() throws Exception {
+    void givenInvalidEndDate_whenValidateSprintInProjectDateRange_thenOutputWithMessage() throws Exception {
         when(projectService.getProjectById(anyInt())).thenReturn(testProject);
         String endDateString = addToDateString(testProject.getEndDateString(), Calendar.DAY_OF_YEAR, 1);
         String output = dateValidationService.validateSprintInProjectDateRange(testProject.getStartDateString(),
@@ -207,7 +207,7 @@ public class DateValidationServiceTest {
      * date of an already existing sprint (boundary case).
      */
     @Test
-    public void givenOverlappingWithStartDate_whenValidateSprintDateRange_thenOutputWithMessage() {
+    void givenOverlappingWithStartDate_whenValidateSprintDateRange_thenOutputWithMessage() {
         when(sprintService.getAllSprints()).thenReturn(testSprints);
         Sprint testSprint = testSprints.get(0);
         String output = dateValidationService.validateSprintDateRange(
@@ -221,7 +221,7 @@ public class DateValidationServiceTest {
      * date of an already existing sprint (boundary case).
      */
     @Test
-    public void givenOverlappingWithEndDate_whenValidateSprintDateRange_thenOutputWithMessage() {
+    void givenOverlappingWithEndDate_whenValidateSprintDateRange_thenOutputWithMessage() {
         when(sprintService.getAllSprints()).thenReturn(testSprints);
         Sprint testSprint = testSprints.get(1);
         String output = dateValidationService.validateSprintDateRange(testSprint.getEndDateString(),
@@ -234,7 +234,7 @@ public class DateValidationServiceTest {
      * existing sprints (boundary case).
      */
     @Test
-    public void givenValidDates_whenValidateSprintDateRange_thenBlankOutput() {
+    void givenValidDates_whenValidateSprintDateRange_thenBlankOutput() {
         when(sprintService.getAllSprints()).thenReturn(testSprints);
         Sprint testSprint = testSprints.get(0);
         String output = dateValidationService.validateSprintDateRange(
@@ -248,7 +248,7 @@ public class DateValidationServiceTest {
      * This is for editing, so the dates of the sprint currently being edited are ignored.
      */
     @Test
-    public void givenOverlappingDatesWithCurrentSprint_whenValidateSprintDateRange_thenBlankOutput() {
+    void givenOverlappingDatesWithCurrentSprint_whenValidateSprintDateRange_thenBlankOutput() {
         when(sprintService.getAllSprints()).thenReturn(testSprints);
         Sprint testSprint = testSprints.get(1);
         String output = dateValidationService.validateSprintDateRange(testSprint.getStartDateString(),
@@ -261,7 +261,7 @@ public class DateValidationServiceTest {
      * as the first sprint and end on the same day as the last sprint (boundary valid case).
      */
     @Test
-    public void givenValidBoundaryDates_whenValidateProjectDatesContainSprints_thenBlankOutput() {
+    void givenValidBoundaryDates_whenValidateProjectDatesContainSprints_thenBlankOutput() {
         when(sprintService.getAllSprintsOrdered()).thenReturn(testSprints);
         String output = dateValidationService.validateProjectDatesContainSprints(
                 testProject.getStartDateString(), testProject.getEndDateString());
@@ -273,7 +273,7 @@ public class DateValidationServiceTest {
      * start date of the first sprint (boundary invalid case).
      */
     @Test
-    public void givenInvalidStartDate_whenValidateProjectDatesContainSprints_thenBlankOutput() {
+    void givenInvalidStartDate_whenValidateProjectDatesContainSprints_thenBlankOutput() {
         when(sprintService.getAllSprintsOrdered()).thenReturn(testSprints);
         String output = dateValidationService.validateProjectDatesContainSprints(
                 addToDateString(testSprints.get(0).getStartDateString(), Calendar.DAY_OF_YEAR, 1),
@@ -286,7 +286,7 @@ public class DateValidationServiceTest {
      * end date of the last sprint (boundary invalid case).
      */
     @Test
-    public void givenInvalidEndDate_whenValidateProjectDatesContainSprints_thenBlankOutput() {
+    void givenInvalidEndDate_whenValidateProjectDatesContainSprints_thenBlankOutput() {
         when(sprintService.getAllSprintsOrdered()).thenReturn(testSprints);
         String output = dateValidationService.validateProjectDatesContainSprints(
                 testProject.getStartDateString(),
@@ -299,7 +299,7 @@ public class DateValidationServiceTest {
      * sprints (invalid case).
      */
     @Test
-    public void givenInvalidDates_whenValidateProjectDatesContainSprints_thenBlankOutput() {
+    void givenInvalidDates_whenValidateProjectDatesContainSprints_thenBlankOutput() {
         when(sprintService.getAllSprintsOrdered()).thenReturn(testSprints);
         String output = dateValidationService.validateProjectDatesContainSprints(
                 addToDateString(testSprints.get(0).getEndDateString(), Calendar.DAY_OF_YEAR, 1),
