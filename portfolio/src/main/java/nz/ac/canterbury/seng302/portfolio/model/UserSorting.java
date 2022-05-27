@@ -29,8 +29,7 @@ public class UserSorting {
     /**
      * Empty constructor required for JPA.
      */
-    public UserSorting() {
-    }
+    public UserSorting() {}
 
     /**
      * Constructor that creates a UserSorting object with the given userId, and default columnIndex and sortOrder.
