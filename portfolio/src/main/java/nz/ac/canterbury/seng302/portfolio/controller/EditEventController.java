@@ -85,9 +85,15 @@ public class EditEventController {
      * @param message EventMessage that holds the event being updated
      * @return returns an EventResponse that holds information about the event being updated.
      */
-    @MessageMapping("/editing")
+    @MessageMapping("/editing-event")
     @SendTo("/events/being-edited")
     public EventResponse updatingEvent(EventMessage message) {
+        return new EventResponse(message.getEventId(), HtmlUtils.htmlEscape(message.getEventName()));
+    }
+
+    @MessageMapping("/saved-edited-event")
+    @SendTo("/events/save-edit")
+    public EventResponse savingUpdatedEvent(EventMessage message) {
         return new EventResponse(message.getEventId(), HtmlUtils.htmlEscape(message.getEventName()));
     }
 }

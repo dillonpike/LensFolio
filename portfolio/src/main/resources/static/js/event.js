@@ -20,14 +20,14 @@ function connect() {
  * Sends the message that an event is being updated, and sends the events names with it.
  */
 function sendName() {
-    stompClient.send("/app/editing", {}, JSON.stringify({'eventName': $("#sprintName").val(), 'eventId': $("#sprintId").val()}));
+    stompClient.send("/app/editing-event", {}, JSON.stringify({'eventName': $("#eventName").val(), 'eventId': $("#eventId").val()}));
 }
 
 /**
  * Sends an empty message so that the other end can realise to close any popups it may have activated.
  */
 function sendEmpty() {
-    stompClient.send("/app/editing", {}, JSON.stringify({'eventName': "", 'eventId': $("#sprintId").val()}));
+    stompClient.send("/app/editing-event", {}, JSON.stringify({'eventName': "", 'eventId': $("#sprintId").val()}));
 }
 
 /**
