@@ -5,7 +5,10 @@ import nz.ac.canterbury.seng302.portfolio.model.EventMessage;
 import nz.ac.canterbury.seng302.portfolio.model.EventResponse;
 import nz.ac.canterbury.seng302.portfolio.service.DateValidationService;
 import nz.ac.canterbury.seng302.portfolio.service.EventService;
+import nz.ac.canterbury.seng302.portfolio.service.RegisterClientService;
+import nz.ac.canterbury.seng302.portfolio.service.UserAccountClientService;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
+import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
@@ -24,6 +27,12 @@ public class EditEventController {
     @Autowired
     private DateValidationService dateValidationService;
 
+    @Autowired
+    private UserAccountClientService userAccountClientService;
+
+    @Autowired
+    private RegisterClientService registerClientService;
+
     /**
      * Gets data for editing a given event.
      * @param id Id of event
@@ -31,12 +40,21 @@ public class EditEventController {
      * @throws Exception If getting the event from the given id fails
      */
     @GetMapping("/edit-event/{id}")
-    public String eventEditForm(@PathVariable("id") Integer id, Model model ) throws Exception {
+    public String eventEditForm(@PathVariable("id") Integer id, Model model, @AuthenticationPrincipal AuthState principal ) throws Exception {
         Event event = eventService.getEventById(id);
         /* Add Event details to the model */
         model.addAttribute("eventId", id);
         model.addAttribute("event", event);
         model.addAttribute("eventDateError", "");
+
+        // Get user information for sending with live updates
+        Integer userId = userAccountClientService.getUserIDFromAuthState(principal);
+        model.addAttribute("userId", userId);
+        UserResponse user = registerClientService.getUserData(userId);
+        model.addAttribute("username", user.getUsername());
+        model.addAttribute("userFirstName", user.getFirstName());
+        model.addAttribute("userLastName", user.getLastName());
+
 
         /* Return the name of the Thymeleaf template */
         return "editEvent";
@@ -82,25 +100,31 @@ public class EditEventController {
     /**
      * This method maps @MessageMapping endpoint to the @SendTo endpoint. Called when something is sent to
      * the MessageMapping endpoint.
-     * @param message EventMessage that holds the event being updated
+     * @param message EventMessage that holds information about the event being updated
      * @return returns an EventResponse that holds information about the event being updated.
      */
     @MessageMapping("/editing-event")
     @SendTo("/events/being-edited")
     public EventResponse updatingEvent(EventMessage message) {
-        String username = "DefAcc";
-        String firstName = "First";
-        String lastName = "Last";
+        String username = message.getUsername();
+        String firstName = message.getUserFirstName();
+        String lastName = message.getUserLastName();
         return new EventResponse(HtmlUtils.htmlEscape(message.getEventName()), username, firstName, lastName);
     }
 
+    /**
+     * This method maps @MessageMapping endpoint to the @SendTo endpoint. Called when something is sent to
+     * the MessageMapping endpoint. This method also triggers some sort of re-render of the events.
+     * @param message EventMessage that holds information about the event being updated
+     * @return returns an EventResponse that holds information about the event being updated.
+     */
     @MessageMapping("/saved-edited-event")
     @SendTo("/events/save-edit")
     public EventResponse savingUpdatedEvent(EventMessage message) {
         // Trigger some sort of reload here?
-        String username = "DefAcc";
-        String firstName = "First";
-        String lastName = "Last";
+        String username = message.getUsername();
+        String firstName = message.getUserFirstName();
+        String lastName = message.getUserLastName();
         return new EventResponse(HtmlUtils.htmlEscape(message.getEventName()), username, firstName, lastName);
     }
 }

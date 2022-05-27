@@ -1,5 +1,6 @@
 package nz.ac.canterbury.seng302.portfolio.model;
 
+
 /**
  * Message class that is sent when STOMP sending event updates
  */
@@ -9,14 +10,26 @@ public class EventMessage {
 
     private int userId;
 
+    private String userFirstName;
+
+    private String userLastName;
+
+    private String username;
+
     /**
      * Main constructer of an EventMessage
-     * @param userId Id of the user editing the event.
-     * @param eventName Event name for displaying.
+     * @param eventName Name of the event being changed.
+     * @param userId User Id of the user editing.
+     * @param userFirstName First name of the user editing.
+     * @param userLastName Last name of the user editing.
+     * @param username Username of the user editing.
      */
-    public EventMessage(int userId, String eventName) {
-        this.userId = userId;
+    public EventMessage(String eventName, int userId, String userFirstName, String userLastName, String username) {
         this.eventName = eventName;
+        this.userId = userId;
+        this.userFirstName = userFirstName;
+        this.userLastName = userLastName;
+        this.username = username;
     }
 
     public String getEventName() {
@@ -33,5 +46,29 @@ public class EventMessage {
 
     public void setUserId(int userId) {
         this.userId = userId;
+    }
+
+    public String getUserFirstName() {
+        return userFirstName;
+    }
+
+    public void setUserFirstName(String userFirstName) {
+        this.userFirstName = userFirstName;
+    }
+
+    public String getUserLastName() {
+        return userLastName;
+    }
+
+    public void setUserLastName(String userLastName) {
+        this.userLastName = userLastName;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 }

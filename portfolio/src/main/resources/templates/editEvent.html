@@ -84,7 +84,81 @@
 </div>
 </body>
 <script src="../js/project.js"></script>
-<script src="../js/event.js"></script>
+<script th:inline="javascript">
+    let stompClient = null;
+
+    /**
+     * Connects the stomp client to the setup websocket endpoint.
+     * Then subscribes a method to the events/being-edited endpoint.
+     */
+    function connect() {
+        let socket = new SockJS('/mywebsockets');
+        stompClient = Stomp.over(socket);
+        stompClient.connect({}, function (frame) {
+            console.log('Connected: ' + frame);
+        });
+    }
+
+    /**
+     * Sends the message that an event is being updated, and sends the events names with it.
+     */
+    function sendName() {
+        let userId = [[${userId}]];
+        let userFirstName = [[${userFirstName}]];
+        let userLastName = [[${userLastName}]];
+        let username = [[${username}]];
+        stompClient.send("/app/editing-event", {}, JSON.stringify({
+            'eventName': $("#eventName").val(),
+            'userId': userId,
+            'userFirstName': userFirstName,
+            'userLastName': userLastName,
+            'username': username
+        }));
+    }
+
+    /**
+     * Sends an empty message so that the other end can realise to close any popups it may have activated.
+     */
+    function sendEmpty() {
+        stompClient.send("/app/editing-event", {}, JSON.stringify({
+            'eventName': $("#eventName").val(),
+            'userId': 0,
+            'userFirstName': "",
+            'userLastName': "",
+            'username': ""
+        }));
+    }
+
+    /**
+     * Sends the message that an event has been updated (saved), and sends the events names with it.
+     */
+    function sendNameReload() {
+        let userId = [[${userId}]];
+        let userFirstName = [[${userFirstName}]];
+        let userLastName = [[${userLastName}]];
+        let username = [[${username}]];
+        stompClient.send("/app/saved-edited-event", {}, JSON.stringify({
+            'eventName': $("#eventName").val(),
+            'userId': userId,
+            'userFirstName': userFirstName,
+            'userLastName': userLastName,
+            'username': username
+        }));
+    }
+
+    /**
+     * Initialises functions/injections
+     */
+    $(function () {
+        $("form").on('submit', function (e) {
+            e.preventDefault();
+        });
+        connect();
+        $( "#send" ).click(function() { sendName(); });
+        $( "#saveButton").click(function() { sendNameReload(); })
+        $( "#cancelButton").click(function() { sendEmpty(); })
+    });
+</script>
 <script>
     /**
      * Checks the entered event dates in the input fields and displays an error message if there's a related error.
