@@ -1,9 +1,7 @@
-package nz.ac.canterbury.seng302.portfolio.WebSocket;
+package nz.ac.canterbury.seng302.portfolio;
 
-import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
-import org.springframework.security.config.annotation.web.socket.AbstractSecurityWebSocketMessageBrokerConfigurer;
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
@@ -14,12 +12,15 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
+        // Endpoint all websockets are set up at
         registry.addEndpoint("/mywebsockets").withSockJS();
     }
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry config) {
-        config.enableSimpleBroker("/topic");
+        // Sets up broker for endpoint
+        config.enableSimpleBroker("/events");
+        // Sets up endpoint the application back end is listening to (Where the front-end sends to)
         config.setApplicationDestinationPrefixes("/app");
     }
 

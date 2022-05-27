@@ -11,7 +11,7 @@
     <script src="/webjars/sockjs-client/1.0.2/sockjs.min.js"></script>
     <script src="/webjars/stomp-websocket/2.3.3/stomp.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
-
+    <script>import 'bootstrap';</script>
 </head>
 <body>
 <div class="project-header">
@@ -57,7 +57,7 @@
             <textarea class="description-input" id="sprintDescription" th:name="sprintDescription" th:text="*{sprintDescription}"></textarea>
         </div>
         <br/>
-        <a th:href="@{../details}"><button class="cancel" type="button">Cancel</button></a>
+        <a th:href="@{../details}"><button class="cancel" type="button" id="cancelButton">Cancel</button></a>
         <button id="saveButton" class="save" type="submit">Save</button>
     </form>
 </div>
@@ -66,34 +66,10 @@
         <div class="col-md-6">
             <form class="form-inline">
                 <div class="form-group">
-                    <label for="connect">WebSocket connection:</label>
-                    <button id="connect" class="btn btn-default" type="submit">Connect</button>
-                    <button id="disconnect" class="btn btn-default" type="submit" disabled="disabled">Disconnect
-                    </button>
-                </div>
-            </form>
-        </div>
-        <div class="col-md-6">
-            <form class="form-inline">
-                <div class="form-group">
-                    <label for="name">What is your name?</label>
-                    <input type="text" id="name" class="form-control" placeholder="Your name here...">
+                    <label>Button to sent toast</label>
                 </div>
                 <button id="send" class="btn btn-default" type="submit">Send</button>
             </form>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-md-12">
-            <table id="conversation" class="table table-striped">
-                <thead>
-                <tr>
-                    <th>Greetings</th>
-                </tr>
-                </thead>
-                <tbody id="greetings">
-                </tbody>
-            </table>
         </div>
     </div>
 </div>

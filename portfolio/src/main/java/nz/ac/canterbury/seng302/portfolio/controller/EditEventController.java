@@ -8,7 +8,6 @@ import nz.ac.canterbury.seng302.portfolio.service.EventService;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
@@ -78,9 +77,15 @@ public class EditEventController {
         return "editEvent :: #eventDateError"; //TODO: add errors to be displayed on the edit event screen.
     }*/
 
-    @MessageMapping("/updating")
-    @SendTo("/topic/receiving")
-    public EventResponse UpdatingEvent(EventMessage message) throws Exception {
-        return new EventResponse(HtmlUtils.htmlEscape(message.getMessage()));
+    /**
+     * This method maps @MessageMapping endpoint to the @SendTo endpoint. Called when something is sent to
+     * the MessageMapping endpoint.
+     * @param message EventMessage that holds the event being updated
+     * @return returns an EventResponse that holds information about the event being updated.
+     */
+    @MessageMapping("/editing")
+    @SendTo("/events/being-edited")
+    public EventResponse updatingEvent(EventMessage message) {
+        return new EventResponse(message.getEventId(), HtmlUtils.htmlEscape(message.getEventName()));
     }
 }
