@@ -17,7 +17,7 @@
     </div>
 </div>
 <div class="content">
-    <form th:action="@{../edit-sprint/{id} (id=${sprintId})}"
+    <form onsubmit="return validateName();" th:action="@{../edit-sprint/{id} (id=${sprintId})}"
           method="post">
         <label for="sprintName">Sprint Name</label> <br/>
         <input id="sprintName" type="text" th:name="sprintName" th:value="*{sprintName}">
@@ -49,6 +49,7 @@
             </div>
         </div>
         <span id="sprintDateError" style="color:red" th:text="*{sprintDateError}"></span>
+        <span id="sprintNameError" style="color:red" th:hidden = "true"> Invalid sprint name, must be between 1 and 50 characters.</span>
         <div>
             <label for="sprintDescription">Sprint Description</label> <br/>
             <textarea class="description-input" id="sprintDescription" th:name="sprintDescription" th:text="*{sprintDescription}"></textarea>
@@ -83,6 +84,18 @@
 
     // Initial run of updateSprintDateError function in case initial values are invalid
     updateSprintDateError();
+</script>
+<script>
+    // Checks whether the name is too long or null
+    function validateName() {
+        document.getElementById("sprintNameError").hidden = true;
+        if (document.getElementById('sprintName').value.length === 0 || document.getElementById('sprintName').value.length > 50 ) {
+            document.getElementById("sprintNameError").hidden = false;
+            return false
+        }
+        return true
+    }
+    document.getElementById("sprintName").onchange = validateName;
 </script>
 <script src="../js/project.js"></script>
 <script type="text/javascript">
