@@ -2,6 +2,7 @@ package nz.ac.canterbury.seng302.portfolio.service;
 
 import nz.ac.canterbury.seng302.portfolio.model.Group;
 import nz.ac.canterbury.seng302.portfolio.repository.GroupRepository;
+import org.hibernate.ObjectNotFoundException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -38,21 +39,18 @@ class GroupServiceTest {
     private final Group expectedGroup = new Group("shortName", "fullName", 2);
 
     /**
-     * Message in exception that should be thrown when a Group object can't be found with the given id.
-     */
-    private final String expectedFindExceptionMessage = "Group not found";
-
-    /**
      * Given that there are no Group objects stored in the database, then the getGroupById method should throw an
-     * Exception.
+     * ObjectNotFoundException.
      */
     @Test
     void givenNoStoredGroups_whenGetGroupById_thenThrowException() {
         given(groupRepository.findById(any(Integer.class))).willReturn(Optional.empty());
+        int id = 1;
+        String expectedFindExceptionMessage = "No row with the given identifier exists: [Group#" + id + "]";
         try {
-            groupService.getGroupById(1);
+            groupService.getGroupById(id);
             fail();
-        } catch (Exception exception) {
+        } catch (ObjectNotFoundException exception) {
             assertEquals(expectedFindExceptionMessage, exception.getMessage());
         }
     }
