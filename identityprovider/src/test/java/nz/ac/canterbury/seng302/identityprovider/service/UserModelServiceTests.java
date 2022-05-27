@@ -1,4 +1,4 @@
-package nz.ac.canterbury.seng302.identityprovider;
+package nz.ac.canterbury.seng302.identityprovider.service;
 
 
 import nz.ac.canterbury.seng302.identityprovider.model.Roles;

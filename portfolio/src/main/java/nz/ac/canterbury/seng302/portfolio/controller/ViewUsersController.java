@@ -2,27 +2,28 @@ package nz.ac.canterbury.seng302.portfolio.controller;
 
 import nz.ac.canterbury.seng302.portfolio.model.UserSorting;
 import nz.ac.canterbury.seng302.portfolio.service.ElementService;;
+import nz.ac.canterbury.seng302.portfolio.service.RegisterClientService;
 import nz.ac.canterbury.seng302.portfolio.service.UserAccountClientService;
 import nz.ac.canterbury.seng302.portfolio.service.UserSortingService;
-import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
-import nz.ac.canterbury.seng302.shared.identityprovider.PaginatedUsersResponse;
-import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
+import nz.ac.canterbury.seng302.shared.identityprovider.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
+import javax.management.relation.Role;
 import java.util.List;
+import java.util.Objects;
 
 /***
  * Controller receive HTTP GET, POST, PUT, DELETE calls for view user page
  */
 @Controller
 public class ViewUsersController {
+
+    @Autowired
+    private RegisterClientService registerClientService;
 
     @Autowired
     private UserAccountClientService userAccountClientService;
@@ -46,9 +47,23 @@ public class ViewUsersController {
             Model model,
             @AuthenticationPrincipal AuthState principal
     ) {
+        UserResponse getUserByIdReply;
         Integer id = userAccountClientService.getUserIDFromAuthState(principal);
         elementService.addHeaderAttributes(model, id);
+        getUserByIdReply = registerClientService.getUserData(id);
+        String role = principal.getClaimsList().stream()
+                .filter(claim -> claim.getType().equals("role"))
+                .findFirst()
+                .map(ClaimDTO::getValue)
+                .orElse("NOT FOUND");
+
+
+        model.addAttribute("currentUserRole", role);
+        model.addAttribute("currentUsername", getUserByIdReply.getUsername());
         model.addAttribute("userId", id);
+        model.addAttribute("studentRole", UserRole.STUDENT);
+        model.addAttribute("teacherRole", UserRole.TEACHER);
+        model.addAttribute("adminRole", UserRole.COURSE_ADMINISTRATOR);
 
         PaginatedUsersResponse response = userAccountClientService.getAllUsers();
         userResponseList = response.getUsersList();
@@ -80,4 +95,54 @@ public class ViewUsersController {
         return "viewUsers";
     }
 
+    /***
+     * Post method request handler for adding user role
+     * @param role The role object indicating the added role(request)
+     * @param userId The current user id of the edited user
+     * @return list of users page(html)
+     */
+    @RequestMapping(value="/add_role", method=RequestMethod.POST)
+    public String addRole(
+                              @RequestParam(value = "role") String role,
+                              @RequestParam(value = "userId") int userId
+    ) {
+
+        if (role.equals("student")) {
+            UserRoleChangeResponse roleChangeResponse = userAccountClientService.addRoleToUser(userId, UserRole.STUDENT);
+        } else if (role.equals("teacher")) {
+            UserRoleChangeResponse roleChangeResponse = userAccountClientService.addRoleToUser(userId, UserRole.TEACHER);
+        } else {
+            UserRoleChangeResponse roleChangeResponse = userAccountClientService.addRoleToUser(userId, UserRole.COURSE_ADMINISTRATOR);
+        }
+        return "redirect:viewUsers";
+    }
+
+    /***
+     * POST method request handler when the url is "/delete_role"
+     * It checks what role that need to be deleted from a user(indicated by the user id) and call delete role service
+     * @param role a String object indicating the user role that will be deleted
+     * @param userId an Integer indicating the user id of a user that a role will be deleted from
+     * @return viewUsers html page. If delete role failed create error Message model which contains the error message
+     */
+    @RequestMapping(value="/delete_role", method=RequestMethod.POST)
+    public String deleteRole(Model model,
+                              @RequestParam(value = "deletedRole") String role,
+                              @RequestParam(value = "userId") int userId
+    ) {
+        UserRoleChangeResponse roleChangeResponse;
+        if(Objects.equals(role, "STUDENT")){
+            roleChangeResponse = userAccountClientService.deleteRoleFromUser(userId, UserRole.STUDENT);
+        } else if(Objects.equals(role, "TEACHER")){
+            roleChangeResponse = userAccountClientService.deleteRoleFromUser(userId, UserRole.TEACHER);
+        } else {
+            roleChangeResponse = userAccountClientService.deleteRoleFromUser(userId, UserRole.COURSE_ADMINISTRATOR);
+        }
+        if(roleChangeResponse.getIsSuccess()){
+            return "redirect:viewUsers";
+        } else {
+            model.addAttribute("errorMessage", "Error deleting user");
+            return "redirect:error";
+        }
+
+    }
 }
