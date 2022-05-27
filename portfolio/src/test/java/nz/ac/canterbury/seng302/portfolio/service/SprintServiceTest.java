@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -69,5 +70,29 @@ class SprintServiceTest {
 
         Sprint updated = sprintService.updateSprint(sprint);
         assertThat(updated.getName()).isSameAs(sprint.getName());
+    }
+
+    @Test
+    void testUpdateSprintDatesSprintExists() {
+        Sprint sprint = new Sprint();
+        sprint.setName("Testing");
+        sprint.setStartDate(sprintService.calendarDateStringToDate("2001-12-20", false));
+        sprint.setEndDate(sprintService.calendarDateStringToDate("2001-12-21", true));
+
+        //providing mock/knowledge
+        when(sprintRepository.findById(any(Integer.class))).thenReturn(Optional.of(sprint));
+        when(sprintRepository.save(any(Sprint.class))).thenReturn(sprint);
+
+        Sprint updated = sprintService.updateSprint(sprint);
+        assertThat(updated.getName()).isSameAs(sprint.getName());
+    }
+
+    @Test
+    void testUpdateSprintDatesSprintDoesNotExist() {
+        //providing mock/knowledge
+        when(sprintRepository.findById(any(Integer.class))).thenReturn(Optional.empty());
+
+        boolean isSuccess = sprintService.updateSprintDates(1, "", "");
+        assertFalse(isSuccess);
     }
 }
