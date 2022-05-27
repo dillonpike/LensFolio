@@ -4,6 +4,7 @@ import nz.ac.canterbury.seng302.portfolio.model.Project;
 import nz.ac.canterbury.seng302.portfolio.model.Sprint;
 import nz.ac.canterbury.seng302.portfolio.service.*;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
+import nz.ac.canterbury.seng302.shared.identityprovider.ClaimDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
@@ -85,6 +86,15 @@ public class CalendarController {
         model.addAttribute("projectName", project.getName());
         model.addAttribute("projectStartDateString", project.getStartDateString());
         model.addAttribute("projectEndDateString", project.getEndDateString());
+
+        String role = principal.getClaimsList().stream()
+                .filter(claim -> claim.getType().equals("role"))
+                .findFirst()
+                .map(ClaimDTO::getValue)
+                .orElse("NOT FOUND");
+
+
+        model.addAttribute("currentUserRole", role);
         return "calendar";
     }
 }
