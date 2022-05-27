@@ -1,5 +1,6 @@
 package nz.ac.canterbury.seng302.portfolio.model;
 
+import java.text.SimpleDateFormat;
 import java.time.LocalTime;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -101,6 +102,16 @@ public class Event {
 
     public Date getEventStartDate() {
         return eventStartDate;
+    }
+
+    public String getEventStartMonth() {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("MMM");
+        return (dateFormat.format(eventStartDate));
+    }
+
+    public int getEventStartDay() {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd");
+        return Integer.parseInt(dateFormat.format(eventStartDate));
     }
 
     public void setEventStartDate(Date eventStartDate) {

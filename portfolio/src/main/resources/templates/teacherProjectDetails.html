@@ -26,19 +26,19 @@
         </a>
     </div>
     <div class="detail-block">
-        <div>
+        <div style="margin: 5px">
             <span class="badge rounded-pill bg-custom-desc">Project Description</span>
             <p class="project-desc" th:text="${project.getDescription}"></p>
         </div>
     </div>
 </div>
     <div class="row">
-        <div class="col-3">
-            <div class="sticky-md-top">
+<!--        <div class="col-3">-->
+<!--            <div class="sticky-md-top">-->
 
-            </div>
-        </div>
-        <div class="col-6">
+<!--            </div>-->
+<!--        </div>-->
+        <div class="col-9">
             <div class="content">
                 <div>
                     <div class="flex-child green">
@@ -124,136 +124,24 @@
                     </ul>
                     <div class="tab-content" id="myTabContent">
                         <div class="tab-pane fade show active" id="event" role="tabpanel" aria-labelledby="event-tab">
-                            <div class="card card-margin">
-                                <div class="card-body pt-0">
-                                    <div class="widget-49">
-                                        <div class="widget-49-title-wrapper">
-                                            <div class="widget-49-date-primary">
-                                                <span class="widget-49-date-day">25</span>
-                                                <span class="widget-49-date-month">Feb</span>
+                            <div th:each="event, meta: ${events}">
+                                <div class="card card-margin">
+                                    <div class="card-body pt-0">
+                                        <div class="widget-49">
+                                            <div class="widget-49-title-wrapper">
+                                                <div class="widget-49-date-primary">
+                                                    <span class="widget-49-date-day" th:text="${event.getEventStartDay()}"></span>
+                                                    <span class="widget-49-date-month" th:text="${event.getEventStartMonth()}" ></span>
+                                                </div>
+                                                <div class="widget-49-meeting-info">
+                                                    <span class="widget-49-pro-title" th:text="${event.eventName}"></span>
+                                                </div>
                                             </div>
-                                            <div class="widget-49-meeting-info">
-                                                <span class="widget-49-pro-title">Test Event 1</span>
-                                            </div>
+                                            <ol class="widget-49-meeting-points">
+                                                <li class="widget-49-meeting-item"><span th:text="From + ': ' + ${event.getEventStartDate()}"> </span></li>
+                                                <li class="widget-49-meeting-item"><span th:text="To + ': ' + ${event.getEventEndDate()}"></span></li>
+                                            </ol>
                                         </div>
-                                        <ol class="widget-49-meeting-points">
-                                            <li class="widget-49-meeting-item"><span>From: 25/Feb/2023</span></li>
-                                            <li class="widget-49-meeting-item"><span>To: 17/Mar/2023</span></li>
-                                        </ol>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="card card-margin">
-                                <div class="card-body pt-0">
-                                    <div class="widget-49">
-                                        <div class="widget-49-title-wrapper">
-                                            <div class="widget-49-date-primary">
-                                                <span class="widget-49-date-day">25</span>
-                                                <span class="widget-49-date-month">Feb</span>
-                                            </div>
-                                            <div class="widget-49-meeting-info">
-                                                <span class="widget-49-pro-title">Test Event 1</span>
-                                            </div>
-                                        </div>
-                                        <ol class="widget-49-meeting-points">
-                                            <li class="widget-49-meeting-item"><span>From: 25/Feb/2023</span></li>
-                                            <li class="widget-49-meeting-item"><span>To: 17/Mar/2023</span></li>
-                                        </ol>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="card card-margin">
-                                <div class="card-body pt-0">
-                                    <div class="widget-49">
-                                        <div class="widget-49-title-wrapper">
-                                            <div class="widget-49-date-primary">
-                                                <span class="widget-49-date-day">25</span>
-                                                <span class="widget-49-date-month">Feb</span>
-                                            </div>
-                                            <div class="widget-49-meeting-info">
-                                                <span class="widget-49-pro-title">Test Event 1</span>
-                                            </div>
-                                        </div>
-                                        <ol class="widget-49-meeting-points">
-                                            <li class="widget-49-meeting-item"><span>From: 25/Feb/2023</span></li>
-                                            <li class="widget-49-meeting-item"><span>To: 17/Mar/2023</span></li>
-                                        </ol>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="card card-margin">
-                                <div class="card-body pt-0">
-                                    <div class="widget-49">
-                                        <div class="widget-49-title-wrapper">
-                                            <div class="widget-49-date-primary">
-                                                <span class="widget-49-date-day">25</span>
-                                                <span class="widget-49-date-month">Feb</span>
-                                            </div>
-                                            <div class="widget-49-meeting-info">
-                                                <span class="widget-49-pro-title">Test Event 1</span>
-                                            </div>
-                                        </div>
-                                        <ol class="widget-49-meeting-points">
-                                            <li class="widget-49-meeting-item"><span>From: 25/Feb/2023</span></li>
-                                            <li class="widget-49-meeting-item"><span>To: 17/Mar/2023</span></li>
-                                        </ol>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="card card-margin">
-                                <div class="card-body pt-0">
-                                    <div class="widget-49">
-                                        <div class="widget-49-title-wrapper">
-                                            <div class="widget-49-date-primary">
-                                                <span class="widget-49-date-day">25</span>
-                                                <span class="widget-49-date-month">Feb</span>
-                                            </div>
-                                            <div class="widget-49-meeting-info">
-                                                <span class="widget-49-pro-title">Test Event 1</span>
-                                            </div>
-                                        </div>
-                                        <ol class="widget-49-meeting-points">
-                                            <li class="widget-49-meeting-item"><span>From: 25/Feb/2023</span></li>
-                                            <li class="widget-49-meeting-item"><span>To: 17/Mar/2023</span></li>
-                                        </ol>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="card card-margin">
-                                <div class="card-body pt-0">
-                                    <div class="widget-49">
-                                        <div class="widget-49-title-wrapper">
-                                            <div class="widget-49-date-primary">
-                                                <span class="widget-49-date-day">25</span>
-                                                <span class="widget-49-date-month">Feb</span>
-                                            </div>
-                                            <div class="widget-49-meeting-info">
-                                                <span class="widget-49-pro-title">Test Event 1</span>
-                                            </div>
-                                        </div>
-                                        <ol class="widget-49-meeting-points">
-                                            <li class="widget-49-meeting-item"><span>From: 25/Feb/2023</span></li>
-                                            <li class="widget-49-meeting-item"><span>To: 17/Mar/2023</span></li>
-                                        </ol>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="card card-margin">
-                                <div class="card-body pt-0">
-                                    <div class="widget-49">
-                                        <div class="widget-49-title-wrapper">
-                                            <div class="widget-49-date-primary">
-                                                <span class="widget-49-date-day">25</span>
-                                                <span class="widget-49-date-month">Feb</span>
-                                            </div>
-                                            <div class="widget-49-meeting-info">
-                                                <span class="widget-49-pro-title">Test Event 1</span>
-                                            </div>
-                                        </div>
-                                        <ol class="widget-49-meeting-points">
-                                            <li class="widget-49-meeting-item"><span>From: 25/Feb/2023</span></li>
-                                            <li class="widget-49-meeting-item"><span>To: 17/Mar/2023</span></li>
-                                        </ol>
                                     </div>
                                 </div>
                             </div>
