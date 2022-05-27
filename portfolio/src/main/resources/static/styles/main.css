@@ -278,6 +278,7 @@ body{
     width: 4rem;
     height: 4rem;
     border-radius: 50%;
+    margin-top: 5px;
 }
 
 .widget-49 .widget-49-title-wrapper .widget-49-date-primary .widget-49-date-day {
@@ -517,7 +518,6 @@ body{
 }
 
 .widget-49 .widget-49-meeting-points .widget-49-meeting-item {
-    display: list-item;
     color: #727686;
 }
 

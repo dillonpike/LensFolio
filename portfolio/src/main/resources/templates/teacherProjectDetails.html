@@ -138,8 +138,11 @@
                                                 </div>
                                             </div>
                                             <ol class="widget-49-meeting-points">
-                                                <li class="widget-49-meeting-item"><span th:text="From + ': ' + ${event.getEventStartDate()}"> </span></li>
-                                                <li class="widget-49-meeting-item"><span th:text="To + ': ' + ${event.getEventEndDate()}"></span></li>
+                                                <span class="widget-49-meeting-item" th:text="From + ': ' + ${event.getStartDateDetail()}"> </span>
+                                            </ol>
+                                            <ol class="widget-49-meeting-points">
+                                                <span class="widget-49-meeting-item" th:text="To + ': ' + ${event.getEndDateDetail()}"></span>
+
                                             </ol>
                                         </div>
                                     </div>
