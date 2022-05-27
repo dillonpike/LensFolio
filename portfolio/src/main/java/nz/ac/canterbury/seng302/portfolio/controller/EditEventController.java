@@ -1,14 +1,19 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
 import nz.ac.canterbury.seng302.portfolio.model.Event;
+import nz.ac.canterbury.seng302.portfolio.model.EventMessage;
+import nz.ac.canterbury.seng302.portfolio.model.EventResponse;
 import nz.ac.canterbury.seng302.portfolio.service.DateValidationService;
 import nz.ac.canterbury.seng302.portfolio.service.EventService;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.util.HtmlUtils;
 
 @Controller
 public class EditEventController {
@@ -72,5 +77,17 @@ public class EditEventController {
                         dateValidationService.validateDatesInProjectDateRange(eventStartDate, eventEndDate) + " " +
                         dateValidationService.validateStartTimeNotAfterEndTime(eventStartTime, eventEndTime, eventStartDate, eventEndDate));
         return "editEvent :: #eventDateError";
+    }
+
+    /**
+     * This method maps @MessageMapping endpoint to the @SendTo endpoint. Called when something is sent to
+     * the MessageMapping endpoint.
+     * @param message EventMessage that holds the event being updated
+     * @return returns an EventResponse that holds information about the event being updated.
+     */
+    @MessageMapping("/editing")
+    @SendTo("/events/being-edited")
+    public EventResponse updatingEvent(EventMessage message) {
+        return new EventResponse(message.getEventId(), HtmlUtils.htmlEscape(message.getEventName()));
     }
 }

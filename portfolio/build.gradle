@@ -73,6 +73,11 @@ dependencies {
     // https://mvnrepository.com/artifact/ru.yandex.qatools.ashot/ashot
     testImplementation group: 'ru.yandex.qatools.ashot', name: 'ashot', version: '1.5.4'
 
+    implementation 'org.springframework.boot:spring-boot-starter-websocket:2.7.0'
+
+    implementation 'org.webjars:sockjs-client:1.0.2'
+    implementation 'org.webjars:stomp-websocket:2.3.3'
+
 }
 
 configurations {
