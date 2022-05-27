@@ -112,7 +112,7 @@ public class SprintService {
      * @param sprintEndDate new end date
      * @return true if update is successful, otherwise false
      */
-    public boolean updateSprintDate(Integer id, String sprintStartDate, String sprintEndDate) {
+    public boolean updateSprintDates(Integer id, String sprintStartDate, String sprintEndDate) {
         Optional<Sprint> sOptional = repository.findById(id);
 
         if (sOptional.isPresent()) {

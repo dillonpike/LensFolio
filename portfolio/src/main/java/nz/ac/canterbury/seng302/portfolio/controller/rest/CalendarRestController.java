@@ -7,6 +7,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletResponse;
+
 /**
  * Handles REST requests for the calendar page.
  */
@@ -30,7 +32,14 @@ public class CalendarRestController {
     @RequestMapping(value="/update-sprint", method= RequestMethod.POST)
     public boolean updateSprintDates(@RequestParam(value="id") Integer id,
                                      @RequestParam(value="sprintStartDate") String sprintStartDate,
-                                     @RequestParam(value="sprintEndDate") String sprintEndDate) {
-        return sprintService.updateSprintDate(id, sprintStartDate, sprintEndDate);
+                                     @RequestParam(value="sprintEndDate") String sprintEndDate,
+                                     HttpServletResponse response) {
+        boolean result = sprintService.updateSprintDates(id, sprintStartDate, sprintEndDate);
+        if (result) {
+            response.setStatus(HttpServletResponse.SC_NO_CONTENT);
+        } else {
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+        }
+        return result;
     }
 }
