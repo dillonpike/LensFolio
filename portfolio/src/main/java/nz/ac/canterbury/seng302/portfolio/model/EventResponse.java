@@ -7,16 +7,24 @@ public class EventResponse {
 
     private String eventName;
 
-    private int eventId;
+    private String username;
+
+    private String userFirstName;
+
+    private String userLastName;
 
     /**
      * Main constructer for EventResponse
-     * @param eventId Id of the event
-     * @param eventName Event name for displaying
+     * @param eventName Event name for displaying.
+     * @param username Username of user editing.
+     * @param userFirstName First name of user editing.
+     * @param userLastName Last name of user editing.
      */
-    public EventResponse(int eventId, String eventName) {
-        this.eventId = eventId;
+    public EventResponse(String eventName, String username, String userFirstName, String userLastName) {
         this.eventName = eventName;
+        this.username = username;
+        this.userFirstName = userFirstName;
+        this.userLastName = userLastName;
     }
 
     public String getEventName() {
@@ -27,11 +35,28 @@ public class EventResponse {
         this.eventName = sprintName;
     }
 
-    public int getEventId() {
-        return eventId;
+    public String getUsername() {
+        return username;
     }
 
-    public void setEventId(int eventId) {
-        this.eventId = eventId;
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getUserFirstName() {
+        return userFirstName;
+    }
+
+    public void setUserFirstName(String userFirstName) {
+        this.userFirstName = userFirstName;
+    }
+
+
+    public String getUserLastName() {
+        return userLastName;
+    }
+
+    public void setUserLastName(String userLastName) {
+        this.userLastName = userLastName;
     }
 }

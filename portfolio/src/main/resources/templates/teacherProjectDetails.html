@@ -11,10 +11,17 @@
     <script src="/webjars/sockjs-client/1.0.2/sockjs.min.js"></script>
     <script src="/webjars/stomp-websocket/2.3.3/stomp.min.js"></script>
     <script src="../webjars/jquery/3.6.0/dist/jquery.min.js"></script>
-    <script>import 'bootstrap';</script>
 </head>
 <body>
 <header th:replace="fragments/header"></header>
+<div class="toast-container position-fixed bottom-0 end-0 p-3">
+    <div class="toast" role="alert" aria-live="assertive" aria-atomic="true" id="liveToast" data-bs-delay="50000">
+        <div class="toast-header">
+            <strong class="me-auto">Event Activity</strong>
+        </div>
+        <div class="toast-body" id="popupText"></div>
+    </div>
+</div>
 <div class="row">
     <div class="project-header">
         <div class="title">
@@ -34,14 +41,6 @@
             <span class="badge rounded-pill bg-custom-desc">Project Description</span>
             <p class="project-desc" th:text="${project.getDescription}"></p>
         </div>
-    </div>
-</div>
-<div class="toast-container position-fixed bottom-0 end-0 p-3">
-    <div class="toast" role="alert" aria-live="assertive" aria-atomic="true" id="liveToast" data-bs-delay="50000">
-        <div class="toast-header">
-            <strong class="me-auto">Event Activity</strong>
-        </div>
-        <div class="toast-body" id="popupText"></div>
     </div>
 </div>
     <div class="row">
@@ -166,7 +165,7 @@
         </div>
 
 
-<script src="../js/event.js"></script>
+<script src="../js/detailsLive.js"></script>
 
 
 

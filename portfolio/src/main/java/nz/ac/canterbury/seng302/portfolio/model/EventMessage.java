@@ -7,15 +7,15 @@ public class EventMessage {
 
     private String eventName;
 
-    private int eventId;
+    private int userId;
 
     /**
      * Main constructer of an EventMessage
-     * @param eventId Id of the event.
+     * @param userId Id of the user editing the event.
      * @param eventName Event name for displaying.
      */
-    public EventMessage(int eventId, String eventName) {
-        this.eventId = eventId;
+    public EventMessage(int userId, String eventName) {
+        this.userId = userId;
         this.eventName = eventName;
     }
 
@@ -27,11 +27,11 @@ public class EventMessage {
         this.eventName = sprintName;
     }
 
-    public int getEventId() {
-        return eventId;
+    public int getUserId() {
+        return userId;
     }
 
-    public void setEventId(int eventId) {
-        this.eventId = eventId;
+    public void setUserId(int userId) {
+        this.userId = userId;
     }
 }

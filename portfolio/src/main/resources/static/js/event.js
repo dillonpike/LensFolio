@@ -9,10 +9,15 @@ function connect() {
     stompClient = Stomp.over(socket);
     stompClient.connect({}, function (frame) {
         console.log('Connected: ' + frame);
-        stompClient.subscribe('/events/being-edited', function (eventResponseArg) {
-            const eventResponse = JSON.parse(eventResponseArg.body)
-            showToast(eventResponse.eventName);
-        });
+        // stompClient.subscribe('/events/being-edited', function (eventResponseArg) {
+        //     const eventResponse = JSON.parse(eventResponseArg.body)
+        //     showToast(eventResponse.eventName, eventResponse.username, eventResponse.userFirstName, eventResponse.userLastName);
+        // });
+        // stompClient.subscribe('/events/save-edit', function (eventResponseArg) {
+        //     const eventResponse = JSON.parse(eventResponseArg.body)
+        //     setTimeout(() => {showToastSave(eventResponse.eventName, eventResponse.username, eventResponse.userFirstName, eventResponse.userLastName);}, 5000);
+        //     showToastSave("", "", "", "")
+        // });
     });
 }
 
@@ -20,31 +25,18 @@ function connect() {
  * Sends the message that an event is being updated, and sends the events names with it.
  */
 function sendName() {
-    stompClient.send("/app/editing-event", {}, JSON.stringify({'eventName': $("#eventName").val(), 'eventId': $("#eventId").val()}));
+    stompClient.send("/app/editing-event", {}, JSON.stringify({'eventName': $("#eventName").val(), 'userId': $("#userId").val()}));
 }
 
 /**
  * Sends an empty message so that the other end can realise to close any popups it may have activated.
  */
 function sendEmpty() {
-    stompClient.send("/app/editing-event", {}, JSON.stringify({'eventName': "", 'eventId': $("#sprintId").val()}));
+    stompClient.send("/app/editing-event", {}, JSON.stringify({'eventName': "", 'userId': $("#userId").val()}));
 }
 
-/**
- * Function that is called when a message is sent to the endpoint. Shows the toast if the message is full.
- * Removes the toast if the message is empty.
- * @param eventName Event message that may or may not be empty.
- */
-function showToast(eventName) {
-    const toast = new bootstrap.Toast($("#liveToast"));
-    toast.autohide = false;
-    if (eventName !== "") {
-        $("#popupText").text(eventName + " is being edited.").hidden = false;
-        toast.show();
-    } else {
-        $("#popupText").text("").hidden = true;
-        toast.hide();
-    }
+function sendNameReload() {
+    stompClient.send("/app/saved-edited-event", {}, JSON.stringify({'eventName': $("#eventName").val(), 'userId': $("#userId").val()}))
 }
 
 /**
@@ -56,6 +48,6 @@ $(function () {
     });
     connect();
     $( "#send" ).click(function() { sendName(); });
-    $( "#saveButton").click(function() { sendEmpty(); })
+    $( "#saveButton").click(function() { sendNameReload(); })
     $( "#cancelButton").click(function() { sendEmpty(); })
 });

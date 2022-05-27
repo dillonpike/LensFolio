@@ -65,7 +65,7 @@ public class EditEventController {
         return "redirect:/details";
     }
 
-    @RequestMapping(value="/edit-event/error", method= RequestMethod.POST)
+    @PostMapping(value="/edit-event/error")
     public String updateEventRangeErrors(@RequestParam(value="eventStartDate") String eventStartDate,
                                          @RequestParam(value="eventEndDate") String eventEndDate,
                                          @RequestParam(value="eventStartTime") String eventStartTime,
@@ -88,12 +88,19 @@ public class EditEventController {
     @MessageMapping("/editing-event")
     @SendTo("/events/being-edited")
     public EventResponse updatingEvent(EventMessage message) {
-        return new EventResponse(message.getEventId(), HtmlUtils.htmlEscape(message.getEventName()));
+        String username = "DefAcc";
+        String firstName = "First";
+        String lastName = "Last";
+        return new EventResponse(HtmlUtils.htmlEscape(message.getEventName()), username, firstName, lastName);
     }
 
     @MessageMapping("/saved-edited-event")
     @SendTo("/events/save-edit")
     public EventResponse savingUpdatedEvent(EventMessage message) {
-        return new EventResponse(message.getEventId(), HtmlUtils.htmlEscape(message.getEventName()));
+        // Trigger some sort of reload here?
+        String username = "DefAcc";
+        String firstName = "First";
+        String lastName = "Last";
+        return new EventResponse(HtmlUtils.htmlEscape(message.getEventName()), username, firstName, lastName);
     }
 }
