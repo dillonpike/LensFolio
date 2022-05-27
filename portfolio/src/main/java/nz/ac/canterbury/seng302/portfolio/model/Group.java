@@ -5,7 +5,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * JPA entity that models a group that users can join.
+ * JPA entity that models a group that users can join. A group is made up of a group id, short name, long name, and a
+ * list of members.
  */
 @Entity
 @Table(name = "group_model",
