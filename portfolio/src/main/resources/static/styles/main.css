@@ -532,3 +532,7 @@ body{
 .widget-49 .widget-49-meeting-action a {
     text-transform: uppercase;
 }
+.tab-pane{
+    height:600px;
+    overflow-y:scroll;
+}

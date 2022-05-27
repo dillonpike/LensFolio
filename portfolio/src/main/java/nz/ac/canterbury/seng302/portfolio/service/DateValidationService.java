@@ -43,6 +43,20 @@ public class DateValidationService {
     }
 
     /**
+     * Returns an error message if a given time is empty or null, otherwise returns a blank message.
+     * @param startTimeString start time to be checked
+     * @param endTimeString end time to be checked
+     * @return error message if a given time is empty or null, otherwise returns a blank message
+     */
+    public String validateTimeRangeNotEmpty(String startTimeString, String endTimeString) {
+        String message = "";
+        if (startTimeString.equals("") || endTimeString.equals("")) {
+            message = "Times can't be empty.";
+        }
+        return message;
+    }
+
+    /**
      * Returns a blank message if the start date is before or on the end date, otherwise returns an error message.
      * @param startDateString start date to be compared
      * @param endDateString end date to be compared
