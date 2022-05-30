@@ -28,3 +28,11 @@ Feature: UUv: List of Users
     And I log in as admin
     And I browse to the list of users page
     Then The list of users is sorted by username descending
+
+  Scenario: The page will persist when I add/delete a user role.
+    Given I am logged in as admin
+    And I am on the list of users page
+    And I go to the next page
+    When I remove a role
+    Then I am on same page
+

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
     <title> View Users</title>
     <meta charset="utf-8">
@@ -19,7 +19,7 @@
 
 <div class="container" style="width:60%";>
     <h1>Participants</h1>
-    <table class="table table-striped table-bordered display" id="sortTable">
+    <table class="table table-striped table-bordered display" id="sortTable" >
         <thead class="table-dark" id="headTable">
         <tr>
             <th id="firstNameColumn">First Name</th>
@@ -30,22 +30,66 @@
         </tr>
         </thead>
         <tbody>
-            <tr th:each="user : ${users}">
-                <td><span th:text="${user.FirstName}"> First Name </span></td>
-                <td><span th:text="${user.LastName}"> Last Name </span></td>
-                <td><span th:text="${user.username}"> Username </span></td>
-                <td><span th:text="${user.nickname}"> Alias </span></td>
-                <td>
-                    <div th:each="role : ${user.rolesList}">
-                            <span class="badge position-relative"><span style="background: #0a64ff; border-radius: 10px;padding:3px 10px 3px 10px;margin-right: 10px;margin-top: 5px;" th:text="${role}"></span>
+        <tr th:each="user : ${users}">
+            <td><span th:text="${user.FirstName}"> First Name </span></td>
+            <td><span th:text="${user.LastName}"> Last Name </span></td>
+            <td><span th:text="${user.username}"> Username </span></td>
+            <td><span th:text="${user.nickname}"> Alias </span></td>
+            <td>
+                <div th:each="role : ${user.rolesList}" style="margin:5px">
+
+                            <span class="badge bg-primary">
+                                <span style="background: #0a64ff; border-radius: 10px;padding:3px 10px 3px 10px;margin: 5px 10px 5px 5px;" th:text="${role}"></span>
+                                <button th:if="${currentUserRole != 'student' && user.username != currentUsername && user.rolesList.size() > 1 }" th:attr="onclick=|deleteUserRole('${user.id}','${role}')|"
+                                        class="position-absolute top-10 start-5 translate-middle badge rounded-pill bg-danger" >
+                                    X
+                                </button>
                             </span>
+                </div>
+                <div class="btn-group" style="margin-left: 5px" th:if="${currentUserRole != 'student' && user.rolesList.size() < 3}">
+                    <button style ="padding:0 10px" type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        +
+                    </button>
+                    <div class="dropdown-menu">
+                        <a class="dropdown-item" th:if="${!user.rolesList.contains(studentRole)}">
+                            <form th:action="@{add_role}" method="post">
+                                <input type="hidden" th:value="student" name="role">
+                                <input type ="hidden" th:value="${user.id}" name="userId">
+                                <button type="submit" id='student' class="btn btn-link" style="color:black;text-decoration: none;" >Student</button>
+                            </form>
+                        </a>
+                        <a class="dropdown-item" th:if="${!user.rolesList.contains(teacherRole)}">
+                            <form th:action="@{add_role}" method="post">
+                                <input type="hidden" th:value="teacher" name="role">
+                                <input type ="hidden" th:value="${user.id}" name="userId">
+                                <button type="submit" class="btn btn-link" style="color:black;text-decoration: none;" >Teacher</button>
+                            </form>
+                        </a>
+                        <a class="dropdown-item" th:if="${currentUserRole == 'admin' && !user.rolesList.contains(adminRole)}">
+                            <form th:action="@{add_role}" method="post">
+                                <input type="hidden" th:value="admin" name="role">
+                                <input type ="hidden" th:value="${user.id}" name="userId">
+                                <button type="submit" class="btn btn-link" style="color:black;text-decoration: none;" >Course Administrator</button>
+                            </form>
+                        </a>
+
                     </div>
-                </td>
-            </tr>
+                </div>
+            </td>
+        </tr>
         </tbody>
     </table>
 </div>
 <script th:inline="javascript">
+    //call 'delete_role' post request and bringing the user id and the role that want to be deleted at the same time through the url
+    //reload the page after the call is finished
+    // @param id an Integer indicating the user id of a user that a role will be deleted from
+    // @param a String object indicating the user role that will be deleted
+    function  deleteUserRole(id, role){
+        const url = "delete_role?userId="+id+"&deletedRole="+role;
+        $.post(url);
+        window.location.reload();
+    }
 
     const table = $('#sortTable');
     // Saves the sorting of the table so that it is persistent
@@ -74,7 +118,7 @@
     userSorting.sortOrder = ['asc', 'desc'].includes(userSorting.sortOrder) ? userSorting.sortOrder : 'asc';
 
     const tableOptions = {
-        stateSave: false,
+        stateSave: true,
         "dom": 'rtip',
         order: [userSorting.columnIndex, userSorting.sortOrder]
     };

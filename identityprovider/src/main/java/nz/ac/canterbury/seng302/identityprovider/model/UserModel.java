@@ -46,6 +46,17 @@ public class UserModel implements Serializable {
         this.roles.add(role);
     }
 
+    public void deleteRole(Roles role) {
+        Set<Roles> filteredSet = new HashSet<>();
+        for(Roles userRole: roles){
+            System.out.println(userRole.getRoleName());
+            if(!userRole.getRoleName().equals(role.getRoleName())){
+                filteredSet.add(userRole);
+            }
+        }
+        roles = filteredSet;
+    }
+
     public Set<Roles> getRoles() {
         return roles;
     }
