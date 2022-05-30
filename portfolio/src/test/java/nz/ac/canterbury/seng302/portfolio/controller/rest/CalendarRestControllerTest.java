@@ -58,7 +58,6 @@ class CalendarRestControllerTest {
                 .param("id", "1")
                 .param("sprintStartDate", "2001-10-20")
                 .param("sprintEndDate", "2001-10-21"))
-                .andExpect(status().isNoContent())
                 .andExpect(content().string("true"));
     }
 
@@ -74,7 +73,6 @@ class CalendarRestControllerTest {
                         .param("id", "1")
                         .param("sprintStartDate", "2001-10-20")
                         .param("sprintEndDate", "2001-10-21"))
-                .andExpect(status().isBadRequest())
                 .andExpect(content().string("false"));
     }
 }

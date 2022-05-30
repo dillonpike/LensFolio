@@ -32,14 +32,7 @@ public class CalendarRestController {
     @RequestMapping(value="/update-sprint", method= RequestMethod.POST)
     public boolean updateSprintDates(@RequestParam(value="id") Integer id,
                                      @RequestParam(value="sprintStartDate") String sprintStartDate,
-                                     @RequestParam(value="sprintEndDate") String sprintEndDate,
-                                     HttpServletResponse response) {
-        boolean result = sprintService.updateSprintDates(id, sprintStartDate, sprintEndDate);
-        if (result) {
-            response.setStatus(HttpServletResponse.SC_NO_CONTENT);
-        } else {
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-        }
-        return result;
+                                     @RequestParam(value="sprintEndDate") String sprintEndDate) {
+        return sprintService.updateSprintDates(id, sprintStartDate, sprintEndDate);
     }
 }
