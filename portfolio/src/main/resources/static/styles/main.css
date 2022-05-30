@@ -181,6 +181,16 @@ a {
     color: #0c506b;
 }
 
+.edit-event-button {
+    height: 40px;
+    width: 40px;
+    border-radius: 40px;
+    border: none;
+    background-color: #06D6A0;
+    color: #0c506b;
+    margin-left: 50px;
+}
+
 .edit-button:hover {
     background-color: #05a881
 }

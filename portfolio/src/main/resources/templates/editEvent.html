@@ -64,9 +64,9 @@
             </div>
         </div>
         <span id="eventDateError" style="color:red" th:text="${eventDateError}"></span>
-        <span id="eventNameError" style="color:red" th:hidden = "true"> Invalid event name. Must be between 1 and 50 characters.</span>
+        <span id="eventNameError" style="color:red" th:hidden = "true"> Invalid event name, must be between 1 and 50 characters.</span>
         <br/>
-        <a th:href="@{../details}"><button class="cancel" type="button" id="cancelButton">Cancel</button></a>
+        <a th:href="@{../details}"><button class="cancel" type="button">Cancel</button></a>
         <button id="saveButton" class="save" type="submit">Save</button>
     </form>
 </div>
@@ -151,7 +151,7 @@
      */
     $(function () {
         $("form").on('submit', function (e) {
-            e.preventDefault();
+            //e.preventDefault();
         });
         connect();
         $( "#send" ).click(function() { sendName(); });
@@ -215,11 +215,6 @@
     $(function() {
         $('#eventEnd').datepicker({format: 'dd/M/yyyy'});
     });
-</script>
-<script>
-    // Sets default values for the time picker
-    document.getElementById("eventStartTime").defaultValue = "12:00";
-    document.getElementById("eventEndTime").defaultValue = "13:00";
 </script>
 
 
