@@ -1,6 +1,7 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
 import com.google.protobuf.Timestamp;
+import nz.ac.canterbury.seng302.portfolio.model.Event;
 import nz.ac.canterbury.seng302.portfolio.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -36,6 +37,10 @@ public class DetailsController {
 
     @Autowired
     private ElementService elementService;
+
+    @Autowired
+    private EventService eventService;
+
 
     /***
      * GET request method, followed by the request URL(../details)
@@ -75,6 +80,9 @@ public class DetailsController {
 
         model.addAttribute("project", project);
         model.addAttribute("project", project);
+
+        List<Event> eventList = eventService.getAllEventsOrdered();
+        model.addAttribute("events", eventList);
         
         List<Sprint> sprintList = sprintService.getAllSprintsOrdered();
         model.addAttribute("sprints", sprintList);
@@ -98,5 +106,7 @@ public class DetailsController {
             return "userProjectDetails";
         }
     }
+
+
 
 }

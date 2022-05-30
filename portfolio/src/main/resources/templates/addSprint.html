@@ -66,6 +66,7 @@
      * Disables the save button if there is an error.
      */
     function updateSprintDateError() {
+        document.getElementById("saveButton").disabled = false;
         const data = {
             sprintStartDate: document.getElementById("sprintStartDate").value,
             sprintEndDate: document.getElementById("sprintEndDate").value
