@@ -13,10 +13,12 @@ function connect() {
             const eventResponse = JSON.parse(eventResponseArg.body)
             showToast(eventResponse.eventName, eventResponse.username, eventResponse.userFirstName, eventResponse.userLastName);
         });
+        stompClient.subscribe('/events/stop-being-edited', function (ignore) {
+            showToast("", "", "", "");
+        })
         stompClient.subscribe('/events/save-edit', function (eventResponseArg) {
             const eventResponse = JSON.parse(eventResponseArg.body)
-            setTimeout(() => {showToastSave(eventResponse.eventName, eventResponse.username, eventResponse.userFirstName, eventResponse.userLastName);}, 5000);
-            showToastSave("", "", "", "")
+            showToastSave(eventResponse.eventName, eventResponse.username, eventResponse.userFirstName, eventResponse.userLastName);
         });
     });
 }
@@ -30,12 +32,14 @@ function connect() {
  * @param lastName Last name of the user
  */
 function showToast(eventName, username, firstName, lastName) {
-    const toast = new bootstrap.Toast($("#liveToast"));
-    toast.autohide = false;
     if (eventName !== "") {
+        const toast = new bootstrap.Toast($("#liveToast"));
+        toast.autohide = true;
+        toast.delay = 5000;
         $("#popupText").text("'" + eventName + "' is being edited by " + firstName + " " + lastName + " (" + username + ").").hidden = false;
         toast.show();
     } else {
+        const toast = $("#liveToast")
         $("#popupText").text("").hidden = true;
         toast.hide();
     }
@@ -50,12 +54,14 @@ function showToast(eventName, username, firstName, lastName) {
  * @param lastName Last name of the user
  */
 function showToastSave(eventName, username, firstName, lastName) {
-    const toast = new bootstrap.Toast($("#liveToast"));
-    toast.autohide = false;
     if (eventName !== "") {
+        const toast = new bootstrap.Toast($("#liveToast"));
+        toast.autohide = true;
+        toast.delay = 5000;
         $("#popupText").text("'" + eventName + "' has been updated by " + firstName + " " + lastName + " (" + username + ").").hidden = false;
         toast.show();
     } else {
+        const toast = $("#liveToast")
         $("#popupText").text("").hidden = true;
         toast.hide();
     }

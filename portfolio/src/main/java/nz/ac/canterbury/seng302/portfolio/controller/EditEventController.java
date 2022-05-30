@@ -114,6 +114,18 @@ public class EditEventController {
 
     /**
      * This method maps @MessageMapping endpoint to the @SendTo endpoint. Called when something is sent to
+     * the MessageMapping endpoint. This is triggered when the user is no longer editing.
+     * @param message Information about the editing state.
+     * @return Returns the message given.
+     */
+    @MessageMapping("/stop-editing-event")
+    @SendTo("/events/stop-being-edited")
+    public String stopUpdatingEvent(String message) {
+        return message;
+    }
+
+    /**
+     * This method maps @MessageMapping endpoint to the @SendTo endpoint. Called when something is sent to
      * the MessageMapping endpoint. This method also triggers some sort of re-render of the events.
      * @param message EventMessage that holds information about the event being updated
      * @return returns an EventResponse that holds information about the event being updated.

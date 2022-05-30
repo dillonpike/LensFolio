@@ -66,7 +66,7 @@
         <span id="eventDateError" style="color:red" th:text="${eventDateError}"></span>
         <span id="eventNameError" style="color:red" th:hidden = "true"> Invalid event name, must be between 1 and 50 characters.</span>
         <br/>
-        <a th:href="@{../details}"><button class="cancel" type="button">Cancel</button></a>
+        <a th:href="@{../details}"><button id="cancelButton" class="cancel" type="button">Cancel</button></a>
         <button id="saveButton" class="save" type="submit">Save</button>
     </form>
 </div>
@@ -120,13 +120,7 @@
      * Sends an empty message so that the other end can realise to close any popups it may have activated.
      */
     function sendEmpty() {
-        stompClient.send("/app/editing-event", {}, JSON.stringify({
-            'eventName': $("#eventName").val(),
-            'userId': 0,
-            'userFirstName': "",
-            'userLastName': "",
-            'username': ""
-        }));
+        stompClient.send("/app/stop-editing-event", {}, "Stop Editing Event");
     }
 
     /**
@@ -154,6 +148,9 @@
             //e.preventDefault();
         });
         connect();
+        $("input").on('input', function (e) {
+            sendName();
+        });
         $( "#send" ).click(function() { sendName(); });
         $( "#saveButton").click(function() { sendNameReload(); })
         $( "#cancelButton").click(function() { sendEmpty(); })
