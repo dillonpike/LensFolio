@@ -4,11 +4,12 @@ import nz.ac.canterbury.seng302.portfolio.model.Project;
 import nz.ac.canterbury.seng302.portfolio.model.Sprint;
 import nz.ac.canterbury.seng302.portfolio.service.*;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
+import nz.ac.canterbury.seng302.shared.identityprovider.ClaimDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
 
@@ -31,12 +32,12 @@ public class CalendarController {
     private ElementService elementService;
 
     public String listToJSON(List<Sprint> sprints) {
-        String json = "";
-        ArrayList<String> colours = new ArrayList<>(Arrays.asList("#5897fc", "#a758fc", "#fc58c3", "#ff3838", "#ffa538", "#fff64a", "#62ff42"," #42ffb4"));
+        StringBuilder json = new StringBuilder();
+        ArrayList<String> colours = new ArrayList<>(Arrays.asList("#5897fc", "#a758fc", "#fc58c3", "#9e1212", "#c65102", "#d5b60a", "#004400"," #11887b"));
         int colIndex = 0;
         for (Sprint sprint : sprints) {
             Date endDate = SprintLifetimeController.getUpdatedDate(sprint.getEndDate(), 1, 0);
-            json += "{title: '"+sprint.getName()+"', start: '"+sprint.getStartDate()+"', end: '"+endDate.toInstant()+"', allDay: true, color: '"+colours.get(colIndex)+"'},";
+            json.append("{id: '").append(sprint.getId()).append("', title: '").append(sprint.getName()).append("', start: '").append(sprint.getStartDate()).append("', end: '").append(endDate.toInstant()).append("', allDay: true, color: '").append(colours.get(colIndex)).append("'},");
 
             if (colIndex == (colours.size() - 1)) { // List max
                 colIndex = 0;
@@ -45,7 +46,7 @@ public class CalendarController {
             }
 
         }
-        return json;
+        return json.toString();
     }
 
 
@@ -85,7 +86,15 @@ public class CalendarController {
         model.addAttribute("projectName", project.getName());
         model.addAttribute("projectStartDateString", project.getStartDateString());
         model.addAttribute("projectEndDateString", project.getEndDateString());
-        return "calendar";
-}
 
+        String role = principal.getClaimsList().stream()
+                .filter(claim -> claim.getType().equals("role"))
+                .findFirst()
+                .map(ClaimDTO::getValue)
+                .orElse("NOT FOUND");
+
+
+        model.addAttribute("currentUserRole", role);
+        return "calendar";
+    }
 }
