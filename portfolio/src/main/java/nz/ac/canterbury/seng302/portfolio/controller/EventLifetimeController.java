@@ -30,7 +30,7 @@ public class EventLifetimeController {
      * @param model For adding the event and error handling
      */
     @GetMapping("/add-event")
-    public String eventAddForm(Model model) throws Exception {
+    public String eventAddForm(Model model) {
 
         Event blankEvent = new Event();
 
@@ -49,7 +49,7 @@ public class EventLifetimeController {
     public String projectSave(
             @ModelAttribute("event") Event event,
             Model model
-    ) throws Exception {
+    ) {
         event.setStartDateString(event.getStartDateString());
         event.setEndDateString(event.getEndDateString());
         event.setStartTimeString(event.getStartTimeString());
@@ -58,7 +58,7 @@ public class EventLifetimeController {
         return "redirect:/details";
     }
 
-    @RequestMapping(value="/add-event/error", method= RequestMethod.POST)
+    @PostMapping(value="/add-event/error")
     public String updateEventRangeErrors(@RequestParam(value="eventStartDate") String eventStartDate,
                                           @RequestParam(value="eventEndDate") String eventEndDate,
                                           @RequestParam(value="eventStartTime") String eventStartTime,
@@ -73,6 +73,21 @@ public class EventLifetimeController {
 
         );
         return "addEvent :: #eventDateError";
+    }
+
+
+    /***
+     * Request handler for deleting event, user will redirect to project detail page after
+     * @param id Event Id
+     * @param model Parameters sent to thymeleaf template to be rendered into HTML
+     * @return project detail page
+     */
+    @GetMapping("/delete-event/{id}")
+    public String sprintRemove(@PathVariable("id") Integer id, Model model) {
+        eventService.removeEvent(id);
+
+        /* Return the name of the Thymeleaf template */
+        return "redirect:/details";
     }
 
 }
