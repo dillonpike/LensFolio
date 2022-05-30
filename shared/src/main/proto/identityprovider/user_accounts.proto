@@ -67,6 +67,7 @@ message UserResponse {
    .google.protobuf.Timestamp Created = 9;
    string ProfileImagePath = 10;
    repeated UserRole Roles = 11;
+   int32 Id = 12;
 }
 enum UserRole {
    STUDENT = 0;
