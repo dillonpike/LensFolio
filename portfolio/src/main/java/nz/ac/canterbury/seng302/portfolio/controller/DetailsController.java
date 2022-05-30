@@ -81,7 +81,7 @@ public class DetailsController {
         model.addAttribute("project", project);
         model.addAttribute("project", project);
 
-        List<Event> eventList = eventService.getAllEvents();
+        List<Event> eventList = eventService.getAllEventsOrdered();
         model.addAttribute("events", eventList);
         
         List<Sprint> sprintList = sprintService.getAllSprintsOrdered();
