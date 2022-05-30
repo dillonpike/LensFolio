@@ -14,6 +14,7 @@
     <script src="webjars/jquery/3.6.0/dist/jquery.min.js"></script>
     <script th:inline="javascript">
         /*<![CDATA[*/
+        let currentRole = /*[[${currentUserRole}]]*/ "";
         document.addEventListener('DOMContentLoaded', function() {
 
             const alternateColour = (colour) => {
@@ -23,7 +24,6 @@
             let calendarEl = document.getElementById('calendar');
             let selectedId = -1;
             let calendar = new FullCalendar.Calendar(calendarEl, {
-                editable: false,
                 themeSystem: 'bootstrap5',
                 initialView: 'dayGridMonth',
                 buttonText: {
@@ -46,9 +46,15 @@
                     let newEvent = calendar.getEventById(info.event.id);
                     let selectedEvent = calendar.getEventById(selectedId);
                     if (selectedId === -1) {
+                        //initial click on any event
                         newEvent.setProp("classNames", "event-border");
                         newEvent.setProp("borderColor", alternateColour(newEvent.backgroundColor));
                         newEvent.setProp("editable", true);
+                        if(currentRole === 'student'){
+                            newEvent.setProp("editable", false);
+                        } else {
+                            newEvent.setProp("editable", true);
+                        }
                         selectedId = info.event.id;
                     } else {
                         if (newEvent.id === selectedEvent.id) {
@@ -63,6 +69,11 @@
                             newEvent.setProp("classNames", "event-border");
                             newEvent.setProp("borderColor", alternateColour(newEvent.backgroundColor));
                             newEvent.setProp("editable", true);
+                            if(currentRole === 'student'){
+                                newEvent.setProp("editable", false);
+                            } else {
+                                newEvent.setProp("editable", true);
+                            }
                             selectedId = info.event.id;
                         }
                     }
