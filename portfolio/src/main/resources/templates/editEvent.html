@@ -74,7 +74,6 @@
 <script src="../js/project.js"></script>
 <script th:inline="javascript">
     let stompClient = null;
-    let changeFlag = false;
 
     /**
      * Connects the stomp client to the setup websocket endpoint.
@@ -158,7 +157,7 @@
             eventStartTime: document.getElementById("eventStartTime").value,
             eventEndTime: document.getElementById("eventEndTime").value
         }
-        $.post("edit-event/error?" + new URLSearchParams(data)).done(function (fragment) {
+        $.post("../edit-event/error?" + new URLSearchParams(data)).done(function (fragment) {
             console.log(fragment);
             $("#eventDateError").replaceWith(fragment);
             document.getElementById("saveButton").disabled = document.getElementById("eventDateError").textContent.trim().length > 0;
