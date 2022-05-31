@@ -27,7 +27,7 @@ public class EditDeadlineController {
      * @throws Exception if sprint cannot be found from the given ID or if it cannot be saved.
      */
     @PostMapping("/edit-deadline/{id}")
-    public String eventEditSave(
+    public String deadlineEditSave(
             @PathVariable("id") Integer id,
             @AuthenticationPrincipal AuthState principal,
             @ModelAttribute("deadlines") Deadlines deadlines,

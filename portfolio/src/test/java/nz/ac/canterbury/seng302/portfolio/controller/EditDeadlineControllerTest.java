@@ -1,11 +1,14 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
+
+import nz.ac.canterbury.seng302.portfolio.model.Deadlines;
 import nz.ac.canterbury.seng302.portfolio.service.DeadlinesService;
-import nz.ac.canterbury.seng302.portfolio.service.SprintService;
+import nz.ac.canterbury.seng302.portfolio.service.UserAccountClientService;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import nz.ac.canterbury.seng302.shared.identityprovider.ClaimDTO;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -17,9 +20,17 @@ import org.springframework.security.web.authentication.preauth.PreAuthenticatedA
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.when;
+import java.util.Date;
 
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
+/***
+ * Testing class which contains unit test for methods in EditDeadlineController class
+ */
 @ExtendWith(SpringExtension.class)
 @WebMvcTest(controllers = EditDeadlineController.class)
 @AutoConfigureMockMvc(addFilters = false)
@@ -44,13 +55,32 @@ class EditDeadlineControllerTest {
     @MockBean
     private DeadlinesService deadlinesService;
 
+    @MockBean
+    private UserAccountClientService userAccountClientService; // needed to load application
+
+    /***
+     * Test the post request method to edit deadline
+     * This only purpose of this test is to check whether the controller is called, and it called the correct method in
+     * the service class
+     * Expect to return 302 status code(redirection) and verify the updateDeadline function in deadlinesService is called
+     */
     @Test
-    void eventEditSave() {
+    void sendRequestToEditDeadline() throws Exception {
         SecurityContext mockedSecurityContext = Mockito.mock(SecurityContext.class);
         when(mockedSecurityContext.getAuthentication()).thenReturn(new PreAuthenticatedAuthenticationToken(validAuthState, ""));
 
         SecurityContextHolder.setContext(mockedSecurityContext);
 
+        Deadlines newDeadlines = new Deadlines(1,0,"testDeadline", new Date());
 
+        when(deadlinesService.getEventById(any(Integer.class))).thenReturn(newDeadlines);
+        when(deadlinesService.updateDeadline(any(Deadlines.class))).thenReturn(newDeadlines);
+
+        ArgumentCaptor<Deadlines> deadlinesArgumentCaptor = ArgumentCaptor.forClass(Deadlines.class);
+        mockMvc.perform(post("/edit-deadline/{id}",1).flashAttr("deadlines", newDeadlines))
+                .andExpect(status().is3xxRedirection()) // Whether to return the status "200 OK"
+                .andExpect(redirectedUrl("/details"));
+
+        Mockito.verify(deadlinesService).updateDeadline(deadlinesArgumentCaptor.capture());
     }
 }
