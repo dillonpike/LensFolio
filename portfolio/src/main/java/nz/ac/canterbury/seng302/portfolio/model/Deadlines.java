@@ -14,24 +14,22 @@ public class Deadlines {
     private int id;
     private int parentProjectId;
     private String deadlineName;
-    private Date deadlineStartDate;
-    private Date deadlineEndDate;
+    private Date deadlineDate;
 
 
     public Deadlines() {}
 
-    public Deadlines(int id, int parentProjectId, String deadlineName, Date deadlineStartDate, Date deadlineEndDate) {
+    public Deadlines(int id, int parentProjectId, String deadlineName, Date deadlineDate) {
         this.id = id;
         this.parentProjectId = parentProjectId;
         this.deadlineName = deadlineName;
-        this.deadlineStartDate = deadlineStartDate;
-        this.deadlineEndDate = deadlineEndDate;
+        this.deadlineDate = deadlineDate;
     }
 
     @Override
     public String toString() {
         return String.format(
-                "deadline[id=%d, parentProjectId='%d', deadlineName='%s', deadlineStartDate='%s', deadlineEndDate='%s']",
-                id, parentProjectId, deadlineName, deadlineStartDate, deadlineEndDate);
+                "deadline[id=%d, parentProjectId='%d', deadlineName='%s', deadlineDate='%s']",
+                id, parentProjectId, deadlineName, deadlineDate);
     }
 }
