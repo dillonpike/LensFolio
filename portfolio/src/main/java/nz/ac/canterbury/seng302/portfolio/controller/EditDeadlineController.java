@@ -33,7 +33,7 @@ public class EditDeadlineController {
             @ModelAttribute("deadlines") Deadlines deadlines,
             Model model
     ) throws Exception {
-        Deadlines newDeadline = deadlinesService.getEventById(id);
+        Deadlines newDeadline = deadlinesService.getDeadlineById(id);
         newDeadline.setDeadlineName(deadlines.getDeadlineName());
         newDeadline.setDeadlineDate(deadlines.getDeadlineDate());
 

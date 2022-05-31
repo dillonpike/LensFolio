@@ -1,6 +1,5 @@
 package nz.ac.canterbury.seng302.portfolio.service;
 
-import io.grpc.Deadline;
 import nz.ac.canterbury.seng302.portfolio.model.Deadlines;
 import nz.ac.canterbury.seng302.portfolio.repository.DeadlinesRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,6 +7,9 @@ import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
+/***
+ * Service class for saving, deleting, updating and retrieving event objects to the database.
+ */
 @Service
 public class DeadlinesService {
 
@@ -41,7 +43,7 @@ public class DeadlinesService {
      * @return deadline with the id that is the input
      * @throws Exception If event can't be found
      */
-    public Deadlines getEventById(Integer id) throws Exception {
+    public Deadlines getDeadlineById(Integer id) throws Exception {
         Optional<Deadlines> deadline = repository.findById(id);
         if(deadline.isPresent()) {
             return deadline.get();

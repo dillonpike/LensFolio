@@ -73,7 +73,7 @@ class EditDeadlineControllerTest {
 
         Deadlines newDeadlines = new Deadlines(1,0,"testDeadline", new Date());
 
-        when(deadlinesService.getEventById(any(Integer.class))).thenReturn(newDeadlines);
+        when(deadlinesService.getDeadlineById(any(Integer.class))).thenReturn(newDeadlines);
         when(deadlinesService.updateDeadline(any(Deadlines.class))).thenReturn(newDeadlines);
 
         ArgumentCaptor<Deadlines> deadlinesArgumentCaptor = ArgumentCaptor.forClass(Deadlines.class);
