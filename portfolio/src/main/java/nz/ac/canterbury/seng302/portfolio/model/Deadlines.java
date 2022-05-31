@@ -9,12 +9,38 @@ import java.util.Date;
 @Entity
 public class Deadlines {
 
+
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
     private int id;
     private int parentProjectId;
     private String deadlineName;
     private Date deadlineDate;
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public String getDeadlineName() {
+        return deadlineName;
+    }
+
+    public void setDeadlineName(String deadlineName) {
+        this.deadlineName = deadlineName;
+    }
+
+    public Date getDeadlineDate() {
+        return deadlineDate;
+    }
+
+    public void setDeadlineDate(Date deadlineDate) {
+        this.deadlineDate = deadlineDate;
+    }
+
 
 
     public Deadlines() {}
