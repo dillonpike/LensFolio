@@ -70,22 +70,11 @@
         <button id="saveButton" class="save" type="submit">Save</button>
     </form>
 </div>
-<div id="main-content" class="container">
-    <div class="row">
-        <div class="col-md-6">
-            <form class="form-inline">
-                <div class="form-group">
-                    <label>Button to sent toast</label>
-                </div>
-                <button id="send" class="btn btn-default" type="submit">Send</button>
-            </form>
-        </div>
-    </div>
-</div>
 </body>
 <script src="../js/project.js"></script>
 <script th:inline="javascript">
     let stompClient = null;
+    let changeFlag = false;
 
     /**
      * Connects the stomp client to the setup websocket endpoint.
@@ -141,17 +130,17 @@
     }
 
     /**
-     * Initialises functions/injections
+     * Initialises functions/injections. All inputs when being focused on (edited) will update and send a notification
+     * to the details page. When these are no longer being updated (edited) they will disappear after a certain period.
      */
     $(function () {
-        $("form").on('submit', function (e) {
-            //e.preventDefault();
-        });
         connect();
-        $("input").on('input', function (e) {
+        $("input").on('focusin', function (ignore) {
             sendName();
+        }).on('focusout', function (ignore) {
+            sendEmpty();
         });
-        $( "#send" ).click(function() { sendName(); });
+
         $( "#saveButton").click(function() { sendNameReload(); })
         $( "#cancelButton").click(function() { sendEmpty(); })
     });

@@ -1,4 +1,6 @@
 let stompClient = null;
+let toast = null;
+let selectedDate = (new Date(Date.now())).valueOf();
 
 /**
  * Connects the stomp client to the setup websocket endpoint.
@@ -25,7 +27,7 @@ function connect() {
 
 /**
  * Function that is called when a message is sent to the endpoint. Shows the toast if the message is full.
- * Removes the toast if the message is empty.
+ * Removes the toast if the message is empty after delay.
  * @param eventName Event message that may or may not be empty.
  * @param username Username of the user making the change
  * @param firstName First name of the user
@@ -33,21 +35,22 @@ function connect() {
  */
 function showToast(eventName, username, firstName, lastName) {
     if (eventName !== "") {
-        const toast = new bootstrap.Toast($("#liveToast"));
-        toast.autohide = true;
-        toast.delay = 5000;
         $("#popupText").text("'" + eventName + "' is being edited by " + firstName + " " + lastName + " (" + username + ").").hidden = false;
         toast.show();
+        selectedDate = (new Date(Date.now())).valueOf();
     } else {
-        const toast = $("#liveToast")
-        $("#popupText").text("").hidden = true;
-        toast.hide();
+        setTimeout(() => {
+            let currentTime = (new Date(Date.now())).valueOf();
+            if (currentTime >= selectedDate + 4950) {
+                toast.hide()
+            }
+        }, 5000);
     }
 }
 
 /**
- * Function that is called when a message is sent to the endpoint. Shows the toast if the message is full.
- * Removes the toast if the message is empty. This function displays that an event has been updated.
+ * Function that is called when a message is sent to the endpoint. Shows the toast if the message is full for a certain period.
+ * This function displays that an event has been updated.
  * @param eventName Event message that may or may not be empty.
  * @param username Username of the user making the change
  * @param firstName First name of the user
@@ -55,15 +58,15 @@ function showToast(eventName, username, firstName, lastName) {
  */
 function showToastSave(eventName, username, firstName, lastName) {
     if (eventName !== "") {
-        const toast = new bootstrap.Toast($("#liveToast"));
-        toast.autohide = true;
-        toast.delay = 5000;
         $("#popupText").text("'" + eventName + "' has been updated by " + firstName + " " + lastName + " (" + username + ").").hidden = false;
         toast.show();
-    } else {
-        const toast = $("#liveToast")
-        $("#popupText").text("").hidden = true;
-        toast.hide();
+        selectedDate = (new Date(Date.now())).valueOf();
+        setTimeout(() => {
+            let currentTime = (new Date(Date.now())).valueOf();
+            if (currentTime >= selectedDate + 4950) {
+                toast.hide();
+            }
+        }, 5000);
     }
 }
 
@@ -74,5 +77,6 @@ $(function () {
     $("form").on('submit', function (e) {
         e.preventDefault();
     });
+    toast = new bootstrap.Toast($("#liveToast"));
     connect();
 });
