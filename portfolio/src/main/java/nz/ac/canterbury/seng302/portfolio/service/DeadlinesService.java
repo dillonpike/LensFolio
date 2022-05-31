@@ -31,7 +31,6 @@ public class DeadlinesService {
             deadlineUpdate = repository.save(deadlineUpdate);
             return deadlineUpdate;
         } else {
-            deadline = repository.save(deadline);
             return deadline;
         }
     }
@@ -43,11 +42,11 @@ public class DeadlinesService {
      * @throws Exception If event can't be found
      */
     public Deadlines getEventById(Integer id) throws Exception {
-
         Optional<Deadlines> deadline = repository.findById(id);
         if(deadline.isPresent()) {
             return deadline.get();
         } else {
+
             throw new Exception("Event not found");
         }
     }
