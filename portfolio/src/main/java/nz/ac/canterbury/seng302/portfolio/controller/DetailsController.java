@@ -91,7 +91,10 @@ public class DetailsController {
         elementService.addHeaderAttributes(model, id);
         model.addAttribute("userId", id);
 
-        // Below code is just begging to be added as a method somewhere...
+        return getFinalThymeleafTemplate(principal);
+    }
+
+    private String getFinalThymeleafTemplate(AuthState principal) {
         String role = principal.getClaimsList().stream()
                 .filter(claim -> claim.getType().equals("role"))
                 .findFirst()
@@ -106,7 +109,5 @@ public class DetailsController {
             return "userProjectDetails";
         }
     }
-
-
 
 }

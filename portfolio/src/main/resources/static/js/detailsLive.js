@@ -20,6 +20,7 @@ function connect() {
         })
         stompClient.subscribe('/events/save-edit', function (eventResponseArg) {
             const eventResponse = JSON.parse(eventResponseArg.body);
+            refreshEvents();
             showToastSave(eventResponse.eventName, eventResponse.username, eventResponse.userFirstName, eventResponse.userLastName);
         });
     });
@@ -58,7 +59,7 @@ function showToast(eventName, username, firstName, lastName) {
  */
 function showToastSave(eventName, username, firstName, lastName) {
     if (eventName !== "") {
-        $("#popupText").text("'" + eventName + "' has been updated by " + firstName + " " + lastName + " (" + username + ").").hidden = false;
+        $("#popupText").text("'" + eventName + "' has been updated by " + firstName + " " + lastName + " (" + username + "). Your page will be reloaded shortly... ").hidden = false;
         toast.show();
         selectedDate = (new Date(Date.now())).valueOf();
         setTimeout(() => {
@@ -68,6 +69,12 @@ function showToastSave(eventName, username, firstName, lastName) {
             }
         }, 5000);
     }
+}
+
+function refreshEvents() {
+    setTimeout(() => {
+        document.location.reload();
+    }, 20);
 }
 
 /**
