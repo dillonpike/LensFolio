@@ -12,14 +12,14 @@ function connect() {
     stompClient.connect({}, function (frame) {
         console.log('Connected: ' + frame);
         stompClient.subscribe('/events/being-edited', function (eventResponseArg) {
-            const eventResponse = JSON.parse(eventResponseArg.body)
+            const eventResponse = JSON.parse(eventResponseArg.body);
             showToast(eventResponse.eventName, eventResponse.username, eventResponse.userFirstName, eventResponse.userLastName);
         });
         stompClient.subscribe('/events/stop-being-edited', function (ignore) {
             showToast("", "", "", "");
         })
         stompClient.subscribe('/events/save-edit', function (eventResponseArg) {
-            const eventResponse = JSON.parse(eventResponseArg.body)
+            const eventResponse = JSON.parse(eventResponseArg.body);
             showToastSave(eventResponse.eventName, eventResponse.username, eventResponse.userFirstName, eventResponse.userLastName);
         });
     });
