@@ -21,8 +21,10 @@
 <div class="content">
     <form method="post" onsubmit="return validateName();" th:action="@{add-event}" th:object="${event}">
         <label for="eventName">Event Name</label> <br/>
-        <input id="eventName" type="text" th:name="eventName" th:field="*{eventName}">
-        <br/>
+        <input onkeydown="updateCharsLeft()" id="eventName" type="text" th:name="eventName" th:field="*{eventName}">
+        <div id="nameLengthMessage">
+            <span id="eventNameLength"></span>
+        </div>
         <div class="horizontal-group">
             <div class="horizontal-group-element" >
                 <label for="eventStartDate">Event Start Date</label> <br/>
@@ -119,6 +121,13 @@
         return true
     }
     document.getElementById("eventName").onchange = validateName;
+</script>
+<script>
+    //updates characters left
+    function updateCharsLeft() {
+        let chars_left = 50 - document.getElementById("eventName").value.length;
+        document.getElementById("eventNameLength").innerText = chars_left + " characters left";
+    }
 </script>
 
 <script type="text/javascript">
