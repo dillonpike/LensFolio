@@ -2,7 +2,6 @@ package nz.ac.canterbury.seng302.portfolio.service;
 
 import nz.ac.canterbury.seng302.portfolio.model.Deadline;
 import nz.ac.canterbury.seng302.portfolio.repository.DeadlinesRepository;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -15,10 +14,10 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import java.util.Date;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.AdditionalAnswers.returnsFirstArg;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 /**
  * Unit tests for GroupService class.
@@ -54,10 +53,10 @@ class DeadlineServiceTest {
 
         Deadline actual = deadlineService.updateDeadline(paramDeadline);
 
-        Assertions.assertEquals("newTest",actual.getDeadlineName());
-        Assertions.assertEquals(new Date(100),actual.getDeadlineDate());
+        assertEquals("newTest",actual.getDeadlineName());
+        assertEquals(new Date(100),actual.getDeadlineDate());
         ArgumentCaptor<Deadline> deadlinesArgumentCaptor = ArgumentCaptor.forClass(Deadline.class);
-        Mockito.verify(deadlinesRepository).save(deadlinesArgumentCaptor.capture());
+        verify(deadlinesRepository).save(deadlinesArgumentCaptor.capture());
     }
 
     /**
@@ -74,8 +73,8 @@ class DeadlineServiceTest {
 
         Deadline actual = deadlineService.updateDeadline(paramDeadline);
 
-        Assertions.assertEquals("deadline not exist in database",actual.getDeadlineName());
-        Assertions.assertEquals(new Date(10),actual.getDeadlineDate());
+        assertEquals("deadline not exist in database",actual.getDeadlineName());
+        assertEquals(new Date(10),actual.getDeadlineDate());
 
     }
 
@@ -90,7 +89,7 @@ class DeadlineServiceTest {
         when(deadlinesRepository.findById(any(Integer.class))).thenReturn(sOptional);
         Deadline actual = deadlineService.getDeadlineById(1);
 
-        Assertions.assertEquals(deadline, actual);
+        assertEquals(deadline, actual);
 
 
     }
@@ -111,5 +110,19 @@ class DeadlineServiceTest {
         String actualMessage = exception.getMessage();
 
         assertTrue(actualMessage.contains(expectedMessage));
+    }
+
+    /**
+     * Tests that the addDeadline method calls repository.save() to save the given deadline to the database, then
+     * returns the saved deadline.
+     */
+    @Test
+    void testAddDeadline() {
+        when(deadlinesRepository.save(any(Deadline.class))).then(returnsFirstArg());
+        Deadline expectedDeadline = new Deadline(0,"Test Deadline", new Date());
+        Deadline deadline = deadlineService.addDeadline(expectedDeadline);
+
+        verify(deadlinesRepository, times(1)).save(expectedDeadline);
+        assertEquals(expectedDeadline, deadline);
     }
 }
