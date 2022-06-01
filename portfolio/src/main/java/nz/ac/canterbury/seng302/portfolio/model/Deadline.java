@@ -7,11 +7,11 @@ import javax.persistence.Id;
 import java.util.Date;
 
 @Entity
-public class Deadlines {
+public class Deadline {
 
 
     @Id
-    @GeneratedValue(strategy= GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     private int parentProjectId;
     private String deadlineName;
@@ -43,10 +43,9 @@ public class Deadlines {
 
 
 
-    public Deadlines() {}
+    public Deadline() {}
 
-    public Deadlines(int id, int parentProjectId, String deadlineName, Date deadlineDate) {
-        this.id = id;
+    public Deadline(int parentProjectId, String deadlineName, Date deadlineDate) {
         this.parentProjectId = parentProjectId;
         this.deadlineName = deadlineName;
         this.deadlineDate = deadlineDate;

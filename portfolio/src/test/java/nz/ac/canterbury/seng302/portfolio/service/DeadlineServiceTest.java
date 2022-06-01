@@ -1,6 +1,6 @@
 package nz.ac.canterbury.seng302.portfolio.service;
 
-import nz.ac.canterbury.seng302.portfolio.model.Deadlines;
+import nz.ac.canterbury.seng302.portfolio.model.Deadline;
 import nz.ac.canterbury.seng302.portfolio.repository.DeadlinesRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -25,7 +25,7 @@ import static org.mockito.Mockito.when;
  */
 @ExtendWith(MockitoExtension.class)
 @ExtendWith(SpringExtension.class)
-class DeadlinesServiceTest {
+class DeadlineServiceTest {
     /**
      * Mocked repository of Deadlines objects.
      */
@@ -36,7 +36,7 @@ class DeadlinesServiceTest {
      * DeadlineService object.
      */
     @InjectMocks
-    private DeadlinesService deadlinesService;
+    private DeadlineService deadlineService;
 
     /**
      * test UpdateDeadline method in DeadlineService class given the deadline exist in database
@@ -45,18 +45,18 @@ class DeadlinesServiceTest {
      */
     @Test
     void updateDeadlineWhenTheDeadlineExistInDatabase() {
-        Deadlines paramDeadline = new Deadlines(1,0,"newTest",new Date(100));
-        Deadlines deadlines = new Deadlines(1 ,0 ,"oldName", new Date(10));
-        Optional<Deadlines> sOptional = Optional.of(deadlines);
+        Deadline paramDeadline = new Deadline(0,"newTest",new Date(100));
+        Deadline deadline = new Deadline(0 ,"oldName", new Date(10));
+        Optional<Deadline> sOptional = Optional.of(deadline);
 
         when(deadlinesRepository.findById(any(Integer.class))).thenReturn(sOptional);
-        when(deadlinesRepository.save(any(Deadlines.class))).thenReturn(paramDeadline);
+        when(deadlinesRepository.save(any(Deadline.class))).thenReturn(paramDeadline);
 
-        Deadlines actual = deadlinesService.updateDeadline(paramDeadline);
+        Deadline actual = deadlineService.updateDeadline(paramDeadline);
 
         Assertions.assertEquals("newTest",actual.getDeadlineName());
         Assertions.assertEquals(new Date(100),actual.getDeadlineDate());
-        ArgumentCaptor<Deadlines> deadlinesArgumentCaptor = ArgumentCaptor.forClass(Deadlines.class);
+        ArgumentCaptor<Deadline> deadlinesArgumentCaptor = ArgumentCaptor.forClass(Deadline.class);
         Mockito.verify(deadlinesRepository).save(deadlinesArgumentCaptor.capture());
     }
 
@@ -66,13 +66,13 @@ class DeadlinesServiceTest {
      */
     @Test
     void updateDeadlineWhenTheDeadlineNotExistInDatabase() {
-        Deadlines paramDeadline = new Deadlines(1,0,"deadline not exist in database",new Date(10));
+        Deadline paramDeadline = new Deadline(0,"deadline not exist in database",new Date(10));
 
-        Optional<Deadlines> sOptional = Optional.empty();
+        Optional<Deadline> sOptional = Optional.empty();
 
         when(deadlinesRepository.findById(any(Integer.class))).thenReturn(sOptional);
 
-        Deadlines actual = deadlinesService.updateDeadline(paramDeadline);
+        Deadline actual = deadlineService.updateDeadline(paramDeadline);
 
         Assertions.assertEquals("deadline not exist in database",actual.getDeadlineName());
         Assertions.assertEquals(new Date(10),actual.getDeadlineDate());
@@ -85,12 +85,12 @@ class DeadlinesServiceTest {
      */
     @Test
     void getDeadlineByIdWhenDeadlineExist() throws Exception {
-        Deadlines deadlines = new Deadlines(1 ,0 ,"oldName", new Date(10));
-        Optional<Deadlines> sOptional = Optional.of(deadlines);
+        Deadline deadline = new Deadline(0 ,"oldName", new Date(10));
+        Optional<Deadline> sOptional = Optional.of(deadline);
         when(deadlinesRepository.findById(any(Integer.class))).thenReturn(sOptional);
-        Deadlines actual = deadlinesService.getDeadlineById(1);
+        Deadline actual = deadlineService.getDeadlineById(1);
 
-        Assertions.assertEquals(deadlines, actual);
+        Assertions.assertEquals(deadline, actual);
 
 
     }
@@ -102,9 +102,9 @@ class DeadlinesServiceTest {
     @Test
     void getEventByIdWhenDeadlineDoesNotExist() {
         Exception exception = assertThrows(Exception.class, () -> {
-            Optional<Deadlines> sOptional = Optional.empty();
+            Optional<Deadline> sOptional = Optional.empty();
             when(deadlinesRepository.findById(any(Integer.class))).thenReturn(sOptional);
-            deadlinesService.getDeadlineById(1);
+            deadlineService.getDeadlineById(1);
         });
 
         String expectedMessage = "Event not found";

@@ -1,6 +1,6 @@
 package nz.ac.canterbury.seng302.portfolio.service;
 
-import nz.ac.canterbury.seng302.portfolio.model.Deadlines;
+import nz.ac.canterbury.seng302.portfolio.model.Deadline;
 import nz.ac.canterbury.seng302.portfolio.repository.DeadlinesRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -11,7 +11,7 @@ import java.util.Optional;
  * Service class for saving, deleting, updating and retrieving event objects to the database.
  */
 @Service
-public class DeadlinesService {
+public class DeadlineService {
 
     @Autowired
     private DeadlinesRepository repository;
@@ -21,11 +21,11 @@ public class DeadlinesService {
      * @param deadline deadline to update it to
      * @return Newly edited event
      */
-    public Deadlines updateDeadline(Deadlines deadline) {
-        Optional<Deadlines> sOptional = repository.findById((Integer) deadline.getId());
+    public Deadline updateDeadline(Deadline deadline) {
+        Optional<Deadline> sOptional = repository.findById((Integer) deadline.getId());
 
         if (sOptional.isPresent()) {
-            Deadlines deadlineUpdate = sOptional.get();
+            Deadline deadlineUpdate = sOptional.get();
             deadlineUpdate.setDeadlineName(deadline.getDeadlineName());
             deadlineUpdate.setDeadlineDate(deadline.getDeadlineDate());
 
@@ -43,8 +43,8 @@ public class DeadlinesService {
      * @return deadline with the id that is the input
      * @throws Exception If event can't be found
      */
-    public Deadlines getDeadlineById(Integer id) throws Exception {
-        Optional<Deadlines> deadline = repository.findById(id);
+    public Deadline getDeadlineById(Integer id) throws Exception {
+        Optional<Deadline> deadline = repository.findById(id);
         if(deadline.isPresent()) {
             return deadline.get();
         } else {

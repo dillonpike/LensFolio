@@ -1,8 +1,8 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
 
-import nz.ac.canterbury.seng302.portfolio.model.Deadlines;
-import nz.ac.canterbury.seng302.portfolio.service.DeadlinesService;
+import nz.ac.canterbury.seng302.portfolio.model.Deadline;
+import nz.ac.canterbury.seng302.portfolio.service.DeadlineService;
 import nz.ac.canterbury.seng302.portfolio.service.UserAccountClientService;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import nz.ac.canterbury.seng302.shared.identityprovider.ClaimDTO;
@@ -53,7 +53,7 @@ class EditDeadlineControllerTest {
     private MockMvc mockMvc;
 
     @MockBean
-    private DeadlinesService deadlinesService;
+    private DeadlineService deadlineService;
 
     @MockBean
     private UserAccountClientService userAccountClientService; // needed to load application
@@ -71,16 +71,16 @@ class EditDeadlineControllerTest {
 
         SecurityContextHolder.setContext(mockedSecurityContext);
 
-        Deadlines newDeadlines = new Deadlines(1,0,"testDeadline", new Date());
+        Deadline newDeadline = new Deadline(0,"testDeadline", new Date());
 
-        when(deadlinesService.getDeadlineById(any(Integer.class))).thenReturn(newDeadlines);
-        when(deadlinesService.updateDeadline(any(Deadlines.class))).thenReturn(newDeadlines);
+        when(deadlineService.getDeadlineById(any(Integer.class))).thenReturn(newDeadline);
+        when(deadlineService.updateDeadline(any(Deadline.class))).thenReturn(newDeadline);
 
-        ArgumentCaptor<Deadlines> deadlinesArgumentCaptor = ArgumentCaptor.forClass(Deadlines.class);
-        mockMvc.perform(post("/edit-deadline/{id}",1).flashAttr("deadlines", newDeadlines))
+        ArgumentCaptor<Deadline> deadlinesArgumentCaptor = ArgumentCaptor.forClass(Deadline.class);
+        mockMvc.perform(post("/edit-deadline/{id}", newDeadline.getId()).flashAttr("deadlines", newDeadline))
                 .andExpect(status().is3xxRedirection()) // Whether to return the status "200 OK"
                 .andExpect(redirectedUrl("/details"));
 
-        Mockito.verify(deadlinesService).updateDeadline(deadlinesArgumentCaptor.capture());
+        Mockito.verify(deadlineService).updateDeadline(deadlinesArgumentCaptor.capture());
     }
 }
