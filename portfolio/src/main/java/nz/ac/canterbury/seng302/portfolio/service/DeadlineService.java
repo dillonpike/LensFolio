@@ -54,4 +54,12 @@ public class DeadlineService {
     }
 
 
+    /**
+     * Saves the given deadline to the database and returns it.
+     * @param deadline deadline to be saved
+     * @return saved deadline
+     */
+    public Deadline addDeadline(Deadline deadline) {
+        return repository.save(deadline);
+    }
 }
