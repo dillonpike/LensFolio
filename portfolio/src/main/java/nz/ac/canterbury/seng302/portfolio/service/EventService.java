@@ -103,6 +103,13 @@ public class EventService {
         return eventRepository.findAllByOrderByEventStartDate();
     }
 
+
+    /***
+     * Get all events and add colour value for start/end date
+     *
+     * @param sprints sprints in chronological order
+     * @return events in chronological order
+     */
     public List<Event> getAllEventsOrderedWithColour(List<Sprint> sprints) {
         List<Event> eventList = getAllEventsOrdered();
         for (int i = 0; i < eventList.size(); i++) {
@@ -117,18 +124,5 @@ public class EventService {
             eventRepository.save(eventList.get(i));
         }
         return getAllEventsOrdered();
-    }
-
-
-    public void getColorDate(Event event) {
-        List<Sprint> sprints = (List<Sprint>) sprintRepository.findAll();
-        for (int i = 0; i<sprints.toArray().length;i++) {
-            if (event.getEventStartDate().after(sprints.get(i).getStartDate()) && event.getEventStartDate().before(sprints.get(i).getEndDate())) {
-                event.setStartDateColour(sprints.get(i).getColour());
-            }
-            if (event.getEventEndDate().after(sprints.get(i).getStartDate()) && event.getEventEndDate().before(sprints.get(i).getEndDate())) {
-                event.setEndDateColour(sprints.get(i).getColour());
-            }
-        }
     }
 }

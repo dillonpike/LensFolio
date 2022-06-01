@@ -116,4 +116,17 @@ class SprintServiceTest {
         Date date = sprintService.calendarDateStringToDate("20/Jan/2001", true);
         assertNull(date);
     }
+
+    @Test
+    void givenOneSprint_returnBlueColour() {
+        Sprint sprint = new Sprint();
+        sprint.setName("Test");
+        sprint.setColour("#5897fc");
+        List<Sprint> sprintList = new ArrayList<>();
+        sprintList.add(sprint);
+        when(sprintRepository.findAllByOrderBySprintStartDate()).thenReturn(sprintList);
+
+        List<Sprint> sprints = sprintService.getAllSprintsOrderedWithColour();
+        assertThat(sprints.get(0).getColour()).isSameAs(sprint.getColour());
+    }
 }
