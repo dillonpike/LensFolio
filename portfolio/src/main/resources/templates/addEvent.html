@@ -21,7 +21,7 @@
 <div class="content">
     <form method="post" onsubmit="return validateName();" th:action="@{add-event}" th:object="${event}">
         <label for="eventName">Event Name</label> <br/>
-        <input onkeydown="updateCharsLeft()" id="eventName" type="text" th:name="eventName" th:field="*{eventName}">
+        <input onkeyup="updateCharsLeft()" id="eventName" type="text" maxlength="50" th:name="eventName" th:field="*{eventName}">
         <div id="nameLengthMessage">
             <span id="eventNameLength"></span>
         </div>
