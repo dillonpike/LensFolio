@@ -143,6 +143,12 @@ public class SprintService {
         return date;
     }
 
+    /***
+     * Function to get all sprints in chronological order,
+     * add colour for each sprint and save to repository
+     *
+     * @return sprints in chronological order
+     */
     public List<Sprint> getAllSprintsOrderedWithColour() {
         List<Sprint> sprints = getAllSprintsOrdered();
         ArrayList<String> colours = new ArrayList<>(Arrays.asList("#5897fc", "#a758fc", "#fc58c3", "#9e1212", "#c65102", "#d5b60a", "#004400", " #11887b"));
