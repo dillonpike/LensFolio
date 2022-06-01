@@ -25,6 +25,14 @@ public class Deadline {
         this.id = id;
     }
 
+    public int getParentProjectId() {
+        return parentProjectId;
+    }
+
+    public void setParentProjectId(int parentProjectId) {
+        this.parentProjectId = parentProjectId;
+    }
+
     public String getDeadlineName() {
         return deadlineName;
     }
@@ -40,8 +48,6 @@ public class Deadline {
     public void setDeadlineDate(Date deadlineDate) {
         this.deadlineDate = deadlineDate;
     }
-
-
 
     public Deadline() {}
 
