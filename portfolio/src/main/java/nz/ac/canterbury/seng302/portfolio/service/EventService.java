@@ -4,6 +4,7 @@ package nz.ac.canterbury.seng302.portfolio.service;
 import nz.ac.canterbury.seng302.portfolio.model.Event;
 import nz.ac.canterbury.seng302.portfolio.model.Sprint;
 import nz.ac.canterbury.seng302.portfolio.repository.EventRepository;
+import nz.ac.canterbury.seng302.portfolio.repository.SprintRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,14 +18,17 @@ import java.util.Optional;
 public class EventService {
 
     @Autowired
-    private EventRepository repository;
+    private EventRepository eventRepository;
+
+    @Autowired
+    private SprintRepository sprintRepository;
 
     /**
      * Get list of all events
      * @return List of events
      */
     public List<Event> getAllEvents() {
-        return (List<Event>) repository.findAll();
+        return (List<Event>) eventRepository.findAll();
     }
 
     /**
@@ -35,7 +39,7 @@ public class EventService {
      */
     public Event getEventById(Integer id) throws Exception {
 
-        Optional<Event> event = repository.findById(id);
+        Optional<Event> event = eventRepository.findById(id);
         if(event.isPresent()) {
             return event.get();
         } else {
@@ -49,7 +53,7 @@ public class EventService {
      * @return Newly edited event
      */
     public Event updateEvent(Event event) {
-        Optional<Event> sOptional = repository.findById((Integer) event.getId());
+        Optional<Event> sOptional = eventRepository.findById((Integer) event.getId());
 
         if (sOptional.isPresent()) {
             Event eventUpdate = sOptional.get();
@@ -59,10 +63,10 @@ public class EventService {
             eventUpdate.setEventStartTime(event.getEventStartTime());
             eventUpdate.setEventEndTime(event.getEventEndTime());
 
-            eventUpdate = repository.save(eventUpdate);
+            eventUpdate = eventRepository.save(eventUpdate);
             return eventUpdate;
         } else {
-            event = repository.save(event);
+            event = eventRepository.save(event);
             return event;
         }
     }
@@ -74,7 +78,7 @@ public class EventService {
      * @return Event that was added to the database
      */
     public Event addEvent(Event event) {
-        event = repository.save(event);
+        event = eventRepository.save(event);
         return event;
     }
 
@@ -83,11 +87,11 @@ public class EventService {
      * @param id ID of the event being removed
      */
     public void removeEvent(Integer id) {
-        Optional<Event> sOptional = repository.findById(id);
+        Optional<Event> sOptional = eventRepository.findById(id);
 
         if(sOptional.isPresent()) {
             Event eventUpdate = sOptional.get();
-            repository.deleteById(eventUpdate.getId());
+            eventRepository.deleteById(eventUpdate.getId());
         }
     }
 
@@ -96,6 +100,19 @@ public class EventService {
      * @return List of events
      */
     public List<Event> getAllEventsOrdered() {
-        return repository.findAllByOrderByEventStartDate();
+        return eventRepository.findAllByOrderByEventStartDate();
+    }
+
+
+    public void getColorDate(Event event) {
+        List<Sprint> sprints = (List<Sprint>) sprintRepository.findAll();
+        for (int i = 0; i<sprints.toArray().length;i++) {
+            if (event.getEventStartDate().after(sprints.get(i).getStartDate()) && event.getEventStartDate().before(sprints.get(i).getEndDate())) {
+                event.setStartDateColour(sprints.get(i).getColour());
+            }
+            if (event.getEventEndDate().after(sprints.get(i).getStartDate()) && event.getEventEndDate().before(sprints.get(i).getEndDate())) {
+                event.setEndDateColour(sprints.get(i).getColour());
+            }
+        }
     }
 }

@@ -20,6 +20,8 @@ public class Sprint {
     private String sprintDescription;
     private Date sprintStartDate;
     private Date sprintEndDate;
+    private String sprintColour;
+
 
     public Sprint() {}
 
@@ -103,4 +105,13 @@ public class Sprint {
     public void setName(String sprintName) {
         this.sprintName = sprintName;
     }
+
+    public void setColour(String sprintColour) {
+        this.sprintColour = sprintColour;
+    }
+
+    public String getColour() {
+        return sprintColour;
+    }
+
 }
