@@ -1,8 +1,6 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
 import nz.ac.canterbury.seng302.portfolio.model.Event;
-import nz.ac.canterbury.seng302.portfolio.model.EventMessage;
-import nz.ac.canterbury.seng302.portfolio.model.EventResponse;
 import nz.ac.canterbury.seng302.portfolio.service.DateValidationService;
 import nz.ac.canterbury.seng302.portfolio.service.EventService;
 import nz.ac.canterbury.seng302.portfolio.service.RegisterClientService;
@@ -10,13 +8,10 @@ import nz.ac.canterbury.seng302.portfolio.service.UserAccountClientService;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.util.HtmlUtils;
 
 @Controller
 public class EditEventController {
@@ -97,46 +92,5 @@ public class EditEventController {
         return "editEvent :: #eventDateError";
     }
 
-    /**
-     * This method maps @MessageMapping endpoint to the @SendTo endpoint. Called when something is sent to
-     * the MessageMapping endpoint.
-     * @param message EventMessage that holds information about the event being updated
-     * @return returns an EventResponse that holds information about the event being updated.
-     */
-    @MessageMapping("/editing-event")
-    @SendTo("/events/being-edited")
-    public EventResponse updatingEvent(EventMessage message) {
-        String username = message.getUsername();
-        String firstName = message.getUserFirstName();
-        String lastName = message.getUserLastName();
-        return new EventResponse(HtmlUtils.htmlEscape(message.getEventName()), username, firstName, lastName);
-    }
 
-    /**
-     * This method maps @MessageMapping endpoint to the @SendTo endpoint. Called when something is sent to
-     * the MessageMapping endpoint. This is triggered when the user is no longer editing.
-     * @param message Information about the editing state.
-     * @return Returns the message given.
-     */
-    @MessageMapping("/stop-editing-event")
-    @SendTo("/events/stop-being-edited")
-    public String stopUpdatingEvent(String message) {
-        return message;
-    }
-
-    /**
-     * This method maps @MessageMapping endpoint to the @SendTo endpoint. Called when something is sent to
-     * the MessageMapping endpoint. This method also triggers some sort of re-render of the events.
-     * @param message EventMessage that holds information about the event being updated
-     * @return returns an EventResponse that holds information about the event being updated.
-     */
-    @MessageMapping("/saved-edited-event")
-    @SendTo("/events/save-edit")
-    public EventResponse savingUpdatedEvent(EventMessage message) {
-        // Trigger some sort of reload here?
-        String username = message.getUsername();
-        String firstName = message.getUserFirstName();
-        String lastName = message.getUserLastName();
-        return new EventResponse(HtmlUtils.htmlEscape(message.getEventName()), username, firstName, lastName);
-    }
 }

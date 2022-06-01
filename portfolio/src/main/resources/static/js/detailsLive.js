@@ -59,7 +59,7 @@ function showToast(eventName, username, firstName, lastName) {
  */
 function showToastSave(eventName, username, firstName, lastName) {
     if (eventName !== "") {
-        $("#popupText").text("'" + eventName + "' has been updated by " + firstName + " " + lastName + " (" + username + "). Your page will be reloaded shortly... ").hidden = false;
+        $("#popupText").text("'" + eventName + "' has been updated by " + firstName + " " + lastName + " (" + username + "). ").hidden = false;
         toast.show();
         selectedDate = (new Date(Date.now())).valueOf();
         setTimeout(() => {
@@ -71,10 +71,13 @@ function showToastSave(eventName, username, firstName, lastName) {
     }
 }
 
+/**
+ * Refresh the DOM after some delay, to account for the saving function completing.
+ */
 function refreshEvents() {
     setTimeout(() => {
         document.location.reload();
-    }, 20);
+    }, 50);
 }
 
 /**
@@ -86,4 +89,10 @@ $(function () {
     });
     toast = new bootstrap.Toast($("#liveToast"));
     connect();
+    // Checks if there should be a live update, and shows a toast if needed.
+    let eventInformation = $("#toastInformation");
+    if (eventInformation.text() !== "") {
+        showToastSave($("#toastEventName").text(), $("#toastUsername").text(), $("#toastFirstName").text(), $("#toastLastName").text());
+        showToastSave("", "", "", "");
+    }
 });
