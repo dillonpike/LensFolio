@@ -23,8 +23,10 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.util.Date;
 
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.AdditionalAnswers.returnsFirstArg;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -71,16 +73,22 @@ class EditDeadlineControllerTest {
 
         SecurityContextHolder.setContext(mockedSecurityContext);
 
-        Deadline newDeadline = new Deadline(0,"testDeadline", new Date());
+        String expectedDeadlineName = "Test Deadline";
+        Date expectedDeadlineDate = new Date();
+
+        Deadline newDeadline = new Deadline(0, expectedDeadlineName, expectedDeadlineDate);
 
         when(deadlineService.getDeadlineById(any(Integer.class))).thenReturn(newDeadline);
-        when(deadlineService.updateDeadline(any(Deadline.class))).thenReturn(newDeadline);
+        when(deadlineService.updateDeadline(any(Deadline.class))).then(returnsFirstArg());
 
         ArgumentCaptor<Deadline> deadlinesArgumentCaptor = ArgumentCaptor.forClass(Deadline.class);
-        mockMvc.perform(post("/edit-deadline/{id}", newDeadline.getId()).flashAttr("deadlines", newDeadline))
-                .andExpect(status().is3xxRedirection()) // Whether to return the status "200 OK"
+        mockMvc.perform(post("/edit-deadline/{id}", newDeadline.getId()).flashAttr("deadline", newDeadline))
+                .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/details"));
 
         Mockito.verify(deadlineService).updateDeadline(deadlinesArgumentCaptor.capture());
+        Deadline addedDeadline = deadlinesArgumentCaptor.getValue();
+        assertEquals(expectedDeadlineName, addedDeadline.getDeadlineName());
+        assertEquals(expectedDeadlineDate, addedDeadline.getDeadlineDate());
     }
 }
