@@ -156,10 +156,10 @@
                                                 </div>
                                             </div>
                                             <ol class="widget-49-meeting-points">
-                                                <span class="widget-49-meeting-item" th:text="From + ': ' + ${event.getStartDateDetail()}"> </span>
+                                                <span class="widget-49-meeting-item" th:style="color + ':' +  ${event.getStartDateColour()}" th:text="From + ': ' + ${event.getStartDateDetail()}"> </span>
                                             </ol>
                                             <ol class="widget-49-meeting-points">
-                                                <span class="widget-49-meeting-item" th:text="To + ': ' + ${event.getEndDateDetail()}"></span>
+                                                <span class="widget-49-meeting-item" th:style="color + ':' +  ${event.getEndDateColour()}" th:text="To + ': ' + ${event.getEndDateDetail()}"></span>
                                             </ol>
                                         </div>
                                     </div>
