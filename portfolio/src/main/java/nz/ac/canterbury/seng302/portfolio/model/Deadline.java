@@ -4,6 +4,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
@@ -98,6 +99,33 @@ public class Deadline {
      */
     public void setDeadlineDate(Date deadlineDate) {
         this.deadlineDate = deadlineDate;
+    }
+
+    /**
+     * Gets the day of the month of the deadline
+     * @return day of the month of the deadline
+     */
+    public int getDeadlineDay() {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd");
+        return Integer.parseInt(dateFormat.format(deadlineDate));
+    }
+
+    /**
+     * Gets the month of the year of the deadline
+     * @return month of the year of the deadline
+     */
+    public String getDeadlineMonth() {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("MMM");
+        return (dateFormat.format(deadlineDate));
+    }
+
+    /**
+     * Returns a string representation of the time of the deadline
+     * @return string representation of the time of the deadline
+     */
+    public String getDeadlineTime()  {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("h:mm a");
+        return (dateFormat.format(deadlineDate));
     }
 
     /**

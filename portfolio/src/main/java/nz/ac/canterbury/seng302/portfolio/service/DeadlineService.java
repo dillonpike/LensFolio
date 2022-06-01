@@ -1,10 +1,12 @@
 package nz.ac.canterbury.seng302.portfolio.service;
 
 import nz.ac.canterbury.seng302.portfolio.model.Deadline;
+import nz.ac.canterbury.seng302.portfolio.model.Event;
 import nz.ac.canterbury.seng302.portfolio.repository.DeadlinesRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 /***
@@ -51,6 +53,22 @@ public class DeadlineService {
 
             throw new Exception("Event not found");
         }
+    }
+
+    /**
+     * Get list of all deadlines
+     * @return List of deadlines
+     */
+    public List<Deadline> getAllDeadlines() {
+        return (List<Deadline>) repository.findAll();
+    }
+
+    /**
+     * Get list of all deadlines
+     * @return List of deadlines
+     */
+    public List<Deadline> getAllDeadlinesOrdered() {
+        return repository.findAllByOrderByDeadlineDate();
     }
 
 

@@ -1,6 +1,7 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
 import com.google.protobuf.Timestamp;
+import nz.ac.canterbury.seng302.portfolio.model.Deadline;
 import nz.ac.canterbury.seng302.portfolio.model.Event;
 import nz.ac.canterbury.seng302.portfolio.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,6 +41,9 @@ public class DetailsController {
 
     @Autowired
     private EventService eventService;
+
+    @Autowired
+    private DeadlineService deadlineService;
 
 
     /***
@@ -83,6 +87,9 @@ public class DetailsController {
 
         List<Event> eventList = eventService.getAllEventsOrdered();
         model.addAttribute("events", eventList);
+
+        List<Deadline> deadlineList = deadlineService.getAllDeadlinesOrdered();
+        model.addAttribute("deadlines", deadlineList);
         
         List<Sprint> sprintList = sprintService.getAllSprintsOrdered();
         model.addAttribute("sprints", sprintList);
