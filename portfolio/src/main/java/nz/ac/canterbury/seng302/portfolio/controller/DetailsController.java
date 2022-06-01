@@ -43,14 +43,14 @@ public class DetailsController {
     private EventService eventService;
 
     /**
-     * Set to true when an event was just updated, which is the reason for the new GET request.
-     */
-    private boolean eventWasUpdated = false;
-
-    /**
      * Last event saved, for toast notification.
      */
     private EventResponse eventResponse;
+
+    /**
+     * Time that the event was updated.
+     */
+    private Date eventWasUpdatedTime = Date.from(Instant.now());
 
 
     /***
@@ -95,9 +95,9 @@ public class DetailsController {
         List<Event> eventList = eventService.getAllEvents();
         model.addAttribute("events", eventList);
 
-        // Runs if the reload was triggered by saving an event.
-        if (eventWasUpdated) {
-            eventWasUpdated = false;
+        // Runs if the reload was triggered by saving an event. Checks set time to now to see if 2 seconds has passed yet.
+        long timeDifference = Date.from(Instant.now()).toInstant().getEpochSecond() - eventWasUpdatedTime.toInstant().getEpochSecond();
+        if (timeDifference <= 2 && eventResponse != null) {
             model.addAttribute("toastEventInformation", "true");
             model.addAttribute("toastEventName", eventResponse.getEventName());
             model.addAttribute("toastUsername", eventResponse.getUsername());
@@ -169,13 +169,12 @@ public class DetailsController {
     @MessageMapping("/saved-edited-event")
     @SendTo("/events/save-edit")
     public EventResponse savingUpdatedEvent(EventMessage message) {
-
         String username = message.getUsername();
         String firstName = message.getUserFirstName();
         String lastName = message.getUserLastName();
         EventResponse response = new EventResponse(HtmlUtils.htmlEscape(message.getEventName()), username, firstName, lastName);
         // Trigger reload and save the last event's information
-        eventWasUpdated = true;
+        eventWasUpdatedTime = Date.from(Instant.now());
         eventResponse = response;
         return response;
     }

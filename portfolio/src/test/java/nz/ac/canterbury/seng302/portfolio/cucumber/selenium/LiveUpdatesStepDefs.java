@@ -18,6 +18,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -30,6 +31,7 @@ import org.springframework.security.web.authentication.preauth.PreAuthenticatedA
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import java.time.Duration;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Date;
@@ -84,6 +86,7 @@ public class LiveUpdatesStepDefs {
     public void setUp() {
         webDriver = SeleniumService.getWebDriver();
         wait = SeleniumService.getWait();
+        wait.withTimeout(Duration.ofSeconds(1));
     }
 
     /**
@@ -116,18 +119,27 @@ public class LiveUpdatesStepDefs {
         ((JavascriptExecutor) webDriver).executeScript("window.open('http://localhost:9000/details')");
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.className("title-name")));
         tabs = new ArrayList<String>(webDriver.getWindowHandles());
+        try {
+            wait.until(ExpectedConditions.elementToBeClickable(By.id("nonExistent")));
+        } catch (TimeoutException ignored) {}
         // Switches back to main tab
         webDriver.switchTo().window(tabs.get(0));
     }
 
     @When("I edit an event {int}")
     public void i_edit_an_event(Integer eventId) {
+        wait.until(ExpectedConditions.elementToBeClickable(By.id("eventName")));
         webDriver.findElement(By.id("eventName")).click();
+        try {
+            wait.until(ExpectedConditions.elementToBeClickable(By.id("nonExistent")));
+        } catch (TimeoutException ignored) {}
+
     }
 
     @When("I save an event {int}")
     public void i_save_an_event(Integer eventId) {
         webDriver.findElement(By.id("saveButton")).click();
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.className("title-name")));
     }
 
     @Then("a live notification appears on the details page with correct message {string}")
@@ -142,6 +154,11 @@ public class LiveUpdatesStepDefs {
         } else {
             fail("Not a valid message to see displayed: '" + messageType + "' ");
         }
+        try {
+            wait.until(ExpectedConditions.elementToBeClickable(By.id("nonExistent")));
+        } catch (TimeoutException ignored) {}
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("popupText")));
+        System.out.println(webDriver.findElement(By.id("popupText")).getText() + "< This");
         assertTrue(webDriver.findElement(By.id("popupText")).getText().matches(pattern));
         assertTrue(webDriver.findElement(By.id("liveToast")).isDisplayed());
 
@@ -149,6 +166,8 @@ public class LiveUpdatesStepDefs {
 
     @When("I stop editing an event {int}")
     public void i_stop_editing_an_event(Integer int1) {
+        webDriver.switchTo().window(tabs.get(0));
+        wait.until(ExpectedConditions.elementToBeClickable(By.id("title")));
         webDriver.findElement(By.id("title")).click();
     }
 
