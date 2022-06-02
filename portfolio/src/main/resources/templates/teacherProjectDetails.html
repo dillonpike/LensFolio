@@ -141,7 +141,7 @@
                     <div class="tab-content" id="myTabContent">
                         <div class="tab-pane fade show active" id="event" role="tabpanel" aria-labelledby="event-tab">
                             <div th:each="event, meta: ${events}">
-                                <div class="card card-margin">
+                                <div class="card card-margin" id="eventId" th:value="${event.id}">
                                     <div class="card-body pt-0">
                                         <div class="widget-49">
                                             <div class="widget-49-title-wrapper">

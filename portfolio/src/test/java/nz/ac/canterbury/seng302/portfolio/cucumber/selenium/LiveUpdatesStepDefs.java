@@ -16,10 +16,7 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.openqa.selenium.By;
-import org.openqa.selenium.JavascriptExecutor;
-import org.openqa.selenium.TimeoutException;
-import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.*;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
@@ -35,6 +32,7 @@ import java.time.Duration;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 
 import static nz.ac.canterbury.seng302.portfolio.controller.SprintLifetimeController.getUpdatedDate;
@@ -78,6 +76,7 @@ public class LiveUpdatesStepDefs {
     private LocalTime endTime = LocalTime.now().plusHours(10L);
     private String mockEventName = "Test Event";
     private Event mockEvent = new Event(1,0,mockEventName, startEvent, endEvent,startTime, endTime);
+    private int eventIdToUse = 1;
 
     /**
      * Sets up for scenario by getting a web driver.
@@ -98,19 +97,32 @@ public class LiveUpdatesStepDefs {
         SeleniumService.tearDownWebDriver();
     }
 
-    @Given("event {int} exists")
-    public void event_exists(Integer eventId) throws Exception {
-        try {
-            mockEvent = eventService.getEventById(eventId);
-        } catch (Exception e) {
-            mockEvent.setId(eventId);
-            eventService.addEvent(mockEvent);
+    @Given("An event exists")
+    public void an_event_exists() throws Exception {
+        wait.until(ExpectedConditions.elementToBeClickable(By.id("projectsHeaderButton")));
+        webDriver.findElement(By.id("projectsHeaderButton")).click();
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.className("title-name")));
+        WebElement parent = webDriver.findElement(By.id("event"));
+        List<WebElement> listOfEvents = parent.findElements(By.className("card"));
+        if (listOfEvents.size() == 0) {
+            //wait.until(ExpectedConditions.elementToBeClickable(By.id("addEventButton")));
+            //webDriver.findElement(By.id("addEventButton")).click();
+            webDriver.get("http://localhost:9000/add-event");
+            wait.until(ExpectedConditions.elementToBeClickable(By.id("eventName")));
+            webDriver.findElement(By.id("eventName")).sendKeys("Test Event");
+            webDriver.findElement(By.id("saveButton")).click();
+            wait.until(ExpectedConditions.visibilityOfElementLocated(By.className("title-name")));
+            eventIdToUse = Integer.parseInt(webDriver.findElement(By.id("event")).findElement(By.className("card")).getAttribute("value"));
+        } else {
+            System.out.println("list was not empty");
+            System.out.println(parent.findElement(By.className("card")).getAttribute("value") + "< eventId");
+            eventIdToUse = Integer.parseInt(parent.findElement(By.className("card")).getAttribute("value"));
         }
     }
 
-    @When("I browse to the edit edit page for event {int}")
-    public void i_browse_to_the_edit_edit_page_for_event(Integer eventId) {
-        webDriver.get("http://localhost:9000/edit-event/" + eventId);
+    @When("I browse to the edit edit page for an event")
+    public void i_browse_to_the_edit_edit_page_for_an_event() {
+        webDriver.get("http://localhost:9000/edit-event/" + eventIdToUse);
         wait.until(ExpectedConditions.elementToBeClickable(By.id("eventName")));
     }
 
@@ -126,8 +138,8 @@ public class LiveUpdatesStepDefs {
         webDriver.switchTo().window(tabs.get(0));
     }
 
-    @When("I edit an event {int}")
-    public void i_edit_an_event(Integer eventId) {
+    @When("I edit an event")
+    public void i_edit_an_event() {
         wait.until(ExpectedConditions.elementToBeClickable(By.id("eventName")));
         webDriver.findElement(By.id("eventName")).click();
         try {
@@ -136,8 +148,8 @@ public class LiveUpdatesStepDefs {
 
     }
 
-    @When("I save an event {int}")
-    public void i_save_an_event(Integer eventId) {
+    @When("I save an event")
+    public void i_save_an_event() {
         webDriver.findElement(By.id("saveButton")).click();
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.className("title-name")));
     }
@@ -164,8 +176,8 @@ public class LiveUpdatesStepDefs {
 
     }
 
-    @When("I stop editing an event {int}")
-    public void i_stop_editing_an_event(Integer int1) {
+    @When("I stop editing an event")
+    public void i_stop_editing_an_event() {
         webDriver.switchTo().window(tabs.get(0));
         wait.until(ExpectedConditions.elementToBeClickable(By.id("title")));
         webDriver.findElement(By.id("title")).click();
