@@ -64,8 +64,8 @@ public class DeadlineService {
     }
 
     /**
-     * Get list of all deadlines
-     * @return List of deadlines
+     * Get list of all deadlines ordered by date
+     * @return List of deadlines ordered by date
      */
     public List<Deadline> getAllDeadlinesOrdered() {
         return repository.findAllByOrderByDeadlineDate();
