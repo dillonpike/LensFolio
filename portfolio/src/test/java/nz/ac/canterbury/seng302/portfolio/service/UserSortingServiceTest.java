@@ -22,7 +22,7 @@ import static org.mockito.Mockito.when;
  */
 @ExtendWith(MockitoExtension.class)
 @ExtendWith(SpringExtension.class)
-public class UserSortingServiceTest {
+class UserSortingServiceTest {
 
     @Mock
     private UserSortingRepository repository;
@@ -48,7 +48,7 @@ public class UserSortingServiceTest {
      * save and return the given sprint.
      */
     @Test
-    public void givenNoStoredUserSortings_whenUpdateUserSorting_thenReturnGivenUserSorting() {
+    void givenNoStoredUserSortings_whenUpdateUserSorting_thenReturnGivenUserSorting() {
         given(repository.findById(any(Integer.class))).willReturn(Optional.empty());
         when(repository.save(any(UserSorting.class))).thenReturn(expectedUserSorting);
         UserSorting userSorting = userSortingService.updateUserSorting(expectedUserSorting);
@@ -60,7 +60,7 @@ public class UserSortingServiceTest {
      * save and return the given sprint.
      */
     @Test
-    public void givenStoredUserSortings_whenUpdateUserSorting_thenReturnGivenUserSorting() {
+    void givenStoredUserSortings_whenUpdateUserSorting_thenReturnGivenUserSorting() {
         given(repository.findById(any(Integer.class))).willReturn(Optional.of(expectedUserSorting));
         when(repository.save(any(UserSorting.class))).thenReturn(expectedUserSorting);
         UserSorting userSorting = userSortingService.updateUserSorting(expectedUserSorting);
@@ -73,7 +73,7 @@ public class UserSortingServiceTest {
      * throw an Exception.
      */
     @Test
-    public void givenNoStoredUserSortings_whenGetUserSortingById_thenThrowException() {
+    void givenNoStoredUserSortings_whenGetUserSortingById_thenThrowException() {
         given(repository.findById(any(Integer.class))).willReturn(Optional.empty());
         try {
             userSortingService.getUserSortingById(1);
@@ -88,7 +88,7 @@ public class UserSortingServiceTest {
      * return the expected UserSorting object.
      */
     @Test
-    public void givenStoredUserSortings_whenGetUserSortingById_thenReturnExpectedUserSorting() {
+    void givenStoredUserSortings_whenGetUserSortingById_thenReturnExpectedUserSorting() {
         given(repository.findById(any(Integer.class))).willReturn(Optional.of(expectedUserSorting));
         try {
             UserSorting userSorting = userSortingService.getUserSortingById(1);

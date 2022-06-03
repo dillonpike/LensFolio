@@ -109,6 +109,16 @@ public class Event {
         return (dateFormat.format(eventStartDate));
     }
 
+    public String getStartDateDetail()  {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("YYYY-MM-dd");
+        return (dateFormat.format(eventStartDate)  + " " + eventStartTime);
+    }
+
+    public String getEndDateDetail()  {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("YYYY-MM-dd");
+        return (dateFormat.format(eventEndDate) + " " + eventEndTime );
+    }
+
     public int getEventStartDay() {
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd");
         return Integer.parseInt(dateFormat.format(eventStartDate));

@@ -108,7 +108,7 @@ class CalendarControllerTest {
 
         Project project = new Project("testProject", "test", projectStartDate, projectFinishDate);
 
-        String expected = "{title: 'firstSprint', start: 'Thu Sep 16 00:00:00 NZST 2021', end: '2021-09-18T12:00:00Z', allDay: true, color: '#5897fc'},{title: 'secondSprint', start: 'Thu Sep 23 00:00:00 NZST 2021', end: '2021-09-26T11:00:00Z', allDay: true, color: '#a758fc'},";
+        String expected = "{id: '0', title: 'firstSprint', start: 'Thu Sep 16 00:00:00 NZST 2021', end: '2021-09-18T12:00:00Z', allDay: true, color: '#5897fc'},{id: '0', title: 'secondSprint', start: 'Thu Sep 23 00:00:00 NZST 2021', end: '2021-09-26T11:00:00Z', allDay: true, color: '#a758fc'},";
 
         SecurityContext mockedSecurityContext = Mockito.mock(SecurityContext.class);
         when(mockedSecurityContext.getAuthentication()).thenReturn(new PreAuthenticatedAuthenticationToken(validAuthState, ""));
@@ -124,7 +124,8 @@ class CalendarControllerTest {
                 .andExpect(view().name("calendar")) // Whether to return the template "account"
                 .andExpect(model().attribute("sprints", expected))
                 .andExpect(model().attribute("userId", 1))
-                .andExpect(model().attribute("projectName", "testProject"));
+                .andExpect(model().attribute("projectName", "testProject"))
+                .andExpect(model().attribute("currentUserRole", "ADMIN"));
     }
 
 }

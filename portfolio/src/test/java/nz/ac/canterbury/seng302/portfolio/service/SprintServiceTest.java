@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -69,5 +70,50 @@ class SprintServiceTest {
 
         Sprint updated = sprintService.updateSprint(sprint);
         assertThat(updated.getName()).isSameAs(sprint.getName());
+    }
+
+    /**
+     * Tests that if the updateSprintDates method is given the id of a sprint that exists, it updates the sprint with
+     * the given dates.
+     */
+    @Test
+    void testUpdateSprintDatesSprintExists() {
+        Sprint sprint = new Sprint();
+        sprint.setName("Testing");
+        sprint.setStartDate(sprintService.calendarDateStringToDate("2001-12-20", false));
+        sprint.setEndDate(sprintService.calendarDateStringToDate("2001-12-22", true));
+
+        //providing mock/knowledge
+        when(sprintRepository.findById(any(Integer.class))).thenReturn(Optional.of(sprint));
+        when(sprintRepository.save(any(Sprint.class))).thenReturn(sprint);
+
+        String newStartDate = "2001-12-25";
+        String newEndDate = "2001-12-27";
+
+        boolean isSuccess = sprintService.updateSprintDates(sprint.getId(), newStartDate, newEndDate);
+        assertTrue(isSuccess);
+        assertEquals(sprint.getStartDate(), sprintService.calendarDateStringToDate(newStartDate, false));
+        assertEquals(sprint.getEndDate(), sprintService.calendarDateStringToDate(newEndDate, true));
+    }
+
+    /**
+     * Tests that if the updateSprintDates method is given the id of a sprint that does not exist, it returns false.
+     */
+    @Test
+    void testUpdateSprintDatesSprintDoesNotExist() {
+        //providing mock/knowledge
+        when(sprintRepository.findById(any(Integer.class))).thenReturn(Optional.empty());
+
+        boolean isSuccess = sprintService.updateSprintDates(1, "", "");
+        assertFalse(isSuccess);
+    }
+
+    /**
+     * Tests that the calendarDateStringToDate method returns null if given a date string in an invalid format.
+     */
+    @Test
+    void testCalendarDateStringToDateInvalid() {
+        Date date = sprintService.calendarDateStringToDate("20/Jan/2001", true);
+        assertNull(date);
     }
 }

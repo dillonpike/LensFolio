@@ -6,9 +6,11 @@ import io.cucumber.java.Before;
 import io.cucumber.java.en.And;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
+import java.util.List;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
@@ -92,5 +94,34 @@ public class ListOfUsersStepDefs {
     public void theListOfUsersIsSeparatedIntoMultiplePages() {
         String nextButtonClass = webDriver.findElement(By.id("sortTable_next")).getAttribute("class");
         assertNotNull(nextButtonClass);
+    }
+
+    @And("I go to the next page")
+    public void iGoToTheNextPage() {
+        wait.until(ExpectedConditions.elementToBeClickable(By.id("sortTable_next"))).click();
+    }
+
+    @When("I remove a role")
+    public void iRemoveARole() {
+        List<WebElement> buttons = webDriver.findElements(By.tagName("button"));
+        WebElement button = null;
+        for (WebElement but : buttons) {
+            if (but.getAttribute("onClick").equals("deleteUserRole('2','TEACHER')")) {
+                button = but;
+                break;
+            }
+        }
+
+        if (button == null) {
+            System.err.println("Cannot find button!");
+        } else {
+            System.out.println("Clicking button now!");
+            button.click();
+        }
+    }
+
+    @Then("I am on same page")
+    public void iAmOnSamePage() {
+        webDriver.findElement(By.id("sortTable_previous")).isEnabled();
     }
 }

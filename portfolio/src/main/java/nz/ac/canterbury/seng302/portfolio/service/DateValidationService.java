@@ -188,8 +188,8 @@ public class DateValidationService {
         if (!startTimeString.equals("") && !endTimeString.equals("")) {
             LocalTime startTime = Event.stringToTime(startTimeString);
             LocalTime endTime = Event.stringToTime(endTimeString);
-            if (startTime.isAfter(endTime) && startDateString.equals(endDateString)) {
-                message = "Start time must be on or before the end time.";
+            if ((startTime.isAfter(endTime) || startTime == endTime) && startDateString.equals(endDateString)) {
+                message = "Start time must be before the end time.";
             }
         }
         return message;

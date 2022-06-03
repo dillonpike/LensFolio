@@ -92,7 +92,7 @@ public class DetailsController {
         model.addAttribute("project", project);
         model.addAttribute("project", project);
 
-        List<Event> eventList = eventService.getAllEvents();
+        List<Event> eventList = eventService.getAllEventsOrdered();
         model.addAttribute("events", eventList);
 
         // Runs if the reload was triggered by saving an event. Checks set time to now to see if 2 seconds has passed yet.

@@ -1,12 +1,18 @@
 package nz.ac.canterbury.seng302.portfolio.service;
 
+import nz.ac.canterbury.seng302.portfolio.model.Project;
 import nz.ac.canterbury.seng302.portfolio.model.Sprint;
 import nz.ac.canterbury.seng302.portfolio.repository.SprintRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+
+
 
 // more info here https://codebun.com/spring-boot-crud-application-using-thymeleaf-and-spring-data-jpa/
 
@@ -83,7 +89,7 @@ public class SprintService {
     public void removeSprint(Integer id) {
         Optional<Sprint> sOptional = repository.findById(id);
 
-        if(sOptional.isPresent()) {
+        if (sOptional.isPresent()) {
             Sprint sprintUpdate = sOptional.get();
             repository.deleteById(sprintUpdate.getId());
         }
@@ -95,5 +101,49 @@ public class SprintService {
      */
     public List<Sprint> getAllSprintsOrdered() {
         return repository.findAllByOrderBySprintStartDate();
+    }
+
+
+    /**
+     * Updates the sprint identified by the given id with the given dates.
+     * Returns true if update is successful, otherwise false.
+     * @param id id of sprint to update
+     * @param sprintStartDate new start date
+     * @param sprintEndDate new end date
+     * @return true if update is successful, otherwise false
+     */
+    public boolean updateSprintDates(Integer id, String sprintStartDate, String sprintEndDate) {
+        Optional<Sprint> sOptional = repository.findById(id);
+
+        if (sOptional.isPresent()) {
+            Sprint sprintUpdate = sOptional.get();
+            sprintUpdate.setStartDate(calendarDateStringToDate(sprintStartDate, false));
+            sprintUpdate.setEndDate(calendarDateStringToDate(sprintEndDate, true));
+            repository.save(sprintUpdate);
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Converts a date string from the calendar to a date object.
+     *
+     * @param dateString the string to read as a date in format 2000/12/30
+     * @return the given date, as a date object
+     */
+    public Date calendarDateStringToDate(String dateString, boolean isEndDate) {
+        Date date = null;
+        try {
+            date = new SimpleDateFormat("yyyy-MM-dd").parse(dateString);
+            if (isEndDate) {
+                Calendar calendar = Calendar.getInstance();
+                calendar.setTime(date);
+                calendar.add(Calendar.MINUTE, -1);
+                date = calendar.getTime();
+            }
+        } catch (Exception e) {
+            System.err.println("Error parsing date: " + e.getMessage());
+        }
+        return date;
     }
 }

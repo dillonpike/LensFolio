@@ -64,6 +64,8 @@ dependencies {
     testImplementation "io.cucumber:cucumber-junit:${cucumberVersion}"
     testImplementation "org.junit.vintage:junit-vintage-engine:${junitVersion}"
 
+    testImplementation 'org.mockito:mockito-inline:2.13.0'
+
     // https://mvnrepository.com/artifact/org.seleniumhq.selenium/selenium-java
     testImplementation group: 'org.seleniumhq.selenium', name: 'selenium-java', version: '4.1.3'
 
