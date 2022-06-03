@@ -6,42 +6,19 @@ import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
-import nz.ac.canterbury.seng302.portfolio.controller.AccountController;
 import nz.ac.canterbury.seng302.portfolio.model.Event;
-import nz.ac.canterbury.seng302.portfolio.repository.EventRepository;
-import nz.ac.canterbury.seng302.portfolio.service.EventService;
-import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
-import nz.ac.canterbury.seng302.shared.identityprovider.ClaimDTO;
-import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.openqa.selenium.*;
-import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.time.Duration;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 
 import static nz.ac.canterbury.seng302.portfolio.controller.SprintLifetimeController.getUpdatedDate;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
 
 public class LiveUpdatesStepDefs {
 
@@ -60,21 +37,14 @@ public class LiveUpdatesStepDefs {
      */
     private ArrayList<String> tabs;
 
-
-    @MockBean
-    private EventService eventService = Mockito.mock(EventService.class);
-
-    @MockBean
-    private EventRepository eventRepository = Mockito.mock(EventRepository.class);
-
     /**
-     * Create mockEvent to be returned when a function return an Event object
+     * Create mockEvent to be used to define an event if none exist.
      */
-    private Date startEvent = new Date();
-    private Date endEvent = getUpdatedDate(startEvent, 5, 0);
-    private LocalTime startTime = LocalTime.now();
-    private LocalTime endTime = LocalTime.now().plusHours(10L);
-    private String mockEventName = "Test Event";
+    private final Date startEvent = new Date();
+    private final Date endEvent = getUpdatedDate(startEvent, 5, 0);
+    private final LocalTime startTime = LocalTime.now();
+    private final LocalTime endTime = LocalTime.now().plusHours(10L);
+    private final String mockEventName = "Test Event";
     private Event mockEvent = new Event(1,0,mockEventName, startEvent, endEvent,startTime, endTime);
     private int eventIdToUse = 1;
 
