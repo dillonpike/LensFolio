@@ -12,8 +12,8 @@
             <a class="d-flex align-items-center mb-2 mb-lg-0 text-dark text-decoration-none">
                 <svg class="bi me-2" width="40" height="32" role="img" aria-label="Bootstrap"><use xlink:href="#bootstrap" /></svg>
             </a>
-            <a class="navbar-brand" href="#">
-                <img th:src="@{images/T100Logo.png}" alt="" width="40" height="40">
+            <a class="navbar-brand">
+                <img th:src="@{/images/T100Logo.png}" alt="" width="40" height="40">
             </a>
             <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
                 <li><form>
@@ -41,7 +41,7 @@
             <div class="dropdown text-end" style="display: flex; flex-direction: row; align-items: center;">
                 <h6 th:text="${headerFullName}" style="margin-right: 5px;padding-top: 5px"></h6>
                 <a href="#" class="d-block link-dark text-decoration-none dropdown-toggle" id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false" >
-                    <img id="userIconSmall" th:src="@{img/userImage}" alt="mdo" width="32" height="32" class="rounded-circle">
+                    <img id="userIconSmall" th:src="@{/img/userImage}" alt="" width="32" height="32" class="rounded-circle">
                 </a>
                 <ul class="dropdown-menu text-small" aria-labelledby="dropdownUser1">
                     <li><form th:action="@{backToAccountPage}" method="post">
