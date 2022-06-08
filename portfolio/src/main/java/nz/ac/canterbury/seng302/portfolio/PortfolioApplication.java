@@ -8,10 +8,9 @@ import java.io.IOException;
 
 @SpringBootApplication
 public class PortfolioApplication {
-    static public String IMAGE_DIR;
+    public static String IMAGE_DIR;
     public static void main(String[] args) throws IOException {
         IMAGE_DIR = new File(".").getCanonicalPath() + "/img/";
-        System.out.println(IMAGE_DIR);
         SpringApplication.run(PortfolioApplication.class, args);
     }
 

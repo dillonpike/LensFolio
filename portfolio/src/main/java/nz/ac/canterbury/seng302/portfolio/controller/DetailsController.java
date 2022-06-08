@@ -1,17 +1,18 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
 import com.google.protobuf.Timestamp;
-import nz.ac.canterbury.seng302.portfolio.model.Event;
+import nz.ac.canterbury.seng302.portfolio.model.*;
 import nz.ac.canterbury.seng302.portfolio.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import nz.ac.canterbury.seng302.portfolio.model.Project;
-import nz.ac.canterbury.seng302.portfolio.model.Sprint;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import nz.ac.canterbury.seng302.shared.identityprovider.ClaimDTO;
+import org.springframework.web.util.HtmlUtils;
 
 import java.time.Instant;
 import java.time.LocalDate;
@@ -40,6 +41,16 @@ public class DetailsController {
 
     @Autowired
     private EventService eventService;
+
+    /**
+     * Last event saved, for toast notification.
+     */
+    private EventResponse eventResponse;
+
+    /**
+     * Time that the event was updated.
+     */
+    private Date eventWasUpdatedTime = Date.from(Instant.now());
 
 
     /***
@@ -83,6 +94,18 @@ public class DetailsController {
 
         List<Event> eventList = eventService.getAllEventsOrdered();
         model.addAttribute("events", eventList);
+
+        // Runs if the reload was triggered by saving an event. Checks set time to now to see if 2 seconds has passed yet.
+        long timeDifference = Date.from(Instant.now()).toInstant().getEpochSecond() - eventWasUpdatedTime.toInstant().getEpochSecond();
+        if (timeDifference <= 2 && eventResponse != null) {
+            model.addAttribute("toastEventInformation", "true");
+            model.addAttribute("toastEventName", eventResponse.getEventName());
+            model.addAttribute("toastUsername", eventResponse.getUsername());
+            model.addAttribute("toastFirstName", eventResponse.getUserFirstName());
+            model.addAttribute("toastLastName", eventResponse.getUserLastName());
+        } else {
+            model.addAttribute("toastEventInformation", "");
+        }
         
         List<Sprint> sprintList = sprintService.getAllSprintsOrdered();
         model.addAttribute("sprints", sprintList);
@@ -91,7 +114,10 @@ public class DetailsController {
         elementService.addHeaderAttributes(model, id);
         model.addAttribute("userId", id);
 
-        // Below code is just begging to be added as a method somewhere...
+        return getFinalThymeleafTemplate(principal);
+    }
+
+    private String getFinalThymeleafTemplate(AuthState principal) {
         String role = principal.getClaimsList().stream()
                 .filter(claim -> claim.getType().equals("role"))
                 .findFirst()
@@ -107,6 +133,50 @@ public class DetailsController {
         }
     }
 
+    /**
+     * This method maps @MessageMapping endpoint to the @SendTo endpoint. Called when something is sent to
+     * the MessageMapping endpoint.
+     * @param message EventMessage that holds information about the event being updated
+     * @return returns an EventResponse that holds information about the event being updated.
+     */
+    @MessageMapping("/editing-event")
+    @SendTo("/events/being-edited")
+    public EventResponse updatingEvent(EventMessage message) {
+        String username = message.getUsername();
+        String firstName = message.getUserFirstName();
+        String lastName = message.getUserLastName();
+        return new EventResponse(HtmlUtils.htmlEscape(message.getEventName()), username, firstName, lastName);
+    }
 
+    /**
+     * This method maps @MessageMapping endpoint to the @SendTo endpoint. Called when something is sent to
+     * the MessageMapping endpoint. This is triggered when the user is no longer editing.
+     * @param message Information about the editing state.
+     * @return Returns the message given.
+     */
+    @MessageMapping("/stop-editing-event")
+    @SendTo("/events/stop-being-edited")
+    public String stopUpdatingEvent(String message) {
+        return message;
+    }
+
+    /**
+     * This method maps @MessageMapping endpoint to the @SendTo endpoint. Called when something is sent to
+     * the MessageMapping endpoint. This method also triggers some sort of re-render of the events.
+     * @param message EventMessage that holds information about the event being updated
+     * @return returns an EventResponse that holds information about the event being updated.
+     */
+    @MessageMapping("/saved-edited-event")
+    @SendTo("/events/save-edit")
+    public EventResponse savingUpdatedEvent(EventMessage message) {
+        String username = message.getUsername();
+        String firstName = message.getUserFirstName();
+        String lastName = message.getUserLastName();
+        EventResponse response = new EventResponse(HtmlUtils.htmlEscape(message.getEventName()), username, firstName, lastName);
+        // Trigger reload and save the last event's information
+        eventWasUpdatedTime = Date.from(Instant.now());
+        eventResponse = response;
+        return response;
+    }
 
 }
