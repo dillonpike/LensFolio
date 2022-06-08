@@ -24,7 +24,7 @@ public class MilestoneLifetimeController {
      * Saves the given milestone to the database and redirects the user to the details page.
      * @param milestone new milestone to be saved
      */
-    @PostMapping("/add-deadline")
+    @PostMapping("/add-milestone")
     public String milestoneSave(@ModelAttribute("milestone") Milestone milestone, @AuthenticationPrincipal AuthState principal) {
         milestoneService.addMilestone(milestone);
         return "redirect:/details";
