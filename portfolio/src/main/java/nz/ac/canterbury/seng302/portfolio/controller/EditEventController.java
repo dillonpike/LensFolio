@@ -78,6 +78,14 @@ public class EditEventController {
         return "redirect:/details";
     }
 
+    /**
+     * Handles adding errors to the edit event page if any errors are found to be made.
+     * @param eventStartDate Current event start date
+     * @param eventEndDate Current event end date
+     * @param eventStartTime Current event start time
+     * @param eventEndTime Current event end time
+     * @param model Model of page
+     */
     @PostMapping(value="/edit-event/error")
     public String updateEventRangeErrors(@RequestParam(value="eventStartDate") String eventStartDate,
                                          @RequestParam(value="eventEndDate") String eventEndDate,

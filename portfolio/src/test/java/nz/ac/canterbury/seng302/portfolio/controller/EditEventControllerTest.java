@@ -126,8 +126,4 @@ class EditEventControllerTest {
                 .andExpect(redirectedUrl("/details")); // Whether to return the status "200 OK";
         Mockito.verify(eventService).updateEvent(eventArgumentCaptor.capture());
     }
-
-//    @Test
-//    void updateEventRangeErrors() {
-//    }
 }
