@@ -546,3 +546,7 @@ body{
     height:600px;
     overflow-y:scroll;
 }
+
+.name-length-message {
+    min-height: 24px;
+}
