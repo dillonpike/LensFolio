@@ -1,5 +1,8 @@
+import Toast from "./Toast";
+
 let stompClient = null;
 let toast = null;
+let toast2 = null;
 let selectedDate = (new Date(Date.now())).valueOf();
 
 /**
@@ -59,13 +62,13 @@ function showToast(eventName, username, firstName, lastName) {
  */
 function showToastSave(eventName, username, firstName, lastName) {
     if (eventName !== "") {
-        $("#popupText").text("'" + eventName + "' has been updated by " + firstName + " " + lastName + " (" + username + "). ").hidden = false;
-        toast.show();
+        $("#popupText2").text("'" + eventName + "' has been updated by " + firstName + " " + lastName + " (" + username + "). ").hidden = false;
+        toast2.show();
         selectedDate = (new Date(Date.now())).valueOf();
         setTimeout(() => {
             let currentTime = (new Date(Date.now())).valueOf();
             if (currentTime >= selectedDate + 4950) {
-                toast.hide();
+                toast2.hide();
             }
         }, 5000);
     }
@@ -88,11 +91,12 @@ $(function () {
         e.preventDefault();
     });
     toast = new bootstrap.Toast($("#liveToast"));
+    toast2 = new bootstrap.Toast($("#liveToast2"));
     connect();
     // Checks if there should be a live update, and shows a toast if needed.
-    let eventInformation = $("#toastInformation");
+    let eventInformation = $("#toastInformation2");
     if (eventInformation.text() !== "") {
-        showToastSave($("#toastEventName").text(), $("#toastUsername").text(), $("#toastFirstName").text(), $("#toastLastName").text());
+        showToastSave($("#toastEventName2").text(), $("#toastUsername2").text(), $("#toastFirstName2").text(), $("#toastLastName2").text());
         showToastSave("", "", "", "");
     }
 });

@@ -98,13 +98,13 @@ public class DetailsController {
         // Runs if the reload was triggered by saving an event. Checks set time to now to see if 2 seconds has passed yet.
         long timeDifference = Date.from(Instant.now()).toInstant().getEpochSecond() - eventWasUpdatedTime.toInstant().getEpochSecond();
         if (timeDifference <= 2 && eventResponse != null) {
-            model.addAttribute("toastEventInformation", "true");
-            model.addAttribute("toastEventName", eventResponse.getEventName());
-            model.addAttribute("toastUsername", eventResponse.getUsername());
-            model.addAttribute("toastFirstName", eventResponse.getUserFirstName());
-            model.addAttribute("toastLastName", eventResponse.getUserLastName());
+            model.addAttribute("toastEventInformation2", "true");
+            model.addAttribute("toastEventName2", eventResponse.getEventName());
+            model.addAttribute("toastUsername2", eventResponse.getUsername());
+            model.addAttribute("toastFirstName2", eventResponse.getUserFirstName());
+            model.addAttribute("toastLastName2", eventResponse.getUserLastName());
         } else {
-            model.addAttribute("toastEventInformation", "");
+            model.addAttribute("toastEventInformation2", "");
         }
         
         List<Sprint> sprintList = sprintService.getAllSprintsOrdered();
