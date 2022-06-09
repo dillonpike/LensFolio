@@ -108,7 +108,17 @@
      * Sends an empty message so that the other end can realise to close any popups it may have activated.
      */
     function sendEmpty() {
-        stompClient.send("/app/stop-editing-event", {}, "Stop Editing Event");
+        let userId = [[${userId}]];
+        let userFirstName = [[${userFirstName}]];
+        let userLastName = [[${userLastName}]];
+        let username = [[${username}]];
+        stompClient.send("/app/stop-editing-event", {}, JSON.stringify({
+            'eventName': $("#eventName").val(),
+            'userId': userId,
+            'userFirstName': userFirstName,
+            'userLastName': userLastName,
+            'username': username
+        }));
     }
 
     /**

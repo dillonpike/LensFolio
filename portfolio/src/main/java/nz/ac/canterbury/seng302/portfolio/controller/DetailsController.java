@@ -17,6 +17,7 @@ import org.springframework.web.util.HtmlUtils;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -51,6 +52,10 @@ public class DetailsController {
      * Time that the event was updated.
      */
     private Date eventWasUpdatedTime = Date.from(Instant.now());
+
+    private ArrayList<String> toastArray = new ArrayList<>();
+
+    private ArrayList<EventResponse> eventsToDisplay = new ArrayList<>();
 
 
     /***
@@ -97,14 +102,20 @@ public class DetailsController {
 
         // Runs if the reload was triggered by saving an event. Checks set time to now to see if 2 seconds has passed yet.
         long timeDifference = Date.from(Instant.now()).toInstant().getEpochSecond() - eventWasUpdatedTime.toInstant().getEpochSecond();
-        if (timeDifference <= 2 && eventResponse != null) {
-            model.addAttribute("toastEventInformation2", "true");
-            model.addAttribute("toastEventName2", eventResponse.getEventName());
-            model.addAttribute("toastUsername2", eventResponse.getUsername());
-            model.addAttribute("toastFirstName2", eventResponse.getUserFirstName());
-            model.addAttribute("toastLastName2", eventResponse.getUserLastName());
+        if (timeDifference <= 2 && eventsToDisplay.size() > 0) {
+            int count = 1;
+            for (EventResponse event : eventsToDisplay) {
+                model.addAttribute("toastEventInformation" + count, "true");
+                model.addAttribute("toastEventName" + count, event.getEventName());
+                model.addAttribute("toastUsername" + count, event.getUsername());
+                model.addAttribute("toastFirstName" + count, event.getUserFirstName());
+                model.addAttribute("toastLastName" + count, event.getUserLastName());
+            }
         } else {
-            model.addAttribute("toastEventInformation2", "");
+            int count = 1;
+            for (EventResponse event : eventsToDisplay) {
+                model.addAttribute("toastEventInformation" + count, "");
+            }
         }
         
         List<Sprint> sprintList = sprintService.getAllSprintsOrdered();
@@ -151,13 +162,17 @@ public class DetailsController {
     /**
      * This method maps @MessageMapping endpoint to the @SendTo endpoint. Called when something is sent to
      * the MessageMapping endpoint. This is triggered when the user is no longer editing.
+     *
      * @param message Information about the editing state.
      * @return Returns the message given.
      */
     @MessageMapping("/stop-editing-event")
     @SendTo("/events/stop-being-edited")
-    public String stopUpdatingEvent(String message) {
-        return message;
+    public EventResponse stopUpdatingEvent(EventMessage message) {
+        String username = message.getUsername();
+        String firstName = message.getUserFirstName();
+        String lastName = message.getUserLastName();
+        return new EventResponse(HtmlUtils.htmlEscape(message.getEventName()), username, firstName, lastName);
     }
 
     /**
@@ -176,7 +191,24 @@ public class DetailsController {
         // Trigger reload and save the last event's information
         eventWasUpdatedTime = Date.from(Instant.now());
         eventResponse = response;
+        eventsToDisplay.add(response);
+        while (eventsToDisplay.size() > 3) {
+            eventsToDisplay.remove(0);
+        }
         return response;
+    }
+
+    /**
+     * Very unfinished method***
+     * Go through a list of toasts and check if they're hidden, and remove them if they are.
+     */
+    private void refreshToastPositions() {
+
+        for (String toast : toastArray) {
+            if (toast.equals("isHidden")) {
+                toastArray.remove(toast);
+            }
+        }
     }
 
 }

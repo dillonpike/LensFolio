@@ -36,6 +36,17 @@
         <div id="toastFirstName2" th:text="${toastFirstName2}" hidden="true"></div>
         <div id="toastLastName2" th:text="${toastLastName2}" hidden="true"></div>
     </div>
+    <div class="toast" role="alert" aria-live="assertive" aria-atomic="true" id="liveToast3" data-bs-autohide="false" data-bs-animation="false">
+        <div class="toast-header">
+            <strong class="me-auto" >Event Activity</strong>
+        </div>
+        <div class="toast-body" id="popupText3"></div>
+        <div id="toastInformation3" th:text="${toastEventInformation3}" hidden="true"></div>
+        <div id="toastEventName3" th:text="${toastEventName3}" hidden="true"></div>
+        <div id="toastUsername3" th:text="${toastUsername3}" hidden="true"></div>
+        <div id="toastFirstName3" th:text="${toastFirstName3}" hidden="true"></div>
+        <div id="toastLastName3" th:text="${toastLastName3}" hidden="true"></div>
+    </div>
 </div>
 <div class="row">
     <div class="project-header">
@@ -191,7 +202,6 @@
                 </div>
             </div>
         </div>
-
 
 <script src="../js/detailsLive.js"></script>
 

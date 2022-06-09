@@ -1,26 +1,31 @@
 
-const Event = "Event";
-const Deadline = "Deadline";
+const EventType = "Event";
+const DeadlineType = "Deadline";
 
 /**
  * Toast object that holds its title and the users' username, first and last name.
  */
 class Toast {
     toast;
+    toastBodyTextVar;
     titleName = "";
+    bodyText = "";
     hasBeenSaved = false;
+
+    name = "";
     username = "";
     firstName = "";
     lastName = "";
 
-    constructor(type, username, firstName, lastName, hasBeenSaved) {
+    constructor(type, name, username, firstName, lastName, hasBeenSaved) {
         this.hasBeenSaved = hasBeenSaved;
+        this.name = name;
         this.username = username;
         this.firstName = firstName;
         this.lastName = lastName;
-        if (type === Event) {
+        if (type === EventType) {
             this.titleName = "Event Activity";
-        } else if (type === Deadline) {
+        } else if (type === DeadlineType) {
             this.titleName = "Deadline Activity";
         } else {
             this.titleName = "Activity";
@@ -54,6 +59,22 @@ class Toast {
     }
     set toast(toast) {
         this.toast = toast;
+    }
+
+    show = function () {
+        if (!this.hasBeenSaved) {
+            this.bodyText = "'" + this.name + "' is being edited by " +
+                this.firstName + " " + this.lastName + " (" + this.username + ").";
+        } else {
+            this.bodyText = "'" + this.name + "' has been updated by " +
+                this.firstName + " " + this.lastName + " (" + this.username + ").";
+        }
+        this.toastBodyTextVar.text(this.bodyText)
+        this.toast.show();
+    }
+
+    hide = function () {
+        this.toast.hide();
     }
 
 }
