@@ -5,6 +5,8 @@ import nz.ac.canterbury.seng302.portfolio.repository.MilestoneRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 /***
  * Service class for saving, deleting, updating and retrieving milestone objects to the database.
  */
@@ -22,4 +24,16 @@ public class MilestoneService {
         return repository.save(milestone);
     }
 
+    /**
+     * Removes the milestone identified by the given id from the database if it exists.
+     * @param id id of the milestone to remove
+     */
+    public void removeMilestone(Integer id) {
+        Optional<Milestone> sOptional = repository.findById(id);
+
+        if (sOptional.isPresent()) {
+            Milestone milestone = sOptional.get();
+            repository.deleteById(milestone.getId());
+        }
+    }
 }
