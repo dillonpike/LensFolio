@@ -18,18 +18,22 @@ class Toast {
     hasBeenSaved = false;
     selectedDate = (new Date(Date.now())).valueOf();
     isHidden = true;
+    type = "";
 
+    id = "";
+    id_number = -1;
     name = "";
     username = "";
     firstName = "";
     lastName = "";
 
-    constructor(type, name, username, firstName, lastName, hasBeenSaved) {
+    constructor(type, name, id, username, firstName, lastName, hasBeenSaved) {
         this.hasBeenSaved = hasBeenSaved;
         this.name = name;
         this.username = username;
         this.firstName = firstName;
         this.lastName = lastName;
+        this.type = type;
         if (type === EventType) {
             this.titleName = "Event Activity";
         } else if (type === DeadlineType) {
@@ -37,6 +41,8 @@ class Toast {
         } else {
             this.titleName = "Activity";
         }
+        this.id = type.toLowerCase() + "_" + username + "_" + id;
+        this.id_number = id;
     }
 
     get username() {
@@ -54,6 +60,15 @@ class Toast {
     get hasBeenSaved() {
         return this.hasBeenSaved;
     }
+    get id() {
+        return this.id;
+    }
+    get id_number() {
+        return this.id_number;
+    }
+    get type() {
+        return this.type;
+    }
 
     set username(username) {
         this.username = username;
@@ -64,10 +79,13 @@ class Toast {
     set lastName(lastName) {
         this.lastName = lastName;
     }
+    set name(name) {
+        this.name = name;
+    }
 
     show = function () {
         this.isHidden = false;
-        selectedDate = (new Date(Date.now())).valueOf();
+        this.selectedDate = (new Date(Date.now())).valueOf();
         if (!this.hasBeenSaved) {
             this.bodyText = "'" + this.name + "' is being edited by " +
                 this.firstName + " " + this.lastName + " (" + this.username + ").";
@@ -89,33 +107,78 @@ class Toast {
      * @param timeInSeconds Time in seconds for the toast to show for. Should be equal to 1 or above
      */
     hideTimed = function (timeInSeconds) {
+        this.selectedDate = (new Date(Date.now())).valueOf();
         if (timeInSeconds <= 0) {
             timeInSeconds = 1;
         }
-        setTimeout(() => {
+        setTimeout((thisToast) => {
             let currentTime = (new Date(Date.now())).valueOf();
-            if (currentTime >= this.selectedDate + (timeInSeconds * 1000) - 50) {
-                this.toast.hide();
-                this.isHidden = true;
+            if (currentTime >= thisToast.selectedDate + ((timeInSeconds * 1000) - 50)) {
+                thisToast.toast.hide();
+                thisToast.isHidden = true;
             }
-        }, timeInSeconds * 1000);
+        }, timeInSeconds * 1000, this);
     }
 
     setToast = function (toast, textVar) {
         this.toast = toast;
         this.toastBodyTextVar = textVar;
-        toast.hide();
-        this.isHidden = true;
+        if (this.isHidden) {
+            toast.hide();
+        } else {
+            this.show();
+        }
     }
 
+    updateToast = function (newToast) {
+        this.name = newToast.name
+        this.hasBeenSaved = newToast.hasBeenSaved;
+
+        return this;
+    }
+}
+
+Toast.prototype.toString = function () {
+    return this.id + ": " + this.name;
 }
 
 let listOfToasts = [];
+let listOfHTMLToasts = [];
 
-function addToast(toast) {
-    listOfToasts.add(toast)
-    while (listOfToasts.length > 3) {
-        listOfToasts.shift();
+function addToast(newToast) {
+    let returnedToast = newToast;
+
+    let toastExists = false;
+    let toastIndex = -1;
+    let count = 0;
+    for (let item in listOfToasts) {
+        if (listOfToasts[count].id === newToast.id) {
+            toastExists = true;
+            toastIndex = count;
+            break;
+        }
+        count += 1;
+    }
+    if (toastExists) {
+        returnedToast = listOfToasts[toastIndex].updateToast(newToast);
+    } else {
+        listOfToasts.push(newToast)
+        while (listOfToasts.length > 3) {
+            listOfToasts.shift();
+        }
+    }
+    reorderToasts();
+
+    return returnedToast;
+}
+
+function reorderToasts() {
+    let count = 0;
+    for (let item in listOfToasts) {
+        let toastItems = listOfHTMLToasts[count];
+        let toast = listOfToasts[count];
+        toast.setToast(toastItems.toast, toastItems.text);
+        count += 1;
     }
 }
 
@@ -130,16 +193,16 @@ function connect() {
         console.log('Connected: ' + frame);
         stompClient.subscribe('/events/being-edited', function (eventResponseArg) {
             const eventResponse = JSON.parse(eventResponseArg.body);
-            showToast(eventResponse.eventName, eventResponse.username, eventResponse.userFirstName, eventResponse.userLastName, false);
+            showToast(eventResponse.eventName, eventResponse.eventId, eventResponse.username, eventResponse.userFirstName, eventResponse.userLastName, false);
         });
         stompClient.subscribe('/events/stop-being-edited', function (eventResponseArg) {
             const eventResponse = JSON.parse(eventResponseArg.body);
-            showToast(eventResponse.eventName, eventResponse.username, eventResponse.userFirstName, eventResponse.userLastName, true);
+            showToast(eventResponse.eventName, eventResponse.eventId, eventResponse.username, eventResponse.userFirstName, eventResponse.userLastName, true);
         })
         stompClient.subscribe('/events/save-edit', function (eventResponseArg) {
             const eventResponse = JSON.parse(eventResponseArg.body);
             refreshEvents();
-            showToastSave(eventResponse.eventName, eventResponse.username, eventResponse.userFirstName, eventResponse.userLastName);
+            showToastSave(eventResponse.eventName, eventResponse.eventId, eventResponse.username, eventResponse.userFirstName, eventResponse.userLastName);
         });
     });
 }
@@ -153,12 +216,15 @@ function connect() {
  * @param lastName Last name of the user
  * @param hide Whether the toast should be hidden or not
  */
-function showToast(eventName, username, firstName, lastName, hide) {
-    let newToast = new Toast("Event", eventName, username, firstName, lastName, false);
-    newToast.setToast(toast1, $("#popupText"));
+function showToast(eventName, eventId, username, firstName, lastName, hide) {
+    let newToast = new Toast("Event", eventName, eventId, username, firstName, lastName, false);
+
+    newToast = addToast(newToast);
+
     if (!hide) {
         newToast.show();
     } else {
+        newToast.show();
         newToast.hideTimed(5);
     }
 }
@@ -171,11 +237,12 @@ function showToast(eventName, username, firstName, lastName, hide) {
  * @param firstName First name of the user
  * @param lastName Last name of the user
  */
-function showToastSave(eventName, username, firstName, lastName) {
+function showToastSave(eventName, eventId, username, firstName, lastName) {
     if (eventName !== "") {
-        let newToast = new Toast("Event", eventName, username, firstName, lastName, true);
-        newToast.setToast(toast1, $("#popupText"));
-        newToast.showTimed(5);
+        let newToast = new Toast("Event", eventName, eventId, username, firstName, lastName, true);
+        newToast = addToast(newToast);
+        newToast.show();
+        newToast.hideTimed(5);
         // $("#popupText2").text("'" + eventName + "' has been updated by " + firstName + " " + lastName + " (" + username + "). ").hidden = false;
         // toast2.show();
         // selectedDate = (new Date(Date.now())).valueOf();
@@ -206,11 +273,20 @@ $(function () {
     });
     toast1 = new bootstrap.Toast($("#liveToast"));
     toast2 = new bootstrap.Toast($("#liveToast2"));
+    toast3 = new bootstrap.Toast($("#liveToast3"));
+    listOfHTMLToasts = [{'toast':toast1, 'text':$("#popupText")}, {'toast':toast2, 'text':$("#popupText2")}, {'toast':toast3, 'text':$("#popupText3")}];
     connect();
     // Checks if there should be a live update, and shows a toast if needed.
-    let eventInformation = $("#toastInformation");
-    if (eventInformation.text() !== "") {
+    let eventInformation1 = $("#toastInformation");
+    if (eventInformation1.text() !== "") {
         showToastSave($("#toastEventName").text(), $("#toastUsername").text(), $("#toastFirstName").text(), $("#toastLastName").text());
-        showToastSave("", "", "", "");
+    }
+    let eventInformation2 = $("#toastInformation2");
+    if (eventInformation2.text() !== "") {
+        showToastSave($("#toastEventName2").text(), $("#toastUsername2").text(), $("#toastFirstName2").text(), $("#toastLastName2").text());
+    }
+    let eventInformation3 = $("#toastInformation3");
+    if (eventInformation3.text() !== "") {
+        showToastSave($("#toastEventName3").text(), $("#toastUsername3").text(), $("#toastFirstName3").text(), $("#toastLastName3").text());
     }
 });

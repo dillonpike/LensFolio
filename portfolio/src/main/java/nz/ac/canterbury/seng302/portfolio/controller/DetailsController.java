@@ -153,10 +153,11 @@ public class DetailsController {
     @MessageMapping("/editing-event")
     @SendTo("/events/being-edited")
     public EventResponse updatingEvent(EventMessage message) {
+        int eventId = message.getEventId();
         String username = message.getUsername();
         String firstName = message.getUserFirstName();
         String lastName = message.getUserLastName();
-        return new EventResponse(HtmlUtils.htmlEscape(message.getEventName()), username, firstName, lastName);
+        return new EventResponse(HtmlUtils.htmlEscape(message.getEventName()), eventId, username, firstName, lastName);
     }
 
     /**
@@ -169,10 +170,11 @@ public class DetailsController {
     @MessageMapping("/stop-editing-event")
     @SendTo("/events/stop-being-edited")
     public EventResponse stopUpdatingEvent(EventMessage message) {
+        int eventId = message.getEventId();
         String username = message.getUsername();
         String firstName = message.getUserFirstName();
         String lastName = message.getUserLastName();
-        return new EventResponse(HtmlUtils.htmlEscape(message.getEventName()), username, firstName, lastName);
+        return new EventResponse(HtmlUtils.htmlEscape(message.getEventName()), eventId, username, firstName, lastName);
     }
 
     /**
@@ -184,10 +186,11 @@ public class DetailsController {
     @MessageMapping("/saved-edited-event")
     @SendTo("/events/save-edit")
     public EventResponse savingUpdatedEvent(EventMessage message) {
+        int eventId = message.getEventId();
         String username = message.getUsername();
         String firstName = message.getUserFirstName();
         String lastName = message.getUserLastName();
-        EventResponse response = new EventResponse(HtmlUtils.htmlEscape(message.getEventName()), username, firstName, lastName);
+        EventResponse response = new EventResponse(HtmlUtils.htmlEscape(message.getEventName()), eventId, username, firstName, lastName);
         // Trigger reload and save the last event's information
         eventWasUpdatedTime = Date.from(Instant.now());
         eventResponse = response;

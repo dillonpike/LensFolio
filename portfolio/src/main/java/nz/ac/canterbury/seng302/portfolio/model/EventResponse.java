@@ -7,6 +7,8 @@ public class EventResponse {
 
     private String eventName;
 
+    private int eventId;
+
     private String username;
 
     private String userFirstName;
@@ -20,8 +22,9 @@ public class EventResponse {
      * @param userFirstName First name of user editing.
      * @param userLastName Last name of user editing.
      */
-    public EventResponse(String eventName, String username, String userFirstName, String userLastName) {
+    public EventResponse(String eventName, int eventId, String username, String userFirstName, String userLastName) {
         this.eventName = eventName;
+        this.eventId = eventId;
         this.username = username;
         this.userFirstName = userFirstName;
         this.userLastName = userLastName;
@@ -58,5 +61,13 @@ public class EventResponse {
 
     public void setUserLastName(String userLastName) {
         this.userLastName = userLastName;
+    }
+
+    public int getEventId() {
+        return eventId;
+    }
+
+    public void setEventId(int eventId) {
+        this.eventId = eventId;
     }
 }

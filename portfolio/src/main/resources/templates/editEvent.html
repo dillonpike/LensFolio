@@ -91,12 +91,14 @@
      * Sends the message that an event is being updated, and sends the events names with it.
      */
     function sendName() {
+        let eventId = [[${eventId}]];
         let userId = [[${userId}]];
         let userFirstName = [[${userFirstName}]];
         let userLastName = [[${userLastName}]];
         let username = [[${username}]];
         stompClient.send("/app/editing-event", {}, JSON.stringify({
             'eventName': $("#eventName").val(),
+            'eventId' : eventId,
             'userId': userId,
             'userFirstName': userFirstName,
             'userLastName': userLastName,
@@ -108,12 +110,14 @@
      * Sends an empty message so that the other end can realise to close any popups it may have activated.
      */
     function sendEmpty() {
+        let eventId = [[${eventId}]];
         let userId = [[${userId}]];
         let userFirstName = [[${userFirstName}]];
         let userLastName = [[${userLastName}]];
         let username = [[${username}]];
         stompClient.send("/app/stop-editing-event", {}, JSON.stringify({
             'eventName': $("#eventName").val(),
+            'eventId' : eventId,
             'userId': userId,
             'userFirstName': userFirstName,
             'userLastName': userLastName,
@@ -125,12 +129,14 @@
      * Sends the message that an event has been updated (saved), and sends the events names with it.
      */
     function sendNameReload() {
+        let eventId = [[${eventId}]];
         let userId = [[${userId}]];
         let userFirstName = [[${userFirstName}]];
         let userLastName = [[${userLastName}]];
         let username = [[${username}]];
         stompClient.send("/app/saved-edited-event", {}, JSON.stringify({
             'eventName': $("#eventName").val(),
+            'eventId' : eventId,
             'userId': userId,
             'userFirstName': userFirstName,
             'userLastName': userLastName,

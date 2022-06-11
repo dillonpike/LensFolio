@@ -8,6 +8,8 @@ public class EventMessage {
 
     private String eventName;
 
+    private int eventId;
+
     private int userId;
 
     private String userFirstName;
@@ -24,8 +26,9 @@ public class EventMessage {
      * @param userLastName Last name of the user editing.
      * @param username Username of the user editing.
      */
-    public EventMessage(String eventName, int userId, String userFirstName, String userLastName, String username) {
+    public EventMessage(String eventName, int eventId, int userId, String userFirstName, String userLastName, String username) {
         this.eventName = eventName;
+        this.eventId = eventId;
         this.userId = userId;
         this.userFirstName = userFirstName;
         this.userLastName = userLastName;
@@ -70,5 +73,13 @@ public class EventMessage {
 
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    public int getEventId() {
+        return eventId;
+    }
+
+    public void setEventId(int eventId) {
+        this.eventId = eventId;
     }
 }
