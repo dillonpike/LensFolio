@@ -130,6 +130,12 @@ public class DetailsController {
         return getFinalThymeleafTemplate(principal);
     }
 
+    /**
+     * Returns a string that represents the correct Thymeleaf template for the user, depending on whether the user
+     * has a role above student.
+     * @param principal
+     * @return
+     */
     private String getFinalThymeleafTemplate(AuthState principal) {
         String role = principal.getClaimsList().stream()
                 .filter(claim -> claim.getType().equals("role"))

@@ -2,7 +2,6 @@ let stompClient = null;
 let toast1 = null;
 let toast2 = null;
 let toast3 = null;
-let selectedDate = (new Date(Date.now())).valueOf();
 
 const EventType = "Event";
 const DeadlineType = "Deadline";
@@ -307,9 +306,6 @@ function showToastSave(eventName, eventId, username, firstName, lastName) {
     newToast = addToast(newToast);
     newToast.show();
     newToast.hideTimed(5);
-    // if (eventName !== "") {
-    //
-    // }
 }
 
 /**
