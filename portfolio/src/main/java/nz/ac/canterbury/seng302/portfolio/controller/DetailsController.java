@@ -44,17 +44,13 @@ public class DetailsController {
     private EventService eventService;
 
     /**
-     * Last event saved, for toast notification.
-     */
-    private EventResponse eventResponse;
-
-    /**
      * Time that the event was updated.
      */
     private Date eventWasUpdatedTime = Date.from(Instant.now());
 
-    private ArrayList<String> toastArray = new ArrayList<>();
-
+    /**
+     * Holds list of events information for displaying.
+     */
     private ArrayList<EventResponse> eventsToDisplay = new ArrayList<>();
 
 
@@ -102,19 +98,25 @@ public class DetailsController {
 
         // Runs if the reload was triggered by saving an event. Checks set time to now to see if 2 seconds has passed yet.
         long timeDifference = Date.from(Instant.now()).toInstant().getEpochSecond() - eventWasUpdatedTime.toInstant().getEpochSecond();
-        if (timeDifference <= 2 && eventsToDisplay.size() > 0) {
+        if (timeDifference <= 2 && !eventsToDisplay.isEmpty()) {
             int count = 1;
             for (EventResponse event : eventsToDisplay) {
                 model.addAttribute("toastEventInformation" + count, "true");
                 model.addAttribute("toastEventName" + count, event.getEventName());
+                model.addAttribute("toastEventId" + count, event.getEventId());
                 model.addAttribute("toastUsername" + count, event.getUsername());
                 model.addAttribute("toastFirstName" + count, event.getUserFirstName());
                 model.addAttribute("toastLastName" + count, event.getUserLastName());
+                count++;
             }
         } else {
-            int count = 1;
-            for (EventResponse event : eventsToDisplay) {
+            for (int count = 1; count <= eventsToDisplay.size(); count++) {
                 model.addAttribute("toastEventInformation" + count, "");
+                model.addAttribute("toastEventName" + count, "");
+                model.addAttribute("toastEventId" + count, "");
+                model.addAttribute("toastUsername" + count, "");
+                model.addAttribute("toastFirstName" + count, "");
+                model.addAttribute("toastLastName" + count, "");
             }
         }
         
@@ -193,25 +195,10 @@ public class DetailsController {
         EventResponse response = new EventResponse(HtmlUtils.htmlEscape(message.getEventName()), eventId, username, firstName, lastName);
         // Trigger reload and save the last event's information
         eventWasUpdatedTime = Date.from(Instant.now());
-        eventResponse = response;
         eventsToDisplay.add(response);
         while (eventsToDisplay.size() > 3) {
             eventsToDisplay.remove(0);
         }
         return response;
     }
-
-    /**
-     * Very unfinished method***
-     * Go through a list of toasts and check if they're hidden, and remove them if they are.
-     */
-    private void refreshToastPositions() {
-
-        for (String toast : toastArray) {
-            if (toast.equals("isHidden")) {
-                toastArray.remove(toast);
-            }
-        }
-    }
-
 }

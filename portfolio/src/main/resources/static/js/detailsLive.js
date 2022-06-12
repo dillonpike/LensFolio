@@ -6,19 +6,23 @@ let selectedDate = (new Date(Date.now())).valueOf();
 
 const EventType = "Event";
 const DeadlineType = "Deadline";
+const MilestoneType = "Milestone";
 
 /**
- * Toast object that holds its title and the users' username, first and last name.
+ * Toast object that holds its title and the users' username, first and last name for an item notification.
+ * This object also holds its HTML toast information and can display on this toast object.
  */
 class Toast {
     toast;
     toastBodyTextVar;
+    toastTitleTextVar;
     titleName = "";
     bodyText = "";
     hasBeenSaved = false;
     selectedDate = (new Date(Date.now())).valueOf();
     isHidden = true;
     type = "";
+    isWaitingToBeHidden = false;
 
     id = "";
     id_number = -1;
@@ -27,6 +31,16 @@ class Toast {
     firstName = "";
     lastName = "";
 
+    /**
+     * Default constructer.
+     * @param type Type of item notification. Can be "Event", "Deadline" or "Milestone".
+     * @param name Name of item being updated. E.g. "Event 1" or "Homework Deadline".
+     * @param id Integer id of the item being updated.
+     * @param username Username of the user updating the item.
+     * @param firstName Users first name.
+     * @param lastName Users last name.
+     * @param hasBeenSaved Whether the item has just been saved, rather than just being edited.
+     */
     constructor(type, name, id, username, firstName, lastName, hasBeenSaved) {
         this.hasBeenSaved = hasBeenSaved;
         this.name = name;
@@ -38,6 +52,8 @@ class Toast {
             this.titleName = "Event Activity";
         } else if (type === DeadlineType) {
             this.titleName = "Deadline Activity";
+        } else if (type === MilestoneType) {
+            this.titleName = "Milestone Activity";
         } else {
             this.titleName = "Activity";
         }
@@ -83,8 +99,12 @@ class Toast {
         this.name = name;
     }
 
+    /**
+     * Shows the toast with the correct message and title.
+     */
     show = function () {
         this.isHidden = false;
+        this.isWaitingToBeHidden = false;
         this.selectedDate = (new Date(Date.now())).valueOf();
         if (!this.hasBeenSaved) {
             this.bodyText = "'" + this.name + "' is being edited by " +
@@ -99,37 +119,58 @@ class Toast {
 
     hide = function () {
         this.isHidden = true;
+        this.isWaitingToBeHidden = false;
         this.toast.hide();
     }
 
     /**
      * Hides the toast after a timer.
-     * @param timeInSeconds Time in seconds for the toast to show for. Should be equal to 1 or above
+     * @param timeInSeconds Time in seconds for the toast to hide after. Should be equal to 1 or above
      */
     hideTimed = function (timeInSeconds) {
         this.selectedDate = (new Date(Date.now())).valueOf();
+        this.isWaitingToBeHidden = true;
         if (timeInSeconds <= 0) {
             timeInSeconds = 1;
         }
-        setTimeout((thisToast) => {
+        setTimeout(((thisToast) => {
             let currentTime = (new Date(Date.now())).valueOf();
-            if (currentTime >= thisToast.selectedDate + ((timeInSeconds * 1000) - 50)) {
+            if (currentTime >= thisToast.selectedDate + ((timeInSeconds * 1000) - 50) && thisToast.isWaitingToBeHidden) {
                 thisToast.toast.hide();
                 thisToast.isHidden = true;
+                thisToast.isWaitingToBeHidden = false;
+                this.toast.hide();
+                this.isHidden = true;
+                this.isWaitingToBeHidden = false;
             }
-        }, timeInSeconds * 1000, this);
+        }).bind(this), timeInSeconds * 1000, this);
     }
 
-    setToast = function (toast, textVar) {
+    /**
+     * Sets the objects html toast object, as well as a body text variable and the title text variable to assign relevant text to.
+     * @param toast HTML toast object.
+     * @param textVar Text variable for body.
+     * @param titleVar Text variable for title.
+     */
+    setToast = function (toast, textVar, titleVar) {
         this.toast = toast;
         this.toastBodyTextVar = textVar;
+        this.toastTitleTextVar = titleVar;
         if (this.isHidden) {
-            toast.hide();
+            this.hide();
         } else {
             this.show();
+            if (this.isWaitingToBeHidden) {
+                this.hideTimed(5);
+            }
         }
     }
 
+    /**
+     * Updates itself with the given toast object that holds new information.
+     * @param newToast New toast that holds updated information about the toast.
+     * @returns {Toast} Returns its updated self.
+     */
     updateToast = function (newToast) {
         this.name = newToast.name
         this.hasBeenSaved = newToast.hasBeenSaved;
@@ -142,9 +183,24 @@ Toast.prototype.toString = function () {
     return this.id + ": " + this.name;
 }
 
+/**
+ * Holds a list of toast objects that are, or have been active. Can only be as long as listOfHTMLToasts.
+ * @type {[Toast]}
+ */
 let listOfToasts = [];
+/**
+ * List of html toast object pairs that hold a Bootstrap toast object, a body text variable and a title text variable.
+ * These can be assigned to toast objects to display them.
+ * @type {[{'toast', 'text', 'title'}]}
+ */
 let listOfHTMLToasts = [];
 
+/**
+ * Adds toast objects to the listOfToasts list if it is new, otherwise updates the existing toast. Then reassigns the
+ * toast html objects to the new list.
+ * @param newToast New toast object to add/update to the list.
+ * @returns {Toast} updated toast if it already existed, otherwise, returns the parameter 'newToast'.
+ */
 function addToast(newToast) {
     let returnedToast = newToast;
 
@@ -163,21 +219,28 @@ function addToast(newToast) {
         returnedToast = listOfToasts[toastIndex].updateToast(newToast);
     } else {
         listOfToasts.push(newToast)
-        while (listOfToasts.length > 3) {
+        while (listOfToasts.length > listOfHTMLToasts.length) {
             listOfToasts.shift();
         }
     }
     reorderToasts();
-
     return returnedToast;
 }
 
+/**
+ * Reassigns toast html objects to the toast objects that are active at the moment (in the list 'listOfToasts')
+ */
 function reorderToasts() {
     let count = 0;
+    for (let item in listOfHTMLToasts) {
+        listOfHTMLToasts[count].toast.hide();
+        count += 1;
+    }
+    count = 0;
     for (let item in listOfToasts) {
         let toastItems = listOfHTMLToasts[count];
         let toast = listOfToasts[count];
-        toast.setToast(toastItems.toast, toastItems.text);
+        toast.setToast(toastItems.toast, toastItems.text, toastItems.title);
         count += 1;
     }
 }
@@ -211,6 +274,7 @@ function connect() {
  * Function that is called when a message is sent to the endpoint. Shows the toast if the message is full.
  * Removes the toast if the message is empty after delay.
  * @param eventName Event message that may or may not be empty.
+ * @param eventId Event id of the event being edited.
  * @param username Username of the user making the change
  * @param firstName First name of the user
  * @param lastName Last name of the user
@@ -233,26 +297,19 @@ function showToast(eventName, eventId, username, firstName, lastName, hide) {
  * Function that is called when a message is sent to the endpoint. Shows the toast if the message is full for a certain period.
  * This function displays that an event has been updated.
  * @param eventName Event message that may or may not be empty.
+ * @param eventId Event id of the event being edited.
  * @param username Username of the user making the change
  * @param firstName First name of the user
  * @param lastName Last name of the user
  */
 function showToastSave(eventName, eventId, username, firstName, lastName) {
-    if (eventName !== "") {
-        let newToast = new Toast("Event", eventName, eventId, username, firstName, lastName, true);
-        newToast = addToast(newToast);
-        newToast.show();
-        newToast.hideTimed(5);
-        // $("#popupText2").text("'" + eventName + "' has been updated by " + firstName + " " + lastName + " (" + username + "). ").hidden = false;
-        // toast2.show();
-        // selectedDate = (new Date(Date.now())).valueOf();
-        // setTimeout(() => {
-        //     let currentTime = (new Date(Date.now())).valueOf();
-        //     if (currentTime >= selectedDate + 4950) {
-        //         toast2.hide();
-        //     }
-        // }, 5000);
-    }
+    let newToast = new Toast("Event", eventName, eventId, username, firstName, lastName, true);
+    newToast = addToast(newToast);
+    newToast.show();
+    newToast.hideTimed(5);
+    // if (eventName !== "") {
+    //
+    // }
 }
 
 /**
@@ -271,22 +328,22 @@ $(function () {
     $("form").on('submit', function (e) {
         e.preventDefault();
     });
-    toast1 = new bootstrap.Toast($("#liveToast"));
+    toast1 = new bootstrap.Toast($("#liveToast1"));
     toast2 = new bootstrap.Toast($("#liveToast2"));
     toast3 = new bootstrap.Toast($("#liveToast3"));
-    listOfHTMLToasts = [{'toast':toast1, 'text':$("#popupText")}, {'toast':toast2, 'text':$("#popupText2")}, {'toast':toast3, 'text':$("#popupText3")}];
+    listOfHTMLToasts = [{'toast':toast1, 'text':$("#popupText1"), 'title':$("#toastTitle1")}, {'toast':toast2, 'text':$("#popupText2"), 'title':$("#toastTitle2")}, {'toast':toast3, 'text':$("#popupText3"), 'title':$("#toastTitle3")}];
     connect();
     // Checks if there should be a live update, and shows a toast if needed.
-    let eventInformation1 = $("#toastInformation");
+    let eventInformation1 = $("#toastInformation1");
     if (eventInformation1.text() !== "") {
-        showToastSave($("#toastEventName").text(), $("#toastUsername").text(), $("#toastFirstName").text(), $("#toastLastName").text());
+        showToastSave($("#toastEventName1").text(), $("#toastEventId1").text(), $("#toastUsername1").text(), $("#toastFirstName1").text(), $("#toastLastName1").text());
     }
     let eventInformation2 = $("#toastInformation2");
     if (eventInformation2.text() !== "") {
-        showToastSave($("#toastEventName2").text(), $("#toastUsername2").text(), $("#toastFirstName2").text(), $("#toastLastName2").text());
+        showToastSave($("#toastEventName2").text(), $("#toastEventId2").text(), $("#toastUsername2").text(), $("#toastFirstName2").text(), $("#toastLastName2").text());
     }
     let eventInformation3 = $("#toastInformation3");
     if (eventInformation3.text() !== "") {
-        showToastSave($("#toastEventName3").text(), $("#toastUsername3").text(), $("#toastFirstName3").text(), $("#toastLastName3").text());
+        showToastSave($("#toastEventName3").text(), $("#toastEventId3").text(), $("#toastUsername3").text(), $("#toastFirstName3").text(), $("#toastLastName3").text());
     }
 });
