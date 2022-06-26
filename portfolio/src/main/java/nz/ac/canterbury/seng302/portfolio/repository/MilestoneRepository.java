@@ -8,5 +8,4 @@ import java.util.List;
 public interface MilestoneRepository extends CrudRepository<Milestone, Integer> {
     Milestone findById(int id);
 
-    List<Milestone> findAllByMilestoneDate();
 }

@@ -102,7 +102,6 @@ deploy-production-identityprovider:
       - identityprovider/build/libs
   only:
     - tags
-    - master
 
 deploy-production-portfolio:
   stage: deploy
@@ -121,7 +120,6 @@ deploy-production-portfolio:
       - portfolio/build/libs
   only:
     - tags
-    - master
 
 sonarqube-report:
   stage: sonarqube
