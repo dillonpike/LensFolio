@@ -84,7 +84,7 @@ public class DetailsController {
             try {
                 projectService.saveProject(project);
             } catch (Exception err) {
-                System.err.println("Failed to save new project");
+                return "redirect:account";
             }
 
         }
@@ -117,6 +117,11 @@ public class DetailsController {
         return getFinalThymeleafTemplate(principal);
     }
 
+    /**
+     * Gets final details page to display, depending on whether the user is a teacher or a student.
+     * @param principal Gets information about the user
+     * @return Thymeleaf template
+     */
     private String getFinalThymeleafTemplate(AuthState principal) {
         String role = principal.getClaimsList().stream()
                 .filter(claim -> claim.getType().equals("role"))
@@ -140,7 +145,7 @@ public class DetailsController {
      * @return returns an EventResponse that holds information about the event being updated.
      */
     @MessageMapping("/editing-event")
-    @SendTo("/events/being-edited")
+    @SendTo("/test/portfolio/events/being-edited")
     public EventResponse updatingEvent(EventMessage message) {
         String username = message.getUsername();
         String firstName = message.getUserFirstName();
@@ -155,7 +160,7 @@ public class DetailsController {
      * @return Returns the message given.
      */
     @MessageMapping("/stop-editing-event")
-    @SendTo("/events/stop-being-edited")
+    @SendTo("/test/portfolio/events/stop-being-edited")
     public String stopUpdatingEvent(String message) {
         return message;
     }
@@ -167,7 +172,7 @@ public class DetailsController {
      * @return returns an EventResponse that holds information about the event being updated.
      */
     @MessageMapping("/saved-edited-event")
-    @SendTo("/events/save-edit")
+    @SendTo("/test/portfolio/events/save-edit")
     public EventResponse savingUpdatedEvent(EventMessage message) {
         String username = message.getUsername();
         String firstName = message.getUserFirstName();

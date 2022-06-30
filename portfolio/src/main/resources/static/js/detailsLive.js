@@ -11,14 +11,14 @@ function connect() {
     stompClient = Stomp.over(socket);
     stompClient.connect({}, function (frame) {
         console.log('Connected: ' + frame);
-        stompClient.subscribe('/events/being-edited', function (eventResponseArg) {
+        stompClient.subscribe('/test/portfolio/events/being-edited', function (eventResponseArg) {
             const eventResponse = JSON.parse(eventResponseArg.body);
             showToast(eventResponse.eventName, eventResponse.username, eventResponse.userFirstName, eventResponse.userLastName);
         });
-        stompClient.subscribe('/events/stop-being-edited', function (ignore) {
+        stompClient.subscribe('/test/portfolio/events/stop-being-edited', function (ignore) {
             showToast("", "", "", "");
         })
-        stompClient.subscribe('/events/save-edit', function (eventResponseArg) {
+        stompClient.subscribe('/test/portfolio/events/save-edit', function (eventResponseArg) {
             const eventResponse = JSON.parse(eventResponseArg.body);
             refreshEvents();
             showToastSave(eventResponse.eventName, eventResponse.username, eventResponse.userFirstName, eventResponse.userLastName);
