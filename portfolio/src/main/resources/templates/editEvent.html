@@ -95,7 +95,7 @@
         let userFirstName = [[${userFirstName}]];
         let userLastName = [[${userLastName}]];
         let username = [[${username}]];
-        stompClient.send("/app/editing-event", {}, JSON.stringify({
+        stompClient.send("/test/portfolio/app/editing-event", {}, JSON.stringify({
             'eventName': $("#eventName").val(),
             'userId': userId,
             'userFirstName': userFirstName,
@@ -108,7 +108,7 @@
      * Sends an empty message so that the other end can realise to close any popups it may have activated.
      */
     function sendEmpty() {
-        stompClient.send("/app/stop-editing-event", {}, "Stop Editing Event");
+        stompClient.send("/test/portfolio/app/stop-editing-event", {}, "Stop Editing Event");
     }
 
     /**
@@ -119,7 +119,7 @@
         let userFirstName = [[${userFirstName}]];
         let userLastName = [[${userLastName}]];
         let username = [[${username}]];
-        stompClient.send("/app/saved-edited-event", {}, JSON.stringify({
+        stompClient.send("/test/portfolio/app/saved-edited-event", {}, JSON.stringify({
             'eventName': $("#eventName").val(),
             'userId': userId,
             'userFirstName': userFirstName,
