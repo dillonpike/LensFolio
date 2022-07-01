@@ -203,7 +203,7 @@
         </div>
 <!-- Button trigger modal -->
 <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addMilestoneDialog">
-    Launch demo modal
+    Add Milestone
 </button>
 
 <!-- Modal -->
@@ -216,9 +216,16 @@
             </div>
             <div class="modal-body">
                 <form>
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <strong>Holy guacamole!</strong> You should check in on some of those fields below.
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
                     <div class="mb-3">
-                        <label for="recipient-name" class="col-form-label">Milestone Name:</label>
-                        <input type="text" class="form-control" id="recipient-name">
+                        <label for="milestoneName" class="col-form-label">Milestone Name:</label>
+                        <input onkeydown="updateCharsLeft()" maxlength="50" type="text" class="form-control" id="milestoneName">
+                        <div class="name-length-message" >
+                            <span id="milestoneNameLength"></span>
+                        </div>
                     </div>
                     <div class="mb-3">
                         <label for="MilestoneDate" class="col-form-label">Milestone Date:</label>
@@ -235,7 +242,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary">Save changes</button>
+                <button type="button" class="btn btn-primary" disabled>Add Milestone</button>
             </div>
         </div>
     </div>
@@ -254,6 +261,39 @@
             clearBtn: true,
         });
     });
+</script>
+
+<script>
+    //updates characters left
+    function updateCharsLeft() {
+        console.log("Hello");
+        let chars_left = 50 - document.getElementById("milestoneName").value.length;
+        if (chars_left === 50) {
+            document.getElementById("milestoneNameLength").innerText = "";
+        } else if (chars_left === 1) {
+            document.getElementById("milestoneNameLength").innerText = chars_left + " character left";
+        } else if (chars_left === 0) {
+            document.getElementById("milestoneNameLength").innerText = "No characters left";
+        } else {
+            document.getElementById("milestoneNameLength").innerText = chars_left + " characters left";
+        }
+    }
+</script>
+
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    let projectEndDate = /*[[${project.getEndDate()}]]*/ "Error";
+    let projectStartDate = /*[[${project.getStartDate()}]]*/ "Error";
+    /*]]>*/
+
+    function validateDateInProjectRange() {
+        const dateInputStr = document.getElementById("MilestoneDate").value;
+        const dateInput = new Date(dateInputStr);
+        console.log(dateInput)
+        console.log(dateInput > projectEndDate);
+    }
+    document.getElementById("MilestoneDate").onchange = validateDateInProjectRange;
+    validateDateInProjectRange();
 </script>
 
 
