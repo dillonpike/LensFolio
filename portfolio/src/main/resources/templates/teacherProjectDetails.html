@@ -202,7 +202,7 @@
             </div>
         </div>
 <!-- Button trigger modal -->
-<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addMilestoneDialog">
+<button type="button" class="btn btn-primary" onclick="{document.getElementById('alertBanner').hidden = true;}" data-bs-toggle="modal" data-bs-target="#addMilestoneDialog">
     Add Milestone
 </button>
 
@@ -216,13 +216,13 @@
             </div>
             <div class="modal-body">
                 <form>
-                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                        <strong>Holy guacamole!</strong> You should check in on some of those fields below.
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert" id="alertBanner">
+                        <span id="alertMessage"></span>
                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>
                     <div class="mb-3">
                         <label for="milestoneName" class="col-form-label">Milestone Name:</label>
-                        <input onkeydown="updateCharsLeft()" maxlength="50" type="text" class="form-control" id="milestoneName">
+                        <input onkeyup="updateCharsLeft()" maxlength="50" type="text" class="form-control" id="milestoneName">
                         <div class="name-length-message" >
                             <span id="milestoneNameLength"></span>
                         </div>
@@ -230,7 +230,7 @@
                     <div class="mb-3">
                         <label for="MilestoneDate" class="col-form-label">Milestone Date:</label>
                         <div class="input-group date" id="milestoneDateInput">
-                            <input onkeydown="return checkDateKeys(event)" type="text" class="form-control" id="MilestoneDate">
+                            <input onkeydown="return checkDateKeys(event)" onchange="validateAddModalDate()" type="text" class="form-control" id="MilestoneDate">
                             <span class="input-group-append">
                                 <span class="input-group-text bg-white">
                                     <i class="bi bi-calendar"></i>
@@ -242,7 +242,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary" disabled>Add Milestone</button>
+                <button type="button" class="btn btn-primary" onclick="submitAddModalInput()" id="submitMilestoneButton" disabled>Add Milestone</button>
             </div>
         </div>
     </div>
@@ -259,6 +259,7 @@
             todayHighlight: true,
             todayBtn: true,
             clearBtn: true,
+            orientation: 'bottom'
         });
     });
 </script>
@@ -266,7 +267,6 @@
 <script>
     //updates characters left
     function updateCharsLeft() {
-        console.log("Hello");
         let chars_left = 50 - document.getElementById("milestoneName").value.length;
         if (chars_left === 50) {
             document.getElementById("milestoneNameLength").innerText = "";
@@ -286,14 +286,36 @@
     let projectStartDate = /*[[${project.getStartDate()}]]*/ "Error";
     /*]]>*/
 
-    function validateDateInProjectRange() {
+    function submitAddModalInput() {
+        document.getElementById('alertBanner').hidden = true;
+
+        const nameInput = document.getElementById("milestoneName").value;
+
+        if(nameInput === ""){
+            document.getElementById('alertBanner').hidden = false;
+            document.getElementById("alertMessage").innerText = "Name cannot be empty!";
+        }
+    }
+
+    function validateAddModalDate() {
+        const options = {year: 'numeric', month: 'long', day: 'numeric' };
         const dateInputStr = document.getElementById("MilestoneDate").value;
         const dateInput = new Date(dateInputStr);
-        console.log(dateInput)
-        console.log(dateInput > projectEndDate);
+
+        const projectEndDateStr = new Date(projectEndDate).toLocaleDateString("en-US", options);
+        const projectStartDateStr = new Date(projectStartDate).toLocaleDateString("en-US", options);
+        if(dateInput < new Date(projectStartDate) || dateInput > new Date(projectEndDate)){
+            $('#submitMilestoneButton').prop('disabled', true);
+            document.getElementById('alertBanner').hidden = false;
+            document.getElementById("alertMessage").innerText = "Date must be between " + projectStartDateStr + " and " + projectEndDateStr;
+        } else {
+            $('#submitMilestoneButton').prop('disabled', false);
+            document.getElementById('alertBanner').hidden = true;
+        }
     }
-    document.getElementById("MilestoneDate").onchange = validateDateInProjectRange;
-    validateDateInProjectRange();
+
+
+
 </script>
 
 
