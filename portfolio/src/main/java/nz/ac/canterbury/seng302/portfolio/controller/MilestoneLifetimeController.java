@@ -6,6 +6,7 @@ import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 
@@ -25,8 +26,11 @@ public class MilestoneLifetimeController {
      * @param milestone new milestone to be saved
      */
     @PostMapping("/add-milestone")
-    public String milestoneSave(@ModelAttribute("milestone") Milestone milestone, @AuthenticationPrincipal AuthState principal) {
-        milestoneService.addMilestone(milestone);
+    public String milestoneSave(@ModelAttribute("milestone") Milestone milestone, Model model) {
+        System.out.println("heloooooooooo\n\n");
+        System.out.println(milestone.getMilestoneName());
+        System.out.println(milestone.getMilestoneDate());
+//        milestoneService.addMilestone(milestone);
         return "redirect:/details";
     }
 }
