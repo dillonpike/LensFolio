@@ -48,7 +48,7 @@
                                 <div class="sprint-label" th:text="'Sprint-' + (${meta.index} + 1)" />
                                 <div class="detail-block">
                                     <div>
-                                        <div class="sprint-title" th:text="${sprint.getName}" />
+                                        <div class="sprint-title" th:style="color + ':' +  ${sprint.getColour()}" th:text="${sprint.getName}" />
                                         <div class="sprint-date" th:text="${sprint.getDates}" />
                                         <div class="sprint-description" th:text="${sprint.getDescription}" />
                                     </div>
