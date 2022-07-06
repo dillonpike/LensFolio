@@ -153,4 +153,20 @@ public class Milestone {
                 "milestone[id=%d, parentProjectId='%d', milestoneName='%s', milestoneDate='%s']",
                 id, parentProjectId, milestoneName, milestoneDate);
     }
+
+    /**
+     * Sets the milestone date with a string.
+     * @param date new date
+     */
+    public void setMilestoneDateString(String date) {
+        this.milestoneDate = Project.stringToDate(date);
+    }
+
+    /**
+     * Returns the milestone date as a string.
+     * @return milestone date as a string
+     */
+    public String getMilestoneDateString() {
+        return Project.dateToString(this.milestoneDate);
+    }
 }

@@ -27,10 +27,7 @@ public class MilestoneLifetimeController {
      */
     @PostMapping("/add-milestone")
     public String milestoneSave(@ModelAttribute("milestone") Milestone milestone, Model model) {
-        System.out.println("heloooooooooo\n\n");
-        System.out.println(milestone.getMilestoneName());
-        System.out.println(milestone.getMilestoneDate());
-//        milestoneService.addMilestone(milestone);
+        milestoneService.addMilestone(milestone);
         return "redirect:/details";
     }
 }
