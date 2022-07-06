@@ -115,8 +115,6 @@ public class DetailsController {
         model.addAttribute("userId", id);
 
 
-        model.addAttribute("blankMilestone", new Milestone());
-
 //        return getFinalThymeleafTemplate(principal);
 //        return "teacherProjectDetails";
         String role = principal.getClaimsList().stream()
@@ -128,7 +126,7 @@ public class DetailsController {
         /* Return the name of the Thymeleaf template */
         // detects the role of the current user and returns appropriate page
         if (role.equals("teacher") || role.equals("admin")) {
-            model.addAttribute("blankMilestone", new Milestone());
+            model.addAttribute("milestone", new Milestone());
             return "teacherProjectDetails";
         } else {
             return "userProjectDetails";
