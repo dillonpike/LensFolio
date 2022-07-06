@@ -206,67 +206,16 @@
     Add Milestone
 </button>
 
-<!-- Modal -->
-<div class="modal fade" id="addMilestoneDialog" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLongTitle">Add Milestone</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <form method="post" id="milestoneForm" onsubmit="return validateModalName('milestoneName', 'milestoneForm');" th:action="@{add-milestone}" th:object="${blankMilestone}">
-                <div class="modal-body">
-                    <div class="alert alert-danger alert-dismissible fade show" role="alert" id="alertBanner">
-                        <span id="alertMessage"></span>
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div>
-                    <div class="mb-3">
-                        <label for="milestoneName" class="col-form-label">Milestone Name:</label>
-                        <input onkeyup="updateCharsLeft('milestoneName', 'milestoneNameLength')" maxlength="50" type="text" class="form-control" id="milestoneName" th:field="*{milestoneName}">
-                        <div class="name-length-message">
-                            <span id="milestoneNameLength"></span>
-                        </div>
-                    </div>
-                    <div class="mb-3">
-                        <label for="milestoneDate" class="col-form-label">Milestone Date:</label>
-                        <div class="input-group date" id="milestoneDateInput">
-                            <input onkeydown="return checkDateKeys(milestone)" onchange="validateModalDate('milestoneDate')" type="text" class="form-control" id="milestoneDate" th:field="*{milestoneDateString}">
-                            <span class="input-group-append">
-                                <span class="input-group-text bg-white">
-                                    <i class="bi bi-calendar"></i>
-                                </span>
-                            </span>
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button class="btn btn-primary" id="submitMilestoneButton" type="submit" disabled>Add Milestone</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
+<!-- Modals -->
+<div th:replace="fragments/addMilestoneModal"></div>
 
 
 <script src="../js/project.js"></script>
 <script src="js/detailsLive.js"></script>
-<script type="text/javascript">
-    // fills in the date pickers
-    $(function() {
-        $('#milestoneDateInput input').datepicker({
-            format: 'dd/M/yyyy',
-            todayHighlight: true,
-            todayBtn: true,
-            clearBtn: true,
-            orientation: 'bottom'
-        });
-    });
-</script>
 
 <script>
     //updates characters left
-    function updateCharsLeft(nameElementId, messageElementId) {
+    function updateCharsLeft(elementId, messageElementId) {
         let chars_left = 50 - document.getElementById(elementId).value.length;
         if (chars_left === 50) {
             document.getElementById(messageElementId).innerText = "";
@@ -300,22 +249,22 @@
         }
     }
 
-    function validateModalDate(elementId) {
+    function validateModalDate(elementId, submitElementId) {
         const dateInputStr = document.getElementById(elementId).value;
         const dateInput = new Date(dateInputStr);
 
         if (dateInput < new Date(projectStartDate) || dateInput > new Date(projectEndDate)) {
-            $('#submitMilestoneButton').prop('disabled', true);
+            $('#' + submitElementId).prop('disabled', true);
             document.getElementById('alertBanner').hidden = false;
             document.getElementById("alertMessage").innerText = "Date must be within the project's date range (" +
                 projectStartDate + " - " + projectEndDate + ").";
         } else {
-            $('#submitMilestoneButton').prop('disabled', false);
+            $('#' + submitElementId).prop('disabled', false);
             document.getElementById('alertBanner').hidden = true;
         }
     }
 
-validateModalDate("milestoneDate")
+validateModalDate("milestoneDate", "submitMilestoneButton")
 </script>
 
 
