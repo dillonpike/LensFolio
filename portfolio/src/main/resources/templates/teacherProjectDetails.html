@@ -236,6 +236,10 @@
     let projectStartDate = /*[[${project.getStartDateString()}]]*/ "Error";
     /*]]>*/
 
+    // Check if the name of the item that the user inputted is not an empty string
+    // Submit the form and return true if the input is not empty string, otherwise show error banner with the error message and return false
+    // @param elementId the ID of the text input HTML element for item's name
+    // @param formId the ID of the form which contains the input HTML element
     function validateModalName(elementId, formId) {
         document.getElementById('alertBanner').hidden = true;
         const nameInput = document.getElementById(elementId).value;
@@ -250,6 +254,10 @@
         }
     }
 
+    // Check if the date of the item that the user inputted is within the project dates range
+    // Show error banner with error message and disable the submit button if the inputted date is outside the project dates range
+    // @param elementId the ID of the date input HTML element
+    // @param submitElementId the ID of the submit button on the modal
     function validateModalDate(elementId, submitElementId) {
         const dateInputStr = document.getElementById(elementId).value;
         const dateInput = new Date(dateInputStr);
