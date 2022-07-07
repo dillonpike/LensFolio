@@ -42,6 +42,9 @@ public class DetailsController {
     @Autowired
     private EventService eventService;
 
+    @Autowired
+    private MilestoneService milestoneService;
+
     /**
      * Last event saved, for toast notification.
      */
@@ -94,6 +97,9 @@ public class DetailsController {
 
         List<Event> eventList = eventService.getAllEventsOrdered();
         model.addAttribute("events", eventList);
+
+        List<Milestone> milestoneList = milestoneService.getAllMilestonesOrdered();
+        model.addAttribute("milestones", milestoneList);
 
         // Runs if the reload was triggered by saving an event. Checks set time to now to see if 2 seconds has passed yet.
         long timeDifference = Date.from(Instant.now()).toInstant().getEpochSecond() - eventWasUpdatedTime.toInstant().getEpochSecond();
