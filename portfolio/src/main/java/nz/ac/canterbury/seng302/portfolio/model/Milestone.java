@@ -118,15 +118,6 @@ public class Milestone {
     }
 
     /**
-     * Returns a string representation of the time of the milestone
-     * @return string representation of the time of the milestone
-     */
-    public String getMilestoneTime()  {
-        SimpleDateFormat dateFormat = new SimpleDateFormat("h:mm a");
-        return (dateFormat.format(milestoneDate));
-    }
-
-    /**
      * Empty constructor for JPA.
      */
     public Milestone() {}
