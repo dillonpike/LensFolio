@@ -163,7 +163,7 @@ class Toast {
         } else {
             this.show();
             if (this.isWaitingToBeHidden) {
-                this.hideTimed(5);
+                this.hideTimed(SECONDS_TILL_HIDE);
             }
         }
     }
