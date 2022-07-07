@@ -8,6 +8,12 @@ const DeadlineType = "Deadline";
 const MilestoneType = "Milestone";
 
 /**
+ * The amount of time in seconds the toast will take before hiding on a timed hide function.
+ * @type {number}
+ */
+const SECONDS_TILL_HIDE = 5;
+
+/**
  * Toast object that holds its title and the users' username, first and last name for an item notification.
  * This object also holds its HTML toast information and can display on this toast object.
  */
@@ -132,12 +138,9 @@ class Toast {
         if (timeInSeconds <= 0) {
             timeInSeconds = 1;
         }
-        setTimeout(((thisToast) => {
+        setTimeout((function () {
             let currentTime = (new Date(Date.now())).valueOf();
-            if (currentTime >= thisToast.selectedDate + ((timeInSeconds * 1000) - 50) && thisToast.isWaitingToBeHidden) {
-                thisToast.toast.hide();
-                thisToast.isHidden = true;
-                thisToast.isWaitingToBeHidden = false;
+            if (currentTime >= this.selectedDate + ((timeInSeconds * 1000) - 50) && this.isWaitingToBeHidden) {
                 this.toast.hide();
                 this.isHidden = true;
                 this.isWaitingToBeHidden = false;
@@ -178,6 +181,10 @@ class Toast {
     }
 }
 
+/**
+ * toSting method for use with debugging.
+ * @returns {string}
+ */
 Toast.prototype.toString = function () {
     return this.id + ": " + this.name;
 }
@@ -245,6 +252,23 @@ function reorderToasts() {
 }
 
 /**
+ * Runs every 10 seconds to make sure that toasts that should be hidden, are hidden.
+ */
+// setInterval(function () {
+//     let count = 0;
+//     for (let item in listOfHTMLToasts) {
+//         let currentHTMLToast = listOfHTMLToasts[count].toast;
+//         console.log(!currentHTMLToast.isHidden + " " + listOfToasts.length.toString(10) !== "0")
+//         if (
+//             !currentHTMLToast.isHidden &&
+//             listOfToasts.length.toString(10) !== "0"
+//         ) {
+//             currentHTMLToast.hide();
+//         }
+//     }
+// }, 10000);
+
+/**
  * Connects the stomp client to the setup websocket endpoint.
  * Then subscribes a method to the events/being-edited endpoint.
  */
@@ -281,14 +305,11 @@ function connect() {
  */
 function showToast(eventName, eventId, username, firstName, lastName, hide) {
     let newToast = new Toast("Event", eventName, eventId, username, firstName, lastName, false);
-
     newToast = addToast(newToast);
-
     if (!hide) {
         newToast.show();
     } else {
-        newToast.show();
-        newToast.hideTimed(5);
+        newToast.hideTimed(SECONDS_TILL_HIDE);
     }
 }
 
@@ -305,7 +326,7 @@ function showToastSave(eventName, eventId, username, firstName, lastName) {
     let newToast = new Toast("Event", eventName, eventId, username, firstName, lastName, true);
     newToast = addToast(newToast);
     newToast.show();
-    newToast.hideTimed(5);
+    newToast.hideTimed(SECONDS_TILL_HIDE);
 }
 
 /**
@@ -328,6 +349,10 @@ $(function () {
     toast2 = new bootstrap.Toast($("#liveToast2"));
     toast3 = new bootstrap.Toast($("#liveToast3"));
     listOfHTMLToasts = [{'toast':toast1, 'text':$("#popupText1"), 'title':$("#toastTitle1")}, {'toast':toast2, 'text':$("#popupText2"), 'title':$("#toastTitle2")}, {'toast':toast3, 'text':$("#popupText3"), 'title':$("#toastTitle3")}];
+    // let count = 0;
+    // for (let item in listOfHTMLToasts) {
+    //     listOfHTMLToasts[count].toast.hide();
+    // }
     connect();
     // Checks if there should be a live update, and shows a toast if needed.
     let eventInformation1 = $("#toastInformation1");

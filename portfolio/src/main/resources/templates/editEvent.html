@@ -155,6 +155,11 @@
         }).on('focusout', function (ignore) {
             sendEmpty();
         });
+        document.addEventListener("visibilitychange", (event) => {
+            if (document.visibilityState !== "visible") {
+                sendEmpty();
+            }
+        });
 
         $( "#saveButton").click(function() { sendNameReload(); })
         $( "#cancelButton").click(function() { sendEmpty(); })
