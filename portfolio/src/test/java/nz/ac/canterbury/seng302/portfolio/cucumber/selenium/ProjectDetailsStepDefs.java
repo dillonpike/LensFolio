@@ -93,10 +93,10 @@ public class ProjectDetailsStepDefs {
         webDriver.findElement(By.id("saveButton")).click();
 
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.className("title-name")));
-        assertEquals(webDriver.findElement(By.className("title-name")).getText(),"test project");
-        assertEquals(webDriver.findElement(By.className("project-desc")).getText(),"test project desc");
-        assertEquals(webDriver.findElement(By.id("project-date")).getText(), projectdtf.format(now) + " - "
-                + projectdtf.format(threeMonthsAfterNow));
+        assertEquals("test project", webDriver.findElement(By.className("title-name")).getText());
+        assertEquals("test project desc", webDriver.findElement(By.className("project-desc")).getText());
+        assertEquals(projectdtf.format(now) + " - " + projectdtf.format(threeMonthsAfterNow),
+                webDriver.findElement(By.id("project-date")).getText());
     }
 
     @When("I browse to the project page")
