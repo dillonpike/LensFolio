@@ -3,9 +3,12 @@ let toast1 = null;
 let toast2 = null;
 let toast3 = null;
 
-const EventType = "Event";
-const DeadlineType = "Deadline";
-const MilestoneType = "Milestone";
+/**
+ * Constants used for identifying what kind of notification the toast should be.
+ */
+const EVENTTYPE = "Event";
+const DEADLINETYPE = "Deadline";
+const MILESTONETYPE = "Milestone";
 
 /**
  * The amount of time in seconds the toast will take before hiding on a timed hide function.
@@ -53,11 +56,11 @@ class Toast {
         this.firstName = firstName;
         this.lastName = lastName;
         this.type = type;
-        if (type === EventType) {
+        if (type === EVENTTYPE) {
             this.titleName = "Event Activity";
-        } else if (type === DeadlineType) {
+        } else if (type === DEADLINETYPE) {
             this.titleName = "Deadline Activity";
-        } else if (type === MilestoneType) {
+        } else if (type === MILESTONETYPE) {
             this.titleName = "Milestone Activity";
         } else {
             this.titleName = "Activity";
@@ -107,7 +110,7 @@ class Toast {
     /**
      * Shows the toast with the correct message and title.
      */
-    show = function () {
+    show() {
         this.isHidden = false;
         this.isWaitingToBeHidden = false;
         this.selectedDate = (new Date(Date.now())).valueOf();
@@ -122,7 +125,7 @@ class Toast {
         this.toast.show();
     }
 
-    hide = function () {
+    hide() {
         this.isHidden = true;
         this.isWaitingToBeHidden = false;
         this.toast.hide();
@@ -132,20 +135,18 @@ class Toast {
      * Hides the toast after a timer.
      * @param timeInSeconds Time in seconds for the toast to hide after. Should be equal to 1 or above
      */
-    hideTimed = function (timeInSeconds) {
-        this.selectedDate = (new Date(Date.now())).valueOf();
-        this.isWaitingToBeHidden = true;
+    hideTimed(timeInSeconds) {
         if (timeInSeconds <= 0) {
             timeInSeconds = 1;
         }
-        setTimeout((function () {
+        this.selectedDate = (new Date(Date.now())).valueOf();
+        this.isWaitingToBeHidden = true;
+        setTimeout((function (toast) {
             let currentTime = (new Date(Date.now())).valueOf();
-            if (currentTime >= this.selectedDate + ((timeInSeconds * 1000) - 50) && this.isWaitingToBeHidden) {
-                this.toast.hide();
-                this.isHidden = true;
-                this.isWaitingToBeHidden = false;
+            if (currentTime >= toast.selectedDate + ((timeInSeconds * 1000) - 500) && toast.isWaitingToBeHidden) {
+                toast.hide();
             }
-        }).bind(this), timeInSeconds * 1000, this);
+        }), timeInSeconds * 1000, this);
     }
 
     /**
@@ -154,17 +155,14 @@ class Toast {
      * @param textVar Text variable for body.
      * @param titleVar Text variable for title.
      */
-    setToast = function (toast, textVar, titleVar) {
+    setToast(toast, textVar, titleVar) {
         this.toast = toast;
         this.toastBodyTextVar = textVar;
         this.toastTitleTextVar = titleVar;
         if (this.isHidden) {
-            this.hide();
+            this.toast.hide();
         } else {
-            this.show();
-            if (this.isWaitingToBeHidden) {
-                this.hideTimed(SECONDS_TILL_HIDE);
-            }
+            this.toast.show();
         }
     }
 
@@ -173,7 +171,7 @@ class Toast {
      * @param newToast New toast that holds updated information about the toast.
      * @returns {Toast} Returns its updated self.
      */
-    updateToast = function (newToast) {
+    updateToast(newToast) {
         this.name = newToast.name
         this.hasBeenSaved = newToast.hasBeenSaved;
 
@@ -252,23 +250,6 @@ function reorderToasts() {
 }
 
 /**
- * Runs every 10 seconds to make sure that toasts that should be hidden, are hidden.
- */
-// setInterval(function () {
-//     let count = 0;
-//     for (let item in listOfHTMLToasts) {
-//         let currentHTMLToast = listOfHTMLToasts[count].toast;
-//         console.log(!currentHTMLToast.isHidden + " " + listOfToasts.length.toString(10) !== "0")
-//         if (
-//             !currentHTMLToast.isHidden &&
-//             listOfToasts.length.toString(10) !== "0"
-//         ) {
-//             currentHTMLToast.hide();
-//         }
-//     }
-// }, 10000);
-
-/**
  * Connects the stomp client to the setup websocket endpoint.
  * Then subscribes a method to the events/being-edited endpoint.
  */
@@ -342,17 +323,10 @@ function refreshEvents() {
  * Initialises functions/injections
  */
 $(function () {
-    $("form").on('submit', function (e) {
-        e.preventDefault();
-    });
     toast1 = new bootstrap.Toast($("#liveToast1"));
     toast2 = new bootstrap.Toast($("#liveToast2"));
     toast3 = new bootstrap.Toast($("#liveToast3"));
     listOfHTMLToasts = [{'toast':toast1, 'text':$("#popupText1"), 'title':$("#toastTitle1")}, {'toast':toast2, 'text':$("#popupText2"), 'title':$("#toastTitle2")}, {'toast':toast3, 'text':$("#popupText3"), 'title':$("#toastTitle3")}];
-    // let count = 0;
-    // for (let item in listOfHTMLToasts) {
-    //     listOfHTMLToasts[count].toast.hide();
-    // }
     connect();
     // Checks if there should be a live update, and shows a toast if needed.
     let eventInformation1 = $("#toastInformation1");
