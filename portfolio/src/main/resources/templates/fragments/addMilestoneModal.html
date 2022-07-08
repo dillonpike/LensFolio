@@ -5,15 +5,15 @@
                 <h5 class="modal-title" id="exampleModalLongTitle">Add Milestone</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form method="post" id="milestoneForm" onsubmit="return validateModalName('milestoneName', 'milestoneForm');" th:action="@{add-milestone}" th:object="${blankMilestone}">
+            <form method="post" id="milestoneForm" onsubmit="return validateModalName('milestoneName', 'addMilestoneAlertBanner', 'addMilestoneAlertMessage');" th:action="@{add-milestone}" th:object="${blankMilestone}">
                 <div class="modal-body">
-                    <div class="alert alert-danger alert-dismissible fade show" role="alert" id="alertBanner">
-                        <span id="alertMessage"></span>
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert" id="addMilestoneAlertBanner" hidden>
+                        <span id="addMilestoneAlertMessage"></span>
                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>
                     <div class="mb-3">
                         <label for="milestoneName" class="col-form-label">Milestone Name:</label>
-                        <input onkeyup="updateCharsLeft('milestoneName', 'milestoneNameLength')" maxlength="50" type="text" class="form-control" id="milestoneName" th:field="*{milestoneName}">
+                        <input onkeyup="updateCharsLeft('milestoneName', 'milestoneNameLength', 50)" maxlength="50" type="text" class="form-control" id="milestoneName" th:field="*{milestoneName}">
                         <div class="name-length-message">
                             <span id="milestoneNameLength"></span>
                         </div>

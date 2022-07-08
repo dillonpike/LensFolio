@@ -107,12 +107,13 @@
                         </div>
                     </div>
                 </div>
-                <a class="add-sprint btn-primary btn-sm" th:href="@{add-sprint}" role="button" id="addSprintButton">
+                <a class="add-sprint btn-primary btn-sm" th:href="@{add-sprint}" role="button" id="addSprintButton" data-bs-toggle="modal" data-bs-target="#addSprintModal">
                     <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16">
                         <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
                     </svg>
                     Add Sprint
                 </a>
+                <div th:replace="fragments/addSprintModal :: addSprintModal(${sprint}, ${sprintDateError})"></div>
                 <a class="add-sprint btn-primary btn-sm" th:href="@{add-event}" role="button" id="addEventButton">
                     <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16">
                         <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
@@ -216,9 +217,9 @@
 
 <script>
     //updates characters left
-    function updateCharsLeft(elementId, messageElementId) {
-        let chars_left = 50 - document.getElementById(elementId).value.length;
-        if (chars_left === 50) {
+    function updateCharsLeft(elementId, messageElementId, numChars) {
+        let chars_left = numChars - document.getElementById(elementId).value.length;
+        if (chars_left === numChars) {
             document.getElementById(messageElementId).innerText = "";
         } else if (chars_left === 1) {
             document.getElementById(messageElementId).innerText = chars_left + " character left";
@@ -236,32 +237,31 @@
     let projectStartDate = /*[[${project.getStartDateString()}]]*/ "Error";
     /*]]>*/
 
-    function validateModalName(elementId, formId) {
-        document.getElementById('alertBanner').hidden = true;
+    function validateModalName(elementId, alertBanner, alertMessage) {
         const nameInput = document.getElementById(elementId).value;
 
         if (nameInput === "") {
-            document.getElementById('alertBanner').hidden = false;
-            document.getElementById("alertMessage").innerText = "Name cannot be empty!";
+            document.getElementById(alertBanner).hidden = false;
+            document.getElementById(alertMessage).innerText = "Name cannot be empty!";
             return false
         } else {
-            document.getElementById(formId).submit();
+            document.getElementById(alertBanner).hidden = true;
             return true
         }
     }
 
-    function validateModalDate(elementId, submitElementId) {
+    function validateModalDate(elementId, submitElementId, alertBanner, alertMessage) {
         const dateInputStr = document.getElementById(elementId).value;
         const dateInput = new Date(dateInputStr);
 
         if (dateInput < new Date(projectStartDate) || dateInput > new Date(projectEndDate)) {
             $('#' + submitElementId).prop('disabled', true);
-            document.getElementById('alertBanner').hidden = false;
-            document.getElementById("alertMessage").innerText = "Date must be within the project's date range (" +
+            document.getElementById(alertBanner).hidden = false;
+            document.getElementById(alertMessage).innerText = "Date must be within the project's date range (" +
                 projectStartDate + " - " + projectEndDate + ").";
         } else {
             $('#' + submitElementId).prop('disabled', false);
-            document.getElementById('alertBanner').hidden = true;
+            document.getElementById(alertBanner).hidden = true;
         }
     }
 
