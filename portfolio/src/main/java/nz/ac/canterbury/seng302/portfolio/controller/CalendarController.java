@@ -1,5 +1,6 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
+import nz.ac.canterbury.seng302.portfolio.model.Event;
 import nz.ac.canterbury.seng302.portfolio.model.Project;
 import nz.ac.canterbury.seng302.portfolio.model.Sprint;
 import nz.ac.canterbury.seng302.portfolio.service.*;
@@ -26,12 +27,20 @@ public class CalendarController {
     private ProjectService projectService;
 
     @Autowired
+    private EventService eventService;
+
+    @Autowired
     private UserAccountClientService userAccountClientService;
 
     @Autowired
     private ElementService elementService;
 
-    public String listToJSON(List<Sprint> sprints) {
+    /***
+     * Produces a JSON list that fullcalendar can read to display sprints on the calendar
+     * @param sprints list of sprints from the database
+     * @return JSON list for sprints to display on the calendar
+     */
+    public String sprintListToJSON(List<Sprint> sprints) {
         StringBuilder json = new StringBuilder();
         ArrayList<String> colours = new ArrayList<>(Arrays.asList("#5897fc", "#a758fc", "#fc58c3", "#9e1212", "#c65102", "#d5b60a", "#004400"," #11887b"));
         int colIndex = 0;
@@ -49,6 +58,19 @@ public class CalendarController {
         return json.toString();
     }
 
+    /***
+     * Produces a JSON list that fullcalendar can read to display events on the calendar
+     * @param events list of events from the database
+     * @return JSON list for events to display on the calendar
+     */
+    public String eventListToJSON(List<Event> events) {
+        StringBuilder json = new StringBuilder();
+        for (Event event : events) {
+            Date endDate = SprintLifetimeController.getUpdatedDate(event.getEventEndDate(), 1, 0);
+            json.append("{id: '").append(event.getId()).append("', title: '").append(event.getEventName()).append("', start: '").append(event.getStartDateDetail()).append("', end: '").append(endDate.toInstant()).append("'},");
+        }
+        return json.toString();
+    }
 
 
     /***
@@ -63,15 +85,18 @@ public class CalendarController {
             Model model,
             @AuthenticationPrincipal AuthState principal) throws Exception {
         List<Sprint> sprints;
+        List<Event> events;
         Integer id = userAccountClientService.getUserIDFromAuthState(principal);
         elementService.addHeaderAttributes(model, id);
         model.addAttribute("userId", id);
         try {
             sprints = sprintService.getAllSprintsOrdered();
+            events = eventService.getAllEventsOrdered();
         } catch (Exception e) {
             return "500InternalServer";
         }
-        model.addAttribute("sprints", listToJSON(sprints));
+        String calendarEvents = sprintListToJSON(sprints) + eventListToJSON(events);
+        model.addAttribute("events", calendarEvents);
 
         Project project;
         try {
