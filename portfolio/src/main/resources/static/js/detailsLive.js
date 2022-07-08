@@ -17,10 +17,10 @@ const MILESTONETYPE = "Milestone";
 const SECONDS_TILL_HIDE = 5;
 
 /**
- * Toast object that holds its title and the users' username, first and last name for an item notification.
- * This object also holds its HTML toast information and can display on this toast object.
+ * Notification object that holds its title and the users' username, first and last name for an item notification.
+ * This object also holds its HTML Bootstrap toast information and can display on this notification object.
  */
-class Toast {
+class Notification {
     toast;
     toastBodyTextVar;
     toastTitleTextVar;
@@ -40,7 +40,7 @@ class Toast {
     lastName = "";
 
     /**
-     * Default constructer.
+     * Default constructor.
      * @param type Type of item notification. Can be "Event", "Deadline" or "Milestone".
      * @param name Name of item being updated. E.g. "Event 1" or "Homework Deadline".
      * @param id Integer id of the item being updated.
@@ -108,7 +108,7 @@ class Toast {
     }
 
     /**
-     * Shows the toast with the correct message and title.
+     * Shows the notification with the assigned toast with the correct message and title.
      */
     show() {
         this.isHidden = false;
@@ -132,8 +132,8 @@ class Toast {
     }
 
     /**
-     * Hides the toast after a timer.
-     * @param timeInSeconds Time in seconds for the toast to hide after. Should be equal to 1 or above
+     * Hides the notification after a timer.
+     * @param timeInSeconds Time in seconds for the notification to hide after. Should be equal to 1 or above
      */
     hideTimed(timeInSeconds) {
         if (timeInSeconds <= 0) {
@@ -141,10 +141,10 @@ class Toast {
         }
         this.selectedDate = (new Date(Date.now())).valueOf();
         this.isWaitingToBeHidden = true;
-        setTimeout((function (toast) {
+        setTimeout((function (notification) {
             let currentTime = (new Date(Date.now())).valueOf();
-            if (currentTime >= toast.selectedDate + ((timeInSeconds * 1000) - 500) && toast.isWaitingToBeHidden) {
-                toast.hide();
+            if (currentTime >= notification.selectedDate + ((timeInSeconds * 1000) - 500) && notification.isWaitingToBeHidden) {
+                notification.hide();
             }
         }), timeInSeconds * 1000, this);
     }
@@ -167,13 +167,13 @@ class Toast {
     }
 
     /**
-     * Updates itself with the given toast object that holds new information.
-     * @param newToast New toast that holds updated information about the toast.
-     * @returns {Toast} Returns its updated self.
+     * Updates itself with the given Notification object that may hold new information.
+     * @param newNotification New notification that holds updated information about the toast.
+     * @returns {Notification} Returns its updated self.
      */
-    updateToast(newToast) {
-        this.name = newToast.name
-        this.hasBeenSaved = newToast.hasBeenSaved;
+    updateNotification(newNotification) {
+        this.name = newNotification.name
+        this.hasBeenSaved = newNotification.hasBeenSaved;
 
         return this;
     }
@@ -183,75 +183,75 @@ class Toast {
  * toSting method for use with debugging.
  * @returns {string}
  */
-Toast.prototype.toString = function () {
+Notification.prototype.toString = function () {
     return this.id + ": " + this.name;
 }
 
 /**
- * Holds a list of toast objects that are, or have been active. Can only be as long as listOfHTMLToasts.
- * @type {[Toast]}
+ * Holds a list of Notification objects that are, or have been active. Can only be as long as listOfHTMLToasts.
+ * @type {[Notification]}
  */
-let listOfToasts = [];
+let listOfNotifications = [];
 /**
  * List of html toast object pairs that hold a Bootstrap toast object, a body text variable and a title text variable.
- * These can be assigned to toast objects to display them.
+ * These can be assigned to Notification objects to display them.
  * @type {[{'toast', 'text', 'title'}]}
  */
 let listOfHTMLToasts = [];
 
 /**
- * Adds toast objects to the listOfToasts list if it is new, otherwise updates the existing toast. Then reassigns the
- * toast html objects to the new list.
- * @param newToast New toast object to add/update to the list.
- * @returns {Toast} updated toast if it already existed, otherwise, returns the parameter 'newToast'.
+ * Adds Notification objects to the listOfNotifications list if it is new, otherwise updates the existing notification.
+ * Then reassigns the toast html objects to the new list.
+ * @param newNotification New toast object to add/update to the list.
+ * @returns {Notification} updated toast if it already existed, otherwise, returns the parameter 'newToast'.
  */
-function addToast(newToast) {
-    let returnedToast = newToast;
+function addNotification(newNotification) {
+    let returnedNotification = newNotification;
 
-    let toastExists = false;
-    let toastIndex = -1;
+    let notificationExists = false;
+    let notificationIndex = -1;
     let count = 0;
-    for (let item in listOfToasts) {
-        if (listOfToasts[count].id === newToast.id) {
-            toastExists = true;
-            toastIndex = count;
+    for (let item in listOfNotifications) {
+        if (listOfNotifications[count].id === newNotification.id) {
+            notificationExists = true;
+            notificationIndex = count;
             break;
         }
         count += 1;
     }
-    if (toastExists) {
-        returnedToast = listOfToasts[toastIndex].updateToast(newToast);
+    if (notificationExists) {
+        returnedNotification = listOfNotifications[notificationIndex].updateNotification(newNotification);
     } else {
-        listOfToasts.push(newToast)
-        while (listOfToasts.length > listOfHTMLToasts.length) {
-            listOfToasts.shift();
+        listOfNotifications.push(newNotification)
+        while (listOfNotifications.length > listOfHTMLToasts.length) {
+            listOfNotifications.shift();
         }
     }
-    reorderToasts();
-    return returnedToast;
+    reorderNotifications();
+    return returnedNotification;
 }
 
 /**
  * Reassigns toast html objects to the toast objects that are active at the moment (in the list 'listOfToasts')
  */
-function reorderToasts() {
+function reorderNotifications() {
     let count = 0;
     for (let item in listOfHTMLToasts) {
         listOfHTMLToasts[count].toast.hide();
         count += 1;
     }
     count = 0;
-    for (let item in listOfToasts) {
+    for (let item in listOfNotifications) {
         let toastItems = listOfHTMLToasts[count];
-        let toast = listOfToasts[count];
-        toast.setToast(toastItems.toast, toastItems.text, toastItems.title);
+        let notification = listOfNotifications[count];
+        notification.setToast(toastItems.toast, toastItems.text, toastItems.title);
         count += 1;
     }
 }
 
 /**
  * Connects the stomp client to the setup websocket endpoint.
- * Then subscribes a method to the events/being-edited endpoint.
+ * Then subscribes methods to the required endpoints.
  */
 function connect() {
     let socket = new SockJS('/mywebsockets');
@@ -275,8 +275,9 @@ function connect() {
 }
 
 /**
- * Function that is called when a message is sent to the endpoint. Shows the toast if the message is full.
- * Removes the toast if the message is empty after delay.
+ * Function that is called when a message is sent to the endpoint. Shows the notification/toast if the message is full.
+ * Removes the notification/toast if 'hide' is true after delay.
+ * This function is used when the 'update' is that it is being edited, rather than saved.
  * @param eventName Event message that may or may not be empty.
  * @param eventId Event id of the event being edited.
  * @param username Username of the user making the change
@@ -285,18 +286,18 @@ function connect() {
  * @param hide Whether the toast should be hidden or not
  */
 function showToast(eventName, eventId, username, firstName, lastName, hide) {
-    let newToast = new Toast("Event", eventName, eventId, username, firstName, lastName, false);
-    newToast = addToast(newToast);
+    let newNotification = new Notification("Event", eventName, eventId, username, firstName, lastName, false);
+    newNotification = addNotification(newNotification);
     if (!hide) {
-        newToast.show();
+        newNotification.show();
     } else {
-        newToast.hideTimed(SECONDS_TILL_HIDE);
+        newNotification.hideTimed(SECONDS_TILL_HIDE);
     }
 }
 
 /**
- * Function that is called when a message is sent to the endpoint. Shows the toast if the message is full for a certain period.
- * This function displays that an event has been updated.
+ * Function that is called when a message is sent to the endpoint. Shows the notification/toast for a certain period.
+ * This function is used when the 'update' is that it has been saved, rather than being updated.
  * @param eventName Event message that may or may not be empty.
  * @param eventId Event id of the event being edited.
  * @param username Username of the user making the change
@@ -304,10 +305,10 @@ function showToast(eventName, eventId, username, firstName, lastName, hide) {
  * @param lastName Last name of the user
  */
 function showToastSave(eventName, eventId, username, firstName, lastName) {
-    let newToast = new Toast("Event", eventName, eventId, username, firstName, lastName, true);
-    newToast = addToast(newToast);
-    newToast.show();
-    newToast.hideTimed(SECONDS_TILL_HIDE);
+    let newNotification = new Notification("Event", eventName, eventId, username, firstName, lastName, true);
+    newNotification = addNotification(newNotification);
+    newNotification.show();
+    newNotification.hideTimed(SECONDS_TILL_HIDE);
 }
 
 /**
