@@ -29,8 +29,8 @@ public class SprintLifetimeRestController {
     public String updateSprintRangeErrors(@RequestParam(value="sprintStartDate") String sprintStartDate,
                                           @RequestParam(value="sprintEndDate") String sprintEndDate) {
         return dateValidationService.validateDateRangeNotEmpty(sprintStartDate, sprintEndDate) + " " +
-                        dateValidationService.validateStartDateNotAfterEndDate(sprintStartDate, sprintEndDate) + " " +
-                        dateValidationService.validateSprintDateRange(sprintStartDate, sprintEndDate, -1) + " " +
-                        dateValidationService.validateDatesInProjectDateRange(sprintStartDate, sprintEndDate);
+                dateValidationService.validateStartDateNotAfterEndDate(sprintStartDate, sprintEndDate) + " " +
+                dateValidationService.validateSprintDateRange(sprintStartDate, sprintEndDate, -1) + " " +
+                dateValidationService.validateDatesInProjectDateRange(sprintStartDate, sprintEndDate);
     }
 }
