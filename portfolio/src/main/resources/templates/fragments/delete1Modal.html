@@ -12,7 +12,7 @@
             </div>
             <div class="modal-footer">
                 <a class="button-link" th:href="${'delete-' + type + '/' + id}">
-                    <button class="btn btn-danger"  th:id="${'delete' + type + 'Button' + id}" >Delete <span th:text="${#strings.capitalize(type)}"/></button>
+                    <button class="btn btn-danger" th:id="${'delete' + #strings.capitalize(type) + 'ModalButton'}" >Delete <span th:text="${#strings.capitalize(type)}"/></button>
                 </a>
             </div>
         </div>

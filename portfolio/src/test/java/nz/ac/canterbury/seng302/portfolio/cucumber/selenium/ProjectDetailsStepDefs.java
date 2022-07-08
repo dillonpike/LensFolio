@@ -40,7 +40,7 @@ public class ProjectDetailsStepDefs {
     /**
      * End date of the last sprint.
      */
-    private String lastSprintEndDate;
+    private String lastaddSprintEndDate;
 
     /**
      * Sets up for scenario by getting a web driver and WebDriverWait object.
@@ -111,47 +111,51 @@ public class ProjectDetailsStepDefs {
     }
 
 
-    @When("I browse to the add sprint page")
-    public void iBrowseToTheAddSprintPage() {
+    @When("I open the add sprint modal")
+    public void iOpenTheAddSprintModal() {
         webDriver.findElement(By.id("addSprintButton")).click();
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[contains(., 'Add Sprint')]")));
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("addSprintModalButton")));
     }
 
     @And("There are {int} sprints")
     public void thereAreSprints(int numSprints) {
         while (!webDriver.findElements(By.id("deleteSprintButton")).isEmpty()) {
             webDriver.findElement(By.id("deleteSprintButton")).click();
+            wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("deleteSprintModalButton")));
+            webDriver.findElement(By.id("deleteSprintModalButton")).click();
         }
         for (int i = 0; i < numSprints; i++) {
             iAddASprint();
         }
         List<WebElement> sprintDates = webDriver.findElements(By.className("sprint-date"));
         String dateString = sprintDates.get(sprintDates.size()-1).getText();
-        lastSprintEndDate = dateString.substring(dateString.indexOf("-")+2);
+        lastaddSprintEndDate = dateString.substring(dateString.indexOf("-")+2);
     }
 
     @And("I add a sprint")
     public void iAddASprint() {
+        wait.until(ExpectedConditions.elementToBeClickable(By.id("addSprintButton")));
         webDriver.findElement(By.id("addSprintButton")).click();
-        wait.until(ExpectedConditions.elementToBeClickable(By.id("saveButton")));
-        webDriver.findElement(By.id("saveButton")).click();
+        wait.until(ExpectedConditions.elementToBeClickable(By.id("addSprintModalButton")));
+        webDriver.findElement(By.id("addSprintModalButton")).click();
+        wait.until(ExpectedConditions.invisibilityOfElementLocated(By.id("addSprintModalButton")));
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//span[contains(., 'Project Description')]")));
     }
 
     @Then("The start date should be {int} day after the end date of the previous sprint")
     public void theStartDateShouldBeOneDayAfterTheEndDateOfThePreviousSprint(int numDays) {
-        String sprintStartDate = webDriver.findElement(By.id("sprintStartDate")).getAttribute("value");
-        String expectedStartDate = addToDateString(lastSprintEndDate, Calendar.DATE, numDays);
-        assertEquals(expectedStartDate, sprintStartDate);
+        String addSprintStartDate = SeleniumService.getVisibleElementLocated(By.xpath("//input[@data-test-id='sprintStartDate']")).getAttribute("value");
+        String expectedStartDate = addToDateString(lastaddSprintEndDate, Calendar.DATE, numDays);
+        assertEquals(expectedStartDate, addSprintStartDate);
     }
 
     @And("The end date should be {int} weeks after the start date")
     public void theEndDateShouldBeWeeksAfterTheStartDate(int numWeeks) {
-        String sprintStartDate = webDriver.findElement(By.id("sprintStartDate")).getAttribute("value");
-        String sprintEndDate = webDriver.findElement(By.id("sprintEndDate")).getAttribute("value");
-        String expectedEndDate = addToDateString(sprintStartDate, Calendar.DATE, -1);
+        String addSprintStartDate = SeleniumService.getVisibleElementLocated(By.xpath("//input[@data-test-id='sprintStartDate']")).getAttribute("value");
+        String addSprintEndDate = SeleniumService.getVisibleElementLocated(By.xpath("//input[@data-test-id='sprintEndDate']")).getAttribute("value");
+        String expectedEndDate = addToDateString(addSprintStartDate, Calendar.DATE, -1);
         expectedEndDate = addToDateString(expectedEndDate, Calendar.WEEK_OF_MONTH, numWeeks);
-        assertEquals(expectedEndDate, sprintEndDate);
+        assertEquals(expectedEndDate, addSprintEndDate);
     }
 
     /**
@@ -160,24 +164,24 @@ public class ProjectDetailsStepDefs {
      * @param numDays number of days to increase by (negative to decrease)
      */
     private void addToSprintInput(WebElement inputElement, int numDays) {
-        String sprintStartDate = inputElement.getAttribute("value");
-        String newStartDate = addToDateString(sprintStartDate, Calendar.DATE, numDays);
+        String addSprintStartDate = inputElement.getAttribute("value");
+        String newStartDate = addToDateString(addSprintStartDate, Calendar.DATE, numDays);
         inputElement.clear();
         inputElement.sendKeys(newStartDate);
-        webDriver.findElement(By.id("sprintName")).click();
+        SeleniumService.getVisibleElementLocated(By.xpath("//input[@data-test-id='sprintName']")).click();
     }
 
     @And("I move the start date back by {int} day")
     public void iMoveTheStartDateBackByDay(int numDays) {
-        addToSprintInput(webDriver.findElement(By.id("sprintStartDate")), -numDays);
+        addToSprintInput(SeleniumService.getVisibleElementLocated(By.xpath("//input[@data-test-id='sprintStartDate']")), -numDays);
     }
 
     @Then("The following error is displayed: {string}")
     public void theFollowingErrorIsDisplayed(String expectedErrorMessage) {
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("sprintDateError")));
-        String actualErrorMessage = webDriver.findElement(By.id("sprintDateError")).getText();
-        System.err.println(actualErrorMessage);
-        assertTrue(actualErrorMessage.contains(expectedErrorMessage));
+//        wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("sprintDateError")));
+//        String actualErrorMessage = webDriver.findElement(By.id("sprintDateError")).getText();
+//        assertTrue(actualErrorMessage.contains(expectedErrorMessage));
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//span[@data-test-id='alertMessage'][contains(., '" + expectedErrorMessage + "')]")));
     }
 
     @When("I browse to the edit sprint page for sprint {int}")
@@ -188,7 +192,7 @@ public class ProjectDetailsStepDefs {
 
     @And("I move the end date forward by {int} day")
     public void iMoveTheEndDateForwardByDay(int numDays) {
-        addToSprintInput(webDriver.findElement(By.id("sprintEndDate")), numDays);
+        addToSprintInput(SeleniumService.getVisibleElementLocated(By.xpath("//input[@data-test-id='sprintEndDate']")), numDays);
     }
 
 
