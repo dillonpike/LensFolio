@@ -21,8 +21,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-import static nz.ac.canterbury.seng302.portfolio.controller.SprintLifetimeController.getUpdatedDate;
-
 /**
  * Controller for the display project details page
  */
@@ -125,15 +123,13 @@ public class DetailsController {
 
         model.addAttribute("blankMilestone", new Milestone());
 
-//        return getFinalThymeleafTemplate(principal);
-//        return "teacherProjectDetails";
         String role = principal.getClaimsList().stream()
                 .filter(claim -> claim.getType().equals("role"))
                 .findFirst()
                 .map(ClaimDTO::getValue)
                 .orElse("NOT FOUND");
 
-        model.addAttribute("sprint", sprintService.getSuggestedSprint());
+        model.addAttribute("newSprint", sprintService.getSuggestedSprint());
         model.addAttribute("sprintDateError", "");
 
         /* Return the name of the Thymeleaf template */

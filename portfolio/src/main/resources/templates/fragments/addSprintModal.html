@@ -1,11 +1,11 @@
-<div th:fragment="addSprintModal(sprint, sprintDateError)" class="modal fade" th:id="addSprintModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+<div th:fragment="sprintModal" class="modal fade" th:id="sprintModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="exampleModalLongTitle">Add Sprint</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form id="addSprintForm" onsubmit="validateAddSprint(); return false;" th:action="@{add-sprint}" th:object="${sprint}" method="post">
+            <form id="addSprintForm" onsubmit="validateAddSprint(); return false;" th:action="@{add-sprint}" method="post">
                 <div class="modal-body">
                     <div class="alert alert-danger alert-dismissible fade show" role="alert" id="addSprintAlertBanner" hidden>
                         <span id="addSprintAlertMessage" data-test-id="alertMessage"></span>
@@ -13,7 +13,7 @@
                     </div>
                     <div class="mb-3">
                         <label for="addSprintName">Sprint Name</label> <br/>
-                        <input onkeyup="updateCharsLeft('addSprintName', 'addSprintNameLength', 50)" maxlength="50" id="addSprintName" data-test-id="sprintName" type="text" class="form-control" th:name="addSprintName" th:field="*{name}">
+                        <input onkeyup="updateCharsLeft('addSprintName', 'addSprintNameLength', 50)" maxlength="50" id="addSprintName" data-test-id="sprintName" type="text" class="form-control" th:name="name">
                         <div class="name-length-message">
                             <span id="addSprintNameLength"></span>
                         </div>
@@ -26,7 +26,7 @@
                         <div class="horizontal-group-element" >
                             <label for="addSprintStartDate">Sprint Start Date</label> <br/>
                             <div class="input-group date" id="sprintStart">
-                                <input onkeydown="return checkDateKeys(sprint)" type="text" class="form-control" id="addSprintStartDate" data-test-id="sprintStartDate" th:name="addSprintStartDate" th:field="*{startDateString}">
+                                <input onkeydown="return checkDateKeys(event)" type="text" class="form-control" id="addSprintStartDate" data-test-id="sprintStartDate" th:name="startDateString">
                                 <span class="input-group-append">
                                     <span class="input-group-text bg-white">
                                         <em class="bi bi-calendar"></em>
@@ -37,7 +37,7 @@
                         <div class="mb-3" >
                             <label for="addSprintEndDate">Sprint End Date</label> <br/>
                             <div class="input-group date" id="sprintEnd">
-                                <input onkeydown="return checkDateKeys(sprint)"type="text" class="form-control" id="addSprintEndDate" data-test-id="sprintEndDate" th:name="addSprintEndDate" th:field="*{endDateString}">
+                                <input onkeydown="return checkDateKeys(event)"type="text" class="form-control" id="addSprintEndDate" data-test-id="sprintEndDate" th:name="endDateString">
                                 <span class="input-group-append">
                                     <span class="input-group-text bg-white">
                                         <em class="bi bi-calendar"></em>
@@ -48,7 +48,7 @@
                     </div>
                     <div>
                         <label for="addSprintDescription">Sprint Description</label> <br/>
-                        <textarea onkeyup="updateCharsLeft('addSprintDescription', 'addSprintDescriptionLength', 500)" maxlength="500" class="form-control" id="addSprintDescription" data-test-id="sprintDescription" th:name="addSprintDescription" th:field="*{description}"></textarea>
+                        <textarea onkeyup="updateCharsLeft('addSprintDescription', 'addSprintDescriptionLength', 500)" maxlength="500" class="form-control" id="addSprintDescription" data-test-id="sprintDescription" th:name="description"></textarea>
                         <div class="name-length-message">
                             <span id="addSprintDescriptionLength"></span>
                         </div>
@@ -85,7 +85,7 @@
                     document.getElementById("addSprintDateAlertBanner").hidden = true;
                     $('#addSprintModalButton').prop('disabled', false);
                 }
-            }).catch(function (error) {
+            }).catch(function () {
                 document.getElementById("addSprintDateAlertBanner").hidden = false;
                 document.getElementById("addSprintDateAlertMessage").innerHTML = "Error occurred while checking dates.";
                 $('#addSprintModalButton').prop('disabled', true);
@@ -119,11 +119,6 @@
                 clearBtn: true,
                 orientation: 'bottom'
             });
-
-            // Initial run of updateSprintDateError function in case initial values are invalid
-            updateSprintDateError();
-            updateCharsLeft('addSprintName', 'addSprintNameLength', 50);
-            updateCharsLeft('addSprintDescription', 'addSprintDescriptionLength', 500);
         });
     </script>
 </div>
