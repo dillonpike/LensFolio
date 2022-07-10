@@ -243,9 +243,13 @@
 <button type="button" class="btn btn-primary" onclick="{document.getElementById('alertBanner').hidden = true;}" data-bs-toggle="modal" data-bs-target="#addMilestoneDialog">
     Add Milestone
 </button>
+<button type="button" class="btn btn-primary" onclick="{document.getElementById('alertBanner').hidden = true;}" data-bs-toggle="modal" data-bs-target="#addDeadlineDialog">
+    Add deadline
+</button>
 
 <!-- Modals -->
 <div th:replace="fragments/addMilestoneModal"></div>
+<div th:replace="fragments/addDeadlineModal"></div>
 
 
 <script src="../js/project.js"></script>
