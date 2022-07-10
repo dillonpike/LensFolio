@@ -37,7 +37,7 @@
                         <div class="mb-3" >
                             <label for="addSprintEndDate">Sprint End Date</label> <br/>
                             <div class="input-group date" id="sprintEnd">
-                                <input onkeydown="return checkDateKeys(event)"type="text" class="form-control" id="addSprintEndDate" data-test-id="sprintEndDate" th:name="endDateString">
+                                <input onkeydown="return checkDateKeys(event)" type="text" class="form-control" id="addSprintEndDate" data-test-id="sprintEndDate" th:name="endDateString">
                                 <span class="input-group-append">
                                     <span class="input-group-text bg-white">
                                         <em class="bi bi-calendar"></em>
@@ -65,6 +65,7 @@
 
         async function checkSprintDates() {
             const data = {
+                id: document.getElementById("addSprintForm").getAttribute('data-sprint-id'),
                 sprintStartDate: document.getElementById("addSprintStartDate").value,
                 sprintEndDate: document.getElementById("addSprintEndDate").value
             }
