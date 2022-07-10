@@ -21,14 +21,9 @@ import java.util.List;
  */
 @Controller
 public class SprintLifetimeController {
+
     @Autowired
     private SprintService sprintService;
-
-    @Autowired
-    private ProjectService projectService;
-
-    @Autowired
-    private DateValidationService dateValidationService;
 
     /**
      * Add a given number of days and/or weeks to a date.util using Calendars.
@@ -44,61 +39,6 @@ public class SprintLifetimeController {
         date.add(Calendar.DATE, day);
         date.add(Calendar.WEEK_OF_YEAR, week);
         return date.getTime();
-    }
-
-    /**
-     * Gives the UI a blank sprint to use to add a new sprint.
-     * @param model For adding the sprint and errors
-     */
-    @GetMapping("/add-sprint")
-    public String sprintAddForm(Model model) throws Exception {
-
-        Sprint blankSprint = new Sprint();
-        List<Sprint> sprints = sprintService.getAllSprintsOrdered();
-        if (sprints.isEmpty()) {
-            blankSprint.setName("Sprint 1");
-            try {
-                Project project = projectService.getProjectById(0);
-                blankSprint.setStartDate(project.getStartDate());
-                blankSprint.setEndDate(getUpdatedDate(project.getStartDate(), 0, 3));
-            } catch (Exception e) {
-                Date now = Date.from(Instant.from(LocalDate.now()));
-                blankSprint.setStartDate(now);
-                blankSprint.setEndDate(getUpdatedDate(now, 0, 3));
-            }
-        } else {
-            Project project;
-            try {
-                project = projectService.getProjectById(0);
-            } catch (Exception e) {
-                int id = sprints.get(sprints.size() - 1).getParentProjectId();
-                try {
-                    project = projectService.getProjectById(id);
-                } catch (Exception e2) {
-                    return "404NotFound";
-                }
-            }
-
-            blankSprint.setName("Sprint " + (sprints.size() + 1));
-            Sprint lastSprint = sprints.get(sprints.size() - 1);
-            if (!getUpdatedDate(lastSprint.getEndDate(), 1, 0).after(project.getEndDate())) { // not at end of project
-                blankSprint.setStartDate(getUpdatedDate(lastSprint.getEndDate(), 1, 0));
-                if (getUpdatedDate(lastSprint.getEndDate(), 0, 3).after(project.getEndDate())) { // sprint end not at end of project
-                    blankSprint.setEndDate(project.getEndDate());
-                } else {
-                    blankSprint.setEndDate(getUpdatedDate(lastSprint.getEndDate(), 0, 3));
-                }
-            } else {
-                blankSprint.setStartDate(lastSprint.getEndDate());
-                blankSprint.setEndDate(lastSprint.getEndDate());
-            }
-        }
-
-        model.addAttribute("sprint", blankSprint);
-        model.addAttribute("sprintDateError", "");
-
-        /* Return the name of the Thymeleaf template */
-        return "addSprint";
     }
 
     /**
@@ -128,17 +68,5 @@ public class SprintLifetimeController {
 
         /* Return the name of the Thymeleaf template */
         return "redirect:/details";
-    }
-
-    @RequestMapping(value="/add-sprint/error", method=RequestMethod.POST)
-    public String updateSprintRangeErrors(@RequestParam(value="sprintStartDate") String sprintStartDate,
-                                          @RequestParam(value="sprintEndDate") String sprintEndDate,
-                                          Model model) {
-        model.addAttribute("sprintDateError",
-                dateValidationService.validateDateRangeNotEmpty(sprintStartDate, sprintEndDate) + " " +
-                dateValidationService.validateStartDateNotAfterEndDate(sprintStartDate, sprintEndDate) + " " +
-                dateValidationService.validateSprintDateRange(sprintStartDate, sprintEndDate, -1) + " " +
-                dateValidationService.validateDatesInProjectDateRange(sprintStartDate, sprintEndDate));
-        return "addSprint :: #sprintDateError";
     }
 }

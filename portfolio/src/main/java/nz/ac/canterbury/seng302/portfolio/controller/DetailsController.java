@@ -21,6 +21,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import static nz.ac.canterbury.seng302.portfolio.controller.SprintLifetimeController.getUpdatedDate;
+
 /**
  * Controller for the display project details page
  */
@@ -130,6 +132,9 @@ public class DetailsController {
                 .findFirst()
                 .map(ClaimDTO::getValue)
                 .orElse("NOT FOUND");
+
+        model.addAttribute("sprint", sprintService.getSuggestedSprint());
+        model.addAttribute("sprintDateError", "");
 
         /* Return the name of the Thymeleaf template */
         // detects the role of the current user and returns appropriate page

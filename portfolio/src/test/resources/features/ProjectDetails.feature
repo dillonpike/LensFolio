@@ -24,7 +24,7 @@ Feature: UPi Project Details
     Given I am logged in as "teacher"
     And I am on the project page
     And There are 2 sprints
-    When I browse to the add sprint page
+    When I open the add sprint modal
     Then The start date should be 1 day after the end date of the previous sprint
     And The end date should be 3 weeks after the start date
 
@@ -32,7 +32,7 @@ Feature: UPi Project Details
     Given I am logged in as "teacher"
     And I am on the project page
     And There are 2 sprints
-    When I browse to the add sprint page
+    When I open the add sprint modal
     And I move the start date back by 1 day
     Then The following error is displayed: "Dates must not overlap"
 
