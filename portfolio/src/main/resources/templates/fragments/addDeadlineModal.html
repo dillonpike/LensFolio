@@ -19,17 +19,17 @@
                         <span id="deadlineLength"></span>
                     </div>
                 </div>
-<!--                <div class="mb-3">-->
-<!--                    <label for="deadlineDate" class="col-form-label">Deadline Date:</label>-->
-<!--                    <div class="input-group date" id="milestoneDateInput">-->
-<!--                        <input onkeydown="return checkDateKeys(milestone)" onchange="validateModalDate('deadlineDate', 'submitDeadlineButton')" type="text" class="form-control" id="deadlineDate" th:field="*{milestoneDateString}">-->
-<!--                        <span class="input-group-append">-->
-<!--                            <span class="input-group-text bg-white">-->
-<!--                                <em class="bi bi-calendar"></em>-->
-<!--                            </span>-->
-<!--                        </span>-->
-<!--                    </div>-->
-<!--                </div>-->
+                <div class="mb-3">
+                    <label for="deadlineDate" class="col-form-label">Deadline Date:</label>
+                    <div class="input-group date" id="milestoneDateInput">
+                        <input onkeydown="return checkDateKeys(milestone)" onchange="validateModalDate('deadlineDate', 'submitDeadlineButton')" type="text" class="form-control" id="deadlineDate">
+                        <span class="input-group-append">
+                            <span class="input-group-text bg-white">
+                                <em class="bi bi-calendar"></em>
+                            </span>
+                        </span>
+                    </div>
+                </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                     <button class="btn btn-primary" id="submitDeadlineButton" type="submit" disabled>Add Milestone</button>
