@@ -48,7 +48,7 @@ function sprintModalSetup() {
 
         // Initial run of updateSprintDateError function in case initial values are invalid
         updateSprintDateError();
-        updateCharsLeft('addSprintName', 'addSprintNameLength', 50);
-        updateCharsLeft('addSprintDescription', 'addSprintDescriptionLength', 500);
+        updateCharsLeft('sprintName', 'sprintNameLength', 50);
+        updateCharsLeft('sprintDescription', 'sprintDescriptionLength', 500);
     })
 }
