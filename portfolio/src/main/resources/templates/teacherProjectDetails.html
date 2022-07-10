@@ -113,7 +113,7 @@
                     </svg>
                     Add Sprint
                 </a>
-                <div id="sprintModal" th:replace="fragments/addSprintModal :: sprintModal"></div>
+                <div id="sprintModal" th:replace="fragments/sprintModal :: sprintModal"></div>
                 <a class="add-sprint btn-primary btn-sm" th:href="@{add-event}" role="button" id="addEventButton">
                     <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16">
                         <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
@@ -248,7 +248,9 @@
 <div th:replace="fragments/addMilestoneModal"></div>
 
 
-<script src="../js/project.js"></script>
+<script src="../js/project.js">
+
+</script>
 <script src="js/detailsLive.js"></script>
 
 <script>
@@ -309,46 +311,9 @@
         }
     }
 
-    var exampleModal = document.getElementById('sprintModal')
-    exampleModal.addEventListener('show.bs.modal', function (event) {
-        // Button that triggered the modal
-        var button = event.relatedTarget
+    sprintModalSetup()
 
-        // Extract info from data-bs-* attributes
-        var sprint = JSON.parse(button.getAttribute('data-bs-sprint'))
-        const type = button.getAttribute('data-bs-type')
-
-        // Update the modal's content.
-        var modalTitle = exampleModal.querySelector('.modal-title')
-        var modalBodyInputs = exampleModal.querySelectorAll('.modal-body input')
-        var modalBodyTextArea = exampleModal.querySelector('.modal-body textarea')
-        var modalButton = exampleModal.querySelector('.modal-footer button')
-        var modalForm = exampleModal.querySelector('form')
-
-        if (type === 'add') {
-            modalTitle.innerText = 'Add Sprint'
-            modalButton.innerHTML = 'Add Sprint'
-            modalForm.action = 'add-sprint'
-            modalForm.setAttribute('data-sprint-id', -1)
-        } else {
-            modalTitle.innerText = 'Edit Sprint'
-            modalButton.innerHTML = 'Save Sprint'
-            modalForm.action = `edit-sprint/${sprint.id}`
-            modalForm.setAttribute('data-sprint-id', sprint.id)
-        }
-        console.log(sprint)
-        modalBodyInputs[0].value = sprint.name
-        $('#sprintStart').datepicker('setDate', sprint.startDateString)
-        $('#sprintEnd').datepicker('setDate', sprint.endDateString)
-        modalBodyTextArea.value = sprint.description
-
-        // Initial run of updateSprintDateError function in case initial values are invalid
-        updateSprintDateError();
-        updateCharsLeft('addSprintName', 'addSprintNameLength', 50);
-        updateCharsLeft('addSprintDescription', 'addSprintDescriptionLength', 500);
-    })
-
-validateModalDate("milestoneDate", "submitMilestoneButton")
+    validateModalDate("milestoneDate", "submitMilestoneButton")
 </script>
 
 
