@@ -29,7 +29,7 @@ public class CalendarRestController {
      * @param sprintEndDate new end date
      * @return true if the update is successful, otherwise false
      */
-    @RequestMapping(value="/update-sprint", method= RequestMethod.POST)
+    @RequestMapping(value="/update-sprint", method=RequestMethod.POST)
     public boolean updateSprintDates(@RequestParam(value="id") Integer id,
                                      @RequestParam(value="sprintStartDate") String sprintStartDate,
                                      @RequestParam(value="sprintEndDate") String sprintEndDate) {

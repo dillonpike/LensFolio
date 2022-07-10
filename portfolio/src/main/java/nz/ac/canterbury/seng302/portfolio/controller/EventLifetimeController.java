@@ -1,6 +1,7 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
 import nz.ac.canterbury.seng302.portfolio.model.Event;
+import nz.ac.canterbury.seng302.portfolio.model.Milestone;
 import nz.ac.canterbury.seng302.portfolio.service.DateValidationService;
 import nz.ac.canterbury.seng302.portfolio.service.EventService;
 import nz.ac.canterbury.seng302.portfolio.service.ProjectService;
@@ -33,7 +34,7 @@ public class EventLifetimeController {
     public String eventAddForm(Model model) {
 
         Event blankEvent = new Event();
-
+        model.addAttribute("milestone", new Milestone());
         model.addAttribute("event", blankEvent);
         model.addAttribute("eventDateError", "");
 

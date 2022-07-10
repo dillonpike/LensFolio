@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.ui.Model;
 
 /**
  * Controller that handles adding and deleting milestone.
@@ -24,7 +25,7 @@ public class MilestoneLifetimeController {
      * @param milestone new milestone to be saved
      */
     @PostMapping("/add-milestone")
-    public String milestoneSave(@ModelAttribute("milestone") Milestone milestone, @AuthenticationPrincipal AuthState principal) {
+    public String milestoneSave(@ModelAttribute("milestone") Milestone milestone, Model model) {
         milestoneService.addMilestone(milestone);
         return "redirect:/details";
     }

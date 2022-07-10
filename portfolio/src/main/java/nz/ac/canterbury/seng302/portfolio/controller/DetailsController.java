@@ -21,6 +21,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import static nz.ac.canterbury.seng302.portfolio.controller.SprintLifetimeController.getUpdatedDate;
+
 /**
  * Controller for the display project details page
  */
@@ -41,6 +43,9 @@ public class DetailsController {
 
     @Autowired
     private EventService eventService;
+
+    @Autowired
+    private MilestoneService milestoneService;
 
     /**
      * Last event saved, for toast notification.
@@ -84,7 +89,7 @@ public class DetailsController {
             try {
                 projectService.saveProject(project);
             } catch (Exception err) {
-                System.err.println("Failed to save new project");
+                return "redirect:account";
             }
 
         }
@@ -94,6 +99,9 @@ public class DetailsController {
 
         List<Event> eventList = eventService.getAllEventsOrdered();
         model.addAttribute("events", eventList);
+
+        List<Milestone> milestoneList = milestoneService.getAllMilestonesOrdered();
+        model.addAttribute("milestones", milestoneList);
 
         // Runs if the reload was triggered by saving an event. Checks set time to now to see if 2 seconds has passed yet.
         long timeDifference = Date.from(Instant.now()).toInstant().getEpochSecond() - eventWasUpdatedTime.toInstant().getEpochSecond();
@@ -114,15 +122,19 @@ public class DetailsController {
         elementService.addHeaderAttributes(model, id);
         model.addAttribute("userId", id);
 
-        return getFinalThymeleafTemplate(principal);
-    }
 
-    private String getFinalThymeleafTemplate(AuthState principal) {
+        model.addAttribute("blankMilestone", new Milestone());
+
+//        return getFinalThymeleafTemplate(principal);
+//        return "teacherProjectDetails";
         String role = principal.getClaimsList().stream()
                 .filter(claim -> claim.getType().equals("role"))
                 .findFirst()
                 .map(ClaimDTO::getValue)
                 .orElse("NOT FOUND");
+
+        model.addAttribute("sprint", sprintService.getSuggestedSprint());
+        model.addAttribute("sprintDateError", "");
 
         /* Return the name of the Thymeleaf template */
         // detects the role of the current user and returns appropriate page
@@ -133,6 +145,15 @@ public class DetailsController {
         }
     }
 
+//    /**
+//     * Gets final details page to display, depending on whether the user is a teacher or a student.
+//     * @param principal Gets information about the user
+//     * @return Thymeleaf template
+//     */
+//    private String getFinalThymeleafTemplate(AuthState principal, Model model) {
+//
+//    }
+
     /**
      * This method maps @MessageMapping endpoint to the @SendTo endpoint. Called when something is sent to
      * the MessageMapping endpoint.
@@ -140,7 +161,7 @@ public class DetailsController {
      * @return returns an EventResponse that holds information about the event being updated.
      */
     @MessageMapping("/editing-event")
-    @SendTo("/events/being-edited")
+    @SendTo("/test/portfolio/events/being-edited")
     public EventResponse updatingEvent(EventMessage message) {
         String username = message.getUsername();
         String firstName = message.getUserFirstName();
@@ -155,7 +176,7 @@ public class DetailsController {
      * @return Returns the message given.
      */
     @MessageMapping("/stop-editing-event")
-    @SendTo("/events/stop-being-edited")
+    @SendTo("/test/portfolio/events/stop-being-edited")
     public String stopUpdatingEvent(String message) {
         return message;
     }
@@ -167,7 +188,7 @@ public class DetailsController {
      * @return returns an EventResponse that holds information about the event being updated.
      */
     @MessageMapping("/saved-edited-event")
-    @SendTo("/events/save-edit")
+    @SendTo("/test/portfolio/events/save-edit")
     public EventResponse savingUpdatedEvent(EventMessage message) {
         String username = message.getUsername();
         String firstName = message.getUserFirstName();

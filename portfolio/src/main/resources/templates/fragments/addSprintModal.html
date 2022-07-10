@@ -1,0 +1,129 @@
+<div th:fragment="addSprintModal(sprint, sprintDateError)" class="modal fade" th:id="addSprintModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLongTitle">Add Sprint</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="addSprintForm" onsubmit="validateAddSprint(); return false;" th:action="@{add-sprint}" th:object="${sprint}" method="post">
+                <div class="modal-body">
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert" id="addSprintAlertBanner" hidden>
+                        <span id="addSprintAlertMessage" data-test-id="alertMessage"></span>
+                        <button type="button" class="btn-close" onclick="document.getElementById('addSprintAlertBanner').hidden = true" aria-label="Close"></button>
+                    </div>
+                    <div class="mb-3">
+                        <label for="addSprintName">Sprint Name</label> <br/>
+                        <input onkeyup="updateCharsLeft('addSprintName', 'addSprintNameLength', 50)" maxlength="50" id="addSprintName" data-test-id="sprintName" type="text" class="form-control" th:name="addSprintName" th:field="*{name}">
+                        <div class="name-length-message">
+                            <span id="addSprintNameLength"></span>
+                        </div>
+                    </div>
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert" id="addSprintDateAlertBanner" hidden>
+                        <span id="addSprintDateAlertMessage" data-test-id="alertMessage"></span>
+                        <button type="button" class="btn-close" onclick="document.getElementById('addSprintDateAlertBanner').hidden = true" aria-label="Close"></button>
+                    </div>
+                    <div class="mb-3">
+                        <div class="horizontal-group-element" >
+                            <label for="addSprintStartDate">Sprint Start Date</label> <br/>
+                            <div class="input-group date" id="sprintStart">
+                                <input onkeydown="return checkDateKeys(sprint)" type="text" class="form-control" id="addSprintStartDate" data-test-id="sprintStartDate" th:name="addSprintStartDate" th:field="*{startDateString}">
+                                <span class="input-group-append">
+                                    <span class="input-group-text bg-white">
+                                        <em class="bi bi-calendar"></em>
+                                    </span>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="mb-3" >
+                            <label for="addSprintEndDate">Sprint End Date</label> <br/>
+                            <div class="input-group date" id="sprintEnd">
+                                <input onkeydown="return checkDateKeys(sprint)"type="text" class="form-control" id="addSprintEndDate" data-test-id="sprintEndDate" th:name="addSprintEndDate" th:field="*{endDateString}">
+                                <span class="input-group-append">
+                                    <span class="input-group-text bg-white">
+                                        <em class="bi bi-calendar"></em>
+                                    </span>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <label for="addSprintDescription">Sprint Description</label> <br/>
+                        <textarea onkeyup="updateCharsLeft('addSprintDescription', 'addSprintDescriptionLength', 500)" maxlength="500" class="form-control" id="addSprintDescription" data-test-id="sprintDescription" th:name="addSprintDescription" th:field="*{description}"></textarea>
+                        <div class="name-length-message">
+                            <span id="addSprintDescriptionLength"></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-primary" id="addSprintModalButton" type="submit">Add Sprint</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <script src="../js/project.js"></script>
+    <script>
+
+        async function checkSprintDates() {
+            const data = {
+                sprintStartDate: document.getElementById("addSprintStartDate").value,
+                sprintEndDate: document.getElementById("addSprintEndDate").value
+            }
+            return await $.get("add-sprint/error?" + new URLSearchParams(data));
+        }
+
+        /**
+         * Checks the entered sprint dates in the input fields and displays an error message if there's a related error.
+         * Disables the save button if there is an error.
+         */
+         function updateSprintDateError() {
+            checkSprintDates().then(function (result) {
+                if (result.trim().length > 0) {
+                    document.getElementById("addSprintDateAlertBanner").hidden = false;
+                    document.getElementById("addSprintDateAlertMessage").innerHTML = result;
+                    $('#addSprintModalButton').prop('disabled', true);
+                } else {
+                    document.getElementById("addSprintDateAlertBanner").hidden = true;
+                    $('#addSprintModalButton').prop('disabled', false);
+                }
+            }).catch(function (error) {
+                document.getElementById("addSprintDateAlertBanner").hidden = false;
+                document.getElementById("addSprintDateAlertMessage").innerHTML = "Error occurred while checking dates.";
+                $('#addSprintModalButton').prop('disabled', true);
+            });
+        }
+
+        // Runs updateSprintDateError function whenever the entered dates change
+        document.getElementById("addSprintStartDate").onchange = updateSprintDateError;
+        document.getElementById("addSprintEndDate").onchange = updateSprintDateError;
+
+        async function validateAddSprint() {
+            if ((await checkSprintDates()).trim().length === 0 &&
+                validateModalName('addSprintName', 'addSprintAlertBanner', 'addSprintAlertMessage')) {
+                document.getElementById('addSprintForm').submit();
+            }
+        }
+
+        $(function() {
+            // Fills in the date pickers
+            $('#sprintStart').datepicker({
+                format: 'dd/M/yyyy',
+                todayHighlight: true,
+                todayBtn: true,
+                clearBtn: true,
+                orientation: 'bottom'
+            });
+            $('#sprintEnd').datepicker({
+                format: 'dd/M/yyyy',
+                todayHighlight: true,
+                todayBtn: true,
+                clearBtn: true,
+                orientation: 'bottom'
+            });
+
+            // Initial run of updateSprintDateError function in case initial values are invalid
+            updateSprintDateError();
+            updateCharsLeft('addSprintName', 'addSprintNameLength', 50);
+            updateCharsLeft('addSprintDescription', 'addSprintDescriptionLength', 500);
+        });
+    </script>
+</div>

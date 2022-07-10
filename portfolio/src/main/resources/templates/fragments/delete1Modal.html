@@ -1,0 +1,20 @@
+<div th:fragment="deleteModal(type, id, name)" class="modal fade" th:id="${'deleteDialog' + id}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLongTitle">Delete <span th:text="${#strings.capitalize(type)}"/></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label class="col-form-label">Are you sure you want to delete <span th:text="${name}"/>?</label>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <a class="button-link" th:href="${'delete-' + type + '/' + id}">
+                    <button class="btn btn-danger" th:id="${'delete' + #strings.capitalize(type) + 'ModalButton'}" >Delete <span th:text="${#strings.capitalize(type)}"/></button>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
