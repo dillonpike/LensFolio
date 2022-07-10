@@ -254,11 +254,11 @@ function reorderNotifications() {
  * Then subscribes methods to the required endpoints.
  */
 function connect() {
-    let socket = new SockJS('/mywebsockets');
+    let socket = new SockJS('https://csse-s302g1.canterbury.ac.nz/test/portfolio/mywebsockets');
     stompClient = Stomp.over(socket);
     stompClient.connect({}, function (frame) {
         console.log('Connected: ' + frame);
-        stompClient.subscribe('/events/being-edited', function (eventResponseArg) {
+        stompClient.subscribe('/test/portfolio/events/being-edited', function (eventResponseArg) {
             const eventResponse = JSON.parse(eventResponseArg.body);
             showToast(eventResponse.eventName, eventResponse.eventId, eventResponse.username, eventResponse.userFirstName, eventResponse.userLastName, false);
         });
@@ -266,7 +266,7 @@ function connect() {
             const eventResponse = JSON.parse(eventResponseArg.body);
             showToast(eventResponse.eventName, eventResponse.eventId, eventResponse.username, eventResponse.userFirstName, eventResponse.userLastName, true);
         })
-        stompClient.subscribe('/events/save-edit', function (eventResponseArg) {
+        stompClient.subscribe('/test/portfolio/events/save-edit', function (eventResponseArg) {
             const eventResponse = JSON.parse(eventResponseArg.body);
             refreshEvents();
             showToastSave(eventResponse.eventName, eventResponse.eventId, eventResponse.username, eventResponse.userFirstName, eventResponse.userLastName);

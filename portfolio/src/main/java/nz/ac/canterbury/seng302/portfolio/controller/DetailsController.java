@@ -85,7 +85,7 @@ public class DetailsController {
             try {
                 projectService.saveProject(project);
             } catch (Exception err) {
-                System.err.println("Failed to save new project");
+                return "redirect:account";
             }
 
         }
@@ -159,7 +159,7 @@ public class DetailsController {
      * @return returns an EventResponse that holds information about the event being updated.
      */
     @MessageMapping("/editing-event")
-    @SendTo("/events/being-edited")
+    @SendTo("/test/portfolio/events/being-edited")
     public EventResponse updatingEvent(EventMessage message) {
         int eventId = message.getEventId();
         String username = message.getUsername();
@@ -192,7 +192,7 @@ public class DetailsController {
      * @return returns an EventResponse that holds information about the event being updated.
      */
     @MessageMapping("/saved-edited-event")
-    @SendTo("/events/save-edit")
+    @SendTo("/test/portfolio/events/save-edit")
     public EventResponse savingUpdatedEvent(EventMessage message) {
         int eventId = message.getEventId();
         String username = message.getUsername();
