@@ -40,6 +40,6 @@ Feature: UPi Project Details
     Given I am logged in as "teacher"
     And I am on the project page
     And There are 2 sprints
-    When I browse to the edit sprint page for sprint 1
+    When I open the edit modal for sprint 1
     And I move the end date forward by 1 day
     Then The following error is displayed: "Dates must not overlap"
