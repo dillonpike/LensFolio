@@ -6,7 +6,7 @@ Feature: Events on the project details/event page.
     Given I am logged in as admin
     And I am on the project page
     When I click the add event button
-    And I save an event
+    And I save an event with the name "Event-Test"
     Then the event is created
 
   Scenario: AC-4 Editing an event and saving a event
