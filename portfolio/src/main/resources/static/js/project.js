@@ -40,7 +40,7 @@ function sprintModalSetup() {
             modalForm.action = `edit-sprint/${sprint.id}`
             modalForm.setAttribute('data-sprint-id', sprint.id)
         }
-        console.log(sprint)
+
         modalBodyInputs[0].value = sprint.name
         $('#sprintStart').datepicker('setDate', sprint.startDateString)
         $('#sprintEnd').datepicker('setDate', sprint.endDateString)
