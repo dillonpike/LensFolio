@@ -67,7 +67,7 @@
                                     </div>
                                     <div>
                                         <div class="button-divider">
-                                            <a class="button-link" th:href="@{edit-sprint/{id} (id=${sprint.id})}">
+                                            <a class="button-link" th:href="@{edit-sprint/{id} (id=${sprint.id})}" data-bs-toggle="modal" data-bs-target="#sprintModal" th:data-bs-sprint="${sprint.toJSONString()}" data-bs-type="edit">
                                                 <button class="edit-button" id="editSprintButton">
                                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil-fill" viewBox="0 0 16 16">
                                                         <path d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"/>
@@ -107,13 +107,12 @@
                         </div>
                     </div>
                 </div>
-                <a class="add-sprint btn-primary btn-sm" th:href="@{add-sprint}" role="button" id="addSprintButton" data-bs-toggle="modal" data-bs-target="#addSprintModal">
+                <a class="add-sprint btn-primary btn-sm" role="button" id="addSprintButton" data-bs-toggle="modal" data-bs-target="#sprintModal" th:data-bs-sprint="${newSprint.toJSONString()}" data-bs-type="add">
                     <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16">
                         <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
                     </svg>
                     Add Sprint
                 </a>
-                <div th:replace="fragments/addSprintModal :: addSprintModal(${sprint}, ${sprintDateError})"></div>
                 <a class="add-sprint btn-primary btn-sm" th:href="@{add-event}" role="button" id="addEventButton">
                     <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16">
                         <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
@@ -246,9 +245,12 @@
 
 <!-- Modals -->
 <div th:replace="fragments/addMilestoneModal"></div>
+<div id="sprintModal" th:replace="fragments/sprintModal :: sprintModal"></div>
 
 
-<script src="../js/project.js"></script>
+<script src="../js/project.js">
+
+</script>
 <script src="js/detailsLive.js"></script>
 
 <script>
@@ -309,7 +311,9 @@
         }
     }
 
-validateModalDate("milestoneDate", "submitMilestoneButton")
+    sprintModalSetup()
+
+    validateModalDate("milestoneDate", "submitMilestoneButton")
 </script>
 
 
