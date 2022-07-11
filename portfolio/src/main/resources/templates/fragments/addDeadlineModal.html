@@ -11,23 +11,21 @@
                         <span id="addDeadlineAlertMessage"></span>
                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>
-                </div>
-                <div class="mb-3">
                     <label for="deadlineName" class="col-form-label">Deadline Name:</label>
                     <input onkeyup="updateCharsLeft('deadlineName', 'deadlineLength', 50)" maxlength="50" type="text" class="form-control" id="deadlineName">
                     <div class="name-length-message">
                         <span id="deadlineLength"></span>
                     </div>
-                </div>
-                <div class="mb-3">
-                    <label for="deadlineDate" class="col-form-label">Deadline Date:</label>
-                    <div class="input-group date" id="milestoneDateInput">
-                        <input onkeydown="return checkDateKeys(milestone)" onchange="validateModalDate('deadlineDate', 'submitDeadlineButton')" type="text" class="form-control" id="deadlineDate">
-                        <span class="input-group-append">
+                    <div class="mb-3">
+                        <label for="deadlineDate" class="col-form-label">Deadline Date:</label>
+                        <div class="input-group date" id="milestoneDateInput">
+                            <input onkeydown="return checkDateKeys(milestone)" onchange="validateModalDate('deadlineDate', 'submitDeadlineButton')" type="text" class="form-control" id="deadlineDate">
+                            <span class="input-group-append">
                             <span class="input-group-text bg-white">
                                 <em class="bi bi-calendar"></em>
                             </span>
                         </span>
+                        </div>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -38,6 +36,7 @@
         </div>
     </div>
 </div>
+
 
 <script type="text/javascript">
     // fills in the date pickers
