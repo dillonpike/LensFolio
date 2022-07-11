@@ -57,6 +57,9 @@ public class DetailsController {
      */
     private Date eventWasUpdatedTime = Date.from(Instant.now());
 
+    @Autowired
+    private DeadlineService deadlineService;
+
 
     /***
      * GET request method, followed by the request URL(../details)
@@ -114,7 +117,10 @@ public class DetailsController {
         } else {
             model.addAttribute("toastEventInformation", "");
         }
-        
+
+        List<Deadline> deadlineList = deadlineService.getAllDeadlinesOrdered();
+        model.addAttribute("deadlines", deadlineList);
+
         List<Sprint> sprintList = sprintService.getAllSprintsOrdered();
         model.addAttribute("sprints", sprintList);
 

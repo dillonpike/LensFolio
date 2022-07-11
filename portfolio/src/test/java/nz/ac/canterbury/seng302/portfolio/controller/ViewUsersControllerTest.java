@@ -31,13 +31,13 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-/***
+/**
  * Junit testing to test the View User Controller
  */
 @ExtendWith(SpringExtension.class)
 @WebMvcTest(controllers = ViewUsersController.class)
 @AutoConfigureMockMvc(addFilters = false)
-public class ViewUsersControllerTest {
+class ViewUsersControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -106,7 +106,7 @@ public class ViewUsersControllerTest {
     public PaginatedUsersResponse mockedUserList = PaginatedUsersResponse.newBuilder()
             .addUsers(mockUser1).addUsers(mockUser2).build();
 
-    /***
+    /**
      * Test the GET method when calling "viewUser"
      * Except to catch status code 200
      */
@@ -123,7 +123,7 @@ public class ViewUsersControllerTest {
                 .andExpect(status().isOk());
     }
 
-    /***
+    /**
      * Test to check if user model(users) is existed in view users page
      */
     @Test
@@ -138,7 +138,7 @@ public class ViewUsersControllerTest {
                 .andExpect(model().attributeExists("users"));
     }
 
-    /***
+    /**
      * Test to check if model attribute(users) has been added in view users page
      */
     @Test
@@ -153,7 +153,7 @@ public class ViewUsersControllerTest {
                 .andExpect(model().attribute("users", mockedUserList.getUsersList()));
     }
 
-    /***
+    /**
      * Test to check when logged In, calling view user page will return viewUsers template
      */
     @Test
@@ -168,7 +168,7 @@ public class ViewUsersControllerTest {
                 .andExpect(view().name("viewUsers"));
     }
 
-    /***
+    /**
      * Test to check when logged In, calling view user page will return viewUsers template
      */
     @Test
@@ -188,7 +188,7 @@ public class ViewUsersControllerTest {
                 .andExpect(redirectedUrl("viewUsers"));
     }
 
-    /***
+    /**
      * Junit test to check if current user log in as a course administrator and request add role request to other user
      */
     @Test
