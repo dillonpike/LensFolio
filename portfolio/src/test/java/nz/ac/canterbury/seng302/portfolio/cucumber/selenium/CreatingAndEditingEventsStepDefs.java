@@ -5,9 +5,7 @@ import io.cucumber.java.Before;
 import io.cucumber.java.en.And;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
-import junit.framework.Assert;
 import org.openqa.selenium.By;
-import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -25,9 +23,11 @@ public class CreatingAndEditingEventsStepDefs {
      */
     private WebDriver webDriver;
 
-    private String address = "http://localhost:9000/add-event";
+    private final String address = "http://localhost:9000/add-event";
 
-    private String expectedName = "Event-Test";
+    private final String expectedName = "Event-Test";
+
+    private int actualValue;
 
     /**
      * WebDriverWait object that is used to wait until some criteria is met, for example an element to be visible.
@@ -48,7 +48,40 @@ public class CreatingAndEditingEventsStepDefs {
      * driver to null.
      */
     @After
-    public void tearDown() {
+    public void ensureEventIsRemoved() {
+        SeleniumService.tearDownWebDriver();
+    }
+    /**
+     * Tears down after running scenario by quitting the web driver (thus closing the browser) and setting the web
+     * driver to null.
+     *
+     * But also firstly ensures that all events created are deleted before doing so.
+     * Only runs when tagged with "EventsNew"
+     */
+    @After("@EventsNew")
+    public void removeEvents() {
+        setUp();
+
+        webDriver.navigate().to("http://localhost:9000/login");
+        wait.until(ExpectedConditions.elementToBeClickable(By.id("usernameLogin")));
+        webDriver.findElement(By.id("usernameLogin")).sendKeys("admin");
+        webDriver.findElement(By.id("passwordLogin")).sendKeys("password");
+        webDriver.findElement(By.id("signIn")).click();
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//h2[contains(., 'Profile')]")));
+
+        webDriver.navigate().to("http://localhost:9000/details");
+
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.className("title-name")));
+        List<WebElement> events = webDriver.findElements(By.className("widget-49-pro-title"));
+        for (WebElement event : events) {
+            if (Objects.equals(event.getText(), expectedName)) {
+                int index = events.indexOf(event);
+                List<WebElement> deleteEvents = webDriver.findElements(By.className("event-del-button-link"));
+                String link = deleteEvents.get(index).getAttribute("href");
+                webDriver.navigate().to(link);
+            }
+        }
+
         SeleniumService.tearDownWebDriver();
     }
 
@@ -61,13 +94,13 @@ public class CreatingAndEditingEventsStepDefs {
         webDriver.navigate().to(address);
     }
 
-    @Then("the event is created")
-    public void theEventIsCreated() {
+    @Then("a event with the name {string} will exist.")
+    public void aEventWithTheNameGivenWillExist(String name) {
         boolean found = false;
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.className("widget-49-pro-title")));
         List<WebElement> events = webDriver.findElements(By.className("widget-49-pro-title"));
         for (WebElement event : events) {
-            if (Objects.equals(event.getText(), expectedName)) {
+            if (Objects.equals(event.getText(), name)) {
                 found = true;
             }
         }
@@ -78,35 +111,71 @@ public class CreatingAndEditingEventsStepDefs {
 
     @And("an event exists with the name {string}")
     public void anEventExistsWithTheName(String name) {
+        webDriver.navigate().to("http://localhost:9000/details");
+        iClickTheAddEventButton();
+        iSaveAnEventWithTheName(name);
     }
 
     @When("I browse to the edit edit page for an the event named {string}")
     public void iBrowseToTheEditEditPageForAnTheEvent(String name) {
-
+        boolean found = false;
+        List<WebElement> events = webDriver.findElements(By.className("widget-49-pro-title"));
+        for (WebElement event : events) {
+            if (Objects.equals(event.getText(), name)) {
+                found = true;
+                int index = events.indexOf(event);
+                List<WebElement> deleteEvents = webDriver.findElements(By.className("event-edit-button-link"));
+                String link = deleteEvents.get(index).getAttribute("href");
+                webDriver.navigate().to(link);
+            }
+        }
+        if (!found) {
+            fail("Event not created.");
+        }
     }
 
     @And("I change the name to {string}")
     public void iChangeTheNameTo(String name) {
-
+        wait.until(ExpectedConditions.elementToBeClickable(By.id("eventName")));
+        WebElement nameInput = webDriver.findElement(By.id("eventName"));
+        nameInput.clear();
+        nameInput.sendKeys(name);
     }
 
-    @Then("a event with the name {string} will exist.")
-    public void aEventWithTheNameWillExist(String name) {
 
+    @When("I click delete for the event {string}")
+    public void iClickDeleteForTheEvent(String name) {
+        boolean found = false;
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.className("title-name")));
+        List<WebElement> events = webDriver.findElements(By.className("widget-49-pro-title"));
+        for (WebElement event : events) {
+            if (Objects.equals(event.getText(), name)) {
+                found = true;
+                int index = events.indexOf(event);
+                List<WebElement> deleteEvents = webDriver.findElements(By.className("event-del-button-link"));
+                String link = deleteEvents.get(index).getAttribute("href");
+                webDriver.navigate().to(link);
+            }
+        }
+
+        if (!found) {
+            fail("No event could be found.");
+        }
     }
 
-    @And("an event exists")
-    public void anEventExists() {
-
-    }
-
-    @When("I click delete event.")
-    public void iClickDeleteEvent() {
-
-    }
-
-    @Then("the event is deleted from the page.")
-    public void theEventIsDeletedFromThePage() {
+    @Then("the event {string} is deleted from the page.")
+    public void theEventIsDeletedFromThePage(String name) {
+        boolean found = false;
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.className("widget-49-pro-title")));
+        List<WebElement> events = webDriver.findElements(By.className("widget-49-pro-title"));
+        for (WebElement event : events) {
+            if (Objects.equals(event.getText(), name)) {
+                found = true;
+            }
+        }
+        if (found) {
+            fail("Event was not deleted from the page.");
+        }
     }
 
     @And("I save an event with the name {string}")
@@ -115,5 +184,30 @@ public class CreatingAndEditingEventsStepDefs {
         WebElement nameInput = webDriver.findElement(By.id("eventName"));
         nameInput.sendKeys(name);
         webDriver.findElement(By.id("saveButton")).click();
+    }
+
+    @And("I am on the add event page")
+    public void iAmOnTheAddEventPage() {
+        webDriver.navigate().to(address);
+    }
+
+    @When("I type {string} into the events name")
+    public void iTypeIntoTheEventsName(String name) {
+        wait.until(ExpectedConditions.elementToBeClickable(By.id("eventName")));
+        WebElement nameInput = webDriver.findElement(By.id("eventName"));
+        nameInput.sendKeys(name);
+    }
+
+    @Then("I will be told I have only {int} characters left.")
+    public void iWillBeToldIHaveOnlyCharactersLeft(int expectedValue) {
+        assertTrue(webDriver.findElement(By.id("eventNameLength")).isDisplayed());
+
+        try {
+            String[] strings = webDriver.findElement(By.id("eventNameLength")).getText().split(" ");
+            actualValue = Integer.parseInt(strings[0]);
+        } catch (Exception e) {
+            fail(e);
+        }
+        assertEquals(expectedValue, actualValue);
     }
 }

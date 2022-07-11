@@ -172,6 +172,16 @@ a {
     text-decoration: none;
 }
 
+.event-del-button-link {
+    border-radius: 40px;
+    text-decoration: none;
+}
+
+.event-edit-button-link {
+    border-radius: 40px;
+    text-decoration: none;
+}
+
 .edit-button {
     height: 40px;
     width: 40px;
