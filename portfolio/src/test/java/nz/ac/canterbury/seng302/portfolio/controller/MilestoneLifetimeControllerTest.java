@@ -23,6 +23,7 @@ import java.util.Date;
 import static org.mockito.AdditionalAnswers.returnsFirstArg;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -75,5 +76,25 @@ class MilestoneLifetimeControllerTest {
                 .andExpect(redirectedUrl("/details"));
 
         verify(milestoneService, times(1)).addMilestone(expectedMilestone);
+    }
+
+    /**
+     * Tests that the milestoneRemove controller method can be called with the "/delete-milestone" URL and deletes the
+     * given milestone from the database.
+     * @throws Exception when an exception is thrown while performing the delete request
+     */
+    @Test
+    void testMilestoneRemove() throws Exception {
+        SecurityContext mockedSecurityContext = Mockito.mock(SecurityContext.class);
+        when(mockedSecurityContext.getAuthentication()).thenReturn(new PreAuthenticatedAuthenticationToken(validAuthState, ""));
+        SecurityContextHolder.setContext(mockedSecurityContext);
+
+        Milestone expectedMilestone = new Milestone(0,"Test Milestone", new Date());
+
+        mockMvc.perform(delete("/delete-milestone/" + expectedMilestone.getId()))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/details"));
+
+        verify(milestoneService, times(1)).removeMilestone(expectedMilestone.getId());
     }
 }
