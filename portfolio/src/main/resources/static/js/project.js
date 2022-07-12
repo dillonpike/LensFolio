@@ -104,7 +104,7 @@ function projectModalSetup() {
         modalBodyTextArea.value = project.description
 
         // Initial run of updateProjectDateError function in case initial values are invalid
-        updateSprintDateError();
+        updateProjectDateError();
         updateCharsLeft('projectName', 'projectNameLength', 50);
         updateCharsLeft('projectDescription', 'projectDescriptionLength', 500);
     })
