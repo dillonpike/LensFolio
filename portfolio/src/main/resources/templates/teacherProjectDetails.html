@@ -36,20 +36,20 @@
             <span id="project-date" class="badge rounded-pill bg-custom text-dark" th:text="${project.getStartDateString} + ' - ' + ${project.getEndDateString}"></span>
         </div>
         <div class="dropdown">
-            <button class="edit-project-button" id="editProjectButton" type="button" data-bs-toggle="dropdown" aria-expanded="false" style="margin: 10px">
+            <button class="edit-project-button" id="projectDropdownButton" type="button" data-bs-toggle="dropdown" aria-expanded="false" style="margin: 10px">
                 <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-three-dots-vertical" viewBox="0 0 16 16">
                     <path d="M9.5 13a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z"/>
                 </svg>
             </button>
                 <ul class="dropdown-menu" aria-labelledby="addActions">
                     <li>
-                        <button class="dropdown-item" type="button">
+                        <button id="editProjectButton" class="dropdown-item" type="button">
                             <span class='bi bi-pencil'></span> <i>Edit Project</i>
                         </button>
                     </li>
                     <li><hr class="dropdown-divider"></li>
                     <li>
-                        <button class="dropdown-item" type="button">
+                        <button id="addSprintButton" class="dropdown-item" type="button" data-bs-toggle="modal" data-bs-target="#sprintModal" th:data-bs-sprint="${newSprint.toJSONString()}" data-bs-type="add">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-circle" viewBox="0 0 16 16">
                                 <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
                                 <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
@@ -58,30 +58,30 @@
                         </button>
                     </li>
                     <li>
-                        <button class="dropdown-item" type="button">
+                        <button id="addEventButton" class="dropdown-item" type="button">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-calendar-event" viewBox="0 0 16 16">
                                 <path d="M11 6.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1z"/>
                                 <path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5zM1 4v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4H1z"/>
                             </svg>
-                            <i>Add Events</i>
+                            <i>Add Event</i>
                         </button>
                     </li>
                     <li>
-                        <button class="dropdown-item" type="button">
+                        <button id="addMilestoneButton" class="dropdown-item" type="button">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-award" viewBox="0 0 16 16">
                                 <path d="M9.669.864 8 0 6.331.864l-1.858.282-.842 1.68-1.337 1.32L2.6 6l-.306 1.854 1.337 1.32.842 1.68 1.858.282L8 12l1.669-.864 1.858-.282.842-1.68 1.337-1.32L13.4 6l.306-1.854-1.337-1.32-.842-1.68L9.669.864zm1.196 1.193.684 1.365 1.086 1.072L12.387 6l.248 1.506-1.086 1.072-.684 1.365-1.51.229L8 10.874l-1.355-.702-1.51-.229-.684-1.365-1.086-1.072L3.614 6l-.25-1.506 1.087-1.072.684-1.365 1.51-.229L8 1.126l1.356.702 1.509.229z"/>
                                 <path d="M4 11.794V16l4-1 4 1v-4.206l-2.018.306L8 13.126 6.018 12.1 4 11.794z"/>
                             </svg>
-                            <i>Add Milestones</i>
+                            <i>Add Milestone</i>
                         </button>
                     </li>
                     <li>
-                        <button class="dropdown-item" type="button">
+                        <button id="addDeadlineButton" class="dropdown-item" type="button">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-alarm" viewBox="0 0 16 16">
                                 <path d="M8.5 5.5a.5.5 0 0 0-1 0v3.362l-1.429 2.38a.5.5 0 1 0 .858.515l1.5-2.5A.5.5 0 0 0 8.5 9V5.5z"/>
                                 <path d="M6.5 0a.5.5 0 0 0 0 1H7v1.07a7.001 7.001 0 0 0-3.273 12.474l-.602.602a.5.5 0 0 0 .707.708l.746-.746A6.97 6.97 0 0 0 8 16a6.97 6.97 0 0 0 3.422-.892l.746.746a.5.5 0 0 0 .707-.708l-.601-.602A7.001 7.001 0 0 0 9 2.07V1h.5a.5.5 0 0 0 0-1h-3zm1.038 3.018a6.093 6.093 0 0 1 .924 0 6 6 0 1 1-.924 0zM0 3.5c0 .753.333 1.429.86 1.887A8.035 8.035 0 0 1 4.387 1.86 2.5 2.5 0 0 0 0 3.5zM13.5 1c-.753 0-1.429.333-1.887.86a8.035 8.035 0 0 1 3.527 3.527A2.5 2.5 0 0 0 13.5 1z"/>
                             </svg>
-                            <i>Add Deadlines</i>
+                            <i>Add Deadline</i>
                         </button>
                     </li>
                 </ul>
@@ -115,17 +115,17 @@
                                                 <button class="btn btn-default " type="button" id="sprintActions" data-bs-toggle="dropdown" aria-expanded="false" >
                                                     <i class='bi bi-gear-fill'></i>
                                                 </button>
-                                                <ul class="dropdown-menu" aria-labelledby="sprintActions" style="z-index: 3000">
+                                                <ul class="dropdown-menu" aria-labelledby="sprintDropdownButton" style="z-index: 3000">
                                                     <li>
                                                         <a class="button-link" data-bs-toggle="modal" data-bs-target="#sprintModal" th:data-bs-sprint="${sprint.toJSONString()}" data-bs-type="edit">
-                                                        <button class="dropdown-item" type="button">
+                                                        <button id="editSprintButton" class="dropdown-item" type="button">
                                                                 <span class='bi bi-pencil'></span> <i>Edit</i>
                                                             </button>
                                                         </a>
                                                     </li>
                                                     <li>
                                                         <a class="button-link" data-bs-toggle="modal" data-bs-target="#deleteModal" th:data-bs-id="${sprint.id}" th:data-bs-name="${sprint.name}" data-bs-type="sprint">
-                                                            <button class="dropdown-item" type="button">
+                                                            <button id="deleteSprintButton" class="dropdown-item" type="button">
                                                                 <span class='bi bi-trash' style='color: red'></span> <i style='color: red'>Delete</i>
                                                             </button>
                                                         </a>
