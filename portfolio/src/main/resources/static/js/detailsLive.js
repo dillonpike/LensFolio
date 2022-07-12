@@ -84,9 +84,6 @@ function refreshEvents() {
  * Initialises functions/injections
  */
 $(function () {
-    $("form").on('submit', function (e) {
-        e.preventDefault();
-    });
     toast = new bootstrap.Toast($("#liveToast"));
     connect();
     // Checks if there should be a live update, and shows a toast if needed.

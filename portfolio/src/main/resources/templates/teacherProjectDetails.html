@@ -5,11 +5,14 @@
     <title th:text="${project.getName}"></title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <link th:href="@{styles/main.css}" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.5/dist/umd/popper.min.js" integrity="sha384-Xe+8cL9oJa6tN/veChSP7q+mnSPaj5Bcu9mPX5F5xIGE0DVittaqT5lorf0EI7Vk" crossorigin="anonymous"></script>
     <script src="webjars/sockjs-client/1.0.2/sockjs.min.js"></script>
     <script src="webjars/stomp-websocket/2.3.3/stomp.min.js"></script>
     <script src="webjars/jquery/3.6.0/dist/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
 </head>
 <body>
 <header th:replace="fragments/header"></header>
@@ -64,7 +67,7 @@
                                     </div>
                                     <div>
                                         <div class="button-divider">
-                                            <a class="button-link" th:href="@{edit-sprint/{id} (id=${sprint.id})}">
+                                            <a class="button-link" th:href="@{edit-sprint/{id} (id=${sprint.id})}" data-bs-toggle="modal" data-bs-target="#sprintModal" th:data-bs-sprint="${sprint.toJSONString()}" data-bs-type="edit">
                                                 <button class="edit-button" id="editSprintButton">
                                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil-fill" viewBox="0 0 16 16">
                                                         <path d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"/>
@@ -73,13 +76,14 @@
                                             </a>
                                         </div>
                                         <div class="button-divider">
-                                            <a class="button-link" th:href="@{delete-sprint/{id} (id=${sprint.id})}">
+                                            <a class="button-link" th:href="@{delete-sprint/{id} (id=${sprint.id})}" data-bs-toggle="modal" th:data-bs-target="'#deleteDialog' + ${sprint.id}">
                                                 <button class="delete-button" id="deleteSprintButton">
                                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash3-fill" viewBox="0 0 16 16">
                                                         <path d="M11 1.5v1h3.5a.5.5 0 0 1 0 1h-.538l-.853 10.66A2 2 0 0 1 11.115 16h-6.23a2 2 0 0 1-1.994-1.84L2.038 3.5H1.5a.5.5 0 0 1 0-1H5v-1A1.5 1.5 0 0 1 6.5 0h3A1.5 1.5 0 0 1 11 1.5Zm-5 0v1h4v-1a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 0-.5.5ZM4.5 5.029l.5 8.5a.5.5 0 1 0 .998-.06l-.5-8.5a.5.5 0 1 0-.998.06Zm6.53-.528a.5.5 0 0 0-.528.47l-.5 8.5a.5.5 0 0 0 .998.058l.5-8.5a.5.5 0 0 0-.47-.528ZM8 4.5a.5.5 0 0 0-.5.5v8.5a.5.5 0 0 0 1 0V5a.5.5 0 0 0-.5-.5Z"/>
                                                     </svg>
                                                 </button>
                                             </a>
+                                            <div th:replace="fragments/delete1Modal :: deleteModal('sprint', ${sprint.id}, ${sprint.name})"></div>
                                         </div>
                                         <button th:id="sidebarButton + ${meta.index}" name="sidebarButton" class="btn btn-primary" type="button" data-bs-toggle="offcanvas" th:data-bs-target="'#offcanvasScrolling' + ${meta.index}" aria-controls="offcanvasScrolling">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-calendar-event" viewBox="0 0 16 16">
@@ -103,7 +107,7 @@
                         </div>
                     </div>
                 </div>
-                <a class="add-sprint btn-primary btn-sm" th:href="@{add-sprint}" role="button" id="addSprintButton">
+                <a class="add-sprint btn-primary btn-sm" role="button" id="addSprintButton" data-bs-toggle="modal" data-bs-target="#sprintModal" th:data-bs-sprint="${newSprint.toJSONString()}" data-bs-type="add">
                     <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16">
                         <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
                     </svg>
@@ -192,16 +196,125 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="tab-pane fade" id="milestone" role="tabpanel" aria-labelledby="milestone-tab">...</div>
+                        <div class="tab-pane fade" id="milestone" role="tabpanel" aria-labelledby="milestone-tab">
+                            <div th:each="milestone, meta: ${milestones}">
+                                <div class="card card-margin" id="milestoneId" th:value="${milestone.id}">
+                                    <div class="card-body pt-0">
+                                        <div class="widget-49">
+                                            <div class="widget-49-title-wrapper hstack">
+                                                <div class="widget-49-date-primary">
+                                                    <span class="widget-49-date-day" th:text="${milestone.getMilestoneDay()}"></span>
+                                                    <span class="widget-49-date-month" th:text="${milestone.getMilestoneMonth()}" ></span>
+                                                </div>
+                                                <div class="widget-49-meeting-info">
+                                                    <span class="widget-49-pro-title" th:text="${milestone.milestoneName}"></span>
+                                                </div>
+                                                <div class="ms-auto">
+                                                    <div style="margin-top: 4px">
+                                                        <a class="button-link" th:href="@{edit-milestone/{id} (id=${milestone.id})}">
+                                                            <button class="edit-button" id="editMilestoneButton">
+                                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil-fill" viewBox="0 0 16 16">
+                                                                    <path d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"/>
+                                                                </svg>
+                                                            </button>
+                                                        </a>
+                                                    </div>
+                                                    <a class="button-link" th:href="@{delete-milestone/{id} (id=${milestone.id})}">
+                                                        <button class="delete-button" id="deleteMilestoneButton">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash3-fill" viewBox="0 0 16 16">
+                                                                <path d="M11 1.5v1h3.5a.5.5 0 0 1 0 1h-.538l-.853 10.66A2 2 0 0 1 11.115 16h-6.23a2 2 0 0 1-1.994-1.84L2.038 3.5H1.5a.5.5 0 0 1 0-1H5v-1A1.5 1.5 0 0 1 6.5 0h3A1.5 1.5 0 0 1 11 1.5Zm-5 0v1h4v-1a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 0-.5.5ZM4.5 5.029l.5 8.5a.5.5 0 1 0 .998-.06l-.5-8.5a.5.5 0 1 0-.998.06Zm6.53-.528a.5.5 0 0 0-.528.47l-.5 8.5a.5.5 0 0 0 .998.058l.5-8.5a.5.5 0 0 0-.47-.528ZM8 4.5a.5.5 0 0 0-.5.5v8.5a.5.5 0 0 0 1 0V5a.5.5 0 0 0-.5-.5Z"/>
+                                                            </svg>
+                                                        </button>
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                         <div class="tab-pane fade" id="deadline" role="tabpanel" aria-labelledby="deadline-tab">...</div>
                     </div>
                 </div>
             </div>
         </div>
+<!-- Button trigger modal -->
+<button type="button" class="btn btn-primary" onclick="{document.getElementById('alertBanner').hidden = true;}" data-bs-toggle="modal" data-bs-target="#addMilestoneDialog">
+    Add Milestone
+</button>
+
+<!-- Modals -->
+<div th:replace="fragments/addMilestoneModal"></div>
+<div id="sprintModal" th:replace="fragments/sprintModal :: sprintModal"></div>
 
 
+<script src="../js/project.js">
+
+</script>
 <script src="js/detailsLive.js"></script>
 
+<script>
+    //updates characters left
+    function updateCharsLeft(elementId, messageElementId, numChars) {
+        let chars_left = numChars - document.getElementById(elementId).value.length;
+        if (chars_left === numChars) {
+            document.getElementById(messageElementId).innerText = "";
+        } else if (chars_left === 1) {
+            document.getElementById(messageElementId).innerText = chars_left + " character left";
+        } else if (chars_left === 0) {
+            document.getElementById(messageElementId).innerText = "No characters left";
+        } else {
+            document.getElementById(messageElementId).innerText = chars_left + " characters left";
+        }
+    }
+</script>
+
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    let projectEndDate = /*[[${project.getEndDateString()}]]*/ "Error";
+    let projectStartDate = /*[[${project.getStartDateString()}]]*/ "Error";
+    /*]]>*/
+
+    // Check if the name of the item that the user inputted is not an empty string
+    // Submit the form and return true if the input is not empty string, otherwise show error banner with the error message and return false
+    // @param elementId the ID of the text input HTML element for item's name
+    // @param formId the ID of the form which contains the input HTML element
+    function validateModalName(elementId, alertBanner, alertMessage) {
+        const nameInput = document.getElementById(elementId).value;
+
+        if (nameInput === "") {
+            document.getElementById(alertBanner).hidden = false;
+            document.getElementById(alertMessage).innerText = "Name cannot be empty!";
+            return false
+        } else {
+            document.getElementById(alertBanner).hidden = true;
+            return true
+        }
+    }
+
+    // Check if the date of the item that the user inputted is within the project dates range
+    // Show error banner with error message and disable the submit button if the inputted date is outside the project dates range
+    // @param elementId the ID of the date input HTML element
+    // @param submitElementId the ID of the submit button on the modal
+    function validateModalDate(elementId, submitElementId, alertBanner, alertMessage) {
+        const dateInputStr = document.getElementById(elementId).value;
+        const dateInput = new Date(dateInputStr);
+
+        if (dateInput < new Date(projectStartDate) || dateInput > new Date(projectEndDate)) {
+            $('#' + submitElementId).prop('disabled', true);
+            document.getElementById(alertBanner).hidden = false;
+            document.getElementById(alertMessage).innerText = "Date must be within the project's date range (" +
+                projectStartDate + " - " + projectEndDate + ").";
+        } else {
+            $('#' + submitElementId).prop('disabled', false);
+            document.getElementById(alertBanner).hidden = true;
+        }
+    }
+
+    sprintModalSetup()
+
+    validateModalDate("milestoneDate", "submitMilestoneButton")
+</script>
 
 
 </body>

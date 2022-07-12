@@ -42,6 +42,9 @@ public class DetailsController {
     @Autowired
     private EventService eventService;
 
+    @Autowired
+    private MilestoneService milestoneService;
+
     /**
      * Last event saved, for toast notification.
      */
@@ -95,6 +98,9 @@ public class DetailsController {
         List<Event> eventList = eventService.getAllEventsOrdered();
         model.addAttribute("events", eventList);
 
+        List<Milestone> milestoneList = milestoneService.getAllMilestonesOrdered();
+        model.addAttribute("milestones", milestoneList);
+
         // Runs if the reload was triggered by saving an event. Checks set time to now to see if 2 seconds has passed yet.
         long timeDifference = Date.from(Instant.now()).toInstant().getEpochSecond() - eventWasUpdatedTime.toInstant().getEpochSecond();
         if (timeDifference <= 2 && eventResponse != null) {
@@ -114,20 +120,17 @@ public class DetailsController {
         elementService.addHeaderAttributes(model, id);
         model.addAttribute("userId", id);
 
-        return getFinalThymeleafTemplate(principal);
-    }
 
-    /**
-     * Gets final details page to display, depending on whether the user is a teacher or a student.
-     * @param principal Gets information about the user
-     * @return Thymeleaf template
-     */
-    private String getFinalThymeleafTemplate(AuthState principal) {
+        model.addAttribute("blankMilestone", new Milestone());
+
         String role = principal.getClaimsList().stream()
                 .filter(claim -> claim.getType().equals("role"))
                 .findFirst()
                 .map(ClaimDTO::getValue)
                 .orElse("NOT FOUND");
+
+        model.addAttribute("newSprint", sprintService.getSuggestedSprint());
+        model.addAttribute("sprintDateError", "");
 
         /* Return the name of the Thymeleaf template */
         // detects the role of the current user and returns appropriate page
@@ -137,6 +140,15 @@ public class DetailsController {
             return "userProjectDetails";
         }
     }
+
+//    /**
+//     * Gets final details page to display, depending on whether the user is a teacher or a student.
+//     * @param principal Gets information about the user
+//     * @return Thymeleaf template
+//     */
+//    private String getFinalThymeleafTemplate(AuthState principal, Model model) {
+//
+//    }
 
     /**
      * This method maps @MessageMapping endpoint to the @SendTo endpoint. Called when something is sent to

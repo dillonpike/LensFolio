@@ -118,15 +118,6 @@ public class Milestone {
     }
 
     /**
-     * Returns a string representation of the time of the milestone
-     * @return string representation of the time of the milestone
-     */
-    public String getMilestoneTime()  {
-        SimpleDateFormat dateFormat = new SimpleDateFormat("h:mm a");
-        return (dateFormat.format(milestoneDate));
-    }
-
-    /**
      * Empty constructor for JPA.
      */
     public Milestone() {}
@@ -152,5 +143,21 @@ public class Milestone {
         return String.format(
                 "milestone[id=%d, parentProjectId='%d', milestoneName='%s', milestoneDate='%s']",
                 id, parentProjectId, milestoneName, milestoneDate);
+    }
+
+    /**
+     * Sets the milestone date with a string.
+     * @param date new date
+     */
+    public void setMilestoneDateString(String date) {
+        this.milestoneDate = Project.stringToDate(date);
+    }
+
+    /**
+     * Returns the milestone date as a string.
+     * @return milestone date as a string
+     */
+    public String getMilestoneDateString() {
+        return Project.dateToString(this.milestoneDate);
     }
 }
