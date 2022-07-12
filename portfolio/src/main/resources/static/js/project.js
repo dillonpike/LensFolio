@@ -147,7 +147,8 @@ function milestoneModalSetup() {
         $('#milestoneDateInput').datepicker('setDate', milestone.milestoneDateString)
 
         // Initial run of validation functions in case initial values are invalid
-        validateModalDate('milestoneDate', 'submitMilestoneButton', 'milestoneAlertBanner', 'milestoneAlertMessage')
+        validateModalName('milestoneName', 'milestoneModalButton', 'milestoneAlertBanner', 'milestoneAlertMessage')
+        validateModalDate('milestoneDate', 'milestoneModalButton', 'milestoneDateAlertBanner', 'milestoneDateAlertMessage')
         updateCharsLeft('milestoneName', 'milestoneNameLength', 50)
     })
 }
