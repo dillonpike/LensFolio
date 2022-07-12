@@ -80,3 +80,32 @@ function deleteModalSetup() {
         modalLink.href = `delete-${type}/${id}`
     })
 }
+
+/**
+ * Customises the project modal attributes with depending on what project it should display and whether it's being used
+ * for adding or editing a project.
+ */
+function projectModalSetup() {
+    const projectModal = document.getElementById('projectModal')
+    projectModal.addEventListener('show.bs.modal', function (event) {
+        // Button that triggered the modal
+        const button = event.relatedTarget
+
+        // Extract info from data-bs-* attributes
+        const project = JSON.parse(button.getAttribute('data-bs-project'))
+
+        // Update the modal's content.
+        const modalBodyInputs = projectModal.querySelectorAll('.modal-body input')
+        const modalBodyTextArea = projectModal.querySelector('.modal-body textarea')
+
+        modalBodyInputs[0].value = project.name
+        $('#projectStart').datepicker('setDate', project.startDateString)
+        $('#projectEnd').datepicker('setDate', project.endDateString)
+        modalBodyTextArea.value = project.description
+
+        // Initial run of updateProjectDateError function in case initial values are invalid
+        updateSprintDateError();
+        updateCharsLeft('projectName', 'projectNameLength', 50);
+        updateCharsLeft('projectDescription', 'projectDescriptionLength', 500);
+    })
+}

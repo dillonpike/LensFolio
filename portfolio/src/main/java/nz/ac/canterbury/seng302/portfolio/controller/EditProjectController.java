@@ -81,7 +81,7 @@ public class EditProjectController {
         return "redirect:/details";
     }
 
-    @RequestMapping(value="/edit-project/error", method= RequestMethod.POST)
+    @GetMapping(value="/edit-project/error")
     public String updateProjectRangeErrors(
             @RequestParam(value="projectStartDate") String projectStartDate,
             @RequestParam(value="projectEndDate") String projectEndDate,
