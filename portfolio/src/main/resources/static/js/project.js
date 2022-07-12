@@ -109,3 +109,45 @@ function projectModalSetup() {
         updateCharsLeft('projectDescription', 'projectDescriptionLength', 500);
     })
 }
+
+/**
+ * Customises the milestone modal attributes with depending on what milestone it should display and whether it's being
+ * used for adding or editing a milestone.
+ */
+function milestoneModalSetup() {
+    const milestoneModal = document.getElementById('milestoneModal')
+    milestoneModal.addEventListener('show.bs.modal', function (event) {
+        // Button that triggered the modal
+        const button = event.relatedTarget
+
+        // Extract info from data-bs-* attributes
+        const milestone = JSON.parse(button.getAttribute('data-bs-milestone'))
+        console.log(milestone)
+        const type = button.getAttribute('data-bs-type')
+
+        // Update the modal's content.
+        const modalTitle = milestoneModal.querySelector('.modal-title')
+        const modalBodyInput = milestoneModal.querySelector('.modal-body input')
+        const modalButton = milestoneModal.querySelector('.modal-footer button')
+        const modalForm = milestoneModal.querySelector('form')
+
+        if (type === 'add') {
+            modalTitle.innerText = 'Add Milestone'
+            modalButton.innerHTML = 'Add Milestone'
+            modalForm.action = 'add-milestone'
+        } else {
+            modalTitle.innerText = 'Edit Milestone'
+            modalButton.innerHTML = 'Save Milestone'
+            modalForm.action = `edit-milestone/${milestone.id}`
+            modalForm.setAttribute('data-milestone-id', sprint.id)
+        }
+
+        modalForm.setAttribute('object', milestone);
+        modalBodyInput.value = milestone.milestoneName
+        $('#milestoneDateInput').datepicker('setDate', milestone.milestoneDateString)
+
+        // Initial run of validation functions in case initial values are invalid
+        validateModalDate('milestoneDate', 'submitMilestoneButton', 'milestoneAlertBanner', 'milestoneAlertMessage')
+        updateCharsLeft('milestoneName', 'milestoneNameLength', 50)
+    })
+}
