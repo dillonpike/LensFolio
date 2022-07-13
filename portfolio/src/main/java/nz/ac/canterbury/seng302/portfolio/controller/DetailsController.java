@@ -44,11 +44,6 @@ public class DetailsController {
     private EventService eventService;
 
     /**
-     * Time that the event was updated.
-     */
-    private Date eventWasUpdatedTime = Date.from(Instant.now());
-
-    /**
      * Holds list of events information for displaying.
      */
     private ArrayList<EventResponse> eventsToDisplay = new ArrayList<>();
@@ -96,21 +91,20 @@ public class DetailsController {
         List<Event> eventList = eventService.getAllEventsOrdered();
         model.addAttribute("events", eventList);
 
-        // Runs if the reload was triggered by saving an event. Checks set time to now to see if 2 seconds has passed yet.
-        long timeDifference = Date.from(Instant.now()).toInstant().getEpochSecond() - eventWasUpdatedTime.toInstant().getEpochSecond();
-        if (timeDifference <= 2 && !eventsToDisplay.isEmpty()) {
-            int count = 1;
-            for (EventResponse event : eventsToDisplay) {
+        // Runs if the reload was triggered by saving an event. Checks the notifications' creation time to see if 2 seconds has passed yet.
+        int count = 1;
+        ArrayList<EventResponse> eventsToDelete = new ArrayList<>();
+        for (EventResponse event : eventsToDisplay) {
+            long timeDifference = Date.from(Instant.now()).toInstant().getEpochSecond() - event.getDateOfCreation();
+            if (timeDifference <= 2) {
                 model.addAttribute("toastEventInformation" + count, "true");
                 model.addAttribute("toastEventName" + count, event.getEventName());
                 model.addAttribute("toastEventId" + count, event.getEventId());
                 model.addAttribute("toastUsername" + count, event.getUsername());
                 model.addAttribute("toastFirstName" + count, event.getUserFirstName());
                 model.addAttribute("toastLastName" + count, event.getUserLastName());
-                count++;
-            }
-        } else {
-            for (int count = 1; count <= eventsToDisplay.size(); count++) {
+            } else {
+                eventsToDelete.add(event);
                 model.addAttribute("toastEventInformation" + count, "");
                 model.addAttribute("toastEventName" + count, "");
                 model.addAttribute("toastEventId" + count, "");
@@ -118,6 +112,10 @@ public class DetailsController {
                 model.addAttribute("toastFirstName" + count, "");
                 model.addAttribute("toastLastName" + count, "");
             }
+            count++;
+        }
+        for (EventResponse event : eventsToDelete) {
+            eventsToDisplay.remove(event);
         }
         
         List<Sprint> sprintList = sprintService.getAllSprintsOrdered();
@@ -165,7 +163,8 @@ public class DetailsController {
         String username = message.getUsername();
         String firstName = message.getUserFirstName();
         String lastName = message.getUserLastName();
-        return new EventResponse(HtmlUtils.htmlEscape(message.getEventName()), eventId, username, firstName, lastName);
+        long dateOfNotification = Date.from(Instant.now()).toInstant().getEpochSecond();
+        return new EventResponse(HtmlUtils.htmlEscape(message.getEventName()), eventId, username, firstName, lastName, dateOfNotification);
     }
 
     /**
@@ -182,7 +181,8 @@ public class DetailsController {
         String username = message.getUsername();
         String firstName = message.getUserFirstName();
         String lastName = message.getUserLastName();
-        return new EventResponse(HtmlUtils.htmlEscape(message.getEventName()), eventId, username, firstName, lastName);
+        long dateOfNotification = Date.from(Instant.now()).toInstant().getEpochSecond();
+        return new EventResponse(HtmlUtils.htmlEscape(message.getEventName()), eventId, username, firstName, lastName, dateOfNotification);
     }
 
     /**
@@ -198,9 +198,9 @@ public class DetailsController {
         String username = message.getUsername();
         String firstName = message.getUserFirstName();
         String lastName = message.getUserLastName();
-        EventResponse response = new EventResponse(HtmlUtils.htmlEscape(message.getEventName()), eventId, username, firstName, lastName);
+        long dateOfNotification = Date.from(Instant.now()).toInstant().getEpochSecond();
+        EventResponse response = new EventResponse(HtmlUtils.htmlEscape(message.getEventName()), eventId, username, firstName, lastName, dateOfNotification);
         // Trigger reload and save the last event's information
-        eventWasUpdatedTime = Date.from(Instant.now());
         eventsToDisplay.add(response);
         while (eventsToDisplay.size() > 3) {
             eventsToDisplay.remove(0);

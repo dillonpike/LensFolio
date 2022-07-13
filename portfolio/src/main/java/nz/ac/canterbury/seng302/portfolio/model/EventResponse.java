@@ -15,19 +15,23 @@ public class EventResponse {
 
     private String userLastName;
 
+    private long dateOfCreation;
+
     /**
      * Main constructer for EventResponse
      * @param eventName Event name for displaying.
      * @param username Username of user editing.
      * @param userFirstName First name of user editing.
      * @param userLastName Last name of user editing.
+     * @param dateOfCreation Date/Time in seconds of when the response was created.
      */
-    public EventResponse(String eventName, int eventId, String username, String userFirstName, String userLastName) {
+    public EventResponse(String eventName, int eventId, String username, String userFirstName, String userLastName, long dateOfCreation) {
         this.eventName = eventName;
         this.eventId = eventId;
         this.username = username;
         this.userFirstName = userFirstName;
         this.userLastName = userLastName;
+        this.dateOfCreation = dateOfCreation;
     }
 
     public String getEventName() {
@@ -69,5 +73,17 @@ public class EventResponse {
 
     public void setEventId(int eventId) {
         this.eventId = eventId;
+    }
+
+    public String toString() {
+        return "<" + this.eventName + " by " + this.username + ">";
+    }
+
+    public long getDateOfCreation() {
+        return dateOfCreation;
+    }
+
+    public void setDateOfCreation(long dateOfCreation) {
+        this.dateOfCreation = dateOfCreation;
     }
 }
