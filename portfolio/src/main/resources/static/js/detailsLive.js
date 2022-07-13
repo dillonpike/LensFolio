@@ -254,7 +254,7 @@ function reorderNotifications() {
  * Then subscribes methods to the required endpoints.
  */
 function connect() {
-    let socket = new SockJS('https://csse-s302g1.canterbury.ac.nz/test/portfolio/mywebsockets');
+    let socket = new SockJS('/test/portfolio/mywebsockets');
     stompClient = Stomp.over(socket);
     stompClient.connect({}, function (frame) {
         console.log('Connected: ' + frame);
@@ -262,7 +262,7 @@ function connect() {
             const eventResponse = JSON.parse(eventResponseArg.body);
             showToast(eventResponse.eventName, eventResponse.eventId, eventResponse.username, eventResponse.userFirstName, eventResponse.userLastName, false);
         });
-        stompClient.subscribe('/events/stop-being-edited', function (eventResponseArg) {
+        stompClient.subscribe('/test/portfolio/events/stop-being-edited', function (eventResponseArg) {
             const eventResponse = JSON.parse(eventResponseArg.body);
             showToast(eventResponse.eventName, eventResponse.eventId, eventResponse.username, eventResponse.userFirstName, eventResponse.userLastName, true);
         })

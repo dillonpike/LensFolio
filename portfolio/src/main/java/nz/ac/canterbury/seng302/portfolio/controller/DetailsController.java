@@ -176,7 +176,7 @@ public class DetailsController {
      * @return Returns the message given.
      */
     @MessageMapping("/stop-editing-event")
-    @SendTo("/events/stop-being-edited")
+    @SendTo("/test/portfolio/events/stop-being-edited")
     public EventResponse stopUpdatingEvent(EventMessage message) {
         int eventId = message.getEventId();
         String username = message.getUsername();
