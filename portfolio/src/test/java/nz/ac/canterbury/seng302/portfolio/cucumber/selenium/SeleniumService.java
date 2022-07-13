@@ -1,11 +1,15 @@
 package nz.ac.canterbury.seng302.portfolio.cucumber.selenium;
 
 import io.github.bonigarcia.wdm.WebDriverManager;
+import org.openqa.selenium.By;
+import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -77,5 +81,20 @@ public class SeleniumService {
             webDriver.quit();
             webDriver = null;
         }
+    }
+
+    /**
+     * Returns the first visible element found with the given locator.
+     * @param by locator for element
+     * @return first visible element found with the given locator
+     */
+    public static WebElement getVisibleElementLocated(By by) {
+        List<WebElement> elements = webDriver.findElements(by);
+        for (WebElement element: elements) {
+            if (element.isDisplayed()) {
+                return element;
+            }
+        }
+        throw new NoSuchElementException("No visible element found with locator " + by);
     }
 }
