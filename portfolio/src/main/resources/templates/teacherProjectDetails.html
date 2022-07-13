@@ -331,6 +331,8 @@
         const dateInput = new Date(dateInputStr);
 
         console.log("Validating modal date")
+        console.log(dateInputStr)
+        console.log(dateInput)
         if (dateInput < new Date(projectStartDate) || dateInput > new Date(projectEndDate)) {
             console.log("is bad modal date")
             $('#' + submitElementId).prop('disabled', true);
@@ -338,6 +340,7 @@
             document.getElementById(alertMessage).innerText = "Date must be within the project's date range (" +
                 projectStartDate + " - " + projectEndDate + ").";
         } else {
+            console.log("Good date")
             $('#' + submitElementId).prop('disabled', false);
             document.getElementById(alertBanner).hidden = true;
         }

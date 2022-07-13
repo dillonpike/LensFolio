@@ -14,7 +14,6 @@
                     <div class="mb-3">
                         <label for="milestoneName" class="col-form-label">Milestone Name:</label>
                         <input onkeyup="updateCharsLeft('milestoneName', 'milestoneNameLength', 50)" maxlength="50" type="text" class="form-control" id="milestoneName">
-<!--                        th:field="*{milestoneName}">-->
                         <div class="name-length-message">
                             <span id="milestoneNameLength"></span>
                         </div>
@@ -22,8 +21,7 @@
                     <div class="mb-3">
                         <label for="milestoneDate" class="col-form-label">Milestone Date:</label>
                         <div class="input-group date" id="milestoneDateInput">
-                            <input onkeydown="return checkDateKeys(event)" onchange="validateModalDate('milestoneDate', 'submitMilestoneButton', 'editMilestoneAlertBanner', 'editMilestoneAlertMessage')" type="text" class="form-control" id="milestoneDate" th:name="milestoneDateString">
-<!--                            th:field="*{milestoneDateString}">-->
+                            <input onkeydown="return checkDateKeys(milestone)" onchange="validateModalDate('milestoneDate', 'submitMilestoneButton', 'editMilestoneAlertBanner', 'editMilestoneAlertMessage')" type="text" class="form-control" id="milestoneDate">
                             <span class="input-group-append">
                                 <span class="input-group-text bg-white">
                                     <em class="bi bi-calendar"></em>
