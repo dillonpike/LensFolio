@@ -1,0 +1,53 @@
+<div class="modal fade" id="editMilestoneDialog" tabindex="-1" role="dialog" aria-labelledby="modalLongTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalLongTitle">Edit Milestone</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="post" id="milestoneForm" onsubmit="return validateModalName('milestoneName', 'addMilestoneAlertBanner', 'addMilestoneAlertMessage');" th:action="@{add-milestone}" th:object="${blankMilestone}">
+                <div class="modal-body">
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert" id="addMilestoneAlertBanner" hidden>
+                        <span id="addMilestoneAlertMessage"></span>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                    <div class="mb-3">
+                        <label for="milestoneName" class="col-form-label">Milestone Name:</label>
+                        <input onkeyup="updateCharsLeft('milestoneName', 'milestoneNameLength', 50)" maxlength="50" type="text" class="form-control" id="milestoneName" th:field="*{milestoneName}">
+                        <div class="name-length-message">
+                            <span id="milestoneNameLength"></span>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="milestoneDate" class="col-form-label">Milestone Date:</label>
+                        <div class="input-group date" id="milestoneDateInput">
+                            <input onkeydown="return checkDateKeys(milestone)" onchange="validateModalDate('milestoneDate', 'submitMilestoneButton')" type="text" class="form-control" id="milestoneDate" th:field="*{milestoneDateString}">
+                            <span class="input-group-append">
+                                <span class="input-group-text bg-white">
+                                    <em class="bi bi-calendar"></em>
+                                </span>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button class="btn btn-primary" id="submitMilestoneButton" type="submit" disabled>Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    // fills in the date pickers
+    $(function() {
+        $('#milestoneDateInput input').datepicker({
+            format: 'dd/M/yyyy',
+            todayHighlight: true,
+            todayBtn: true,
+            clearBtn: true,
+            orientation: 'bottom'
+        });
+    });
+</script>
