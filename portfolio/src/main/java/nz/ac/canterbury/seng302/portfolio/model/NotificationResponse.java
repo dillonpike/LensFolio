@@ -3,11 +3,11 @@ package nz.ac.canterbury.seng302.portfolio.model;
 /**
  * The response message class sent that are received by STOMP subscriptions when events are edited.
  */
-public class EventResponse {
+public class NotificationResponse {
 
-    private String eventName;
+    private String artefactName;
 
-    private int eventId;
+    private int artefactId;
 
     private String username;
 
@@ -17,29 +17,40 @@ public class EventResponse {
 
     private long dateOfCreation;
 
+    private String artefactType;
+
     /**
-     * Main constructer for EventResponse
-     * @param eventName Event name for displaying.
+     * Main constructer for NotificationResponse
+     * @param artefactName Event name for displaying.
      * @param username Username of user editing.
      * @param userFirstName First name of user editing.
      * @param userLastName Last name of user editing.
      * @param dateOfCreation Date/Time in seconds of when the response was created.
      */
-    public EventResponse(String eventName, int eventId, String username, String userFirstName, String userLastName, long dateOfCreation) {
-        this.eventName = eventName;
-        this.eventId = eventId;
+    public NotificationResponse(String artefactName, int artefactId, String username, String userFirstName, String userLastName, long dateOfCreation, String artefactType) {
+        this.artefactName = artefactName;
+        this.artefactId = artefactId;
         this.username = username;
         this.userFirstName = userFirstName;
         this.userLastName = userLastName;
         this.dateOfCreation = dateOfCreation;
+        this.artefactType = artefactType;
     }
 
-    public String getEventName() {
-        return eventName;
+    public String getArtefactType() {
+        return artefactType;
     }
 
-    public void setEventName(String sprintName) {
-        this.eventName = sprintName;
+    public void setArtefactType(String artefactType) {
+        this.artefactType = artefactType;
+    }
+
+    public String getArtefactName() {
+        return artefactName;
+    }
+
+    public void setArtefactName(String artefactName) {
+        this.artefactName = artefactName;
     }
 
     public String getUsername() {
@@ -67,16 +78,16 @@ public class EventResponse {
         this.userLastName = userLastName;
     }
 
-    public int getEventId() {
-        return eventId;
+    public int getArtefactId() {
+        return artefactId;
     }
 
-    public void setEventId(int eventId) {
-        this.eventId = eventId;
+    public void setArtefactId(int eventId) {
+        this.artefactId = eventId;
     }
 
     public String toString() {
-        return "<" + this.eventName + " by " + this.username + ">";
+        return "<" + this.artefactName + " by " + this.username + ">";
     }
 
     public long getDateOfCreation() {

@@ -122,6 +122,7 @@ class Notification {
                 this.firstName + " " + this.lastName + " (" + this.username + ").";
         }
         this.toastBodyTextVar.text(this.bodyText);
+        this.toastTitleTextVar.text(this.titleName);
         this.toast.show();
     }
 
@@ -260,16 +261,17 @@ function connect() {
         console.log('Connected: ' + frame);
         stompClient.subscribe('/test/portfolio/events/being-edited', function (eventResponseArg) {
             const eventResponse = JSON.parse(eventResponseArg.body);
-            showToast(eventResponse.eventName, eventResponse.eventId, eventResponse.username, eventResponse.userFirstName, eventResponse.userLastName, false);
+            showToast(eventResponse.artefactName, eventResponse.artefactId, eventResponse.username, eventResponse.userFirstName, eventResponse.userLastName, false, eventResponse.artefactType);
         });
         stompClient.subscribe('/test/portfolio/events/stop-being-edited', function (eventResponseArg) {
             const eventResponse = JSON.parse(eventResponseArg.body);
-            showToast(eventResponse.eventName, eventResponse.eventId, eventResponse.username, eventResponse.userFirstName, eventResponse.userLastName, true);
+            showToast(eventResponse.artefactName, eventResponse.artefactId, eventResponse.username, eventResponse.userFirstName, eventResponse.userLastName, true, eventResponse.artefactType);
         })
         stompClient.subscribe('/test/portfolio/events/save-edit', function (eventResponseArg) {
             const eventResponse = JSON.parse(eventResponseArg.body);
             refreshEvents();
-            showToastSave(eventResponse.eventName, eventResponse.eventId, eventResponse.username, eventResponse.userFirstName, eventResponse.userLastName);
+            showToastSave(eventResponse.artefactName, eventResponse.artefactId, eventResponse.username, eventResponse.userFirstName, eventResponse.userLastName, eventResponse.artefactType);
+
         });
     });
 }
@@ -284,9 +286,10 @@ function connect() {
  * @param firstName First name of the user
  * @param lastName Last name of the user
  * @param hide Whether the toast should be hidden or not
+ * @param type they type of the artefact it is either Milestone, Deadline, or event
  */
-function showToast(eventName, eventId, username, firstName, lastName, hide) {
-    let newNotification = new Notification("Event", eventName, eventId, username, firstName, lastName, false);
+function showToast(eventName, eventId, username, firstName, lastName, hide, type) {
+    let newNotification = new Notification(type, eventName, eventId, username, firstName, lastName, false);
     newNotification = addNotification(newNotification);
     if (!hide) {
         newNotification.show();
@@ -304,8 +307,8 @@ function showToast(eventName, eventId, username, firstName, lastName, hide) {
  * @param firstName First name of the user
  * @param lastName Last name of the user
  */
-function showToastSave(eventName, eventId, username, firstName, lastName) {
-    let newNotification = new Notification("Event", eventName, eventId, username, firstName, lastName, true);
+function showToastSave(eventName, eventId, username, firstName, lastName,type) {
+    let newNotification = new Notification(type, eventName, eventId, username, firstName, lastName, true);
     newNotification = addNotification(newNotification);
     newNotification.show();
     newNotification.hideTimed(SECONDS_TILL_HIDE);
