@@ -100,7 +100,7 @@ public class DetailsController {
         for (NotificationResponse event : eventsToDisplay) {
             long timeDifference = Date.from(Instant.now()).toInstant().getEpochSecond() - event.getDateOfCreation();
             if (timeDifference <= 2) {
-                model.addAttribute("toastEventInformation" + count, "true");
+                model.addAttribute("toastEventInformation" + count, event.getArtefactType());
                 model.addAttribute("toastEventName" + count, event.getArtefactName());
                 model.addAttribute("toastEventId" + count, event.getArtefactId());
                 model.addAttribute("toastUsername" + count, event.getUsername());

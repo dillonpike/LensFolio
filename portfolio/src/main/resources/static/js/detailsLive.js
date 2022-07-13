@@ -306,8 +306,9 @@ function showToast(eventName, eventId, username, firstName, lastName, hide, type
  * @param username Username of the user making the change
  * @param firstName First name of the user
  * @param lastName Last name of the user
+ * @param type type of artefact
  */
-function showToastSave(eventName, eventId, username, firstName, lastName,type) {
+function showToastSave(eventName, eventId, username, firstName, lastName, type) {
     let newNotification = new Notification(type, eventName, eventId, username, firstName, lastName, true);
     newNotification = addNotification(newNotification);
     newNotification.show();
@@ -335,14 +336,14 @@ $(function () {
     // Checks if there should be a live update, and shows a toast if needed.
     let eventInformation1 = $("#toastInformation1");
     if (eventInformation1.text() !== "") {
-        showToastSave($("#toastEventName1").text(), $("#toastEventId1").text(), $("#toastUsername1").text(), $("#toastFirstName1").text(), $("#toastLastName1").text());
+        showToastSave($("#toastEventName1").text(), $("#toastEventId1").text(), $("#toastUsername1").text(), $("#toastFirstName1").text(), $("#toastLastName1").text(), eventInformation1.text());
     }
-    let eventInformation2 = $("#toastInformation2");
+    let eventInformation2 = $("#toastEventInformation2");
     if (eventInformation2.text() !== "") {
-        showToastSave($("#toastEventName2").text(), $("#toastEventId2").text(), $("#toastUsername2").text(), $("#toastFirstName2").text(), $("#toastLastName2").text());
+        showToastSave($("#toastEventName2").text(), $("#toastEventId2").text(), $("#toastUsername2").text(), $("#toastFirstName2").text(), $("#toastLastName2").text(), eventInformation1.text());
     }
-    let eventInformation3 = $("#toastInformation3");
+    let eventInformation3 = $("#toastEventInformation3");
     if (eventInformation3.text() !== "") {
-        showToastSave($("#toastEventName3").text(), $("#toastEventId3").text(), $("#toastUsername3").text(), $("#toastFirstName3").text(), $("#toastLastName3").text());
+        showToastSave($("#toastEventName3").text(), $("#toastEventId3").text(), $("#toastUsername3").text(), $("#toastFirstName3").text(), $("#toastLastName3").text(), eventInformation1.text());
     }
 });
