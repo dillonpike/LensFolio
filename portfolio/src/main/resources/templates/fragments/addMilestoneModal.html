@@ -21,7 +21,7 @@
                     <div class="mb-3">
                         <label for="milestoneDate" class="col-form-label">Milestone Date:</label>
                         <div class="input-group date" id="milestoneDateInput">
-                            <input onkeydown="return checkDateKeys(milestone)" onchange="validateModalDate('milestoneDate', 'submitMilestoneButton')" type="text" class="form-control" id="milestoneDate" th:field="*{milestoneDateString}">
+                            <input onkeydown="return checkDateKeys(milestone)" onchange="validateModalDate('milestoneDate', 'submitMilestoneButton', 'addMilestoneAlertBanner', 'addMilestoneAlertMessage')" type="text" class="form-control" id="milestoneDate" th:field="*{milestoneDateString}">
                             <span class="input-group-append">
                                 <span class="input-group-text bg-white">
                                     <em class="bi bi-calendar"></em>

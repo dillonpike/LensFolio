@@ -97,19 +97,16 @@ function milestoneModalSetup() {
         const modalTitle = milestoneModal.querySelector('.modal-title')
         const modalBodyInputs = milestoneModal.querySelectorAll('.modal-body input')
         const modalBodyTextArea = milestoneModal.querySelector('.modal-body textarea')
-        const modalButton = milestoneModal.querySelector('.modal-footer button')
         const modalForm = milestoneModal.querySelector('form')
 
         modalTitle.innerText = 'Edit Milestone'
-        modalButton.innerHTML = 'Save Milestone'
         modalForm.action = `edit-milestone/${milestone.id}`
-        modalForm.setAttribute('data-sprint-id', milestone.id)
+        modalForm.setAttribute('data-milestone-id', milestone.id)
 
-        modalBodyInputs[0].value = milestone.name
-        modalBodyInputs[1].value = milestone.date
-        //$('#milestoneDateInput').datepicker('setDate', milestone.milestoneDate)
+        modalBodyInputs[0].value = milestone.milestoneName
+        modalBodyInputs[1].value = milestone.milestoneDateString
 
         // Initial run of updateSprintDateError function in case initial values are invalid
-        // updateSprintDateError();
+        validateModalDate('milestoneDate', 'submitMilestoneButton', 'editMilestoneAlertBanner', 'editMilestoneAlertMessage');
     })
 }
