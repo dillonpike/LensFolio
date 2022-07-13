@@ -241,7 +241,7 @@
                                                         </button>
                                                         <ul class="dropdown-menu" aria-labelledby="milestoneActions">
                                                             <li>
-                                                                <a class="button-link" data-bs-toggle="modal" data-bs-target="#editMilestoneModal" th:data-bs-name="${milestone.getMilestoneName()}" data-bs-type="edit">
+                                                                <a class="button-link" data-bs-toggle="modal" data-bs-target="#editMilestoneModal" th:data-bs-milestone="${milestone.toJSONString()}" data-bs-type="edit">
                                                                     <button id="editMilestoneButton" class="dropdown-item" type="button">
                                                                         <span class='bi bi-pencil'></span> <i>Edit</i>
                                                                     </button>
@@ -275,7 +275,7 @@
 
 <!-- Modals -->
 <div th:replace="fragments/addMilestoneModal"></div>
-<div th:replace="fragments/editMilestoneModal"></div>
+<div id="editMilestoneModal" th:replace="fragments/editMilestoneModal"></div>
 <div id="sprintModal" th:replace="fragments/sprintModal :: sprintModal"></div>
 <div th:replace="fragments/deleteModalProject :: deleteModal()"></div>
 
@@ -342,6 +342,7 @@
     }
 
     sprintModalSetup()
+    milestoneModalSetup()
     deleteModalSetup()
     validateModalDate("milestoneDate", "submitMilestoneButton")
 </script>

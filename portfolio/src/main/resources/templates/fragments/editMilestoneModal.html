@@ -1,14 +1,14 @@
-<div class="modal fade" id="editMilestoneDialog" tabindex="-1" role="dialog" aria-labelledby="modalLongTitle" aria-hidden="true">
+<div class="modal fade" id="editMilestoneModal" tabindex="-1" role="dialog" aria-labelledby="modalLongTitle" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="modalLongTitle">Edit Milestone</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form method="post" id="milestoneForm" onsubmit="return validateModalName('milestoneName', 'addMilestoneAlertBanner', 'addMilestoneAlertMessage');" th:action="@{add-milestone}" th:object="${blankMilestone}">
+            <form id="milestoneForm" onsubmit="return validateModalName('milestoneName', 'editMilestoneAlertBanner', 'editMilestoneAlertMessage');" th:action="@{edit-milestone}" method="post">
                 <div class="modal-body">
-                    <div class="alert alert-danger alert-dismissible fade show" role="alert" id="addMilestoneAlertBanner" hidden>
-                        <span id="addMilestoneAlertMessage"></span>
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert" id="editMilestoneAlertBanner" hidden>
+                        <span id="editMilestoneAlertMessage"></span>
                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>
                     <div class="mb-3">

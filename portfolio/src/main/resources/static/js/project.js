@@ -80,3 +80,36 @@ function deleteModalSetup() {
         modalLink.href = `delete-${type}/${id}`
     })
 }
+
+/**
+ * Customises the milestone edit modal attributes with depending on what milestone it should display.
+ */
+function milestoneModalSetup() {
+    const milestoneModal = document.getElementById('editMilestoneModal')
+    milestoneModal.addEventListener('show.bs.modal', function (event) {
+        // Button that triggered the modal
+        const button = event.relatedTarget
+
+        // Extract info from data-bs-milestone attribute
+        const milestone = JSON.parse(button.getAttribute('data-bs-milestone'))
+
+        // Update the modal's content.
+        const modalTitle = milestoneModal.querySelector('.modal-title')
+        const modalBodyInputs = milestoneModal.querySelectorAll('.modal-body input')
+        const modalBodyTextArea = milestoneModal.querySelector('.modal-body textarea')
+        const modalButton = milestoneModal.querySelector('.modal-footer button')
+        const modalForm = milestoneModal.querySelector('form')
+
+        modalTitle.innerText = 'Edit Milestone'
+        modalButton.innerHTML = 'Save Milestone'
+        modalForm.action = `edit-milestone/${milestone.id}`
+        modalForm.setAttribute('data-sprint-id', milestone.id)
+
+        modalBodyInputs[0].value = milestone.name
+        modalBodyInputs[1].value = milestone.date
+        //$('#milestoneDateInput').datepicker('setDate', milestone.milestoneDate)
+
+        // Initial run of updateSprintDateError function in case initial values are invalid
+        // updateSprintDateError();
+    })
+}
