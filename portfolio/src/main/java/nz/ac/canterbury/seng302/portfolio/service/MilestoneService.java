@@ -71,6 +71,11 @@ public class MilestoneService {
         }
     }
 
+    /**
+     * Updates a milestone in the repository.
+     * @param milestone Edited milestone to save.
+     * @return Saved milestone as it appears in the repository.
+     */
     public Milestone updateMilestone(Milestone milestone) {
         Optional<Milestone> mOptional = repository.findById((Integer) milestone.getId());
 
