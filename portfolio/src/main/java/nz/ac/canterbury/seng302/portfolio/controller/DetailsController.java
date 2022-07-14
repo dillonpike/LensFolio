@@ -140,8 +140,7 @@ public class DetailsController {
         model.addAttribute("userFirstName", user.getFirstName());
         model.addAttribute("userLastName", user.getLastName());
 
-
-        model.addAttribute("blankMilestone", new Milestone());
+        model.addAttribute("newMilestone", new Milestone(0, "", new Date()));
 
         String role = principal.getClaimsList().stream()
                 .filter(claim -> claim.getType().equals("role"))

@@ -82,31 +82,72 @@ function deleteModalSetup() {
 }
 
 /**
- * Customises the milestone edit modal attributes with depending on what milestone it should display.
+ * Customises the project modal attributes with depending on what project it should display and whether it's being used
+ * for adding or editing a project.
+ */
+function projectModalSetup() {
+    const projectModal = document.getElementById('projectModal')
+    projectModal.addEventListener('show.bs.modal', function (event) {
+        // Button that triggered the modal
+        const button = event.relatedTarget
+
+        // Extract info from data-bs-* attributes
+        const project = JSON.parse(button.getAttribute('data-bs-project'))
+
+        // Update the modal's content.
+        const modalBodyInputs = projectModal.querySelectorAll('.modal-body input')
+        const modalBodyTextArea = projectModal.querySelector('.modal-body textarea')
+
+        modalBodyInputs[0].value = project.name
+        $('#projectStart').datepicker('setDate', project.startDateString)
+        $('#projectEnd').datepicker('setDate', project.endDateString)
+        modalBodyTextArea.value = project.description
+
+        // Initial run of updateProjectDateError function in case initial values are invalid
+        updateProjectDateError();
+        updateCharsLeft('projectName', 'projectNameLength', 50);
+        updateCharsLeft('projectDescription', 'projectDescriptionLength', 500);
+    })
+}
+
+/**
+ * Customises the milestone modal attributes with depending on what milestone it should display and whether it's being
+ * used for adding or editing a milestone.
  */
 function milestoneModalSetup() {
-    const milestoneModal = document.getElementById('editMilestoneModal')
+    const milestoneModal = document.getElementById('milestoneModal')
     milestoneModal.addEventListener('show.bs.modal', function (event) {
         // Button that triggered the modal
         const button = event.relatedTarget
 
-        // Extract info from data-bs-milestone attribute
+        // Extract info from data-bs-* attributes
         const milestone = JSON.parse(button.getAttribute('data-bs-milestone'))
+        const type = button.getAttribute('data-bs-type')
 
         // Update the modal's content.
         const modalTitle = milestoneModal.querySelector('.modal-title')
-        const modalBodyInputs = milestoneModal.querySelectorAll('.modal-body input')
-        const modalBodyTextArea = milestoneModal.querySelector('.modal-body textarea')
+        const modalBodyInput = milestoneModal.querySelector('.modal-body input')
+        const modalButton = milestoneModal.querySelector('.modal-footer button')
         const modalForm = milestoneModal.querySelector('form')
 
-        modalTitle.innerText = 'Edit Milestone'
-        modalForm.action = `edit-milestone/${milestone.id}`
-        modalForm.setAttribute('data-milestone-id', milestone.id)
+        if (type === 'add') {
+            modalTitle.innerText = 'Add Milestone'
+            modalButton.innerHTML = 'Add Milestone'
+            modalForm.action = 'add-milestone'
+        } else {
+            modalTitle.innerText = 'Edit Milestone'
+            modalButton.innerHTML = 'Save Milestone'
+            modalForm.action = `edit-milestone/${milestone.id}`
+            modalForm.setAttribute('milestone', milestone)
+        }
 
-        modalBodyInputs[0].value = milestone.milestoneName
-        modalBodyInputs[1].value = milestone.milestoneDateString
+        modalForm.setAttribute('object', milestone);
+        modalBodyInput.value = milestone.milestoneName
+        $('#milestoneDateInput').datepicker('setDate', milestone.milestoneDateString)
 
-        // Initial run of updateSprintDateError function in case initial values are invalid
-        validateModalDate('milestoneDate', 'submitMilestoneButton', 'editMilestoneAlertBanner', 'editMilestoneAlertMessage');
+        // Initial run of validation functions in case initial values are invalid
+        validateModalName('milestoneName', 'milestoneModalButton', 'milestoneAlertBanner', 'milestoneAlertMessage')
+        validateModalDate('milestoneDate', 'milestoneModalButton', 'milestoneDateAlertBanner', 'milestoneDateAlertMessage')
+        updateCharsLeft('milestoneName', 'milestoneNameLength', 50)
     })
 }
