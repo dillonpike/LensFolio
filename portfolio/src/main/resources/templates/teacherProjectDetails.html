@@ -340,6 +340,21 @@
         }
     }
 
+    function validateModalTime(elementId, submitElementId, alertBanner, alertMessage) {
+        const timeInputStr = document.getElementById(elementId).value;
+
+        if (timeInputStr.match(/[0-2]\d:[0-5]\d [a|p]m/)) {
+            $('#' + submitElementId).prop('disabled', false);
+            document.getElementById(alertBanner).hidden = true;
+            return true;
+        } else {
+            $('#' + submitElementId).prop('disabled', true);
+            document.getElementById(alertBanner).hidden = false;
+            document.getElementById(alertMessage).innerText = "Time should be in this format: \"hour:minute pm/am\" (e.g. 12:37 pm). ";
+            return false;
+        }
+    }
+
     sprintModalSetup()
     projectModalSetup()
     milestoneModalSetup()

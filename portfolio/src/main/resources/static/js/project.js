@@ -8,6 +8,10 @@ function checkDateKeys(event) {
     return '1234567890/'.includes(event.key) || [8, 13, 46].includes(event.keyCode) || 65 <= event.keyCode && event.keyCode <= 90;
 }
 
+function checkTimeKeys(event) {
+    return '1234567890: apm'.includes(event.key) || [8, 13, 46].includes(event.keyCode);
+}
+
 /**
  * Customises the sprint modal attributes with depending on what sprint it should display and whether it's being used
  * for adding or editing a sprint.
