@@ -149,5 +149,6 @@ function milestoneModalSetup() {
         validateModalName('milestoneName', 'milestoneModalButton', 'milestoneAlertBanner', 'milestoneAlertMessage')
         validateModalDate('milestoneDate', 'milestoneModalButton', 'milestoneDateAlertBanner', 'milestoneDateAlertMessage')
         updateCharsLeft('milestoneName', 'milestoneNameLength', 50)
+        $('#' + modalButton.getAttribute("id")).prop('hidden', false);
     })
 }
