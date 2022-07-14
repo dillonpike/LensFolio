@@ -9,6 +9,9 @@ import javax.persistence.Id;
 import java.util.Date;
 import java.text.SimpleDateFormat;
 import java.util.Objects;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.format.annotation.DateTimeFormat;
 
 @Entity // this is an entity, assumed to be in a table called Project
@@ -129,5 +132,9 @@ public class Project {
 
     public void setEndDateString(String date) {
         this.projectEndDate = Project.stringToDate(date);
+    }
+
+    public String toJSONString() throws JsonProcessingException {
+        return new ObjectMapper().writeValueAsString(this);
     }
 }

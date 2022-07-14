@@ -23,11 +23,12 @@ public class SprintLifetimeRestController {
      * @return error message based on the given sprint dates
      */
     @GetMapping(value="/add-sprint/error")
-    public String updateSprintRangeErrors(@RequestParam(value="sprintStartDate") String sprintStartDate,
+    public String updateSprintRangeErrors(@RequestParam(value="id") Integer id,
+                                          @RequestParam(value="sprintStartDate") String sprintStartDate,
                                           @RequestParam(value="sprintEndDate") String sprintEndDate) {
         return dateValidationService.validateDateRangeNotEmpty(sprintStartDate, sprintEndDate) + " " +
                 dateValidationService.validateStartDateNotAfterEndDate(sprintStartDate, sprintEndDate) + " " +
-                dateValidationService.validateSprintDateRange(sprintStartDate, sprintEndDate, -1) + " " +
+                dateValidationService.validateSprintDateRange(sprintStartDate, sprintEndDate, id) + " " +
                 dateValidationService.validateDatesInProjectDateRange(sprintStartDate, sprintEndDate);
     }
 }

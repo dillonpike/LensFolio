@@ -21,8 +21,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-import static nz.ac.canterbury.seng302.portfolio.controller.SprintLifetimeController.getUpdatedDate;
-
 /**
  * Controller for the display project details page
  */
@@ -128,18 +126,15 @@ public class DetailsController {
         elementService.addHeaderAttributes(model, id);
         model.addAttribute("userId", id);
 
+        model.addAttribute("newMilestone", new Milestone(0, "", new Date()));
 
-        model.addAttribute("blankMilestone", new Milestone());
-
-//        return getFinalThymeleafTemplate(principal);
-//        return "teacherProjectDetails";
         String role = principal.getClaimsList().stream()
                 .filter(claim -> claim.getType().equals("role"))
                 .findFirst()
                 .map(ClaimDTO::getValue)
                 .orElse("NOT FOUND");
 
-        model.addAttribute("sprint", sprintService.getSuggestedSprint());
+        model.addAttribute("newSprint", sprintService.getSuggestedSprint());
         model.addAttribute("sprintDateError", "");
 
         /* Return the name of the Thymeleaf template */
@@ -150,15 +145,6 @@ public class DetailsController {
             return "userProjectDetails";
         }
     }
-
-//    /**
-//     * Gets final details page to display, depending on whether the user is a teacher or a student.
-//     * @param principal Gets information about the user
-//     * @return Thymeleaf template
-//     */
-//    private String getFinalThymeleafTemplate(AuthState principal, Model model) {
-//
-//    }
 
     /**
      * This method maps @MessageMapping endpoint to the @SendTo endpoint. Called when something is sent to

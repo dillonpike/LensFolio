@@ -23,12 +23,12 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 
 /**
- * Unit tests for SprintLifetimeRestController.
+ * Unit tests for EditProjectRestController.
  */
 @ExtendWith(SpringExtension.class)
-@WebMvcTest(controllers = SprintLifetimeRestController.class)
+@WebMvcTest(controllers = EditProjectRestController.class)
 @AutoConfigureMockMvc(addFilters = false)
-class SprintLifetimeRestControllerTest {
+class EditProjectRestControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -44,7 +44,7 @@ class SprintLifetimeRestControllerTest {
 
     @Before
     public void setup() {
-        mockMvc = MockMvcBuilders.standaloneSetup(SprintLifetimeRestController.class).build();
+        mockMvc = MockMvcBuilders.standaloneSetup(EditProjectRestController.class).build();
     }
 
     /**
@@ -52,15 +52,14 @@ class SprintLifetimeRestControllerTest {
      * @throws Exception when an exception is thrown while performing the post request
      */
     @Test
-    void testAddSprintErrorMessage() throws Exception {
+    void testEditProjectErrorMessage() throws Exception {
         when(dateValidationService.validateDateRangeNotEmpty(anyString(), anyString())).thenReturn("1");
         when(dateValidationService.validateStartDateNotAfterEndDate(anyString(), anyString())).thenReturn("2");
-        when(dateValidationService.validateSprintDateRange(anyString(), anyString(), anyInt())).thenReturn("3");
-        when(dateValidationService.validateDatesInProjectDateRange(anyString(), anyString())).thenReturn("4");
-        mockMvc.perform(get("/add-sprint/error")
-                        .param("id", "1")
-                        .param("sprintStartDate", "2001-10-20")
-                        .param("sprintEndDate", "2001-10-21"))
+        when(dateValidationService.validateDateNotOverAYearAgo(anyString())).thenReturn("3");
+        when(dateValidationService.validateProjectDatesContainSprints(anyString(), anyString())).thenReturn("4");
+        mockMvc.perform(get("/edit-project/error")
+                        .param("projectStartDate", "2001-10-20")
+                        .param("projectEndDate", "2001-10-21"))
                 .andExpect(content().string("1 2 3 4"));
     }
 }
