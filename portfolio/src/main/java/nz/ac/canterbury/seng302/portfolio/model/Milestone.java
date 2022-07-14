@@ -164,6 +164,11 @@ public class Milestone {
         return Project.dateToString(this.milestoneDate);
     }
 
+    /**
+     * Returns the milestone as a JSON string.
+     * @return milestone as a JSON string
+     * @throws JsonProcessingException when the milestone cannot be converted to a JSON string
+     */
     public String toJSONString() throws JsonProcessingException {
         return new ObjectMapper().writeValueAsString(this);
     }

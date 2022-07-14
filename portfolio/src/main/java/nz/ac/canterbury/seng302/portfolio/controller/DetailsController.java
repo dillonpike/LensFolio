@@ -120,8 +120,7 @@ public class DetailsController {
         elementService.addHeaderAttributes(model, id);
         model.addAttribute("userId", id);
 
-
-        model.addAttribute("blankMilestone", new Milestone());
+        model.addAttribute("newMilestone", new Milestone(0, "", new Date()));
 
         String role = principal.getClaimsList().stream()
                 .filter(claim -> claim.getType().equals("role"))
@@ -140,15 +139,6 @@ public class DetailsController {
             return "userProjectDetails";
         }
     }
-
-//    /**
-//     * Gets final details page to display, depending on whether the user is a teacher or a student.
-//     * @param principal Gets information about the user
-//     * @return Thymeleaf template
-//     */
-//    private String getFinalThymeleafTemplate(AuthState principal, Model model) {
-//
-//    }
 
     /**
      * This method maps @MessageMapping endpoint to the @SendTo endpoint. Called when something is sent to
