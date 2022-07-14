@@ -338,11 +338,11 @@ $(function () {
     if (eventInformation1.text() !== "") {
         showToastSave($("#toastEventName1").text(), $("#toastEventId1").text(), $("#toastUsername1").text(), $("#toastFirstName1").text(), $("#toastLastName1").text(), eventInformation1.text());
     }
-    let eventInformation2 = $("#toastEventInformation2");
+    let eventInformation2 = $("#toastInformation2");
     if (eventInformation2.text() !== "") {
         showToastSave($("#toastEventName2").text(), $("#toastEventId2").text(), $("#toastUsername2").text(), $("#toastFirstName2").text(), $("#toastLastName2").text(), eventInformation1.text());
     }
-    let eventInformation3 = $("#toastEventInformation3");
+    let eventInformation3 = $("#toastInformation3");
     if (eventInformation3.text() !== "") {
         showToastSave($("#toastEventName3").text(), $("#toastEventId3").text(), $("#toastUsername3").text(), $("#toastFirstName3").text(), $("#toastLastName3").text(), eventInformation1.text());
     }

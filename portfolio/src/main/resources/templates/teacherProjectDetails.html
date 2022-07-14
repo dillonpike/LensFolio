@@ -267,7 +267,7 @@
                                                     <ul class="dropdown-menu" aria-labelledby="milestoneActions">
                                                         <li>
                                                             <a class="button-link" data-bs-toggle="modal" data-bs-target="#milestoneModal" th:data-bs-milestone="${milestone.toJSONString()}" data-bs-type="edit">
-                                                                <button id="editMilestoneButton" class="dropdown-item" type="button" th:attr="onclick='editMilestone(\'' + ${milestone.getMilestoneName()}+  '\',\'' + ${milestone.getId()}+  '\');'">
+                                                                <button id="editMilestoneButton" class="dropdown-item" type="button" th:attr="onclick='editMilestone(\'' + ${milestone.getMilestoneName()} + '\',\'' + ${milestone.getId()}+  '\');'">
                                                                     <span class='bi bi-pencil'></span> <i>Edit</i>
                                                                 </button>
                                                             </a>
