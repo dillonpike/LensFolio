@@ -267,7 +267,7 @@
                                                     <ul class="dropdown-menu" aria-labelledby="milestoneActions">
                                                         <li>
                                                             <a class="button-link" data-bs-toggle="modal" data-bs-target="#milestoneModal" th:data-bs-milestone="${milestone.toJSONString()}" data-bs-type="edit">
-                                                                <button id="editMilestoneButton" class="dropdown-item" type="button">
+                                                                <button id="editMilestoneButton" class="dropdown-item" type="button" th:attr="onclick='editMilestone(\'' + ${milestone.getMilestoneName()}+  '\',\'' + ${milestone.getId()}+  '\');'">
                                                                     <span class='bi bi-pencil'></span> <i>Edit</i>
                                                                 </button>
                                                             </a>
@@ -301,8 +301,92 @@
 <div th:replace="fragments/deleteModalProject :: deleteModal"></div>
 
 
+
+</body>
 <script src="../js/project.js"></script>
-<script src="js/detailsLive.js"></script>
+<script src="../js/detailsLive.js"></script>
+<script src="./js/liveNotificationRequest.js"></script>
+
+<script th:inline="javascript">
+    /**
+     * Sends the message that an event is being updated, and sends the events names with it.
+     */
+    function sendName(artefactName, artefactId,userId, userFirstName, userLastName, username, artefactType) {
+        stompClient.send("/test/portfolio/app/editing-artefact", {}, JSON.stringify({
+            'artefactName': artefactName,
+            'artefactId' : artefactId,
+            'artefactType' : artefactType,
+            'userId': userId,
+            'userFirstName': userFirstName,
+            'userLastName': userLastName,
+            'username': username
+        }));
+    }
+
+    /**
+     * Sends an empty message so that the other end can realise to close any popups it may have activated.
+     */
+    function sendEmpty(artefactName, artefactId,userId, userFirstName, userLastName, username, artefactType) {
+        stompClient.send("/test/portfolio/app/stop-editing-artefact", {}, JSON.stringify({
+            'artefactName': artefactName,
+            'artefactId' : artefactId,
+            'userId': userId,
+            'artefactType' : artefactType,
+            'userFirstName': userFirstName,
+            'userLastName': userLastName,
+            'username': username
+        }));
+    }
+
+    /**
+     * Sends the message that an event has been updated (saved), and sends the events names with it.
+     */
+    function sendNameReload(artefactName, artefactId,userId, userFirstName, userLastName, username, artefactType) {
+        stompClient.send("/test/portfolio/app/saved-edited-artefact", {}, JSON.stringify({
+            'artefactName': artefactName,
+            'artefactId' : artefactId,
+            'userId': userId,
+            'artefactType' : artefactType,
+            'userFirstName': userFirstName,
+            'userLastName': userLastName,
+            'username': username
+        }));
+    }
+
+    let userId = [[${userId}]];
+    let userFirstName = [[${userFirstName}]];
+    let userLastName = [[${userLastName}]];
+    let username = [[${username}]];
+    let milestoneName = '';
+    let milestoneId = -1;
+    /**
+     * Initialises functions/injections. All inputs when being focused on (edited) will update and send a notification
+     * to the details page. When these are no longer being updated (edited) they will disappear after a certain period.
+     */
+    $(function () {
+        connect();
+        document.addEventListener("visibilitychange", (ignore) => {
+            if (document.visibilityState !== "visible") {
+                sendEmpty(milestoneName, milestoneId,userId, userFirstName, userLastName, username, "Milestone");
+            }
+        });
+
+        // $( "#saveButton").click(function() { sendNameReload(eventName, eventId,userId, userFirstName, userLastName, username, "Event"); })
+        // $( "#cancelButton").click(function() { sendEmpty(eventName, eventId,userId, userFirstName, userLastName, username, "Event"); })
+    });
+
+    function editMilestone(milestone, id){
+        milestoneName = milestone;
+        milestoneId = id;
+        sendName(milestone,id,userId, userFirstName, userLastName, username, "Milestone");
+    }
+    $("#milestoneModalButton").click(function() {
+        const actionType = document.getElementById('milestoneModal').querySelector('form').action.split('/')[3];
+        if(actionType === 'edit-milestone'){
+            sendNameReload(milestoneName, milestoneId,userId, userFirstName, userLastName, username, "Milestone");
+        }
+    })
+</script>
 
 <script>
     //updates characters left
@@ -326,10 +410,10 @@
     let projectStartDate = /*[[${project.getStartDateString()}]]*/ "Error";
     /*]]>*/
     /**
-    Check if the name of the item that the user inputted is not an empty string
-    Submit the form and return true if the input is not empty string, otherwise show error banner with the error message and return false
-    @param elementId the ID of the text input HTML element for item's name
-    @param formId the ID of the form which contains the input HTML element
+     Check if the name of the item that the user inputted is not an empty string
+     Submit the form and return true if the input is not empty string, otherwise show error banner with the error message and return false
+     @param elementId the ID of the text input HTML element for item's name
+     @param formId the ID of the form which contains the input HTML element
      */
     function validateModalName(elementId, alertBanner, alertMessage) {
         const nameInput = document.getElementById(elementId).value;
@@ -344,10 +428,10 @@
         }
     }
     /**
-    Check if the date of the item that the user inputted is within the project dates range
-    Show error banner with error message and disable the submit button if the inputted date is outside the project dates range
-    @param elementId the ID of the date input HTML element
-    @param submitElementId the ID of the submit button on the modal
+     Check if the date of the item that the user inputted is within the project dates range
+     Show error banner with error message and disable the submit button if the inputted date is outside the project dates range
+     @param elementId the ID of the date input HTML element
+     @param submitElementId the ID of the submit button on the modal
      */
     function validateModalDate(elementId, submitElementId, alertBanner, alertMessage) {
         const dateInputStr = document.getElementById(elementId).value;
@@ -373,6 +457,4 @@
     validateModalDate("milestoneDate", "submitMilestoneButton")
 </script>
 
-
-</body>
 </html>
