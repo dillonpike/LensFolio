@@ -122,7 +122,6 @@ function milestoneModalSetup() {
 
         // Extract info from data-bs-* attributes
         const milestone = JSON.parse(button.getAttribute('data-bs-milestone'))
-        console.log(milestone)
         const type = button.getAttribute('data-bs-type')
 
         // Update the modal's content.
@@ -139,7 +138,7 @@ function milestoneModalSetup() {
             modalTitle.innerText = 'Edit Milestone'
             modalButton.innerHTML = 'Save Milestone'
             modalForm.action = `edit-milestone/${milestone.id}`
-            modalForm.setAttribute('data-milestone-id', sprint.id)
+            modalForm.setAttribute('milestone', milestone)
         }
 
         modalForm.setAttribute('object', milestone);
