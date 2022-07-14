@@ -3,6 +3,7 @@ package nz.ac.canterbury.seng302.portfolio.controller;
 import com.google.protobuf.Timestamp;
 import nz.ac.canterbury.seng302.portfolio.model.*;
 import nz.ac.canterbury.seng302.portfolio.service.*;
+import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
@@ -45,6 +46,9 @@ public class DetailsController {
 
     @Autowired
     private MilestoneService milestoneService;
+
+    @Autowired
+    private RegisterClientService registerClientService;
 
     /**
      * Holds list of events information for displaying.
@@ -89,10 +93,8 @@ public class DetailsController {
         }
 
         model.addAttribute("project", project);
-        model.addAttribute("project", project);
 
-        List<Event> eventList = eventService.getAllEventsOrdered();
-        model.addAttribute("events", eventList);
+
 
         // Runs if the reload was triggered by saving an event. Checks the notifications' creation time to see if 2 seconds has passed yet.
         int count = 1;
@@ -120,9 +122,12 @@ public class DetailsController {
         for (NotificationResponse event : eventsToDelete) {
             eventsToDisplay.remove(event);
         }
+
+        List<Event> eventList = eventService.getAllEventsOrdered();
+        model.addAttribute("events", eventList);
+
         List<Milestone> milestoneList = milestoneService.getAllMilestonesOrdered();
         model.addAttribute("milestones", milestoneList);
-
 
         List<Sprint> sprintList = sprintService.getAllSprintsOrdered();
         model.addAttribute("sprints", sprintList);
@@ -130,6 +135,10 @@ public class DetailsController {
         Integer id = userAccountClientService.getUserIDFromAuthState(principal);
         elementService.addHeaderAttributes(model, id);
         model.addAttribute("userId", id);
+        UserResponse user = registerClientService.getUserData(id);
+        model.addAttribute("username", user.getUsername());
+        model.addAttribute("userFirstName", user.getFirstName());
+        model.addAttribute("userLastName", user.getLastName());
 
 
         model.addAttribute("blankMilestone", new Milestone());
