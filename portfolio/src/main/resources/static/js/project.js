@@ -52,3 +52,61 @@ function sprintModalSetup() {
         updateCharsLeft('sprintDescription', 'sprintDescriptionLength', 500);
     })
 }
+
+/**
+ * Customises the delete modal attributes with depending on what type of thing (e.g. sprint, event, milestone) is
+ * being deleted, and which thing it is.
+ */
+function deleteModalSetup() {
+    const deleteModal = document.getElementById('deleteModal')
+    deleteModal.addEventListener('show.bs.modal', function (event) {
+        // Button that triggered the modal
+        const button = event.relatedTarget
+
+        // Extract info from data-bs-* attributes
+        const id = button.getAttribute('data-bs-id')
+        const name = button.getAttribute('data-bs-name')
+        const type = button.getAttribute('data-bs-type')
+
+        // Update the modal's content.
+        const modalTitle = deleteModal.querySelector('.modal-title')
+        const modalBodyLabel = deleteModal.querySelector('.modal-body label')
+        const modalButton = deleteModal.querySelector('.modal-footer button')
+        const modalLink = deleteModal.querySelector('.modal-footer a')
+
+        modalTitle.innerText = `Delete ${type.charAt(0).toUpperCase() + type.slice(1)}`
+        modalBodyLabel.textContent = `Are you sure you want to delete ${name}?`
+        modalButton.innerHTML = `Delete ${type.charAt(0).toUpperCase() + type.slice(1)}`
+        modalLink.href = `delete-${type}/${id}`
+    })
+}
+
+/**
+ * Customises the milestone edit modal attributes with depending on what milestone it should display.
+ */
+function milestoneModalSetup() {
+    const milestoneModal = document.getElementById('editMilestoneModal')
+    milestoneModal.addEventListener('show.bs.modal', function (event) {
+        // Button that triggered the modal
+        const button = event.relatedTarget
+
+        // Extract info from data-bs-milestone attribute
+        const milestone = JSON.parse(button.getAttribute('data-bs-milestone'))
+
+        // Update the modal's content.
+        const modalTitle = milestoneModal.querySelector('.modal-title')
+        const modalBodyInputs = milestoneModal.querySelectorAll('.modal-body input')
+        const modalBodyTextArea = milestoneModal.querySelector('.modal-body textarea')
+        const modalForm = milestoneModal.querySelector('form')
+
+        modalTitle.innerText = 'Edit Milestone'
+        modalForm.action = `edit-milestone/${milestone.id}`
+        modalForm.setAttribute('data-milestone-id', milestone.id)
+
+        modalBodyInputs[0].value = milestone.milestoneName
+        modalBodyInputs[1].value = milestone.milestoneDateString
+
+        // Initial run of updateSprintDateError function in case initial values are invalid
+        validateModalDate('milestoneDate', 'submitMilestoneButton', 'editMilestoneAlertBanner', 'editMilestoneAlertMessage');
+    })
+}

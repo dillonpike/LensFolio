@@ -1,5 +1,8 @@
 package nz.ac.canterbury.seng302.portfolio.model;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -159,5 +162,9 @@ public class Milestone {
      */
     public String getMilestoneDateString() {
         return Project.dateToString(this.milestoneDate);
+    }
+
+    public String toJSONString() throws JsonProcessingException {
+        return new ObjectMapper().writeValueAsString(this);
     }
 }

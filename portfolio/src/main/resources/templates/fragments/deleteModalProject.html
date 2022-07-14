@@ -1,0 +1,20 @@
+<div th:fragment="deleteModal()" class="modal fade" th:id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteModalTitle">Delete </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label class="col-form-label">Are you sure you want to delete ?</label>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <a class="button-link">
+                    <button class="btn btn-danger" id="deleteModalButton" >Delete</button>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
