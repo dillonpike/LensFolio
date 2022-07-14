@@ -128,6 +128,8 @@ public class DetailsController {
 
         model.addAttribute("newMilestone", new Milestone(0, "", new Date()));
 
+        model.addAttribute("newDeadline", new Deadline(0, "", new Date()));
+
         String role = principal.getClaimsList().stream()
                 .filter(claim -> claim.getType().equals("role"))
                 .findFirst()

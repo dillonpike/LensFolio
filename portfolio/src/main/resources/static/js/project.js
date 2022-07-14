@@ -152,3 +152,46 @@ function milestoneModalSetup() {
         $('#' + modalButton.getAttribute("id")).prop('hidden', false);
     })
 }
+
+/**
+ * Customises the deadline modal attributes with depending on what deadline it should display and whether it's being
+ * used for adding or editing a deadline.
+ */
+function deadlineModalSetup() {
+    const deadlineModal = document.getElementById('deadlineModal')
+    deadlineModal.addEventListener('show.bs.modal', function (event) {
+        // Button that triggered the modal
+        const button = event.relatedTarget
+
+        // Extract info from data-bs-* attributes
+        const deadline = JSON.parse(button.getAttribute('data-bs-deadline'))
+        const type = button.getAttribute('data-bs-type')
+
+        // Update the modal's content.
+        const modalTitle = deadlineModal.querySelector('.modal-title')
+        const modalBodyInput = deadlineModal.querySelector('.modal-body input')
+        const modalButton = deadlineModal.querySelector('.modal-footer button')
+        const modalForm = deadlineModal.querySelector('form')
+
+        if (type === 'add') {
+            modalTitle.innerText = 'Add Deadline'
+            modalButton.innerHTML = 'Add Deadline'
+            modalForm.action = 'add-deadline'
+        } else {
+            modalTitle.innerText = 'Edit Deadline'
+            modalButton.innerHTML = 'Save Deadline'
+            modalForm.action = `edit-deadline/${deadline.id}`
+            modalForm.setAttribute('deadline', deadline)
+        }
+
+        modalForm.setAttribute('object', deadline);
+        modalBodyInput.value = deadline.deadlineName
+        $('#deadlineDateInput').datepicker('setDate', deadline.deadlineDateString)
+
+        // Initial run of validation functions in case initial values are invalid
+        validateModalName('deadlineName', 'deadlineModalButton', 'deadlineAlertBanner', 'deadlineAlertMessage')
+        validateModalDate('deadlineDate', 'deadlineModalButton', 'deadlineDateAlertBanner', 'deadlineDateAlertMessage')
+        updateCharsLeft('deadlineName', 'deadlineNameLength', 50)
+        $('#' + modalButton.getAttribute("id")).prop('hidden', false);
+    })
+}

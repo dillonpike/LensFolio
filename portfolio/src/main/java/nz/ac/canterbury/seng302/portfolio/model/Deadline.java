@@ -1,5 +1,8 @@
 package nz.ac.canterbury.seng302.portfolio.model;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -154,5 +157,14 @@ public class Deadline {
         return String.format(
                 "deadline[id=%d, parentProjectId='%d', deadlineName='%s', deadlineDate='%s']",
                 id, parentProjectId, deadlineName, deadlineDate);
+    }
+
+    /**
+     * Returns the deadline as a JSON string.
+     * @return deadline as a JSON string
+     * @throws JsonProcessingException when the deadline cannot be converted to a JSON string
+     */
+    public String toJSONString() throws JsonProcessingException {
+        return new ObjectMapper().writeValueAsString(this);
     }
 }
