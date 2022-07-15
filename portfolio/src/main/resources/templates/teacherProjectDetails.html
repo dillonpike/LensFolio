@@ -359,6 +359,7 @@
     let username = [[${username}]];
     let milestoneName = '';
     let milestoneId = -1;
+
     /**
      * Initialises functions/injections. All inputs when being focused on (edited) will update and send a notification
      * to the details page. When these are no longer being updated (edited) they will disappear after a certain period.
@@ -370,9 +371,6 @@
                 sendEmpty(milestoneName, milestoneId,userId, userFirstName, userLastName, username, "Milestone");
             }
         });
-
-        // $( "#saveButton").click(function() { sendNameReload(eventName, eventId,userId, userFirstName, userLastName, username, "Event"); })
-        // $( "#cancelButton").click(function() { sendEmpty(eventName, eventId,userId, userFirstName, userLastName, username, "Event"); })
     });
 
     function editMilestone(milestone, id){
@@ -380,10 +378,17 @@
         milestoneId = id;
         sendName(milestone,id,userId, userFirstName, userLastName, username, "Milestone");
     }
+
     $("#milestoneModalButton").click(function() {
         const actionType = document.getElementById('milestoneModal').querySelector('form').action.split('/')[3];
         if(actionType === 'edit-milestone'){
             sendNameReload(milestoneName, milestoneId,userId, userFirstName, userLastName, username, "Milestone");
+        }
+    })
+    $("#closeMilestoneModalButton").click(function() {
+        const actionType = document.getElementById('milestoneModal').querySelector('form').action.split('/')[3];
+        if(actionType === 'edit-milestone'){
+            sendEmpty(milestoneName, milestoneId,userId, userFirstName, userLastName, username, "Milestone");
         }
     })
 </script>
