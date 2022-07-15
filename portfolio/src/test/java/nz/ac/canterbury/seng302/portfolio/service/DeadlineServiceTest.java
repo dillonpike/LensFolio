@@ -125,4 +125,30 @@ class DeadlineServiceTest {
         verify(deadlinesRepository, times(1)).save(expectedDeadline);
         assertEquals(expectedDeadline, deadline);
     }
+
+    /**
+     * Tests that the testRemove method calls the repository's deleteById method with the expected deadline id when a
+     * deadline with the given id exists.
+     */
+    @Test
+    void testRemoveDeadlineExists() {
+        Deadline testDeadline = new Deadline(0, "Test Deadline", new Date());
+        when(deadlinesRepository.findById(any(Integer.class))).thenReturn(Optional.of(testDeadline));
+        deadlineService.removeDeadline(testDeadline.getId());
+
+        verify(deadlinesRepository, times(1)).deleteById(testDeadline.getId());
+
+    }
+
+    /**
+     * Tests that the testRemove method does not call the repository's deleteById method with when a deadline with the
+     * given id does not exist.
+     */
+    @Test
+    void testRemoveMilestoneDoesNotExist() {
+        when(deadlinesRepository.findById(any(Integer.class))).thenReturn(Optional.empty());
+        deadlineService.removeDeadline(1);
+
+        verify(deadlinesRepository, times(0)).deleteById(any(Integer.class));
+    }
 }
