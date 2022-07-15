@@ -110,13 +110,13 @@ public class Event {
     }
 
     public String getStartDateDetail()  {
-        SimpleDateFormat dateFormat = new SimpleDateFormat("YYYY-MM-dd");
-        return (dateFormat.format(eventStartDate)  + " " + eventStartTime);
+        DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("h:mm a");
+        return (Project.dateToString(eventStartDate)  + " " + eventStartTime.format(dateFormat));
     }
 
     public String getEndDateDetail()  {
-        SimpleDateFormat dateFormat = new SimpleDateFormat("YYYY-MM-dd");
-        return (dateFormat.format(eventEndDate) + " " + eventEndTime );
+        DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("h:mm a");
+        return (Project.dateToString(eventEndDate) + " " + eventEndTime.format(dateFormat));
     }
 
     public int getEventStartDay() {
