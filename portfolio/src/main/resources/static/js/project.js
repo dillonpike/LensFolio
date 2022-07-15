@@ -173,7 +173,7 @@ function deadlineModalSetup() {
 
         // Update the modal's content.
         const modalTitle = deadlineModal.querySelector('.modal-title')
-        const modalBodyInput = deadlineModal.querySelector('.modal-body input')
+        const modalBodyInput = deadlineModal.querySelectorAll('.modal-body input')
         const modalButton = deadlineModal.querySelector('.modal-footer button')
         const modalForm = deadlineModal.querySelector('form')
 
@@ -189,8 +189,9 @@ function deadlineModalSetup() {
         }
 
         modalForm.setAttribute('object', deadline);
-        modalBodyInput.value = deadline.deadlineName
-        $('#deadlineDateInput').datepicker('setDate', deadline.deadlineDateString)
+        modalBodyInput[0].value = deadline.deadlineName;
+        $('#deadlineDateInput').datepicker('setDate', deadline.deadlineDateString);
+        modalBodyInput[2].value = deadline.deadlineTime;
 
         // Initial run of validation functions in case initial values are invalid
         validateModalName('deadlineName', 'deadlineModalButton', 'deadlineAlertBanner', 'deadlineAlertMessage')

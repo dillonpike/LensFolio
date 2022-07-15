@@ -343,7 +343,7 @@
     function validateModalTime(elementId, submitElementId, alertBanner, alertMessage) {
         const timeInputStr = document.getElementById(elementId).value;
 
-        if (timeInputStr.match(/[0-2]\d:[0-5]\d [a|p]m/)) {
+        if (timeInputStr.match(/[0-2]?\d:[0-5]\d [a|p]m/)) {
             $('#' + submitElementId).prop('disabled', false);
             document.getElementById(alertBanner).hidden = true;
             return true;

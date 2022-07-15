@@ -7,6 +7,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -129,6 +130,26 @@ public class Deadline {
     public String getDeadlineTime()  {
         SimpleDateFormat dateFormat = new SimpleDateFormat("h:mm a");
         return (dateFormat.format(deadlineDate));
+    }
+
+    /**
+     * Sets the time of the date stored in deadlineDate.
+     * @param time Time in string format, formatted as: "h:mm a" (e.g. 12:37 am).
+     * @throws ParseException Thrown if time parameter is given in the wrong format.
+     */
+    public void setDeadlineTime(String time) throws ParseException {
+        SimpleDateFormat timeFormat = new SimpleDateFormat("h:mm a");
+        long milliseconds = timeFormat.parse(time).getTime();
+        deadlineDate.setTime(milliseconds);
+    }
+
+    /**
+     * Gets the deadline date in the format made by the Project class
+     * ONLY GETS DATE, NOT TIME
+     * @return Deadline date as a string.
+     */
+    public String getDeadlineDateString() {
+        return Project.dateToString(this.deadlineDate);
     }
 
     /**
