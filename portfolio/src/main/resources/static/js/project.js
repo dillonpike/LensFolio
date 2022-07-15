@@ -191,7 +191,7 @@ function deadlineModalSetup() {
         modalForm.setAttribute('object', deadline);
         modalBodyInput[0].value = deadline.deadlineName;
         $('#deadlineDateInput').datepicker('setDate', deadline.deadlineDateString);
-        modalBodyInput[2].value = deadline.deadlineTime;
+        modalBodyInput[2].value = deadline.deadlineTimeString;
 
         // Initial run of validation functions in case initial values are invalid
         validateModalName('deadlineName', 'deadlineModalButton', 'deadlineAlertBanner', 'deadlineAlertMessage')
