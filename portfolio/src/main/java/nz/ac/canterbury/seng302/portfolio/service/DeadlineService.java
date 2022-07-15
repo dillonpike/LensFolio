@@ -80,4 +80,18 @@ public class DeadlineService {
     public Deadline addDeadline(Deadline deadline) {
         return repository.save(deadline);
     }
+
+
+    /**
+     * Removes the deadline by the given id from the database if it exists
+     * @param id of the deadline to remove
+     */
+    public void removeDeadline(Integer id) {
+        Optional<Deadline> sOptional = repository.findById(id);
+
+        if (sOptional.isPresent()) {
+            Deadline deadline = sOptional.get();
+            repository.deleteById(deadline.getId());
+        }
+    }
 }
