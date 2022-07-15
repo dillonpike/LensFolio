@@ -361,8 +361,7 @@
     let milestoneId = -1;
 
     /**
-     * Initialises functions/injections. All inputs when being focused on (edited) will update and send a notification
-     * to the details page. When these are no longer being updated (edited) they will disappear after a certain period.
+     * Initialises functions/injections. When these are no longer being updated (edited) they will disappear after a certain period.
      */
     $(function () {
         connect();
@@ -373,18 +372,56 @@
         });
     });
 
+    /**
+     * get the selected milestone to edit then set it in global variable
+     */
     function editMilestone(milestone, id){
         milestoneName = milestone;
         milestoneId = id;
-        sendName(milestone,id,userId, userFirstName, userLastName, username, "Milestone");
     }
 
+    /**
+     * All inputs on milestone modal when being focused on (edited) will update and send a notification
+     * to the details page. When these are no longer being updated (edited) they will disappear after a certain period.
+    */
+    $("#milestoneName").on('focusin', function (ignore) {
+        const actionType = document.getElementById('milestoneModal').querySelector('form').action.split('/')[3]; //getting the type of the request, this is necessary as same modal is being used for both adding and editing milestone
+        if(actionType === 'edit-milestone'){
+            sendName(milestoneName,milestoneId,userId, userFirstName, userLastName, username, "Milestone");
+        }
+    }).on('focusout', function (ignore) {
+        const actionType = document.getElementById('milestoneModal').querySelector('form').action.split('/')[3]; //getting the type of the request, this is necessary as same modal is being used for both adding and editing milestone
+        if(actionType === 'edit-milestone'){
+            sendEmpty(milestoneName, milestoneId,userId, userFirstName, userLastName, username, "Milestone");
+        }
+    });
+    $("#milestoneDate").on('focusin', function (ignore) {
+        const actionType = document.getElementById('milestoneModal').querySelector('form').action.split('/')[3]; //getting the type of the request, this is necessary as same modal is being used for both adding and editing milestone
+        if(actionType === 'edit-milestone'){
+            sendName(milestoneName,milestoneId,userId, userFirstName, userLastName, username, "Milestone");
+        }
+    }).on('focusout', function (ignore) {
+        const actionType = document.getElementById('milestoneModal').querySelector('form').action.split('/')[3]; //getting the type of the request, this is necessary as same modal is being used for both adding and editing milestone
+        if(actionType === 'edit-milestone'){
+            sendEmpty(milestoneName, milestoneId,userId, userFirstName, userLastName, username, "Milestone");
+        }
+    });
+
+    /**
+     * send request to show the live notification's toast when an update on a milestone is saved by a user
+     * this function is triggered when save button on Milestone Modal is clicked
+     */
     $("#milestoneModalButton").click(function() {
-        const actionType = document.getElementById('milestoneModal').querySelector('form').action.split('/')[3];
+        const actionType = document.getElementById('milestoneModal').querySelector('form').action.split('/')[3]; //getting the type of the request, this is necessary as same modal is being used for both adding and editing milestone
         if(actionType === 'edit-milestone'){
             sendNameReload(milestoneName, milestoneId,userId, userFirstName, userLastName, username, "Milestone");
         }
     })
+
+    /**
+     * send request to hide the live notification's toast when an update on a milestone is saved by a user
+     * this function is triggered when close button on Milestone Modal is clicked
+     */
     $("#closeMilestoneModalButton").click(function() {
         const actionType = document.getElementById('milestoneModal').querySelector('form').action.split('/')[3];
         if(actionType === 'edit-milestone'){
