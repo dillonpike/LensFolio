@@ -263,7 +263,47 @@
                             </div>
                         </div>
                     </div>
-                    <div class="tab-pane fade" id="deadline" role="tabpanel" aria-labelledby="deadline-tab">...</div>
+                    <div class="tab-pane fade" id="deadline" role="tabpanel" aria-labelledby="deadline-tab">
+                        <div th:each="deadline, meta: ${deadlines}">
+                            <div class="card card-margin" id="deadlineId" th:value="${deadline.id}">
+                                <div class="card-body pt-0">
+                                    <div class="widget-49">
+                                        <div class="widget-49-title-wrapper hstack">
+                                            <div class="widget-49-date-primary">
+                                                <span class="widget-49-date-day" th:text="${deadline.getDeadlineDay()}"></span>
+                                                <span class="widget-49-date-month" th:text="${deadline.getDeadlineMonth()}" ></span>
+                                            </div>
+                                            <div class="widget-49-meeting-info">
+                                                <span class="widget-49-pro-title" th:text="${deadline.getDeadlineName()}"></span>
+                                            </div>
+                                            <div class="ms-auto">
+                                                <div class="dropdown">
+                                                    <button class="btn btn-default " type="button" id="deadlineActions" data-bs-toggle="dropdown" aria-expanded="false" >
+                                                        <i class='bi bi-gear-fill'></i>
+                                                    </button>
+                                                    <ul class="dropdown-menu" aria-labelledby="deadlineActions">
+                                                        <li>
+                                                            <a class="button-link" data-bs-toggle="modal" data-bs-target="#milestoneModal" th:data-bs-milestone="${deadline.toJSONString()}" data-bs-type="edit">
+                                                                <button id="editDeadlineButton" class="dropdown-item" type="button">
+                                                                    <span class='bi bi-pencil'></span> <i>Edit</i>
+                                                                </button>
+                                                            </a>
+                                                        </li>
+                                                        <li>
+                                                            <a class="button-link" data-bs-toggle="modal" data-bs-target="#deleteModal" th:data-bs-id="${deadline.id}" th:data-bs-name="${deadline.deadlineName}" data-bs-type="deadline">
+                                                                <button class="dropdown-item" type="button">
+                                                                    <span class='bi bi-trash' style='color: red'></span> <i style='color: red'>Delete</i>
+                                                                </button>
+                                                            </a>
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                 </div>
             </div>
         </div>
