@@ -4,7 +4,9 @@ import nz.ac.canterbury.seng302.portfolio.model.Deadline;
 import nz.ac.canterbury.seng302.portfolio.service.DeadlineService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
 /**
@@ -26,6 +28,12 @@ public class DeadlineLifetimeController {
     @PostMapping("/add-deadline")
     public String deadlineSave(@ModelAttribute("deadline") Deadline deadline) {
         deadlineService.addDeadline(deadline);
+        return "redirect:/details";
+    }
+
+    @GetMapping("/delete-deadline/{id}")
+    public String deadlineRemove(@PathVariable("id") Integer id) {
+        deadlineService.removeDeadline(id);
         return "redirect:/details";
     }
 }
