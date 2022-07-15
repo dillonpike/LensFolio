@@ -20,8 +20,6 @@ public class EventService {
     @Autowired
     private EventRepository eventRepository;
 
-    @Autowired
-    private SprintRepository sprintRepository;
 
     /**
      * Get list of all events
@@ -96,7 +94,7 @@ public class EventService {
     }
 
     /**
-     * Get list of all events
+     * Get list of all events in order
      * @return List of events
      */
     public List<Event> getAllEventsOrdered() {
@@ -105,7 +103,8 @@ public class EventService {
 
 
     /***
-     * Get all events and add colour value for start/end date
+     * For any events existing, get the sprints colour for its start date if it is within the sprint time slot,
+     * and the same is done with the events end date
      *
      * @param sprints sprints in chronological order
      * @return events in chronological order
@@ -113,15 +112,17 @@ public class EventService {
     public List<Event> getAllEventsOrderedWithColour(List<Sprint> sprints) {
         List<Event> eventList = getAllEventsOrdered();
         for (int i = 0; i < eventList.size(); i++) {
+//            Get the event from current index
+            Event currentEvent = eventList.get(i);
             for (Sprint sprint : sprints) {
-                if (eventList.get(i).getEventStartDate().after(sprint.getStartDate()) && eventList.get(i).getEventStartDate().before(sprints.get(i).getEndDate())) {
-                    eventList.get(i).setStartDateColour(sprint.getColour());
+                if (currentEvent.getEventStartDate().after(sprint.getStartDate()) && currentEvent.getEventStartDate().before(sprint.getEndDate())) {
+                    currentEvent.setStartDateColour(sprint.getColour());
                 }
-                if (eventList.get(i).getEventEndDate().after(sprint.getStartDate()) && eventList.get(i).getEventEndDate().before(sprints.get(i).getEndDate())) {
-                    eventList.get(i).setEndDateColour(sprint.getColour());
+                if (currentEvent.getEventEndDate().after(sprint.getStartDate()) && currentEvent.getEventEndDate().before(sprint.getEndDate())) {
+                    currentEvent.setEndDateColour(sprint.getColour());
                 }
             }
-            eventRepository.save(eventList.get(i));
+            eventRepository.save(currentEvent);
         }
         return getAllEventsOrdered();
     }
