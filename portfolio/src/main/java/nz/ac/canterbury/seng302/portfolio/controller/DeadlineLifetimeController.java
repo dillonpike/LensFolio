@@ -31,6 +31,10 @@ public class DeadlineLifetimeController {
         return "redirect:/details";
     }
 
+    /**
+     * Tried to delete a deadline with given id
+     * @param id of the deadline being deleted
+     */
     @GetMapping("/delete-deadline/{id}")
     public String deadlineRemove(@PathVariable("id") Integer id) {
         deadlineService.removeDeadline(id);

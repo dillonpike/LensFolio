@@ -29,9 +29,7 @@ public class EditDeadlineController {
     @PostMapping("/edit-deadline/{id}")
     public String deadlineEditSave(
             @PathVariable("id") Integer id,
-            @AuthenticationPrincipal AuthState principal,
-            @ModelAttribute("deadline") Deadline deadline,
-            Model model
+            @ModelAttribute("deadline") Deadline deadline
     ) throws Exception {
         Deadline newDeadline = deadlineService.getDeadlineById(id);
         newDeadline.setDeadlineName(deadline.getDeadlineName());
