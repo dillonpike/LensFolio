@@ -39,13 +39,14 @@ class EventServiceTest {
         sprint.setName("Testing");
         sprint.setStartDate(sprintService.calendarDateStringToDate("2001-12-20", false));
         sprint.setEndDate(sprintService.calendarDateStringToDate("2001-12-22", true));
+        sprint.setColour("#5897fc");
         List<Sprint> sprintList = new ArrayList<>();
         sprintList.add(sprint);
 
         Event event = new Event();
         event.setEventStartDate(sprintService.calendarDateStringToDate("2001-12-21", false));
         event.setEventEndDate(sprintService.calendarDateStringToDate("2001-12-21", true));
-        event.setEndDateColour("#5897fc");
+        //event.setEndDateColour("#5897fc");
         List<Event> eventList = new ArrayList<>();
         eventList.add(event);
 
@@ -53,6 +54,7 @@ class EventServiceTest {
 
         List<Event> outputEventList = eventService.getAllEventsOrderedWithColour(sprintList);
         assertThat(outputEventList.size()).isSameAs(eventList.size());
-        assertThat(outputEventList.get(0).getEndDateColour()).isSameAs(event.getEndDateColour());
+        assertThat(outputEventList.get(0).getStartDateColour()).isSameAs(sprint.getColour());
+        assertThat(outputEventList.get(0).getEndDateColour()).isSameAs(sprint.getColour());
     }
 }
