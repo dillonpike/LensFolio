@@ -126,8 +126,8 @@ public class LiveUpdatesStepDefs {
 
     @Then("a live notification appears on the details page with correct message {string}")
     public void a_live_notification_appears_on_the_details_page_with_correct_message(String messageType) {
-        webDriver.switchTo().window(tabs.get(1));
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.className("title-name")));
+//        webDriver.switchTo().window(tabs.get(1));
+//        wait.until(ExpectedConditions.visibilityOfElementLocated(By.className("title-name")));
         String pattern = "";
         if (messageType.equals("Is being edited")) {
             pattern = "^'.*' is being edited by .*$";
@@ -139,10 +139,10 @@ public class LiveUpdatesStepDefs {
         try {
             wait.until(ExpectedConditions.elementToBeClickable(By.id("nonExistent")));
         } catch (TimeoutException ignored) {}
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("popupText")));
-        System.out.println(webDriver.findElement(By.id("popupText")).getText() + "< This");
-        assertTrue(webDriver.findElement(By.id("popupText")).getText().matches(pattern));
-        assertTrue(webDriver.findElement(By.id("liveToast")).isDisplayed());
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("popupText1")));
+        System.out.println(webDriver.findElement(By.id("popupText1")).getText() + "< This");
+        assertTrue(webDriver.findElement(By.id("popupText1")).getText().matches(pattern));
+        assertTrue(webDriver.findElement(By.id("liveToast1")).isDisplayed());
 
     }
 
@@ -155,11 +155,40 @@ public class LiveUpdatesStepDefs {
 
     @Then("a live notification disappears from the details page after {int} seconds")
     public void a_live_notification_disappears_from_the_details_page_after_seconds(Integer timeInSeconds) {
-        webDriver.switchTo().window(tabs.get(1));
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.className("title-name")));
+//        webDriver.switchTo().window(tabs.get(1));
+//        wait.until(ExpectedConditions.visibilityOfElementLocated(By.className("title-name")));
         WebDriverWait customWait = new WebDriverWait(webDriver, timeInSeconds); // 'timeInSeconds' wait time
-        customWait.until(ExpectedConditions.invisibilityOfElementLocated(By.id("liveToast")));
-        assertFalse(webDriver.findElement(By.id("liveToast")).isDisplayed());
+        customWait.until(ExpectedConditions.invisibilityOfElementLocated(By.id("liveToast1")));
+        assertFalse(webDriver.findElement(By.id("liveToast1")).isDisplayed());
     }
 
+
+
+    @And("I open edit milestone modal")
+    public void iOpenEditMilestoneModal() {
+        webDriver.findElement(By.id("milestone-tab")).click();
+        wait.until(ExpectedConditions.elementToBeClickable(By.id("milestoneActions")));
+        webDriver.findElement(By.id("milestoneActions")).click();
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("editMilestoneButton")));
+        webDriver.findElement(By.id("editMilestoneButton")).click();
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//h5[contains(., 'Edit Milestone')]")));
+    }
+
+    @When("I edit an milestone")
+    public void iEditAnMilestone() {
+        webDriver.findElement(By.id("milestoneName")).click();
+        try {
+            wait.until(ExpectedConditions.elementToBeClickable(By.id("nonExistent")));
+        } catch (TimeoutException ignored) {}
+    }
+
+    @And("I save the update")
+    public void iSaveTheUpdate() {
+        webDriver.findElement(By.id("milestoneModalButton")).click();
+    }
+
+    @And("I stop editing an milestone")
+    public void iStopEditingAnMilestone() {
+        webDriver.findElement(By.id("exampleModalLongTitle")).click();
+    }
 }
