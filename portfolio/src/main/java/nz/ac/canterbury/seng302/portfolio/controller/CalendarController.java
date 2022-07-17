@@ -50,7 +50,7 @@ public class CalendarController {
         int colIndex = 0;
         for (Sprint sprint : sprints) {
             Date endDate = SprintLifetimeController.getUpdatedDate(sprint.getEndDate(), 1, 0);
-            json.append("{id: '").append(sprint.getId()).append("', title: '").append(sprint.getName()).append("', start: '").append(sprint.getStartDate()).append("', end: '").append(endDate.toInstant()).append("', allDay: true, color: '").append(colours.get(colIndex)).append("'},");
+            json.append("{id: '").append(sprint.getId()).append("', title: '").append(sprint.getName()).append("', start: '").append(sprint.getStartDate()).append("', end: '").append(endDate.toInstant()).append("', allDay: true, color: '").append(colours.get(colIndex)).append("', type: 'Sprint").append("'},");
 
             if (colIndex == (colours.size() - 1)) { // List max
                 colIndex = 0;
@@ -71,7 +71,7 @@ public class CalendarController {
         StringBuilder json = new StringBuilder();
         for (Event event : events) {
             Date endDate = SprintLifetimeController.getUpdatedDate(event.getEventEndDate(), 1, 0);
-            json.append("{id: '").append(event.getId()).append("', title: '").append(event.getEventName()).append("', start: '").append(event.getEventStartDate()).append("', end: '").append(endDate.toInstant()).append("'},");
+            json.append("{id: '").append(event.getId()).append("', title: '").append(event.getEventName()).append("', start: '").append(event.getEventStartDate()).append("', end: '").append(endDate.toInstant()).append("', type: 'Event").append("'},");
         }
         return json.toString();
     }
@@ -84,7 +84,7 @@ public class CalendarController {
     public String deadlineListToJSON(List<Deadline> deadlines) {
         StringBuilder json = new StringBuilder();
         for (Deadline deadline : deadlines) {
-            json.append("{id: '").append(deadline.getId()).append("', title: '").append(deadline.getDeadlineName()).append("', start: '").append(deadline.getDeadlineDate()).append("', image_url: 'images/deadline.svg").append("'},");
+            json.append("{id: '").append(deadline.getId()).append("', title: '").append(deadline.getDeadlineName()).append("', start: '").append(deadline.getDeadlineDate()).append("', type: 'Deadline").append("'},");
         }
         return json.toString();
     }
@@ -115,7 +115,7 @@ public class CalendarController {
         } catch (Exception e) {
             return "500InternalServer";
         }
-        String calendarEvents = sprintListToJSON(sprints) + deadlineListToJSON(deadlines); // + eventListToJSON(events)
+        String calendarEvents = sprintListToJSON(sprints) + deadlineListToJSON(deadlines) + eventListToJSON(events);
         model.addAttribute("events", calendarEvents);
 
         Project project;

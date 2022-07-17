@@ -14,6 +14,10 @@
     <script src="webjars/jquery/3.6.0/dist/jquery.min.js"></script>
     <script th:inline="javascript">
         /*<![CDATA[*/
+        const eventImage = 'images/event.svg';
+        const deadlineImage = 'images/deadline.svg';
+        const milestoneImage = 'images/milestone.svg';
+
         let currentRole = /*[[${currentUserRole}]]*/ "";
         document.addEventListener('DOMContentLoaded', function() {
 
@@ -49,11 +53,23 @@
 
                     // image event
                     let imgEventWrap = document.createElement('div')
-                    if(arg.event.extendedProps.image_url) {
-                        let imgEvent = '<img src="'+arg.event.extendedProps.image_url+'" >'
+
+                    if(arg.event.extendedProps.type === 'Deadline') {
+                        let imgEvent = '<img src= ' + deadlineImage + ' >'
                         imgEventWrap.classList = "fc-event-img"
                         imgEventWrap.innerHTML = imgEvent;
                     }
+                    if(arg.event.extendedProps.type === 'Event') {
+                        let imgEvent = '<img src= ' + eventImage + ' >'
+                        imgEventWrap.classList = "fc-event-img"
+                        imgEventWrap.innerHTML = imgEvent;
+                    }
+                    if(arg.event.extendedProps.type === 'Milestone') {
+                        let imgEvent = '<img src= ' + milestoneImage + ' >'
+                        imgEventWrap.classList = "fc-event-img"
+                        imgEventWrap.innerHTML = imgEvent;
+                    }
+
 
                     arrayOfDomNodes = [ titleEvent,imgEventWrap ]
 
