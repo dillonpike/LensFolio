@@ -111,7 +111,6 @@ public class CalendarController {
             sprints = sprintService.getAllSprintsOrdered();
             events = eventService.getAllEventsOrdered();
             deadlines = deadlineService.getAllDeadlinesOrdered();
-            System.out.println(sprintListToJSON(sprints) + eventListToJSON(events));
         } catch (Exception e) {
             return "500InternalServer";
         }
