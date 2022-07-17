@@ -81,60 +81,71 @@
                 eventClick: function(info) {
                     // change the border color
                     let newEvent = calendar.getEventById(info.event.id);
-                    let selectedEvent = calendar.getEventById(selectedId);
-                    if (selectedId === -1) {
-                        //initial click on any event
-                        newEvent.setProp("classNames", "event-border");
-                        newEvent.setProp("borderColor", alternateColour(newEvent.backgroundColor));
-                        newEvent.setProp("editable", true);
-                        if(currentRole === 'student'){
-                            newEvent.setProp("editable", false);
-                        } else {
-                            newEvent.setProp("editable", true);
-                        }
-                        selectedId = info.event.id;
-                    } else {
-                        if (newEvent.id === selectedEvent.id) {
-                            newEvent.setProp("classNames", "event-border");
-                            newEvent.setProp("borderColor", newEvent.backgroundColor);
-                            newEvent.setProp("editable", false);
-                            selectedId = -1;
-                        } else {
-                            selectedEvent.setProp("classNames", "event-border");
-                            selectedEvent.setProp("borderColor", selectedEvent.backgroundColor)
-                            selectedEvent.setProp("editable", false);
+                    if (newEvent.extendedProps.type === 'Sprint') {
+                        let selectedEvent = calendar.getEventById(selectedId);
+                        if (selectedId === -1) {
+                            //initial click on any event
                             newEvent.setProp("classNames", "event-border");
                             newEvent.setProp("borderColor", alternateColour(newEvent.backgroundColor));
                             newEvent.setProp("editable", true);
-                            if(currentRole === 'student'){
+                            if (currentRole === 'student') {
                                 newEvent.setProp("editable", false);
                             } else {
                                 newEvent.setProp("editable", true);
                             }
                             selectedId = info.event.id;
+                        } else {
+                            if (newEvent.id === selectedEvent.id) {
+                                newEvent.setProp("classNames", "event-border");
+                                newEvent.setProp("borderColor", newEvent.backgroundColor);
+                                newEvent.setProp("editable", false);
+                                selectedId = -1;
+                            } else {
+                                selectedEvent.setProp("classNames", "event-border");
+                                selectedEvent.setProp("borderColor", selectedEvent.backgroundColor)
+                                selectedEvent.setProp("editable", false);
+                                newEvent.setProp("classNames", "event-border");
+                                newEvent.setProp("borderColor", alternateColour(newEvent.backgroundColor));
+                                newEvent.setProp("editable", true);
+                                if (currentRole === 'student') {
+                                    newEvent.setProp("editable", false);
+                                } else {
+                                    newEvent.setProp("editable", true);
+                                }
+                                selectedId = info.event.id;
+                            }
                         }
                     }
                 },
                 eventMouseEnter: function(info) {
                     // change the border color
                     let event = calendar.getEventById(info.event.id);
-                    if (event.borderColor !== alternateColour(event.backgroundColor)) {
-                        event.setProp("classNames", "event-border-hover");
-                        //event.setProp("borderColor", "black");
+
+                    if (event.extendedProps.type === 'Sprint') {
+                        if (event.borderColor !== alternateColour(event.backgroundColor)) {
+                            event.setProp("classNames", "event-border-hover");
+                            //event.setProp("borderColor", "black");
+                        }
                     }
                 },
                 eventMouseLeave: function(info) {
                     // change the border color
                     let event = calendar.getEventById(info.event.id);
-                    if (event.borderColor !== alternateColour(event.backgroundColor)) {
-                        event.setProp("classNames", "event-border");
-                        //event.setProp("borderColor", event.backgroundColor);
+                    if (event.extendedProps.type === 'Sprint') {
+                        if (event.borderColor !== alternateColour(event.backgroundColor)) {
+                            event.setProp("classNames", "event-border");
+                            //event.setProp("borderColor", event.backgroundColor);
+                        }
                     }
                 },
                 eventOverlap: function(stillEvent, movingEvent) {
-                    document.getElementById("overlapError").hidden = false;
-                    setTimeout( function () {document.getElementById("overlapError").hidden = true;}, 5000)
-                    return false;
+                    console.log(stillEvent);
+                    if (stillEvent.extendedProps.type === 'Sprint') {
+                        document.getElementById("overlapError").hidden = false;
+                        setTimeout( function () {document.getElementById("overlapError").hidden = true;}, 5000)
+                        return false;
+                    }
+                    return true;
                 },
                 eventResizableFromStart: function(info) {
                     return true;
