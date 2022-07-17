@@ -46,7 +46,6 @@ class EventServiceTest {
         Event event = new Event();
         event.setEventStartDate(sprintService.calendarDateStringToDate("2001-12-21", false));
         event.setEventEndDate(sprintService.calendarDateStringToDate("2001-12-21", true));
-        //event.setEndDateColour("#5897fc");
         List<Event> eventList = new ArrayList<>();
         eventList.add(event);
 
@@ -71,7 +70,6 @@ class EventServiceTest {
         Event event = new Event();
         event.setEventStartDate(sprintService.calendarDateStringToDate("2001-12-23", false));
         event.setEventEndDate(sprintService.calendarDateStringToDate("2001-12-23", true));
-        //event.setEndDateColour("#5897fc");
         List<Event> eventList = new ArrayList<>();
         eventList.add(event);
 
