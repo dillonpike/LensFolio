@@ -7,7 +7,7 @@ let selectedDate = (new Date(Date.now())).valueOf();
  * Then subscribes a method to the events/being-edited endpoint.
  */
 function connect() {
-    let socket = new SockJS('https://csse-s302g1.canterbury.ac.nz/test/portfolio/mywebsockets');
+    let socket = new SockJS('/test/portfolio/mywebsockets');
     stompClient = Stomp.over(socket);
     stompClient.connect({}, function (frame) {
         console.log('Connected: ' + frame);
@@ -84,9 +84,6 @@ function refreshEvents() {
  * Initialises functions/injections
  */
 $(function () {
-    $("form").on('submit', function (e) {
-        e.preventDefault();
-    });
     toast = new bootstrap.Toast($("#liveToast"));
     connect();
     // Checks if there should be a live update, and shows a toast if needed.

@@ -26,22 +26,118 @@
             <p class="project-desc" th:text="${project.getDescription}"></p>
         </div>
     </div>
-    <p class="sprints-top">Project Sprints</p>
-    <div th:each="sprint, meta: ${sprints}">
-        <div class="sprint-block">
-            <div class="sprint-label" th:text="'Sprint-' + (${meta.index} + 1)" />
-            <div class="detail-block">
-                <div>
-                    <div class="sprint-title" th:text="${sprint.getName}" />
-                    <div class="sprint-date" th:text="${sprint.getDates}" />
-                    <div class="sprint-description" th:text="${sprint.getDescription}" />
-                </div>
+    <div class="row">
+        <!--        <div class="col-3">-->
+        <!--            <div class="sticky-md-top">-->
 
+        <!--            </div>-->
+        <!--        </div>-->
+        <div class="col-9">
+            <div class="content">
+                <div>
+                    <div class="flex-child green">
+                        <p class="sprints-top">Project Sprints</p>
+                        <div th:each="sprint, meta: ${sprints}">
+                            <div class="sprint-block">
+                                <div class="sprint-label" th:text="'Sprint-' + (${meta.index} + 1)" />
+                                <div class="detail-block">
+                                    <div>
+                                        <div class="sprint-title" th:text="${sprint.getName}" />
+                                        <div class="sprint-date" th:text="${sprint.getDates}" />
+                                        <div class="sprint-description" th:text="${sprint.getDescription}" />
+                                    </div>
+                                    <div>
+                                        <button th:id="sidebarButton + ${meta.index}" name="sidebarButton" class="btn btn-primary" type="button" data-bs-toggle="offcanvas" th:data-bs-target="'#offcanvasScrolling' + ${meta.index}" aria-controls="offcanvasScrolling">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-calendar-event" viewBox="0 0 16 16">
+                                                <path d="M11 6.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1z"/>
+                                                <path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5zM1 4v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4H1z"/>
+                                            </svg>
+                                        </button>
+                                        <div class="offcanvas offcanvas-start" data-bs-scroll="true" data-bs-backdrop="false" tabindex="-1" th:id="offcanvasScrolling + ${meta.index}" aria-labelledby="offcanvasScrollingLabel">
+                                            <div class="offcanvas-header">
+                                                <h5 class="offcanvas-title" id="offcanvasScrollingLabel"></h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                                            </div>
+                                            <div class="offcanvas-body">
+                                                <h1 id="sidebarTitle" th:text="${sprint.getName}"></h1>
+                                                <li><hr class="dropdown-divider"></li>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-3">
+            <div class="sticky-md-top">
+                <ul class="nav nav-tabs" id="myTab" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="event-tab" data-bs-toggle="tab" data-bs-target="#event" type="button" role="tab" aria-controls="event" aria-selected="true">Event</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="milestone-tab" data-bs-toggle="tab" data-bs-target="#milestone" type="button" role="tab" aria-controls="milestone" aria-selected="false">Milestone</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="deadline-tab" data-bs-toggle="tab" data-bs-target="#deadline" type="button" role="tab" aria-controls="deadline" aria-selected="false">Deadlines</button>
+                    </li>
+                </ul>
+                <div class="tab-content" id="myTabContent">
+                    <div class="tab-pane fade show active" id="event" role="tabpanel" aria-labelledby="event-tab">
+                        <div th:each="event, meta: ${events}">
+                            <div class="card card-margin">
+                                <div class="card-body pt-0">
+                                    <div class="widget-49">
+                                        <div class="widget-49-title-wrapper hstack">
+                                            <div class="widget-49-date-primary">
+                                                <span class="widget-49-date-day" th:text="${event.getEventStartDay()}"></span>
+                                                <span class="widget-49-date-month" th:text="${event.getEventStartMonth()}" ></span>
+                                            </div>
+                                            <div class="widget-49-meeting-info">
+                                                <span class="widget-49-pro-title" th:text="${event.eventName}"></span>
+                                            </div>
+                                        </div>
+                                        <ol class="widget-49-meeting-points">
+                                            <span class="widget-49-meeting-item" th:text="From + ': ' + ${event.getStartDateDetail()}"> </span>
+                                        </ol>
+                                        <ol class="widget-49-meeting-points">
+                                            <span class="widget-49-meeting-item" th:text="To + ': ' + ${event.getEndDateDetail()}"></span>
+                                        </ol>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tab-pane fade" id="deadline" role="tabpanel" aria-labelledby="deadline-tab">
+                        <div th:each="deadline, meta: ${deadlines}">
+                            <div class="card card-margin">
+                                <div class="card-body pt-0">
+                                    <div class="widget-49">
+                                        <div class="widget-49-title-wrapper hstack">
+                                            <div class="widget-49-date-primary">
+                                                <span class="widget-49-date-day" th:text="${deadline.getDeadlineDay()}"></span>
+                                                <span class="widget-49-date-month" th:text="${deadline.getDeadlineMonth()}" ></span>
+                                            </div>
+                                            <div class="widget-49-meeting-info">
+                                                <span class="widget-49-pro-title" th:text="${deadline.deadlineName}"></span>
+                                            </div>
+                                        </div>
+                                        <ol class="widget-49-meeting-points">
+                                            <span class="widget-49-meeting-item" th:text="Time + ': ' + ${deadline.getDeadlineTime()}"> </span>
+                                        </ol>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tab-pane fade" id="milestone" role="tabpanel" aria-labelledby="milestone-tab">...</div>
+                </div>
             </div>
         </div>
     </div>
+
 </div>
-
-
 </body>
 </html>

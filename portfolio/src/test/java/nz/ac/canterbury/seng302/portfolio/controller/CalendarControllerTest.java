@@ -40,6 +40,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(controllers = CalendarController.class)
 @AutoConfigureMockMvc(addFilters = false)
 class CalendarControllerTest {
+
     /**
      * AuthState object to be used when we mock security context
      */

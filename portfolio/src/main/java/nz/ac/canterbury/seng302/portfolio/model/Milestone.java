@@ -1,5 +1,8 @@
 package nz.ac.canterbury.seng302.portfolio.model;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -118,15 +121,6 @@ public class Milestone {
     }
 
     /**
-     * Returns a string representation of the time of the milestone
-     * @return string representation of the time of the milestone
-     */
-    public String getMilestoneTime()  {
-        SimpleDateFormat dateFormat = new SimpleDateFormat("h:mm a");
-        return (dateFormat.format(milestoneDate));
-    }
-
-    /**
      * Empty constructor for JPA.
      */
     public Milestone() {}
@@ -152,5 +146,30 @@ public class Milestone {
         return String.format(
                 "milestone[id=%d, parentProjectId='%d', milestoneName='%s', milestoneDate='%s']",
                 id, parentProjectId, milestoneName, milestoneDate);
+    }
+
+    /**
+     * Sets the milestone date with a string.
+     * @param date new date
+     */
+    public void setMilestoneDateString(String date) {
+        this.milestoneDate = Project.stringToDate(date);
+    }
+
+    /**
+     * Returns the milestone date as a string.
+     * @return milestone date as a string
+     */
+    public String getMilestoneDateString() {
+        return Project.dateToString(this.milestoneDate);
+    }
+
+    /**
+     * Returns the milestone as a JSON string.
+     * @return milestone as a JSON string
+     * @throws JsonProcessingException when the milestone cannot be converted to a JSON string
+     */
+    public String toJSONString() throws JsonProcessingException {
+        return new ObjectMapper().writeValueAsString(this);
     }
 }

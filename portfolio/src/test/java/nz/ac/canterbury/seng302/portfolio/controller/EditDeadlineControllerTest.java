@@ -1,12 +1,14 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
-import nz.ac.canterbury.seng302.portfolio.model.Milestone;
-import nz.ac.canterbury.seng302.portfolio.service.MilestoneService;
+
+import nz.ac.canterbury.seng302.portfolio.model.Deadline;
+import nz.ac.canterbury.seng302.portfolio.service.DeadlineService;
 import nz.ac.canterbury.seng302.portfolio.service.UserAccountClientService;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import nz.ac.canterbury.seng302.shared.identityprovider.ClaimDTO;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -20,21 +22,22 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.Date;
 
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.AdditionalAnswers.returnsFirstArg;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-/**
- * Unit tests for the DeadlineLifetimeController class.
+/***
+ * Testing class which contains unit test for methods in EditDeadlineController class
  */
 @ExtendWith(SpringExtension.class)
-@WebMvcTest(controllers = MilestoneLifetimeController.class)
+@WebMvcTest(controllers = EditDeadlineController.class)
 @AutoConfigureMockMvc(addFilters = false)
-class MilestoneLifetimeControllerTest {
+class EditDeadlineControllerTest {
+
     /**
      * AuthState object to be used when we mock security context
      */
@@ -52,49 +55,40 @@ class MilestoneLifetimeControllerTest {
     private MockMvc mockMvc;
 
     @MockBean
-    private MilestoneService milestoneService;
+    private DeadlineService deadlineService;
 
     @MockBean
     private UserAccountClientService userAccountClientService; // needed to load application
 
-    /**
-     * Tests that the milestoneSave controller method can be called with the "/add-milestone" URL and saves the given
-     * milestone to the database.
-     * @throws Exception when an exception is thrown while performing the post request
+    /***
+     * Test the post request method to edit deadline
+     * This only purpose of this test is to check whether the controller is called, and it called the correct method in
+     * the service class
+     * Expect to return 302 status code(redirection) and verify the updateDeadline function in deadlinesService is called
      */
     @Test
-    void testMilestoneSave() throws Exception {
+    void sendRequestToEditDeadline() throws Exception {
         SecurityContext mockedSecurityContext = Mockito.mock(SecurityContext.class);
         when(mockedSecurityContext.getAuthentication()).thenReturn(new PreAuthenticatedAuthenticationToken(validAuthState, ""));
+
         SecurityContextHolder.setContext(mockedSecurityContext);
 
-        Milestone expectedMilestone = new Milestone(0,"Test Milestone", new Date());
-        when(milestoneService.addMilestone(any(Milestone.class))).then(returnsFirstArg());
+        String expectedDeadlineName = "Test Deadline";
+        Date expectedDeadlineDate = new Date();
 
-        mockMvc.perform(post("/add-milestone").flashAttr("milestone", expectedMilestone))
+        Deadline newDeadline = new Deadline(0, expectedDeadlineName, expectedDeadlineDate);
+
+        when(deadlineService.getDeadlineById(any(Integer.class))).thenReturn(newDeadline);
+        when(deadlineService.updateDeadline(any(Deadline.class))).then(returnsFirstArg());
+
+        ArgumentCaptor<Deadline> deadlinesArgumentCaptor = ArgumentCaptor.forClass(Deadline.class);
+        mockMvc.perform(post("/edit-deadline/{id}", newDeadline.getId()).flashAttr("deadline", newDeadline))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/details"));
 
-        verify(milestoneService, times(1)).addMilestone(expectedMilestone);
-    }
-
-    /**
-     * Tests that the milestoneRemove controller method can be called with the "/delete-milestone" URL and deletes the
-     * given milestone from the database.
-     * @throws Exception when an exception is thrown while performing the delete request
-     */
-    @Test
-    void testMilestoneRemove() throws Exception {
-        SecurityContext mockedSecurityContext = Mockito.mock(SecurityContext.class);
-        when(mockedSecurityContext.getAuthentication()).thenReturn(new PreAuthenticatedAuthenticationToken(validAuthState, ""));
-        SecurityContextHolder.setContext(mockedSecurityContext);
-
-        Milestone expectedMilestone = new Milestone(0,"Test Milestone", new Date());
-
-        mockMvc.perform(delete("/delete-milestone/" + expectedMilestone.getId()))
-                .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/details"));
-
-        verify(milestoneService, times(1)).removeMilestone(expectedMilestone.getId());
+        Mockito.verify(deadlineService).updateDeadline(deadlinesArgumentCaptor.capture());
+        Deadline addedDeadline = deadlinesArgumentCaptor.getValue();
+        assertEquals(expectedDeadlineName, addedDeadline.getDeadlineName());
+        assertEquals(expectedDeadlineDate, addedDeadline.getDeadlineDate());
     }
 }

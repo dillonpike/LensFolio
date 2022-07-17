@@ -1,0 +1,132 @@
+<div th:fragment="projectModal" class="modal fade" th:id="projectModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="projectModalTitle">Edit Project</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="projectForm" onsubmit="validateProject(); return false;" th:action="@{edit-project}" method="post">
+                <div class="modal-body">
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert" id="projectAlertBanner" hidden>
+                        <span id="projectAlertMessage" data-test-id="alertMessage"></span>
+                        <button type="button" class="btn-close" onclick="document.getElementById('projectAlertBanner').hidden = true" aria-label="Close"></button>
+                    </div>
+                    <div class="mb-3">
+                        <label for="projectName">Project Name</label> <br/>
+                        <input onkeyup="updateCharsLeft('projectName', 'projectNameLength', 50)" maxlength="50" id="projectName" data-test-id="projectName" type="text" class="form-control" th:name="name">
+                        <div class="name-length-message">
+                            <span id="projectNameLength"></span>
+                        </div>
+                    </div>
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert" id="projectDateAlertBanner" hidden>
+                        <span id="projectDateAlertMessage" data-test-id="alertMessage"></span>
+                        <button type="button" class="btn-close" onclick="document.getElementById('projectDateAlertBanner').hidden = true" aria-label="Close"></button>
+                    </div>
+                    <div class="mb-3">
+                        <div class="horizontal-group-element" >
+                            <label for="projectStartDate">Project Start Date</label> <br/>
+                            <div class="input-group date" id="projectStart">
+                                <input onkeydown="return checkDateKeys(event)" type="text" class="form-control" id="projectStartDate" data-test-id="projectStartDate" th:name="startDateString">
+                                <span class="input-group-append">
+                                    <span class="input-group-text bg-white">
+                                        <em class="bi bi-calendar"></em>
+                                    </span>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="mb-3" >
+                            <label for="projectEndDate">Project End Date</label> <br/>
+                            <div class="input-group date" id="projectEnd">
+                                <input onkeydown="return checkDateKeys(event)" type="text" class="form-control" id="projectEndDate" data-test-id="projectEndDate" th:name="endDateString">
+                                <span class="input-group-append">
+                                    <span class="input-group-text bg-white">
+                                        <em class="bi bi-calendar"></em>
+                                    </span>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <label for="projectDescription">Project Description</label> <br/>
+                        <textarea onkeyup="updateCharsLeft('projectDescription', 'projectDescriptionLength', 500)" maxlength="500" class="form-control" id="projectDescription" data-test-id="projectDescription" th:name="description"></textarea>
+                        <div class="name-length-message">
+                            <span id="projectDescriptionLength"></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-primary" id="projectModalButton" type="submit">Save Project</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <script src="../js/project.js"></script>
+    <script>
+
+        /**
+         * Sends the currently entered dates to the server and returns a Promise that resolves to an
+         * error message based on the dates.
+         * @returns {Promise<String>} resolves to an error message based on the dates
+         */
+        async function checkProjectDates() {
+            const data = {
+                projectStartDate: document.getElementById("projectStartDate").value,
+                projectEndDate: document.getElementById("projectEndDate").value
+            }
+            return await $.get("edit-project/error?" + new URLSearchParams(data));
+        }
+
+        /**
+         * Checks the entered project dates in the input fields and displays an error message if there's a related error.
+         * Disables the save button if there is an error.
+         */
+        function updateProjectDateError() {
+            checkProjectDates().then(function (result) {
+                if (result.trim().length > 0) {
+                    document.getElementById("projectDateAlertBanner").hidden = false;
+                    document.getElementById("projectDateAlertMessage").innerHTML = result;
+                    $('#projectModalButton').prop('disabled', true);
+                } else {
+                    document.getElementById("projectDateAlertBanner").hidden = true;
+                    $('#projectModalButton').prop('disabled', false);
+                }
+            }).catch(function () {
+                document.getElementById("projectDateAlertBanner").hidden = false;
+                document.getElementById("projectDateAlertMessage").innerHTML = "Error occurred while checking dates.";
+                $('#projectModalButton').prop('disabled', true);
+            });
+        }
+
+        // Runs updateProjectDateError function whenever the entered dates change
+        document.getElementById("projectStartDate").onchange = updateProjectDateError;
+        document.getElementById("projectEndDate").onchange = updateProjectDateError;
+
+        /**
+         * Validates the currently entered information for the project and submits the form if it's valid.
+         */
+        async function validateProject() {
+            if ((await checkProjectDates()).trim().length === 0 &&
+                validateModalName('projectName', 'projectAlertBanner', 'projectAlertMessage')) {
+                document.getElementById('projectForm').submit();
+            }
+        }
+
+        // Fills in the date pickers
+        $(function() {
+            $('#projectStart').datepicker({
+                format: 'dd/M/yyyy',
+                todayHighlight: true,
+                todayBtn: true,
+                clearBtn: true,
+                orientation: 'bottom'
+            });
+            $('#projectEnd').datepicker({
+                format: 'dd/M/yyyy',
+                todayHighlight: true,
+                todayBtn: true,
+                clearBtn: true,
+                orientation: 'bottom'
+            });
+        });
+    </script>
+</div>

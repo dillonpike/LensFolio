@@ -42,6 +42,9 @@ public class DetailsController {
     @Autowired
     private EventService eventService;
 
+    @Autowired
+    private MilestoneService milestoneService;
+
     /**
      * Last event saved, for toast notification.
      */
@@ -51,6 +54,9 @@ public class DetailsController {
      * Time that the event was updated.
      */
     private Date eventWasUpdatedTime = Date.from(Instant.now());
+
+    @Autowired
+    private DeadlineService deadlineService;
 
 
     /***
@@ -90,10 +96,12 @@ public class DetailsController {
         }
 
         model.addAttribute("project", project);
-        model.addAttribute("project", project);
 
         List<Event> eventList = eventService.getAllEventsOrdered();
         model.addAttribute("events", eventList);
+
+        List<Milestone> milestoneList = milestoneService.getAllMilestonesOrdered();
+        model.addAttribute("milestones", milestoneList);
 
         // Runs if the reload was triggered by saving an event. Checks set time to now to see if 2 seconds has passed yet.
         long timeDifference = Date.from(Instant.now()).toInstant().getEpochSecond() - eventWasUpdatedTime.toInstant().getEpochSecond();
@@ -106,7 +114,10 @@ public class DetailsController {
         } else {
             model.addAttribute("toastEventInformation", "");
         }
-        
+
+        List<Deadline> deadlineList = deadlineService.getAllDeadlinesOrdered();
+        model.addAttribute("deadlines", deadlineList);
+
         List<Sprint> sprintList = sprintService.getAllSprintsOrdered();
         model.addAttribute("sprints", sprintList);
 
@@ -114,20 +125,18 @@ public class DetailsController {
         elementService.addHeaderAttributes(model, id);
         model.addAttribute("userId", id);
 
-        return getFinalThymeleafTemplate(principal);
-    }
+        model.addAttribute("newMilestone", new Milestone(0, "", new Date()));
 
-    /**
-     * Gets final details page to display, depending on whether the user is a teacher or a student.
-     * @param principal Gets information about the user
-     * @return Thymeleaf template
-     */
-    private String getFinalThymeleafTemplate(AuthState principal) {
+        model.addAttribute("newDeadline", new Deadline(0, "", new Date()));
+
         String role = principal.getClaimsList().stream()
                 .filter(claim -> claim.getType().equals("role"))
                 .findFirst()
                 .map(ClaimDTO::getValue)
                 .orElse("NOT FOUND");
+
+        model.addAttribute("newSprint", sprintService.getSuggestedSprint());
+        model.addAttribute("sprintDateError", "");
 
         /* Return the name of the Thymeleaf template */
         // detects the role of the current user and returns appropriate page
