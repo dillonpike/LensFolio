@@ -93,10 +93,10 @@ public class ProjectDetailsStepDefs {
         webDriver.findElement(By.id("saveButton")).click();
 
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.className("title-name")));
-        assertEquals(webDriver.findElement(By.className("title-name")).getText(),"test project");
-        assertEquals(webDriver.findElement(By.className("project-desc")).getText(),"test project desc");
-        assertEquals(webDriver.findElement(By.id("project-date")).getText(), projectdtf.format(now) + " - "
-                + projectdtf.format(threeMonthsAfterNow));
+        assertEquals("test project", webDriver.findElement(By.className("title-name")).getText());
+        assertEquals("test project desc", webDriver.findElement(By.className("project-desc")).getText());
+        assertEquals(projectdtf.format(now) + " - " + projectdtf.format(threeMonthsAfterNow),
+                webDriver.findElement(By.id("project-date")).getText());
     }
 
     @When("I browse to the project page")
@@ -111,16 +111,18 @@ public class ProjectDetailsStepDefs {
     }
 
 
-    @When("I browse to the add sprint page")
-    public void iBrowseToTheAddSprintPage() {
+    @When("I open the add sprint modal")
+    public void iOpenTheAddSprintModal() {
         webDriver.findElement(By.id("addSprintButton")).click();
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[contains(., 'Add Sprint')]")));
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("sprintModalButton")));
     }
 
     @And("There are {int} sprints")
     public void thereAreSprints(int numSprints) {
         while (!webDriver.findElements(By.id("deleteSprintButton")).isEmpty()) {
             webDriver.findElement(By.id("deleteSprintButton")).click();
+            wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("deleteSprintModalButton")));
+            webDriver.findElement(By.id("deleteSprintModalButton")).click();
         }
         for (int i = 0; i < numSprints; i++) {
             iAddASprint();
@@ -132,9 +134,11 @@ public class ProjectDetailsStepDefs {
 
     @And("I add a sprint")
     public void iAddASprint() {
+        wait.until(ExpectedConditions.elementToBeClickable(By.id("addSprintButton")));
         webDriver.findElement(By.id("addSprintButton")).click();
-        wait.until(ExpectedConditions.elementToBeClickable(By.id("saveButton")));
-        webDriver.findElement(By.id("saveButton")).click();
+        wait.until(ExpectedConditions.elementToBeClickable(By.id("sprintModalButton")));
+        webDriver.findElement(By.id("sprintModalButton")).click();
+        wait.until(ExpectedConditions.invisibilityOfElementLocated(By.id("sprintModalButton")));
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//span[contains(., 'Project Description')]")));
     }
 
@@ -174,16 +178,16 @@ public class ProjectDetailsStepDefs {
 
     @Then("The following error is displayed: {string}")
     public void theFollowingErrorIsDisplayed(String expectedErrorMessage) {
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("sprintDateError")));
-        String actualErrorMessage = webDriver.findElement(By.id("sprintDateError")).getText();
-        System.err.println(actualErrorMessage);
-        assertTrue(actualErrorMessage.contains(expectedErrorMessage));
+//        wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("sprintDateError")));
+//        String actualErrorMessage = webDriver.findElement(By.id("sprintDateError")).getText();
+//        assertTrue(actualErrorMessage.contains(expectedErrorMessage));
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//span[@data-test-id='alertMessage'][contains(., '" + expectedErrorMessage + "')]")));
     }
 
-    @When("I browse to the edit sprint page for sprint {int}")
-    public void iBrowseToTheEditSprintPageForSprint(int sprintNum) {
+    @When("I open the edit modal for sprint {int}")
+    public void iOpenTheEditModalForSprint(int sprintNum) {
         webDriver.findElements(By.id("editSprintButton")).get(sprintNum-1).click();
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[contains(., 'Edit Sprint')]")));
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("sprintModalButton")));
     }
 
     @And("I move the end date forward by {int} day")

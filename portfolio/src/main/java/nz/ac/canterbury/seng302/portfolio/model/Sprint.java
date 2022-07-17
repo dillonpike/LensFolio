@@ -1,11 +1,13 @@
 package nz.ac.canterbury.seng302.portfolio.model;
 
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 
 @Entity // this is an entity, assumed to be in a table called Sprint
@@ -104,6 +106,10 @@ public class Sprint {
 
     public void setName(String sprintName) {
         this.sprintName = sprintName;
+    }
+
+    public String toJSONString() throws JsonProcessingException {
+        return new ObjectMapper().writeValueAsString(this);
     }
 
     public void setColour(String sprintColour) {

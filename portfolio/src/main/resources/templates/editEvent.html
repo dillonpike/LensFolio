@@ -1,30 +1,30 @@
-<!DOCTYPE html>
+<!DOCTYPE HTML>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
-    <title>Add Event</title>
-    <link th:href="@{styles/main.css}" rel="stylesheet" />
-    <link th:href="@{styles/form.css}" rel="stylesheet" />
+    <title>Edit Event</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <link th:href="@{../styles/main.css}" rel="stylesheet" />
+    <link th:href="@{../styles/form.css}" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous"> <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css">
-    <script src="webjars/jquery/3.6.0/dist/jquery.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css">
+    <script src="../webjars/jquery/3.6.0/dist/jquery.min.js"></script>
+    <script src="../webjars/sockjs-client/1.0.2/sockjs.min.js"></script>
+    <script src="../webjars/stomp-websocket/2.3.3/stomp.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
 </head>
 <body>
 <div class="project-header">
     <div class="title">
-        <div class="title-name">Add Event</div>
+        <div id="title" th:data="${eventId}" class="title-name">Edit Event</div>
     </div>
 </div>
 
-
 <div class="content">
-    <form method="post" onsubmit="return validateName();" th:action="@{add-event}" th:object="${event}">
+    <form onsubmit="return validateName();" th:action="@{../edit-event/{id} (id=${eventId})}" th:object="${event}"
+          method="post" >
         <label for="eventName">Event Name</label> <br/>
-        <input onkeyup="updateCharsLeft()" id="eventName" type="text" maxlength="50" th:name="eventName" th:field="*{eventName}">
-        <div class="name-length-message" >
-            <span id="eventNameLength"></span>
-        </div>
+        <input id="eventName" type="text" th:name="eventName" th:field="*{eventName}">
+        <br/>
         <div class="horizontal-group">
             <div class="horizontal-group-element" >
                 <label for="eventStartDate">Event Start Date</label> <br/>
@@ -66,16 +66,83 @@
         <span id="eventDateError" style="color:red" th:text="${eventDateError}"></span>
         <span id="eventNameError" style="color:red" th:hidden = "true"> Invalid event name, must be between 1 and 50 characters.</span>
         <br/>
-        <a th:href="@{details}"><button class="cancel" type="button">Cancel</button></a>
+        <a th:href="@{../details}"><button id="cancelButton" class="cancel" type="button">Cancel</button></a>
         <button id="saveButton" class="save" type="submit">Save</button>
     </form>
 </div>
 </body>
 <script src="../js/project.js"></script>
-<script>
-    // Sets default values for the time picker
-    document.getElementById("eventStartTime").defaultValue = "12:00";
-    document.getElementById("eventEndTime").defaultValue = "13:00";
+<script th:inline="javascript">
+    let stompClient = null;
+
+    /**
+     * Connects the stomp client to the setup websocket endpoint.
+     * Then subscribes a method to the events/being-edited endpoint.
+     */
+    function connect() {
+        let socket = new SockJS('/test/portfolio/mywebsockets');
+        stompClient = Stomp.over(socket);
+        stompClient.connect({}, function (frame) {
+            console.log('Connected: ' + frame);
+        });
+    }
+
+    /**
+     * Sends the message that an event is being updated, and sends the events names with it.
+     */
+    function sendName() {
+        let userId = [[${userId}]];
+        let userFirstName = [[${userFirstName}]];
+        let userLastName = [[${userLastName}]];
+        let username = [[${username}]];
+        stompClient.send("/test/portfolio/app/editing-event", {}, JSON.stringify({
+            'eventName': $("#eventName").val(),
+            'userId': userId,
+            'userFirstName': userFirstName,
+            'userLastName': userLastName,
+            'username': username
+        }));
+    }
+
+    /**
+     * Sends an empty message so that the other end can realise to close any popups it may have activated.
+     */
+    function sendEmpty() {
+        stompClient.send("/test/portfolio/app/stop-editing-event", {}, "Stop Editing Event");
+    }
+
+    /**
+     * Sends the message that an event has been updated (saved), and sends the events names with it.
+     */
+    function sendNameReload() {
+        let userId = [[${userId}]];
+        let userFirstName = [[${userFirstName}]];
+        let userLastName = [[${userLastName}]];
+        let username = [[${username}]];
+        stompClient.send("/test/portfolio/app/saved-edited-event", {}, JSON.stringify({
+            'eventName': $("#eventName").val(),
+            'userId': userId,
+            'userFirstName': userFirstName,
+            'userLastName': userLastName,
+            'username': username
+        }));
+    }
+
+    /**
+     * Initialises functions/injections. All inputs when being focused on (edited) will update and send a notification
+     * to the details page. When these are no longer being updated (edited) they will disappear after a certain period.
+     */
+    $(function () {
+        connect();
+        $("input").on('focusin', function (ignore) {
+            sendName();
+        }).on('focusout', function (ignore) {
+            sendEmpty();
+        });
+
+        $( "#saveButton").click(function() { sendNameReload(); })
+        $( "#cancelButton").click(function() { sendEmpty(); })
+    });
 </script>
 <script>
     /**
@@ -90,7 +157,7 @@
             eventStartTime: document.getElementById("eventStartTime").value,
             eventEndTime: document.getElementById("eventEndTime").value
         }
-        $.post("add-event/error?" + new URLSearchParams(data)).done(function (fragment) {
+        $.post("../edit-event/error?" + new URLSearchParams(data)).done(function (fragment) {
             console.log(fragment);
             $("#eventDateError").replaceWith(fragment);
             document.getElementById("saveButton").disabled = document.getElementById("eventDateError").textContent.trim().length > 0;
@@ -122,21 +189,6 @@
     }
     document.getElementById("eventName").onchange = validateName;
 </script>
-<script>
-    //updates characters left
-    function updateCharsLeft() {
-        let chars_left = 50 - document.getElementById("eventName").value.length;
-        if (chars_left === 50) {
-            document.getElementById("eventNameLength").innerText = "";
-        } else if (chars_left === 1) {
-            document.getElementById("eventNameLength").innerText = chars_left + " character left";
-        } else if (chars_left === 0) {
-            document.getElementById("eventNameLength").innerText = "No characters left";
-        } else {
-            document.getElementById("eventNameLength").innerText = chars_left + " characters left";
-        }
-    }
-</script>
 
 <script type="text/javascript">
     // fills in the date pickers
@@ -149,5 +201,7 @@
         $('#eventEnd').datepicker({format: 'dd/M/yyyy'});
     });
 </script>
+
+
 
 </html>

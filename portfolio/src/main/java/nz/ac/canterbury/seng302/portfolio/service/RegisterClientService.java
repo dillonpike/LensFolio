@@ -128,12 +128,11 @@ public class RegisterClientService {
         byte[] imageArray = new byte[0];
         boolean imageFoundCorrectly = true;
         try {
-            // TODO Change to use the file from the attributes once a valid file is being given
             ImageInputStream iis = ImageIO.createImageInputStream(imageFile);
             Iterator<ImageReader> imageReaders = ImageIO.getImageReaders(iis);
             ImageReader reader = null;
             while (imageReaders.hasNext()) {
-                reader = (ImageReader) imageReaders.next();
+                reader = imageReaders.next();
             }
 
             BufferedImage testImage = ImageIO.read(imageFile);  // DEBUGGING Use imageFile instead
@@ -149,8 +148,6 @@ public class RegisterClientService {
         StreamObserver<FileUploadStatusResponse> responseObserver = new StreamObserver<FileUploadStatusResponse>() {
             @Override
             public void onNext(FileUploadStatusResponse value) {
-
-                UploadUserProfilePhotoRequest.Builder reply = UploadUserProfilePhotoRequest.newBuilder();
 
                 switch (value.getStatusValue()) {
                     case 0:  // PENDING
@@ -172,7 +169,8 @@ public class RegisterClientService {
                         System.out.println("Server failed to upload image");
                         System.out.println("    System returned: " + value.getMessage());
                         break;
-
+                    default:
+                        break;
                 }
             }
 
@@ -196,7 +194,7 @@ public class RegisterClientService {
 
                 ImageReader reader = null;
                 while (imageReaders.hasNext()) {
-                    reader = (ImageReader) imageReaders.next();
+                    reader = imageReaders.next();
                 }
 
                 // Start with uploading the metadata

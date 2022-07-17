@@ -8,6 +8,14 @@ import org.springframework.stereotype.Service;
 
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+import java.util.Optional;
+
+import static nz.ac.canterbury.seng302.portfolio.controller.SprintLifetimeController.getUpdatedDate;
 
 
 // more info here https://codebun.com/spring-boot-crud-application-using-thymeleaf-and-spring-data-jpa/
@@ -20,6 +28,9 @@ public class SprintService {
 
     @Autowired
     private SprintRepository repository;
+
+    @Autowired
+    private ProjectService projectService;
 
     /**
      * Get list of all sprints
@@ -141,6 +152,54 @@ public class SprintService {
             System.err.println("Error parsing date: " + e.getMessage());
         }
         return date;
+    }
+
+    /**
+     * Returns a suggested sprint for the user to create.
+     * @return suggested sprint for the user to create
+     */
+    public Sprint getSuggestedSprint() {
+        Sprint blankSprint = new Sprint();
+        List<Sprint> sprints = getAllSprintsOrdered();
+        if (sprints.isEmpty()) {
+            blankSprint.setName("Sprint 1");
+            try {
+                Project project = projectService.getProjectById(0);
+                blankSprint.setStartDate(project.getStartDate());
+                blankSprint.setEndDate(getUpdatedDate(project.getStartDate(), 0, 3));
+            } catch (Exception e) {
+                Date now = Date.from(Instant.from(LocalDate.now()));
+                blankSprint.setStartDate(now);
+                blankSprint.setEndDate(getUpdatedDate(now, 0, 3));
+            }
+        } else {
+            Project project;
+            try {
+                project = projectService.getProjectById(0);
+            } catch (Exception e) {
+                int id = sprints.get(sprints.size() - 1).getParentProjectId();
+                try {
+                    project = projectService.getProjectById(id);
+                } catch (Exception e2) {
+                    return new Sprint();
+                }
+            }
+
+            blankSprint.setName("Sprint " + (sprints.size() + 1));
+            Sprint lastSprint = sprints.get(sprints.size() - 1);
+            if (!getUpdatedDate(lastSprint.getEndDate(), 1, 0).after(project.getEndDate())) { // not at end of project
+                blankSprint.setStartDate(getUpdatedDate(lastSprint.getEndDate(), 1, 0));
+                if (getUpdatedDate(lastSprint.getEndDate(), 0, 3).after(project.getEndDate())) { // sprint end not at end of project
+                    blankSprint.setEndDate(project.getEndDate());
+                } else {
+                    blankSprint.setEndDate(getUpdatedDate(lastSprint.getEndDate(), 0, 3));
+                }
+            } else {
+                blankSprint.setStartDate(lastSprint.getEndDate());
+                blankSprint.setEndDate(lastSprint.getEndDate());
+            }
+        }
+        return blankSprint;
     }
 
     /***
