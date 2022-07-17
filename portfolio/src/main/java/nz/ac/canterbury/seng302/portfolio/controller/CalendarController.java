@@ -67,7 +67,7 @@ public class CalendarController {
         StringBuilder json = new StringBuilder();
         for (Event event : events) {
             Date endDate = SprintLifetimeController.getUpdatedDate(event.getEventEndDate(), 1, 0);
-            json.append("{id: '").append(event.getId()).append("', title: '").append(event.getEventName()).append("', start: '").append(event.getStartDateDetail()).append("', end: '").append(endDate.toInstant()).append("'},");
+            json.append("{id: '").append(event.getId()).append("', title: '").append(event.getEventName()).append("', start: '").append(event.getEventStartDate()).append("', end: '").append(endDate.toInstant()).append("'},");
         }
         return json.toString();
     }
@@ -92,6 +92,7 @@ public class CalendarController {
         try {
             sprints = sprintService.getAllSprintsOrdered();
             events = eventService.getAllEventsOrdered();
+            System.out.println(sprintListToJSON(sprints) + eventListToJSON(events));
         } catch (Exception e) {
             return "500InternalServer";
         }
