@@ -186,4 +186,7 @@ public class Event {
         return Event.timeToString(this.eventEndTime);
     }
 
+    public String getDateRange() {
+        return getStartDateString() + " <-> " + getEndDateString();
+    }
 }

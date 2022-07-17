@@ -5,6 +5,7 @@ import nz.ac.canterbury.seng302.portfolio.model.Event;
 import nz.ac.canterbury.seng302.portfolio.model.Project;
 import nz.ac.canterbury.seng302.portfolio.model.Sprint;
 import nz.ac.canterbury.seng302.portfolio.service.*;
+import nz.ac.canterbury.seng302.portfolio.utility.EventDic;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import nz.ac.canterbury.seng302.shared.identityprovider.ClaimDTO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -89,6 +90,25 @@ public class CalendarController {
         return json.toString();
     }
 
+    /***
+     * Produces a JSON list that fullcalendar can read to display events on the calendar
+     * @param deadlines list of events from the database
+     * @return JSON list for events to display on the calendar
+     */
+    private String eventsToDisplay(List<Deadline> deadlines, List<Event> events) {
+        EventDic dic = new EventDic();
+        dic.add(deadlines.get(0));
+        /*
+        for (Deadline deadline : deadlines) {
+            dic.add(deadline);
+        }
+        for (Event event : events) {
+            dic.add(event);
+
+        }*/
+        return dic.makeJSON();
+    }
+
 
     /***
      * GET request method, followed by the request URL(../calendar)
@@ -115,8 +135,10 @@ public class CalendarController {
         } catch (Exception e) {
             return "500InternalServer";
         }
-        String calendarEvents = sprintListToJSON(sprints) + deadlineListToJSON(deadlines) + eventListToJSON(events);
+        String calendarEvents = sprintListToJSON(sprints) + eventsToDisplay(deadlines, events);
         model.addAttribute("events", calendarEvents);
+        model.addAttribute("event-details", eventListToJSON(events));
+        model.addAttribute("deadline-details", deadlineListToJSON(deadlines));
 
         Project project;
         try {
@@ -142,4 +164,6 @@ public class CalendarController {
         model.addAttribute("currentUserRole", role);
         return "calendar";
     }
+
+
 }
