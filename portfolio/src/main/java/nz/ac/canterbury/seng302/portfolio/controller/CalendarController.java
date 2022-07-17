@@ -1,5 +1,6 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
+import nz.ac.canterbury.seng302.portfolio.model.Deadline;
 import nz.ac.canterbury.seng302.portfolio.model.Event;
 import nz.ac.canterbury.seng302.portfolio.model.Project;
 import nz.ac.canterbury.seng302.portfolio.model.Sprint;
@@ -28,6 +29,9 @@ public class CalendarController {
 
     @Autowired
     private EventService eventService;
+
+    @Autowired
+    private DeadlineService deadlineService;
 
     @Autowired
     private UserAccountClientService userAccountClientService;
@@ -72,6 +76,19 @@ public class CalendarController {
         return json.toString();
     }
 
+    /***
+     * Produces a JSON list that fullcalendar can read to display events on the calendar
+     * @param deadlines list of events from the database
+     * @return JSON list for events to display on the calendar
+     */
+    public String deadlineListToJSON(List<Deadline> deadlines) {
+        StringBuilder json = new StringBuilder();
+        for (Deadline deadline : deadlines) {
+            json.append("{id: '").append(deadline.getId()).append("', title: '").append(deadline.getDeadlineName()).append("', start: '").append(deadline.getDeadlineDate()).append("'},");
+        }
+        return json.toString();
+    }
+
 
     /***
      * GET request method, followed by the request URL(../calendar)
@@ -86,17 +103,19 @@ public class CalendarController {
             @AuthenticationPrincipal AuthState principal) throws Exception {
         List<Sprint> sprints;
         List<Event> events;
+        List<Deadline> deadlines;
         Integer id = userAccountClientService.getUserIDFromAuthState(principal);
         elementService.addHeaderAttributes(model, id);
         model.addAttribute("userId", id);
         try {
             sprints = sprintService.getAllSprintsOrdered();
             events = eventService.getAllEventsOrdered();
+            deadlines = deadlineService.getAllDeadlinesOrdered();
             System.out.println(sprintListToJSON(sprints) + eventListToJSON(events));
         } catch (Exception e) {
             return "500InternalServer";
         }
-        String calendarEvents = sprintListToJSON(sprints) + eventListToJSON(events);
+        String calendarEvents = sprintListToJSON(sprints) + deadlineListToJSON(deadlines); // + eventListToJSON(events)
         model.addAttribute("events", calendarEvents);
 
         Project project;
