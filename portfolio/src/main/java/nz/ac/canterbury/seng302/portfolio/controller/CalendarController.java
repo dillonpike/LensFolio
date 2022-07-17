@@ -84,7 +84,7 @@ public class CalendarController {
     public String deadlineListToJSON(List<Deadline> deadlines) {
         StringBuilder json = new StringBuilder();
         for (Deadline deadline : deadlines) {
-            json.append("{id: '").append(deadline.getId()).append("', title: '").append(deadline.getDeadlineName()).append("', start: '").append(deadline.getDeadlineDate()).append("'},");
+            json.append("{id: '").append(deadline.getId()).append("', title: '").append(deadline.getDeadlineName()).append("', start: '").append(deadline.getDeadlineDate()).append("', image_url: 'images/deadline.svg").append("'},");
         }
         return json.toString();
     }

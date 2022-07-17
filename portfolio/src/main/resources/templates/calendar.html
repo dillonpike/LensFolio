@@ -38,6 +38,27 @@
                 events: [
                     /*[(${events})]*/ null
                 ],
+                eventContent: function(arg) {
+                    let arrayOfDomNodes = []
+                    // title event
+                    let titleEvent = document.createElement('div')
+                    if(arg.event._def.title) {
+                        titleEvent.innerHTML = arg.event._def.title
+                        titleEvent.classList = "fc-event-title fc-sticky"
+                    }
+
+                    // image event
+                    let imgEventWrap = document.createElement('div')
+                    if(arg.event.extendedProps.image_url) {
+                        let imgEvent = '<img src="'+arg.event.extendedProps.image_url+'" >'
+                        imgEventWrap.classList = "fc-event-img"
+                        imgEventWrap.innerHTML = imgEvent;
+                    }
+
+                    arrayOfDomNodes = [ titleEvent,imgEventWrap ]
+
+                    return { domNodes: arrayOfDomNodes }
+                },
                 eventDidMount: function(info) {
                     info.event.setProp("classNames", "event-border");
                 },
