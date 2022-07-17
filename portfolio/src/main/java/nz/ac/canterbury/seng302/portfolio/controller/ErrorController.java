@@ -60,10 +60,8 @@ public class ErrorController implements org.springframework.boot.web.servlet.err
                 return "500InternalServer";
             }
             else if (statusCode == HttpStatus.NOT_FOUND.value()) {
-                System.out.println(statusCode);
                 return "404NotFound";
             } else {
-                System.out.println(statusCode);
                 //technically any other error
                 return "404NotFound";
             }
