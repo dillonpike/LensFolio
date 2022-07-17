@@ -57,4 +57,115 @@ class EventServiceTest {
         assertThat(outputEventList.get(0).getStartDateColour()).isSameAs(sprint.getColour());
         assertThat(outputEventList.get(0).getEndDateColour()).isSameAs(sprint.getColour());
     }
+
+    @Test
+    void givenOneEventExistAndDateOutOfRange_returnNull() {
+        Sprint sprint = new Sprint();
+        sprint.setName("Testing");
+        sprint.setStartDate(sprintService.calendarDateStringToDate("2001-12-20", false));
+        sprint.setEndDate(sprintService.calendarDateStringToDate("2001-12-22", true));
+        sprint.setColour("#5897fc");
+        List<Sprint> sprintList = new ArrayList<>();
+        sprintList.add(sprint);
+
+        Event event = new Event();
+        event.setEventStartDate(sprintService.calendarDateStringToDate("2001-12-23", false));
+        event.setEventEndDate(sprintService.calendarDateStringToDate("2001-12-23", true));
+        //event.setEndDateColour("#5897fc");
+        List<Event> eventList = new ArrayList<>();
+        eventList.add(event);
+
+        when(eventService.getAllEventsOrderedWithColour(sprintList)).thenReturn(eventList);
+
+        List<Event> outputEventList = eventService.getAllEventsOrderedWithColour(sprintList);
+        assertThat(outputEventList.size()).isSameAs(eventList.size());
+        assertThat(outputEventList.get(0).getStartDateColour()).isNull();
+        assertThat(outputEventList.get(0).getEndDateColour()).isNull();
+
+    }
+
+    @Test
+    void givenMultipleEventsWithAllDateInSprintRange_returnSprintColor() {
+        Sprint sprint = new Sprint();
+        sprint.setName("Testing");
+        sprint.setStartDate(sprintService.calendarDateStringToDate("2001-12-20", false));
+        sprint.setEndDate(sprintService.calendarDateStringToDate("2001-12-22", true));
+        sprint.setColour("#5897fc");
+        List<Sprint> sprintList = new ArrayList<>();
+        sprintList.add(sprint);
+
+        Event event1 = new Event();
+        Event event2 = new Event();
+        Event event3 = new Event();
+
+        event1.setEventStartDate(sprintService.calendarDateStringToDate("2001-12-21", false));
+        event1.setEventEndDate(sprintService.calendarDateStringToDate("2001-12-21", true));
+
+        event2.setEventStartDate(sprintService.calendarDateStringToDate("2001-12-21", false));
+        event2.setEventEndDate(sprintService.calendarDateStringToDate("2001-12-21", true));
+
+        event3.setEventStartDate(sprintService.calendarDateStringToDate("2001-12-21", false));
+        event3.setEventEndDate(sprintService.calendarDateStringToDate("2001-12-21", true));
+
+        List<Event> eventList = new ArrayList<>();
+        eventList.add(event1);
+        eventList.add(event2);
+        eventList.add(event3);
+
+        when(eventService.getAllEventsOrderedWithColour(sprintList)).thenReturn(eventList);
+        List<Event> outputEventList = eventService.getAllEventsOrderedWithColour(sprintList);
+
+        assertThat(outputEventList.size()).isSameAs(eventList.size());
+
+        assertThat(outputEventList.get(0).getStartDateColour()).isSameAs(sprint.getColour());
+        assertThat(outputEventList.get(1).getStartDateColour()).isSameAs(sprint.getColour());
+        assertThat(outputEventList.get(2).getStartDateColour()).isSameAs(sprint.getColour());
+
+        assertThat(outputEventList.get(0).getEndDateColour()).isSameAs(sprint.getColour());
+        assertThat(outputEventList.get(1).getEndDateColour()).isSameAs(sprint.getColour());
+        assertThat(outputEventList.get(2).getEndDateColour()).isSameAs(sprint.getColour());
+
+    }
+
+    @Test
+    void givenMultipleEventsWithPartialEventsInSprintRange_returnBlueColorIfInRange_andNullIfOutOfRange() {
+        Sprint sprint = new Sprint();
+        sprint.setName("Testing");
+        sprint.setStartDate(sprintService.calendarDateStringToDate("2001-12-20", false));
+        sprint.setEndDate(sprintService.calendarDateStringToDate("2001-12-22", true));
+        sprint.setColour("#5897fc");
+        List<Sprint> sprintList = new ArrayList<>();
+        sprintList.add(sprint);
+
+        Event event1 = new Event();
+        Event event2 = new Event();
+        Event event3 = new Event();
+
+        event1.setEventStartDate(sprintService.calendarDateStringToDate("2001-12-21", false));
+        event1.setEventEndDate(sprintService.calendarDateStringToDate("2001-12-21", true));
+
+        event2.setEventStartDate(sprintService.calendarDateStringToDate("2001-12-21", false));
+        event2.setEventEndDate(sprintService.calendarDateStringToDate("2001-12-21", true));
+
+        event3.setEventStartDate(sprintService.calendarDateStringToDate("2001-12-23", false));
+        event3.setEventEndDate(sprintService.calendarDateStringToDate("2001-12-23", true));
+
+        List<Event> eventList = new ArrayList<>();
+        eventList.add(event1);
+        eventList.add(event2);
+        eventList.add(event3);
+
+        when(eventService.getAllEventsOrderedWithColour(sprintList)).thenReturn(eventList);
+        List<Event> outputEventList = eventService.getAllEventsOrderedWithColour(sprintList);
+
+        assertThat(outputEventList.size()).isSameAs(eventList.size());
+
+        assertThat(outputEventList.get(0).getStartDateColour()).isSameAs(sprint.getColour());
+        assertThat(outputEventList.get(1).getStartDateColour()).isSameAs(sprint.getColour());
+        assertThat(outputEventList.get(2).getStartDateColour()).isNull();
+
+        assertThat(outputEventList.get(0).getEndDateColour()).isSameAs(sprint.getColour());
+        assertThat(outputEventList.get(1).getEndDateColour()).isSameAs(sprint.getColour());
+        assertThat(outputEventList.get(2).getEndDateColour()).isNull();
+    }
 }
