@@ -97,15 +97,13 @@ public class CalendarController {
      */
     private String eventsToDisplay(List<Deadline> deadlines, List<Event> events) {
         EventDic dic = new EventDic();
-        dic.add(deadlines.get(0));
-        /*
         for (Deadline deadline : deadlines) {
             dic.add(deadline);
         }
         for (Event event : events) {
             dic.add(event);
 
-        }*/
+        }
         return dic.makeJSON();
     }
 
