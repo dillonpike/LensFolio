@@ -115,7 +115,6 @@ public class DetailsController {
             model.addAttribute("toastEventInformation", "");
         }
 
-        List<Sprint> sprintList = sprintService.getAllSprintsOrdered();
         model.addAttribute("sprints", sprintList);
 
         Integer id = userAccountClientService.getUserIDFromAuthState(principal);
