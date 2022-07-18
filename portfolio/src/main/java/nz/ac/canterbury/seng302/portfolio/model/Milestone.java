@@ -38,6 +38,10 @@ public class Milestone {
      */
     private Date milestoneDate;
 
+
+
+    private String Colour;
+
     /**
      * Gets the id of the milestone
      * @return the id of the milestone
@@ -171,5 +175,13 @@ public class Milestone {
      */
     public String toJSONString() throws JsonProcessingException {
         return new ObjectMapper().writeValueAsString(this);
+    }
+
+    public String getColour() {
+        return Colour;
+    }
+
+    public void setColour(String colour) {
+        Colour = colour;
     }
 }

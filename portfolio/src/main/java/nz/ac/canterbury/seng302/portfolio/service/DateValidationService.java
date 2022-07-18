@@ -4,9 +4,7 @@ import java.time.LocalTime;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import nz.ac.canterbury.seng302.portfolio.model.Event;
-import nz.ac.canterbury.seng302.portfolio.model.Project;
-import nz.ac.canterbury.seng302.portfolio.model.Sprint;
+import nz.ac.canterbury.seng302.portfolio.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -225,5 +223,10 @@ public class DateValidationService {
      */
     public boolean validateEventEndDateInSprintDate(Event event, Sprint sprint) {
         return event.getEventEndDate().compareTo(sprint.getStartDate()) >= 0 && event.getEventEndDate().compareTo(sprint.getEndDate()) <= 0;
+    }
+
+    public boolean validateMilestoneDateInSprintDateRange(Milestone milestone, Sprint sprint) {
+        return milestone.getMilestoneDate().compareTo(sprint.getStartDate()) >= 0 && milestone.getMilestoneDate().compareTo(sprint.getEndDate()) <= 0;
+
     }
 }

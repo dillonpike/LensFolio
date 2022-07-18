@@ -1,6 +1,8 @@
 package nz.ac.canterbury.seng302.portfolio.service;
 
+import nz.ac.canterbury.seng302.portfolio.model.Event;
 import nz.ac.canterbury.seng302.portfolio.model.Milestone;
+import nz.ac.canterbury.seng302.portfolio.model.Sprint;
 import nz.ac.canterbury.seng302.portfolio.repository.MilestoneRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,6 +18,9 @@ import java.util.List;
 public class MilestoneService {
     @Autowired
     private MilestoneRepository repository;
+
+    @Autowired
+    private DateValidationService dateValidationService;
 
     /**
      * Get list of all milestones
@@ -90,5 +95,28 @@ public class MilestoneService {
             milestone = repository.save(milestone);
             return milestone;
         }
+    }
+
+    /***
+     * For any events existing, get the sprints colour for its start date if it is within the sprint time slot,
+     * and the same is done with the events end date
+     *
+     * @param sprints sprints in chronological order
+     * @return events in chronological order
+     */
+    public List<Milestone> getAllEventsOrderedWithColour(List<Sprint> sprints) {
+        List<Milestone> milestoneList = getAllMilestonesOrdered();
+        for (Milestone currentMilestone : milestoneList) {
+            // Reset Event's color
+            currentMilestone.setColour(null);
+
+            for (Sprint sprint : sprints) {
+                if (dateValidationService.validateMilestoneDateInSprintDateRange(currentMilestone, sprint)) {
+                    currentMilestone.setColour(sprint.getColour());
+                }
+            }
+            repository.save(currentMilestone);
+        }
+        return getAllMilestonesOrdered();
     }
 }

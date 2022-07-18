@@ -131,7 +131,7 @@ public class DetailsController {
             eventsToDisplay.remove(event);
         }
 
-        List<Milestone> milestoneList = milestoneService.getAllMilestonesOrdered();
+        List<Milestone> milestoneList = milestoneService.getAllEventsOrderedWithColour(sprintList);
         model.addAttribute("milestones", milestoneList);
 
         List<Deadline> deadlineList = deadlineService.getAllDeadlines();
