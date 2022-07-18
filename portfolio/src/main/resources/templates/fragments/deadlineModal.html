@@ -1,0 +1,82 @@
+<div th:fragment="deadlineModal" class="modal fade" id="deadlineModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLongTitle">Add Deadline</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <form method="post" id="deadlineForm" onsubmit="validateDeadline(); return false;" th:action="@{add-deadline}">
+        <div class="modal-body">
+          <div class="alert alert-danger alert-dismissible fade show" role="alert" id="deadlineAlertBanner" hidden>
+            <span id="deadlineAlertMessage" data-test-id="alertMessage"></span>
+            <button type="button" class="btn-close" onclick="document.getElementById('deadlineAlertBanner').hidden = true" aria-label="Close"></button>
+          </div>
+          <div class="mb-3">
+            <label for="deadlineName" class="col-form-label">Deadline Name:</label>
+            <input onkeyup="updateCharsLeft('deadlineName', 'deadlineNameLength', 50)" maxlength="50" type="text" class="form-control" id="deadlineName" name="deadlineName">
+            <div class="name-length-message">
+              <span id="deadlineNameLength"></span>
+            </div>
+          </div>
+          <div class="alert alert-danger alert-dismissible fade show" role="alert" id="deadlineDateAlertBanner" hidden>
+            <span id="deadlineDateAlertMessage" data-test-id="alertMessage"></span>
+            <button type="button" class="btn-close" onclick="document.getElementById('deadlineDateAlertBanner').hidden = true" aria-label="Close"></button>
+          </div>
+          <div class="mb-3">
+            <label for="deadlineDate" class="col-form-label">Deadline Date:</label>
+            <div class="input-group date" id="deadlineDateInput">
+              <input onkeydown="return checkDateKeys(event)" onchange="validateModalDate('deadlineDate', 'deadlineModalButton', 'deadlineDateAlertBanner', 'deadlineDateAlertMessage')" type="text" class="form-control" id="deadlineDate" th:name="deadlineDateString">
+              <span class="input-group-append">
+                  <span class="input-group-text bg-white">
+                      <em class="bi bi-calendar"></em>
+                  </span>
+              </span>
+            </div>
+          </div>
+          <div class="alert alert-danger alert-dismissible fade show" role="alert" id="deadlineTimeAlertBanner" hidden>
+            <span id="deadlineTimeAlertMessage" data-test-id="alertMessage"></span>
+            <button type="button" class="btn-close" onclick="document.getElementById('deadlineTimeAlertBanner').hidden = true" aria-label="Close"></button>
+          </div>
+          <div class="mb-3">
+            <label for="deadlineTime" class="col-form-label">Deadline Time:</label>
+            <div class='input-group date' id='deadlineTimeInput'>
+              <input onkeydown="return checkTimeKeys(event)" onchange="validateModalTime('deadlineTime', 'deadlineModalButton', 'deadlineTimeAlertBanner', 'deadlineTimeAlertMessage')" type="text" class="form-control" id="deadlineTime" th:name="deadlineTimeString">
+              <span class="input-group-append">
+                <span class="input-group-text bg-white">
+                    <em class="bi bi-clock"></em>
+                </span>
+              </span>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-primary" id="deadlineModalButton" type="submit">Add Deadline</button>
+        </div>
+      </form>
+    </div>
+  </div>
+  <script type="text/javascript">
+
+    /**
+     * Validates the currently entered information for the deadline and submits the form if it's valid.
+     */
+    async function validateDeadline() {
+      if (validateModalDate('deadlineDate', 'submitDeadlineButton', 'deadlineDateAlertBanner', 'deadlineDateAlertMessage') &&
+              validateModalTime('deadlineTime', 'submitDeadlineButton', 'deadlineTimeAlertBanner', 'deadlineTimeAlertMessage') &&
+              validateModalName('deadlineName', 'deadlineAlertBanner', 'deadlineAlertMessage')) {
+        document.getElementById('deadlineForm').submit();
+      }
+    }
+
+    // fills in the date pickers
+    $(function() {
+      $('#deadlineDateInput').datepicker({
+        format: 'dd/M/yyyy',
+        todayHighlight: true,
+        todayBtn: true,
+        clearBtn: true,
+        orientation: 'bottom'
+      });
+    });
+  </script>
+</div>

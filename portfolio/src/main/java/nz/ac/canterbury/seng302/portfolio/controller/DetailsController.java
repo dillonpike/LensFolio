@@ -48,6 +48,9 @@ public class DetailsController {
     private MilestoneService milestoneService;
 
     @Autowired
+    private DeadlineService deadlineService;
+
+    @Autowired
     private RegisterClientService registerClientService;
 
     /**
@@ -141,6 +144,8 @@ public class DetailsController {
 
         model.addAttribute("newMilestone", new Milestone(0, "", new Date()));
 
+        model.addAttribute("newDeadline", new Deadline(0, "", new Date()));
+
         String role = principal.getClaimsList().stream()
                 .filter(claim -> claim.getType().equals("role"))
                 .findFirst()
@@ -180,7 +185,6 @@ public class DetailsController {
     /**
      * This method maps @MessageMapping endpoint to the @SendTo endpoint. Called when something is sent to
      * the MessageMapping endpoint. This is triggered when the user is no longer editing.
-     *
      * @param message Information about the editing state.
      * @return Returns the message given.
      */

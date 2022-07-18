@@ -47,8 +47,7 @@ public class SprintLifetimeController {
      */
     @PostMapping("/add-sprint")
     public String projectSave(
-            @ModelAttribute("sprint") Sprint sprint,
-            Model model
+            @ModelAttribute("sprint") Sprint sprint
     ) {
         sprint.setStartDateString(sprint.getStartDateString());
         sprint.setEndDateString(sprint.getEndDateString());
