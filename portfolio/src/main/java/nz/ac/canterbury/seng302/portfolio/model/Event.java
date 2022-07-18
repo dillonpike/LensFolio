@@ -21,6 +21,8 @@ public class Event {
     private Date eventEndDate;
     private LocalTime eventStartTime;
     private LocalTime eventEndTime;
+    private String startDateColour;
+    private String endDateColour;
 
     public Event() {}
 
@@ -186,4 +188,19 @@ public class Event {
         return Event.timeToString(this.eventEndTime);
     }
 
+    public String getStartDateColour() {
+        return startDateColour;
+    }
+
+    public void setStartDateColour(String startDateColour) {
+        this.startDateColour = startDateColour;
+    }
+
+    public String getEndDateColour() {
+        return endDateColour;
+    }
+
+    public void setEndDateColour(String endDateColour) {
+        this.endDateColour = endDateColour;
+    }
 }

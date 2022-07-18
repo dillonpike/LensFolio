@@ -95,7 +95,9 @@ public class DetailsController {
         model.addAttribute("project", project);
         model.addAttribute("project", project);
 
-        List<Event> eventList = eventService.getAllEventsOrdered();
+        List<Sprint> sprintList = sprintService.getAllSprintsOrderedWithColour();
+        List<Event> eventList = eventService.getAllEventsOrderedWithColour(sprintList);
+
         model.addAttribute("events", eventList);
 
         List<Milestone> milestoneList = milestoneService.getAllMilestonesOrdered();
@@ -112,8 +114,7 @@ public class DetailsController {
         } else {
             model.addAttribute("toastEventInformation", "");
         }
-        
-        List<Sprint> sprintList = sprintService.getAllSprintsOrdered();
+
         model.addAttribute("sprints", sprintList);
 
         Integer id = userAccountClientService.getUserIDFromAuthState(principal);
