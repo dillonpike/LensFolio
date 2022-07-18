@@ -7,6 +7,7 @@ import nz.ac.canterbury.seng302.portfolio.repository.EventRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -129,5 +130,27 @@ public class EventService {
             eventRepository.save(currentEvent);
         }
         return getAllEventsOrdered();
+    }
+
+    /**
+     * Gets a list of events that overlap with the given sprint in some way. This is to know what events should be
+     * displayed with this sprint. It does this by checking if either of the dates are within the sprints dates.
+     * @param sprint Sprint to check events against.
+     * @return List of events that overlap with the given sprint.
+     */
+    public List<Event> getAllEventsOverlappingWithSprint(Sprint sprint) {
+        ArrayList<Event> eventsList = (ArrayList<Event>) getAllEventsOrdered();
+        ArrayList<Event> eventsOverlapped = new ArrayList<>();
+
+        for (Event currentEvent : eventsList) {
+            if (dateValidationService.validateEventStartDateInSprintDate(currentEvent, sprint) ||
+                    dateValidationService.validateEventEndDateInSprintDate(currentEvent, sprint) ||
+                    // For events that start before and go after the sprint (would not be present with above checks).
+                    (currentEvent.getEventStartDate().before(sprint.getStartDate()) && currentEvent.getEventEndDate().after(sprint.getEndDate()))
+            ) {
+                eventsOverlapped.add(currentEvent);
+            }
+        }
+        return eventsOverlapped;
     }
 }

@@ -1,6 +1,5 @@
 package nz.ac.canterbury.seng302.portfolio.service;
 
-import nz.ac.canterbury.seng302.portfolio.model.Event;
 import nz.ac.canterbury.seng302.portfolio.model.Project;
 import nz.ac.canterbury.seng302.portfolio.model.Sprint;
 import nz.ac.canterbury.seng302.portfolio.repository.SprintRepository;
@@ -32,12 +31,6 @@ public class SprintService {
 
     @Autowired
     private ProjectService projectService;
-
-    @Autowired
-    private EventService eventService;
-
-    @Autowired
-    private DateValidationService dateValidationService;
 
     /**
      * Get list of all sprints
@@ -231,27 +224,5 @@ public class SprintService {
             }
         }
         return getAllSprintsOrdered();
-    }
-
-    /**
-     * Gets a list of events that overlap with the given sprint in some way. This is to know what events should be
-     * displayed with this sprint. It does this by checking if either of the dates are within the sprints dates.
-     * @param sprint Sprint to check events against.
-     * @return List of events that overlap with the given sprint.
-     */
-    public List<Event> getAllEventsOverlappingWithSprint(Sprint sprint) {
-        ArrayList<Event> eventsList = (ArrayList<Event>) eventService.getAllEventsOrdered();
-        ArrayList<Event> eventsOverlapped = new ArrayList<>();
-
-        for (Event currentEvent : eventsList) {
-            if (dateValidationService.validateEventStartDateInSprintDate(currentEvent, sprint) ||
-                    dateValidationService.validateEventEndDateInSprintDate(currentEvent, sprint) ||
-                    // For events that start before and go after the sprint (would not be present with above checks).
-                    (currentEvent.getEventStartDate().before(sprint.getStartDate()) && currentEvent.getEventEndDate().after(sprint.getEndDate()))
-            ) {
-                eventsOverlapped.add(currentEvent);
-            }
-        }
-        return eventsOverlapped;
     }
 }
