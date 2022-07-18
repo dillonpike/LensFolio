@@ -104,20 +104,26 @@ public class Milestone {
 
     /**
      * Gets the day of the month of the milestone
-     * @return day of the month of the milestone
+     * @return day of the month of the milestone. 0 if milestone date is null
      */
     public int getMilestoneDay() {
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd");
-        return Integer.parseInt(dateFormat.format(milestoneDate));
+        if (milestoneDate != null) {
+            return Integer.parseInt(dateFormat.format(milestoneDate));
+        }
+        return 0;
     }
 
     /**
      * Gets the month of the year of the milestone
-     * @return month of the year of the milestone
+     * @return month of the year of the milestone. Null if milestone date is null
      */
     public String getMilestoneMonth() {
         SimpleDateFormat dateFormat = new SimpleDateFormat("MMM");
-        return (dateFormat.format(milestoneDate));
+        if (milestoneDate != null) {
+            return (dateFormat.format(milestoneDate));
+        }
+        return null;
     }
 
     /**
