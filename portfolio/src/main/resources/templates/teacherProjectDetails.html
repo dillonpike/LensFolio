@@ -516,15 +516,23 @@
         }
     }
     /**
-     Check if the date of the item that the user inputted is within the project dates range
-     Show error banner with error message and disable the submit button if the inputted date is outside the project dates range
-     @param elementId the ID of the date input HTML element
-     @param submitElementId the ID of the submit button on the modal
+     * Check if the date of the item that the user inputted is within the project dates range
+     * Show error banner with error message and disable the submit button if the inputted date is outside the project dates range
+     * @param elementId the ID of the date input HTML element
+     * @param submitElementId the ID of the submit button on the modal
+     * @param alertBanner the ID of the banner element that will display the alert message
+     * @param alertMessage the ID of the alert message element
      */
     function validateModalDate(elementId, submitElementId, alertBanner, alertMessage) {
         const dateInputStr = document.getElementById(elementId).value;
-        const dateInput = new Date(dateInputStr);
+        if (dateInputStr === "") {
+            $('#' + submitElementId).prop('disabled', true);
+            document.getElementById(alertBanner).hidden = false;
+            document.getElementById(alertMessage).innerText = "Date must not be empty!";
+            return false;
+        }
 
+        const dateInput = new Date(dateInputStr);
         if (dateInput < new Date(projectStartDate) || dateInput > new Date(projectEndDate)) {
             $('#' + submitElementId).prop('disabled', true);
             document.getElementById(alertBanner).hidden = false;
