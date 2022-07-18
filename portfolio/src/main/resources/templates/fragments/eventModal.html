@@ -12,7 +12,7 @@
             <button type="button" class="btn-close" onclick="document.getElementById('eventAlertBanner').hidden = true" aria-label="Close"></button>
           </div> 
           <div class="mb-3">
-            <label for="eventName" class="col-form-label">event Name:</label>
+            <label for="eventName" class="col-form-label">Event Name:</label>
             <input onkeyup="updateCharsLeft('eventName', 'eventNameLength', 50)" maxlength="50" type="text" class="form-control" id="eventName" name="eventName">
             <div class="name-length-message">
               <span id="eventNameLength"></span>
@@ -49,9 +49,20 @@
             <button type="button" class="btn-close" onclick="document.getElementById('eventTimeAlertBanner').hidden = true" aria-label="Close"></button>
           </div>
           <div class="mb-3">
-            <label for="eventTime" class="col-form-label">event Time:</label>
-            <div class='input-group date' id='eventTimeInput'>
-              <input onkeydown="return checkTimeKeys(event)" onchange="validateModalTime('eventTime', 'eventModalButton', 'eventTimeAlertBanner', 'eventTimeAlertMessage')" type="text" class="form-control" id="eventTime" th:name="eventTimeString">
+            <label for="eventStartTime" class="col-form-label">Event Start Time:</label>
+            <div class='input-group date' id='eventStartTimeInput'>
+              <input onkeydown="return checkTimeKeys(event)" onchange="validateModalTime('eventStartTime', 'eventModalButton', 'eventTimeAlertBanner', 'eventTimeAlertMessage')" type="text" class="form-control" id="eventStartTime" th:name="eventStartTimeString">
+              <span class="input-group-append">
+                <span class="input-group-text bg-white">
+                    <em class="bi bi-clock"></em>
+                </span>
+              </span>
+            </div>
+          </div>
+          <div class="mb-3">
+            <label for="eventEndTime" class="col-form-label">Event End Time:</label>
+            <div class='input-group date' id='eventEndTimeInput'>
+              <input onkeydown="return checkTimeKeys(event)" onchange="validateModalTime('eventEndTime', 'eventModalButton', 'eventTimeAlertBanner', 'eventTimeAlertMessage')" type="text" class="form-control" id="eventEndTime" th:name="eventEndTimeString">
               <span class="input-group-append">
                 <span class="input-group-text bg-white">
                     <em class="bi bi-clock"></em>
@@ -72,8 +83,8 @@
      * Validates the currently entered information for the event and submits the form if it's valid.
      */
     async function validateevent() {
-      if (validateModalDate('eventStartDate', 'eventStartDate', 'submiteventButton', 'eventDateAlertBanner', 'eventDateAlertMessage') &&
-              validateModalTime('eventTime', 'submiteventButton', 'eventTimeAlertBanner', 'eventTimeAlertMessage') &&
+      if (validateModalDate('eventStartDate', 'eventEndDate', 'submitEventButton', 'eventDateAlertBanner', 'eventDateAlertMessage') &&
+              validateModalTime('eventStartTime', 'eventEndTime', 'submitEventButton', 'eventTimeAlertBanner', 'eventTimeAlertMessage') &&
               validateModalName('eventName', 'eventAlertBanner', 'eventAlertMessage')) {
         document.getElementById('eventForm').submit();
       }

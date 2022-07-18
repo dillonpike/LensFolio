@@ -213,7 +213,7 @@ function eventModalSetup() {
         const button = event.relatedTarget
 
         // Extract info from data-bs-* attributes
-        const events = JSON.parse(button.getAttribute('data-bs-milestone'))
+        const events = JSON.parse(button.getAttribute('data-bs-event'))
         const type = button.getAttribute('data-bs-type')
 
         // Update the modal's content.
