@@ -134,6 +134,9 @@ public class DetailsController {
         List<Milestone> milestoneList = milestoneService.getAllMilestonesOrdered();
         model.addAttribute("milestones", milestoneList);
 
+        List<Deadline> deadlineList = deadlineService.getAllDeadlines();
+        model.addAttribute("deadlines", deadlineList);
+
         Integer id = userAccountClientService.getUserIDFromAuthState(principal);
         elementService.addHeaderAttributes(model, id);
         model.addAttribute("userId", id);
