@@ -299,7 +299,7 @@
                                                 <span class="widget-49-date-month" th:text="${deadline.getDeadlineMonth()}" ></span>
                                             </div>
                                             <div class="widget-49-meeting-info">
-                                                <span class="widget-49-pro-title" th:text="${deadline.getDeadlineName}"></span>
+                                                <span class="widget-49-pro-title" th:style="color + ':' +  ${deadline.getDeadlineColour()}" th:text="${deadline.getDeadlineName}"></span>
                                             </div>
                                             <div class="ms-auto">
                                                 <div class="dropdown">
@@ -347,9 +347,8 @@
 <div id="deadlineModal" th:replace="fragments/deadlineModal :: deadlineModal"></div>
 <div th:replace="fragments/deleteModalProject :: deleteModal"></div>
 
-
+    </div>
 </body>
-
 <script src="js/project.js"></script>
 <script src="js/detailsLive.js"></script>
 

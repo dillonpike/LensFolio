@@ -43,6 +43,11 @@ public class Deadline {
     private Date deadlineDate;
 
     /**
+     * Colour of the deadline.
+     */
+    private String deadlineColour;
+
+    /**
      * Gets the id of the deadline
      * @return the id of the deadline
      */
@@ -57,6 +62,23 @@ public class Deadline {
     public void setId(int id) {
         this.id = id;
     }
+
+    /**
+     * Gets the colour of the deadline
+     * @return the colour of the deadline
+     */
+    public String getDeadlineColour() {
+        return deadlineColour;
+    }
+
+    /**
+     * Sets the colour of the deadline
+     * @param colour colour of the deadline
+     */
+    public void setDeadlineColour(String colour) {
+        this.deadlineColour = colour;
+    }
+
 
     /**
      * Gets the project id that the deadline is in
