@@ -97,6 +97,8 @@ public class DetailsController {
         List<Sprint> sprintList = sprintService.getAllSprintsOrderedWithColour();
         List<Event> eventList = eventService.getAllEventsOrderedWithColour(sprintList);
 
+        model.addAttribute("sprints", sprintList);
+        model.addAttribute("events", eventList);
 
 
         // Runs if the reload was triggered by saving an event. Checks the notifications' creation time to see if 2 seconds has passed yet.
@@ -126,13 +128,8 @@ public class DetailsController {
             eventsToDisplay.remove(event);
         }
 
-        List<Event> eventList = eventService.getAllEventsOrdered();
-        model.addAttribute("events", eventList);
-
         List<Milestone> milestoneList = milestoneService.getAllMilestonesOrdered();
         model.addAttribute("milestones", milestoneList);
-
-        model.addAttribute("sprints", sprintList);
 
         Integer id = userAccountClientService.getUserIDFromAuthState(principal);
         elementService.addHeaderAttributes(model, id);
