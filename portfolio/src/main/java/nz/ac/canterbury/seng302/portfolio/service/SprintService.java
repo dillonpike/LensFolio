@@ -235,7 +235,7 @@ public class SprintService {
 
     /**
      * Gets a list of events that overlap with the given sprint in some way. This is to know what events should be
-     * displayed with this sprint.
+     * displayed with this sprint. It does this by checking if either of the dates are within the sprints dates.
      * @param sprint Sprint to check events against.
      * @return List of events that overlap with the given sprint.
      */
