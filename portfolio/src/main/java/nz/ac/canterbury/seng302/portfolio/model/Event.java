@@ -1,5 +1,8 @@
 package nz.ac.canterbury.seng302.portfolio.model;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import java.text.SimpleDateFormat;
 import java.time.LocalTime;
 import javax.persistence.Entity;
@@ -186,4 +189,12 @@ public class Event {
         return Event.timeToString(this.eventEndTime);
     }
 
+    /**
+     * Returns the deadline as a JSON string.
+     * @return deadline as a JSON string
+     * @throws JsonProcessingException when the deadline cannot be converted to a JSON string
+     */
+    public String toJSONString() throws JsonProcessingException {
+        return new ObjectMapper().writeValueAsString(this);
+    }
 }

@@ -200,3 +200,47 @@ function deadlineModalSetup() {
         $('#' + modalButton.getAttribute("id")).prop('hidden', false);
     })
 }
+
+
+/**
+ * Customises the milestone modal attributes with depending on what milestone it should display and whether it's being
+ * used for adding or editing a milestone.
+ */
+function eventModalSetup() {
+    const eventModal = document.getElementById('eventModal')
+    eventModal.addEventListener('show.bs.modal', function (event) {
+        // Button that triggered the modal
+        const button = event.relatedTarget
+
+        // Extract info from data-bs-* attributes
+        const events = JSON.parse(button.getAttribute('data-bs-milestone'))
+        const type = button.getAttribute('data-bs-type')
+
+        // Update the modal's content.
+        const modalTitle = eventModal.querySelector('.modal-title')
+        const modalBodyInput = eventModal.querySelector('.modal-body input')
+        const modalButton = eventModal.querySelector('.modal-footer button')
+        const modalForm = eventModal.querySelector('form')
+
+        if (type === 'add') {
+            modalTitle.innerText = 'Add Event'
+            modalButton.innerHTML = 'Add Event'
+            modalForm.action = 'add-event'
+        } else {
+            modalTitle.innerText = 'Edit Event'
+            modalButton.innerHTML = 'Save Event'
+            modalForm.action = `edit-event/${events.id}`
+            modalForm.setAttribute('milestone', events)
+        }
+
+        modalForm.setAttribute('object', events);
+        modalBodyInput.value = events.eventName
+        $('#eventDateInput').datepicker('setDate', events.eventStartDateString)
+
+        // Initial run of validation functions in case initial values are invalid
+        validateModalName('eventName', 'eventModalButton', 'eventAlertBanner', 'eventAlertMessage')
+        validateModalDate('eventDate', 'eventModalButton', 'eventDateAlertBanner', 'eventDateAlertMessage')
+        updateCharsLeft('eventName', 'eventNameLength', 50)
+        $('#' + modalButton.getAttribute("id")).prop('hidden', false);
+    })
+}
