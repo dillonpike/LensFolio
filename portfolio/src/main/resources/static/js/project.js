@@ -230,7 +230,7 @@ function eventModalSetup() {
             modalTitle.innerText = 'Edit Event'
             modalButton.innerHTML = 'Save Event'
             modalForm.action = `edit-event/${events.id}`
-            modalForm.setAttribute('milestone', events)
+            modalForm.setAttribute('event', events)
         }
 
         modalForm.setAttribute('object', events);
@@ -239,7 +239,7 @@ function eventModalSetup() {
 
         // Initial run of validation functions in case initial values are invalid
         validateModalName('eventName', 'eventModalButton', 'eventAlertBanner', 'eventAlertMessage')
-        validateModalDate('eventDate', 'eventModalButton', 'eventDateAlertBanner', 'eventDateAlertMessage')
+        validateModalDate('eventStartDate', 'eventEndDate', 'eventModalButton', 'eventDateAlertBanner', 'eventDateAlertMessage')
         updateCharsLeft('eventName', 'eventNameLength', 50)
         $('#' + modalButton.getAttribute("id")).prop('hidden', false);
     })

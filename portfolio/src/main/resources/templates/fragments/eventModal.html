@@ -23,9 +23,20 @@
             <button type="button" class="btn-close" onclick="document.getElementById('eventDateAlertBanner').hidden = true" aria-label="Close"></button>
           </div>
           <div class="mb-3">
-            <label for="eventDate" class="col-form-label">event Date:</label>
-            <div class="input-group date" id="eventDateInput">
-              <input onkeydown="return checkDateKeys(event)" onchange="validateModalDate('eventDate', 'eventModalButton', 'eventDateAlertBanner', 'eventDateAlertMessage')" type="text" class="form-control" id="eventDate" th:name="eventDateString">
+            <label for="eventStartDate" class="col-form-label">Event Start Date:</label>
+            <div class="input-group date" id="eventStartDateInput">
+              <input onkeydown="return checkDateKeys(event)" onchange="validateModalDate('eventStartDate', 'eventModalButton', 'eventDateAlertBanner', 'eventDateAlertMessage')" type="text" class="form-control" id="eventStartDate" th:name="eventStartDateString">
+              <span class="input-group-append">
+                  <span class="input-group-text bg-white">
+                      <em class="bi bi-calendar"></em>
+                  </span>
+              </span>
+            </div>
+          </div>
+          <div class="mb-3">
+            <label for="eventEndDate" class="col-form-label">Event End Date:</label>
+            <div class="input-group date" id="eventEndDateInput">
+              <input onkeydown="return checkDateKeys(event)" onchange="validateModalDate('eventEndDate', 'eventModalButton', 'eventDateAlertBanner', 'eventDateAlertMessage')" type="text" class="form-control" id="eventEndDate" th:name="eventEndDateString">
               <span class="input-group-append">
                   <span class="input-group-text bg-white">
                       <em class="bi bi-calendar"></em>
@@ -61,7 +72,7 @@
      * Validates the currently entered information for the event and submits the form if it's valid.
      */
     async function validateevent() {
-      if (validateModalDate('eventDate', 'submiteventButton', 'eventDateAlertBanner', 'eventDateAlertMessage') &&
+      if (validateModalDate('eventStartDate', 'eventStartDate', 'submiteventButton', 'eventDateAlertBanner', 'eventDateAlertMessage') &&
               validateModalTime('eventTime', 'submiteventButton', 'eventTimeAlertBanner', 'eventTimeAlertMessage') &&
               validateModalName('eventName', 'eventAlertBanner', 'eventAlertMessage')) {
         document.getElementById('eventForm').submit();
@@ -70,7 +81,17 @@
 
     // fills in the date pickers
     $(function() {
-      $('#eventDateInput').datepicker({
+      $('#eventStartDateInput').datepicker({
+        format: 'dd/M/yyyy',
+        todayHighlight: true,
+        todayBtn: true,
+        clearBtn: true,
+        orientation: 'bottom'
+      });
+    });
+
+    $(function() {
+      $('#eventEndDateInput').datepicker({
         format: 'dd/M/yyyy',
         todayHighlight: true,
         todayBtn: true,

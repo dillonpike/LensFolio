@@ -2,6 +2,7 @@ package nz.ac.canterbury.seng302.portfolio.model;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.json.JsonMapper;
 
 import java.text.SimpleDateFormat;
 import java.time.LocalTime;
@@ -29,6 +30,15 @@ public class Event {
 
     public Event(int id, int parentProjectId, String eventName, Date eventStartDate, Date eventEndDate, LocalTime startTime, LocalTime endTime) {
         this.id = id;
+        this.parentProjectId = parentProjectId;
+        this.eventName = eventName;
+        this.eventStartDate = eventStartDate;
+        this.eventEndDate = eventEndDate;
+        this.eventStartTime = startTime;
+        this.eventEndTime = endTime;
+    }
+
+    public Event(int parentProjectId, String eventName, Date eventStartDate, Date eventEndDate, LocalTime startTime, LocalTime endTime) {
         this.parentProjectId = parentProjectId;
         this.eventName = eventName;
         this.eventStartDate = eventStartDate;
@@ -195,6 +205,8 @@ public class Event {
      * @throws JsonProcessingException when the deadline cannot be converted to a JSON string
      */
     public String toJSONString() throws JsonProcessingException {
-        return new ObjectMapper().writeValueAsString(this);
+        ObjectMapper mapper = JsonMapper.builder().findAndAddModules().build();
+        return mapper.writeValueAsString(this);
+
     }
 }
