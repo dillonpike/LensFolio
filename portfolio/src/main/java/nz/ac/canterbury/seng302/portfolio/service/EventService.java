@@ -20,6 +20,8 @@ public class EventService {
     @Autowired
     private EventRepository eventRepository;
 
+    @Autowired
+    private DateValidationService dateValidationService;
 
     /**
      * Get list of all events
@@ -102,6 +104,7 @@ public class EventService {
     }
 
 
+
     /***
      * For any events existing, get the sprints colour for its start date if it is within the sprint time slot,
      * and the same is done with the events end date
@@ -111,19 +114,16 @@ public class EventService {
      */
     public List<Event> getAllEventsOrderedWithColour(List<Sprint> sprints) {
         List<Event> eventList = getAllEventsOrdered();
-        for (int i = 0; i < eventList.size(); i++) {
-//            Get the event from current index
-            Event currentEvent = eventList.get(i);
-
+        for (Event currentEvent : eventList) {
             // Reset Event's color
             currentEvent.setStartDateColour(null);
             currentEvent.setEndDateColour(null);
 
             for (Sprint sprint : sprints) {
-                if (currentEvent.getEventStartDate().after(sprint.getStartDate()) && currentEvent.getEventStartDate().before(sprint.getEndDate())) {
+                if (dateValidationService.validateEventStartDateInSprintDate(currentEvent, sprint)) {
                     currentEvent.setStartDateColour(sprint.getColour());
                 }
-                if (currentEvent.getEventEndDate().after(sprint.getStartDate()) && currentEvent.getEventEndDate().before(sprint.getEndDate())) {
+                if (dateValidationService.validateEventEndDateInSprintDate(currentEvent, sprint)) {
                     currentEvent.setEndDateColour(sprint.getColour());
                 }
             }
