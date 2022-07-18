@@ -114,6 +114,11 @@ public class EventService {
         for (int i = 0; i < eventList.size(); i++) {
 //            Get the event from current index
             Event currentEvent = eventList.get(i);
+
+            // Reset Event's color
+            currentEvent.setStartDateColour(null);
+            currentEvent.setEndDateColour(null);
+
             for (Sprint sprint : sprints) {
                 if (currentEvent.getEventStartDate().after(sprint.getStartDate()) && currentEvent.getEventStartDate().before(sprint.getEndDate())) {
                     currentEvent.setStartDateColour(sprint.getColour());
