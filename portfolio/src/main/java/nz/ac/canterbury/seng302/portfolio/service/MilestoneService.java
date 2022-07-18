@@ -54,4 +54,36 @@ public class MilestoneService {
             repository.deleteById(milestone.getId());
         }
     }
+
+    /**
+     * Get milestone by given ID from repository.
+     * @param id Id of milestone requested.
+     * @return Milestone object from repository.
+     * @throws Exception Thrown if no milestone exists.
+     */
+    public Milestone getMilestoneById(Integer id) throws Exception {
+        Optional<Milestone> milestone = repository.findById(id);
+
+        if (milestone.isPresent()) {
+            return milestone.get();
+        } else {
+            throw new Exception("Milestone not found");
+        }
+    }
+
+    public Milestone updateMilestone(Milestone milestone) {
+        Optional<Milestone> mOptional = repository.findById((Integer) milestone.getId());
+
+        if (mOptional.isPresent()) {
+            Milestone milestoneUpdate = mOptional.get();
+            milestoneUpdate.setMilestoneName(milestone.getMilestoneName());
+            milestoneUpdate.setMilestoneDate(milestone.getMilestoneDate());
+
+            milestoneUpdate = repository.save(milestoneUpdate);
+            return milestoneUpdate;
+        } else {
+            milestone = repository.save(milestone);
+            return milestone;
+        }
+    }
 }

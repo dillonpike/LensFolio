@@ -3,6 +3,7 @@ package nz.ac.canterbury.seng302.portfolio.controller;
 import com.google.protobuf.Timestamp;
 import nz.ac.canterbury.seng302.portfolio.model.*;
 import nz.ac.canterbury.seng302.portfolio.service.*;
+import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
@@ -17,6 +18,7 @@ import org.springframework.web.util.HtmlUtils;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -45,15 +47,13 @@ public class DetailsController {
     @Autowired
     private MilestoneService milestoneService;
 
-    /**
-     * Last event saved, for toast notification.
-     */
-    private EventResponse eventResponse;
+    @Autowired
+    private RegisterClientService registerClientService;
 
     /**
-     * Time that the event was updated.
+     * Holds list of events information for displaying.
      */
-    private Date eventWasUpdatedTime = Date.from(Instant.now());
+    private ArrayList<NotificationResponse> eventsToDisplay = new ArrayList<>();
 
 
     /***
@@ -93,36 +93,56 @@ public class DetailsController {
         }
 
         model.addAttribute("project", project);
-        model.addAttribute("project", project);
 
         List<Sprint> sprintList = sprintService.getAllSprintsOrderedWithColour();
         List<Event> eventList = eventService.getAllEventsOrderedWithColour(sprintList);
 
+
+
+        // Runs if the reload was triggered by saving an event. Checks the notifications' creation time to see if 2 seconds has passed yet.
+        int count = 1;
+        ArrayList<NotificationResponse> eventsToDelete = new ArrayList<>();
+        for (NotificationResponse event : eventsToDisplay) {
+            long timeDifference = Date.from(Instant.now()).toInstant().getEpochSecond() - event.getDateOfCreation();
+            if (timeDifference <= 2) {
+                model.addAttribute("toastEventInformation" + count, event.getArtefactType());
+                model.addAttribute("toastEventName" + count, event.getArtefactName());
+                model.addAttribute("toastEventId" + count, event.getArtefactId());
+                model.addAttribute("toastUsername" + count, event.getUsername());
+                model.addAttribute("toastFirstName" + count, event.getUserFirstName());
+                model.addAttribute("toastLastName" + count, event.getUserLastName());
+            } else {
+                eventsToDelete.add(event);
+                model.addAttribute("toastEventInformation" + count, "");
+                model.addAttribute("toastEventName" + count, "");
+                model.addAttribute("toastEventId" + count, "");
+                model.addAttribute("toastUsername" + count, "");
+                model.addAttribute("toastFirstName" + count, "");
+                model.addAttribute("toastLastName" + count, "");
+            }
+            count++;
+        }
+        for (NotificationResponse event : eventsToDelete) {
+            eventsToDisplay.remove(event);
+        }
+
+        List<Event> eventList = eventService.getAllEventsOrdered();
         model.addAttribute("events", eventList);
 
         List<Milestone> milestoneList = milestoneService.getAllMilestonesOrdered();
         model.addAttribute("milestones", milestoneList);
-
-        // Runs if the reload was triggered by saving an event. Checks set time to now to see if 2 seconds has passed yet.
-        long timeDifference = Date.from(Instant.now()).toInstant().getEpochSecond() - eventWasUpdatedTime.toInstant().getEpochSecond();
-        if (timeDifference <= 2 && eventResponse != null) {
-            model.addAttribute("toastEventInformation", "true");
-            model.addAttribute("toastEventName", eventResponse.getEventName());
-            model.addAttribute("toastUsername", eventResponse.getUsername());
-            model.addAttribute("toastFirstName", eventResponse.getUserFirstName());
-            model.addAttribute("toastLastName", eventResponse.getUserLastName());
-        } else {
-            model.addAttribute("toastEventInformation", "");
-        }
 
         model.addAttribute("sprints", sprintList);
 
         Integer id = userAccountClientService.getUserIDFromAuthState(principal);
         elementService.addHeaderAttributes(model, id);
         model.addAttribute("userId", id);
+        UserResponse user = registerClientService.getUserData(id);
+        model.addAttribute("username", user.getUsername());
+        model.addAttribute("userFirstName", user.getFirstName());
+        model.addAttribute("userLastName", user.getLastName());
 
-
-        model.addAttribute("blankMilestone", new Milestone());
+        model.addAttribute("newMilestone", new Milestone(0, "", new Date()));
 
         String role = principal.getClaimsList().stream()
                 .filter(claim -> claim.getType().equals("role"))
@@ -142,58 +162,64 @@ public class DetailsController {
         }
     }
 
-//    /**
-//     * Gets final details page to display, depending on whether the user is a teacher or a student.
-//     * @param principal Gets information about the user
-//     * @return Thymeleaf template
-//     */
-//    private String getFinalThymeleafTemplate(AuthState principal, Model model) {
-//
-//    }
-
     /**
      * This method maps @MessageMapping endpoint to the @SendTo endpoint. Called when something is sent to
      * the MessageMapping endpoint.
-     * @param message EventMessage that holds information about the event being updated
-     * @return returns an EventResponse that holds information about the event being updated.
+     * @param message NotificationMessage that holds information about the event being updated
+     * @return returns an NotificationResponse that holds information about the event being updated.
      */
-    @MessageMapping("/editing-event")
+    @MessageMapping("/editing-artefact")
     @SendTo("/test/portfolio/events/being-edited")
-    public EventResponse updatingEvent(EventMessage message) {
+    public NotificationResponse updatingArtefact(NotificationMessage message) {
+        int eventId = message.getArtefactId();
         String username = message.getUsername();
         String firstName = message.getUserFirstName();
         String lastName = message.getUserLastName();
-        return new EventResponse(HtmlUtils.htmlEscape(message.getEventName()), username, firstName, lastName);
+        String artefactType = message.getArtefactType();
+        long dateOfNotification = Date.from(Instant.now()).toInstant().getEpochSecond();
+        return new NotificationResponse(HtmlUtils.htmlEscape(message.getArtefactName()), eventId, username, firstName, lastName, dateOfNotification, artefactType);
     }
 
     /**
      * This method maps @MessageMapping endpoint to the @SendTo endpoint. Called when something is sent to
      * the MessageMapping endpoint. This is triggered when the user is no longer editing.
+     *
      * @param message Information about the editing state.
      * @return Returns the message given.
      */
-    @MessageMapping("/stop-editing-event")
+    @MessageMapping("/stop-editing-artefact")
     @SendTo("/test/portfolio/events/stop-being-edited")
-    public String stopUpdatingEvent(String message) {
-        return message;
+    public NotificationResponse stopUpdatingArtefact(NotificationMessage message) {
+        int eventId = message.getArtefactId();
+        String username = message.getUsername();
+        String firstName = message.getUserFirstName();
+        String lastName = message.getUserLastName();
+        String artefactType = message.getArtefactType();
+        long dateOfNotification = Date.from(Instant.now()).toInstant().getEpochSecond();
+        return new NotificationResponse(HtmlUtils.htmlEscape(message.getArtefactName()), eventId, username, firstName, lastName, dateOfNotification, artefactType);
     }
 
     /**
      * This method maps @MessageMapping endpoint to the @SendTo endpoint. Called when something is sent to
      * the MessageMapping endpoint. This method also triggers some sort of re-render of the events.
-     * @param message EventMessage that holds information about the event being updated
-     * @return returns an EventResponse that holds information about the event being updated.
+     * @param message NotificationMessage that holds information about the event being updated
+     * @return returns an NotificationResponse that holds information about the event being updated.
      */
-    @MessageMapping("/saved-edited-event")
+    @MessageMapping("/saved-edited-artefact")
     @SendTo("/test/portfolio/events/save-edit")
-    public EventResponse savingUpdatedEvent(EventMessage message) {
+    public NotificationResponse savingUpdatedArtefact(NotificationMessage message) {
+        int eventId = message.getArtefactId();
         String username = message.getUsername();
         String firstName = message.getUserFirstName();
         String lastName = message.getUserLastName();
-        EventResponse response = new EventResponse(HtmlUtils.htmlEscape(message.getEventName()), username, firstName, lastName);
+        long dateOfNotification = Date.from(Instant.now()).toInstant().getEpochSecond();
+        String artefactType = message.getArtefactType();
+        NotificationResponse response = new NotificationResponse(HtmlUtils.htmlEscape(message.getArtefactName()), eventId, username, firstName, lastName, dateOfNotification, artefactType);
         // Trigger reload and save the last event's information
-        eventWasUpdatedTime = Date.from(Instant.now());
-        eventResponse = response;
+        eventsToDisplay.add(response);
+        while (eventsToDisplay.size() > 3) {
+            eventsToDisplay.remove(0);
+        }
         return response;
     }
 

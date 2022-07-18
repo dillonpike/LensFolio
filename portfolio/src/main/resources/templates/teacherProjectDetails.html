@@ -17,16 +17,41 @@
 <body>
 <header th:replace="fragments/header"></header>
 <div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 2000">
-    <div class="toast" role="alert" aria-live="assertive" aria-atomic="true" id="liveToast" data-bs-autohide="false" data-bs-animation="false">
+    <div class="toast" role="alert" aria-live="assertive" aria-atomic="true" id="liveToast1" data-bs-autohide="false" data-bs-animation="false">
         <div class="toast-header">
-            <strong class="me-auto" id="toastTitle">Event Activity</strong>
+            <strong class="me-auto" id="toastTitle1"></strong>
         </div>
-        <div class="toast-body" id="popupText"></div>
-        <div id="toastInformation" th:text="${toastEventInformation}" hidden="true"></div>
-        <div id="toastEventName" th:text="${toastEventName}" hidden="true"></div>
-        <div id="toastUsername" th:text="${toastUsername}" hidden="true"></div>
-        <div id="toastFirstName" th:text="${toastFirstName}" hidden="true"></div>
-        <div id="toastLastName" th:text="${toastLastName}" hidden="true"></div>
+        <div class="toast-body" id="popupText1"></div>
+        <div id="toastInformation1" th:text="${toastEventInformation1}" hidden="true"></div>
+        <div id="toastEventName1" th:text="${toastEventName1}" hidden="true"></div>
+        <div id="toastEventId1" th:text="${toastEventId1}" hidden="true"></div>
+        <div id="toastUsername1" th:text="${toastUsername1}" hidden="true"></div>
+        <div id="toastFirstName1" th:text="${toastFirstName1}" hidden="true"></div>
+        <div id="toastLastName1" th:text="${toastLastName1}" hidden="true"></div>
+    </div>
+    <div class="toast" role="alert" aria-live="assertive" aria-atomic="true" id="liveToast2" data-bs-autohide="false" data-bs-animation="false">
+        <div class="toast-header">
+            <strong class="me-auto" id="toastTitle2"></strong>
+        </div>
+        <div class="toast-body" id="popupText2"></div>
+        <div id="toastInformation2" th:text="${toastEventInformation2}" hidden="true"></div>
+        <div id="toastEventName2" th:text="${toastEventName2}" hidden="true"></div>
+        <div id="toastEventId2" th:text="${toastEventId2}" hidden="true"></div>
+        <div id="toastUsername2" th:text="${toastUsername2}" hidden="true"></div>
+        <div id="toastFirstName2" th:text="${toastFirstName2}" hidden="true"></div>
+        <div id="toastLastName2" th:text="${toastLastName2}" hidden="true"></div>
+    </div>
+    <div class="toast" role="alert" aria-live="assertive" aria-atomic="true" id="liveToast3" data-bs-autohide="false" data-bs-animation="false">
+        <div class="toast-header">
+            <strong class="me-auto" id="toastTitle3"></strong>
+        </div>
+        <div class="toast-body" id="popupText3"></div>
+        <div id="toastInformation3" th:text="${toastEventInformation3}" hidden="true"></div>
+        <div id="toastEventName3" th:text="${toastEventName3}" hidden="true"></div>
+        <div id="toastEventId3" th:text="${toastEventId3}" hidden="true"></div>
+        <div id="toastUsername3" th:text="${toastUsername3}" hidden="true"></div>
+        <div id="toastFirstName3" th:text="${toastFirstName3}" hidden="true"></div>
+        <div id="toastLastName3" th:text="${toastLastName3}" hidden="true"></div>
     </div>
 </div>
 <div class="row">
@@ -43,7 +68,7 @@
             </button>
                 <ul class="dropdown-menu" aria-labelledby="addActions">
                     <li>
-                        <button id="editProjectButton" class="dropdown-item" type="button">
+                        <button id="editProjectButton" class="dropdown-item" type="button" data-bs-toggle="modal" data-bs-target="#projectModal" th:data-bs-project="${project.toJSONString()}" >
                             <span class='bi bi-pencil'></span> <i>Edit Project</i>
                         </button>
                     </li>
@@ -67,7 +92,7 @@
                         </button>
                     </li>
                     <li>
-                        <button id="addMilestoneButton" class="dropdown-item" type="button">
+                        <button id="addMilestoneButton" class="dropdown-item" type="button" data-bs-toggle="modal" data-bs-target="#milestoneModal" th:data-bs-milestone="${newMilestone.toJSONString()}" data-bs-type="add">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-award" viewBox="0 0 16 16">
                                 <path d="M9.669.864 8 0 6.331.864l-1.858.282-.842 1.68-1.337 1.32L2.6 6l-.306 1.854 1.337 1.32.842 1.68 1.858.282L8 12l1.669-.864 1.858-.282.842-1.68 1.337-1.32L13.4 6l.306-1.854-1.337-1.32-.842-1.68L9.669.864zm1.196 1.193.684 1.365 1.086 1.072L12.387 6l.248 1.506-1.086 1.072-.684 1.365-1.51.229L8 10.874l-1.355-.702-1.51-.229-.684-1.365-1.086-1.072L3.614 6l-.25-1.506 1.087-1.072.684-1.365 1.51-.229L8 1.126l1.356.702 1.509.229z"/>
                                 <path d="M4 11.794V16l4-1 4 1v-4.206l-2.018.306L8 13.126 6.018 12.1 4 11.794z"/>
@@ -105,7 +130,7 @@
                                 <div class="sprint-label" th:text="'Sprint-' + (${meta.index} + 1)" />
                                 <div class="detail-block">
                                     <div>
-                                        <div class="sprint-title" th:style="color + ':' +  ${sprint.getColour()}" th:text="${sprint.getName}" />
+                                        <div class="sprint-title" th:text="${sprint.getName}" th:style="color + ':' +  ${sprint.getColour()}" />
                                         <div class="sprint-date" th:text="${sprint.getDates}" />
                                         <div class="sprint-description" th:text="${sprint.getDescription}" />
                                     </div>
@@ -211,10 +236,10 @@
                                                 </div>
                                             </div>
                                             <ol class="widget-49-meeting-points">
-                                                <span class="widget-49-meeting-item" th:style="color + ':' +  ${event.getStartDateColour()}" th:text="From + ': ' + ${event.getStartDateDetail()}"> </span>
+                                                <span class="widget-49-meeting-item" th:text="From + ': ' + ${event.getStartDateDetail()}"> </span>
                                             </ol>
                                             <ol class="widget-49-meeting-points">
-                                                <span class="widget-49-meeting-item" th:style="color + ':' +  ${event.getEndDateColour()}" th:text="To + ': ' + ${event.getEndDateDetail()}"></span>
+                                                <span class="widget-49-meeting-item" th:text="To + ': ' + ${event.getEndDateDetail()}"></span>
                                             </ol>
                                         </div>
                                     </div>
@@ -235,22 +260,27 @@
                                                     <span class="widget-49-pro-title" th:text="${milestone.milestoneName}"></span>
                                                 </div>
                                                 <div class="ms-auto">
-                                                    <div style="margin-top: 4px">
-                                                        <a class="button-link" th:href="@{edit-milestone/{id} (id=${milestone.id})}">
-                                                            <button class="edit-button" id="editMilestoneButton">
-                                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil-fill" viewBox="0 0 16 16">
-                                                                    <path d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"/>
-                                                                </svg>
-                                                            </button>
-                                                        </a>
-                                                    </div>
-                                                    <a class="button-link" data-bs-toggle="modal" data-bs-target="#deleteModal" th:data-bs-id="${milestone.id}" th:data-bs-name="${milestone.milestoneName}" data-bs-type="milestone">
-                                                        <button class="delete-button" id="deleteMilestoneButton">
-                                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash3-fill" viewBox="0 0 16 16">
-                                                                <path d="M11 1.5v1h3.5a.5.5 0 0 1 0 1h-.538l-.853 10.66A2 2 0 0 1 11.115 16h-6.23a2 2 0 0 1-1.994-1.84L2.038 3.5H1.5a.5.5 0 0 1 0-1H5v-1A1.5 1.5 0 0 1 6.5 0h3A1.5 1.5 0 0 1 11 1.5Zm-5 0v1h4v-1a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 0-.5.5ZM4.5 5.029l.5 8.5a.5.5 0 1 0 .998-.06l-.5-8.5a.5.5 0 1 0-.998.06Zm6.53-.528a.5.5 0 0 0-.528.47l-.5 8.5a.5.5 0 0 0 .998.058l.5-8.5a.5.5 0 0 0-.47-.528ZM8 4.5a.5.5 0 0 0-.5.5v8.5a.5.5 0 0 0 1 0V5a.5.5 0 0 0-.5-.5Z"/>
-                                                            </svg>
+                                                    <div class="dropdown">
+                                                        <button class="btn btn-default " type="button" id="milestoneActions" data-bs-toggle="dropdown" aria-expanded="false" >
+                                                            <i class='bi bi-gear-fill' id="milestoneActionsIcon"></i>
                                                         </button>
-                                                    </a>
+                                                        <ul class="dropdown-menu" aria-labelledby="milestoneActions">
+                                                            <li>
+                                                                <a class="button-link" data-bs-toggle="modal" data-bs-target="#milestoneModal" th:data-bs-milestone="${milestone.toJSONString()}" data-bs-type="edit">
+                                                                    <button id="editMilestoneButton" class="dropdown-item" type="button" th:attr="onclick='editMilestone(\'' + ${milestone.getMilestoneName()} + '\',\'' + ${milestone.getId()}+  '\');'">
+                                                                        <span class='bi bi-pencil'></span> <i>Edit</i>
+                                                                    </button>
+                                                                </a>
+                                                            </li>
+                                                            <li>
+                                                                <a class="button-link" data-bs-toggle="modal" data-bs-target="#deleteModal" th:data-bs-id="${milestone.id}" th:data-bs-name="${milestone.milestoneName}" data-bs-type="milestone">
+                                                                    <button class="dropdown-item" type="button">
+                                                                        <span class='bi bi-trash' style='color: red'></span> <i style='color: red'>Delete</i>
+                                                                    </button>
+                                                                </a>
+                                                            </li>
+                                                        </ul>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
@@ -258,24 +288,147 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="tab-pane fade" id="deadline" role="tabpanel" aria-labelledby="deadline-tab">...</div>
                     </div>
+                    <div class="tab-pane fade" id="deadline" role="tabpanel" aria-labelledby="deadline-tab">...</div>
                 </div>
             </div>
         </div>
-<!-- Button trigger modal -->
-<button type="button" class="btn btn-primary" onclick="{document.getElementById('alertBanner').hidden = true;}" data-bs-toggle="modal" data-bs-target="#addMilestoneDialog">
-    Add Milestone
-</button>
+    </div>
 
 <!-- Modals -->
-<div th:replace="fragments/addMilestoneModal"></div>
 <div id="sprintModal" th:replace="fragments/sprintModal :: sprintModal"></div>
-<div th:replace="fragments/deleteModalProject :: deleteModal()"></div>
+<div id="projectModal" th:replace="fragments/projectModal :: projectModal"></div>
+<div id="milestoneModal" th:replace="fragments/milestoneModal :: milestoneModal"></div>
+<div th:replace="fragments/deleteModalProject :: deleteModal"></div>
 
+
+</body>
 
 <script src="js/project.js"></script>
 <script src="js/detailsLive.js"></script>
+
+<script th:inline="javascript">
+    /**
+     * Sends the message that an event is being updated, and sends the events names with it.
+     */
+    function sendName(artefactName, artefactId,userId, userFirstName, userLastName, username, artefactType) {
+        stompClient.send("/test/portfolio/app/editing-artefact", {}, JSON.stringify({
+            'artefactName': artefactName,
+            'artefactId' : artefactId,
+            'artefactType' : artefactType,
+            'userId': userId,
+            'userFirstName': userFirstName,
+            'userLastName': userLastName,
+            'username': username
+        }));
+    }
+
+    /**
+     * Sends an empty message so that the other end can realise to close any popups it may have activated.
+     */
+    function sendEmpty(artefactName, artefactId,userId, userFirstName, userLastName, username, artefactType) {
+        stompClient.send("/test/portfolio/app/stop-editing-artefact", {}, JSON.stringify({
+            'artefactName': artefactName,
+            'artefactId' : artefactId,
+            'userId': userId,
+            'artefactType' : artefactType,
+            'userFirstName': userFirstName,
+            'userLastName': userLastName,
+            'username': username
+        }));
+    }
+
+    /**
+     * Sends the message that an event has been updated (saved), and sends the events names with it.
+     */
+    function sendNameReload(artefactName, artefactId,userId, userFirstName, userLastName, username, artefactType) {
+        stompClient.send("/test/portfolio/app/saved-edited-artefact", {}, JSON.stringify({
+            'artefactName': artefactName,
+            'artefactId' : artefactId,
+            'userId': userId,
+            'artefactType' : artefactType,
+            'userFirstName': userFirstName,
+            'userLastName': userLastName,
+            'username': username
+        }));
+    }
+
+    let userId = [[${userId}]];
+    let userFirstName = [[${userFirstName}]];
+    let userLastName = [[${userLastName}]];
+    let username = [[${username}]];
+    let milestoneName = '';
+    let milestoneId = -1;
+
+    /**
+     * Initialises functions/injections. When these are no longer being updated (edited) they will disappear after a certain period.
+     */
+    $(function () {
+        connect();
+        document.addEventListener("visibilitychange", (ignore) => {
+            if (document.visibilityState !== "visible") {
+                sendEmpty(milestoneName, milestoneId,userId, userFirstName, userLastName, username, "Milestone");
+            }
+        });
+    });
+
+    /**
+     * get the selected milestone to edit then set it in global variable
+     */
+    function editMilestone(milestone, id){
+        milestoneName = milestone;
+        milestoneId = id;
+    }
+
+    /**
+     * All inputs on milestone modal when being focused on (edited) will update and send a notification
+     * to the details page. When these are no longer being updated (edited) they will disappear after a certain period.
+    */
+    $("#milestoneName").on('focusin', function (ignore) {
+        const actionType = document.getElementById('milestoneModal').querySelector('form').action.split('/')[3]; //getting the type of the request, this is necessary as same modal is being used for both adding and editing milestone
+        if(actionType === 'edit-milestone'){
+            sendName(milestoneName,milestoneId,userId, userFirstName, userLastName, username, "Milestone");
+        }
+    }).on('focusout', function (ignore) {
+        const actionType = document.getElementById('milestoneModal').querySelector('form').action.split('/')[3]; //getting the type of the request, this is necessary as same modal is being used for both adding and editing milestone
+        if(actionType === 'edit-milestone'){
+            sendEmpty(milestoneName, milestoneId,userId, userFirstName, userLastName, username, "Milestone");
+        }
+    });
+    $("#milestoneDate").on('focusin', function (ignore) {
+        const actionType = document.getElementById('milestoneModal').querySelector('form').action.split('/')[3]; //getting the type of the request, this is necessary as same modal is being used for both adding and editing milestone
+        if(actionType === 'edit-milestone'){
+            sendName(milestoneName,milestoneId,userId, userFirstName, userLastName, username, "Milestone");
+        }
+    }).on('focusout', function (ignore) {
+        const actionType = document.getElementById('milestoneModal').querySelector('form').action.split('/')[3]; //getting the type of the request, this is necessary as same modal is being used for both adding and editing milestone
+        if(actionType === 'edit-milestone'){
+            sendEmpty(milestoneName, milestoneId,userId, userFirstName, userLastName, username, "Milestone");
+        }
+    });
+
+    /**
+     * send request to show the live notification's toast when an update on a milestone is saved by a user
+     * this function is triggered when save button on Milestone Modal is clicked
+     */
+    $("#milestoneModalButton").click(function() {
+        const actionType = document.getElementById('milestoneModal').querySelector('form').action.split('/')[3]; //getting the type of the request, this is necessary as same modal is being used for both adding and editing milestone
+        if(actionType === 'edit-milestone'){
+            sendNameReload(milestoneName, milestoneId,userId, userFirstName, userLastName, username, "Milestone");
+        }
+    })
+
+    /**
+     * send request to hide the live notification's toast when an update on a milestone is saved by a user
+     * this function is triggered when close button on Milestone Modal is clicked
+     */
+    $("#closeMilestoneModalButton").click(function() {
+        const actionType = document.getElementById('milestoneModal').querySelector('form').action.split('/')[3];
+        if(actionType === 'edit-milestone'){
+            sendEmpty(milestoneName, milestoneId,userId, userFirstName, userLastName, username, "Milestone");
+        }
+    })
+</script>
 
 <script>
     //updates characters left
@@ -298,11 +451,12 @@
     let projectEndDate = /*[[${project.getEndDateString()}]]*/ "Error";
     let projectStartDate = /*[[${project.getStartDateString()}]]*/ "Error";
     /*]]>*/
-
-    // Check if the name of the item that the user inputted is not an empty string
-    // Submit the form and return true if the input is not empty string, otherwise show error banner with the error message and return false
-    // @param elementId the ID of the text input HTML element for item's name
-    // @param formId the ID of the form which contains the input HTML element
+    /**
+     Check if the name of the item that the user inputted is not an empty string
+     Submit the form and return true if the input is not empty string, otherwise show error banner with the error message and return false
+     @param elementId the ID of the text input HTML element for item's name
+     @param formId the ID of the form which contains the input HTML element
+     */
     function validateModalName(elementId, alertBanner, alertMessage) {
         const nameInput = document.getElementById(elementId).value;
 
@@ -315,11 +469,12 @@
             return true
         }
     }
-
-    // Check if the date of the item that the user inputted is within the project dates range
-    // Show error banner with error message and disable the submit button if the inputted date is outside the project dates range
-    // @param elementId the ID of the date input HTML element
-    // @param submitElementId the ID of the submit button on the modal
+    /**
+     Check if the date of the item that the user inputted is within the project dates range
+     Show error banner with error message and disable the submit button if the inputted date is outside the project dates range
+     @param elementId the ID of the date input HTML element
+     @param submitElementId the ID of the submit button on the modal
+     */
     function validateModalDate(elementId, submitElementId, alertBanner, alertMessage) {
         const dateInputStr = document.getElementById(elementId).value;
         const dateInput = new Date(dateInputStr);
@@ -329,17 +484,19 @@
             document.getElementById(alertBanner).hidden = false;
             document.getElementById(alertMessage).innerText = "Date must be within the project's date range (" +
                 projectStartDate + " - " + projectEndDate + ").";
+            return false;
         } else {
             $('#' + submitElementId).prop('disabled', false);
             document.getElementById(alertBanner).hidden = true;
+            return true;
         }
     }
 
     sprintModalSetup()
+    projectModalSetup()
+    milestoneModalSetup()
     deleteModalSetup()
     validateModalDate("milestoneDate", "submitMilestoneButton")
 </script>
 
-
-</body>
 </html>
