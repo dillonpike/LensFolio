@@ -83,6 +83,10 @@ function deleteModalSetup() {
         modalButton.innerHTML = `Delete ${type.charAt(0).toUpperCase() + type.slice(1)}`
         modalLink.href = `delete-${type}/${id}`
     })
+
+    $("#deleteModalButton").on('click', function (ignore) {
+        deleteReload();
+    });
 }
 
 /**

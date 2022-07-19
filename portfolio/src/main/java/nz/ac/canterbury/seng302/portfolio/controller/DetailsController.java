@@ -234,7 +234,8 @@ public class DetailsController {
      */
     @MessageMapping("/delete-artefact")
     @SendTo("/test/portfolio/events/delete-artefact")
-    public void deleteArtefact(NotificationMessage ignore) {
+    public NotificationResponse deleteArtefact(NotificationMessage ignore) {
+        //System.out.println("hellow");
 //        int eventId = message.getArtefactId();
 //        String username = message.getUsername();
 //        String firstName = message.getUserFirstName();
@@ -247,7 +248,7 @@ public class DetailsController {
 //        while (eventsToDisplay.size() > 3) {
 //            eventsToDisplay.remove(0);
 //        }
-//        return response;
+        return new NotificationResponse();
     }
 
 }

@@ -244,6 +244,9 @@
                 refreshEvents();
 
             });
+            stompClient.subscribe('/test/portfolio/events/delete-artefact', function (ignore) {
+                refreshEvents();
+            });
         });
     }
 
