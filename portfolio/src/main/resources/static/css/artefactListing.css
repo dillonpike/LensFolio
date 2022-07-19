@@ -1,0 +1,25 @@
+.event-block {
+    padding: 3px;
+}
+
+.event-title {
+    padding-left: 2px;
+}
+
+.event-date {
+    font-size: small;
+    color: #727686;
+    padding-left: 5px;
+}
+
+.event-start-date {
+
+}
+
+.event-end-date {
+    padding-left: 21px;
+}
+
+.artefact-button {
+    padding: 0px;
+}
