@@ -21,5 +21,14 @@
 }
 
 .artefact-button {
-    padding: 0px;
+    padding-bottom: 5px;
+}
+
+.artefact-block {
+    width: 25%;
+    padding: 5px;
+}
+
+.sprint-info-block {
+    width: 25%;
 }
