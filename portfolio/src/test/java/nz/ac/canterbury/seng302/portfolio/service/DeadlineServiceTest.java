@@ -1,5 +1,7 @@
 package nz.ac.canterbury.seng302.portfolio.service;
 
+import java.util.ArrayList;
+import java.util.List;
 import nz.ac.canterbury.seng302.portfolio.model.Deadline;
 import nz.ac.canterbury.seng302.portfolio.repository.DeadlinesRepository;
 import org.junit.jupiter.api.Test;
@@ -14,6 +16,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import java.util.Date;
 import java.util.Optional;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.AdditionalAnswers.returnsFirstArg;
 import static org.mockito.ArgumentMatchers.any;
@@ -151,4 +154,21 @@ class DeadlineServiceTest {
 
         verify(deadlinesRepository, times(0)).deleteById(any(Integer.class));
     }
+
+    @Test
+    void givenOneDeadlineExistAndDateInRange_returnBlueColor() {
+        Deadline deadline = new Deadline();
+        deadline.setDeadlineName("Testing");
+        deadline.setDeadlineDateString("2001-12-20");
+        List<Deadline> deadlineList = new ArrayList<>();
+        deadlineList.add(deadline);
+        deadline.setDeadlineColour("#5897fc");
+
+        when(deadlineService.getAllDeadlinesOrderedWithColour(deadlineList)).thenReturn(deadlineList);
+
+        List<Deadline> outputDeadlineList = deadlineService.getAllDeadlinesOrderedWithColour(deadlineList);
+        assertThat(outputDeadlineList.size()).isSameAs(deadlineList.size());
+        assertThat(outputDeadlineList.get(0).getDeadlineColour()).isSameAs(deadline.getDeadlineColour());
+    }
+
 }

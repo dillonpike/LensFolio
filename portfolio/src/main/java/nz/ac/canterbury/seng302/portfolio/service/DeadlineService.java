@@ -102,8 +102,10 @@ public class DeadlineService {
      * add colour for each deadline and save to repository
      *
      * @return deadline in chronological order
+     * @param deadlineList
      */
-    public List<Deadline> getAllDeadlinesOrderedWithColour() {
+    public List<Deadline> getAllDeadlinesOrderedWithColour(
+        List<Deadline> deadlineList) {
         List<Deadline> deadlines = getAllDeadlinesOrdered();
         ArrayList<String> colours = new ArrayList<>(
             Arrays.asList("#5897fc", "#a758fc", "#fc58c3", "#9e1212", "#c65102", "#d5b60a", "#004400", " #11887b"));
