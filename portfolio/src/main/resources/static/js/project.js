@@ -167,7 +167,7 @@ function milestoneModalSetup() {
         // Initial run of validation functions in case initial values are invalid
         validateModalName('milestoneName', 'milestoneModalButton', 'milestoneAlertBanner', 'milestoneAlertMessage')
         validateModalDate('milestoneDate', 'milestoneModalButton', 'milestoneDateAlertBanner', 'milestoneDateAlertMessage')
-        updateCharsLeft('milestoneName', 'milestoneNameLength', 50)
+        updateCharsLeft('milestoneName', 'milestoneNameLength', 30)
         $('#' + modalButton.getAttribute("id")).prop('hidden', false);
     })
 
@@ -215,7 +215,7 @@ function deadlineModalSetup() {
         // Initial run of validation functions in case initial values are invalid
         validateModalName('deadlineName', 'deadlineModalButton', 'deadlineAlertBanner', 'deadlineAlertMessage')
         validateModalDate('deadlineDate', 'deadlineModalButton', 'deadlineDateAlertBanner', 'deadlineDateAlertMessage')
-        updateCharsLeft('deadlineName', 'deadlineNameLength', 50)
+        updateCharsLeft('deadlineName', 'deadlineNameLength', 30)
         $('#' + modalButton.getAttribute("id")).prop('hidden', false);
     })
 
@@ -270,7 +270,7 @@ function eventModalSetup() {
         // Initial run of validation functions in case initial values are invalid
         validateModalName('eventName', 'eventAlertBanner', 'eventAlertMessage')
         validateModalDateTime('eventStartDate', 'eventEndDate', 'eventStartTime', 'eventEndTime','eventModalButton', 'eventDateTimeAlertBanner', 'eventDateTimeAlertMessage')
-        updateCharsLeft('eventName', 'eventNameLength', 50)
+        updateCharsLeft('eventName', 'eventNameLength', 30)
         $('#' + modalButton.getAttribute("id")).prop('hidden', false);
     })
 }

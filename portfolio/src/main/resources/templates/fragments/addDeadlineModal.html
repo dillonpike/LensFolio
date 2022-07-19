@@ -12,7 +12,7 @@
                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>
                     <label for="deadlineName" class="col-form-label">Deadline Name:</label>
-                    <input onkeyup="updateCharsLeft('deadlineName', 'deadlineLength', 50)" maxlength="50" type="text" class="form-control" id="deadlineName" th:field="*{deadlineName}">
+                    <input onkeyup="updateCharsLeft('deadlineName', 'deadlineLength', 30)" maxlength="30" type="text" class="form-control" id="deadlineName" th:field="*{deadlineName}">
                     <div class="name-length-message">
                         <span id="deadlineLength"></span>
                     </div>
