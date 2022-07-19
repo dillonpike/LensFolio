@@ -8,10 +8,7 @@ import nz.ac.canterbury.seng302.portfolio.repository.DeadlinesRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 /***
  * Service class for saving, deleting, updating and retrieving event objects to the database.
@@ -127,6 +124,30 @@ public class DeadlineService {
         Date deadlineDate = deadline.getDeadlineDate();
         Date sprintStartDate = sprint.getStartDate();
         Date sprintEndDate = sprint.getEndDate();
-        return sprintStartDate.compareTo(deadlineDate) * sprintEndDate.compareTo(deadlineDate) <= 0;
+
+        // Convert deadlineDate to Calendar object
+        Calendar calendar1 = Calendar.getInstance();
+        calendar1.setTime(deadlineDate);
+
+        // Convert sprint Start Date to Calendar object
+        Calendar calendar2 = Calendar.getInstance();
+        calendar2.setTime(sprintStartDate);
+
+        // Convert sprint End Date to Calendar object
+        Calendar calendar3 = Calendar.getInstance();
+        calendar3.setTime(sprintEndDate);
+
+        // Check if deadline is the sprint start day
+        boolean isStartDay = calendar1.get(Calendar.YEAR) == calendar2.get(Calendar.YEAR)
+                && calendar1.get(Calendar.MONTH) == calendar2.get(Calendar.MONTH)
+                && calendar1.get(Calendar.DAY_OF_MONTH) == calendar2.get(Calendar.DAY_OF_MONTH);
+
+        // Check if deadline is the sprint end day
+        boolean isEndDay = calendar1.get(Calendar.YEAR) == calendar3.get(Calendar.YEAR)
+                && calendar1.get(Calendar.MONTH) == calendar3.get(Calendar.MONTH)
+                && calendar1.get(Calendar.DAY_OF_MONTH) == calendar3.get(Calendar.DAY_OF_MONTH);
+
+        return (deadlineDate.compareTo(sprintStartDate) >= 0 && deadlineDate.compareTo(sprintEndDate) <= 0)
+                || isStartDay || isEndDay;
     }
 }
