@@ -495,23 +495,57 @@
             sendName(deadlineName, deadlineId, userId, userFirstName, userLastName, username, 'Deadline');
         }
     }).on('focusout', function (ignore) {
-        const actionType = document.getElementById('deadlineModal').querySelector('form').action.split('/')[3]; //getting the type of the request, this is necessary as same modal is being used for both adding and editing milestone
+        const actionType = document.getElementById('deadlineModal').querySelector('form').action.split('/')[3]; //getting the type of the request, this is necessary as same modal is being used for both adding and editing deadline
         if(actionType === 'edit-deadline'){
             sendEmpty(deadlineName, deadlineId,userId, userFirstName, userLastName, username, "Deadline");
         }
     });
 
     $("#deadlineDate").on('focusin', function (ignore) {
-        const actionType = document.getElementById('deadlineModal').querySelector('form').action.split('/')[3]; //getting the type of the request, this is necessary as same modal is being used for both adding and editing milestone
+        const actionType = document.getElementById('deadlineModal').querySelector('form').action.split('/')[3]; //getting the type of the request, this is necessary as same modal is being used for both adding and editing deadline
         if(actionType === 'edit-deadline'){
             sendName(deadlineName,deadlineId,userId, userFirstName, userLastName, username, "Deadline");
         }
     }).on('focusout', function (ignore) {
-        const actionType = document.getElementById('milestoneModal').querySelector('form').action.split('/')[3]; //getting the type of the request, this is necessary as same modal is being used for both adding and editing milestone
+        const actionType = document.getElementById('deadlineModal').querySelector('form').action.split('/')[3]; //getting the type of the request, this is necessary as same modal is being used for both adding and editing deadline
         if(actionType === 'edit-deadline'){
             sendEmpty(deadlineName, deadlineId,userId, userFirstName, userLastName, username, "Deadline");
         }
     });
+
+    $("#deadlineTime").on('focusin', function (ignore) {
+        const actionType = document.getElementById('deadlineModal').querySelector('form').action.split('/')[3]; //getting the type of the request, this is necessary as same modal is being used for both adding and editing deadline
+        if(actionType === 'edit-deadline'){
+            sendName(deadlineName,deadlineId,userId, userFirstName, userLastName, username, "Deadline");
+        }
+    }).on('focusout', function (ignore) {
+        const actionType = document.getElementById('deadlineModal').querySelector('form').action.split('/')[3]; //getting the type of the request, this is necessary as same modal is being used for both adding and editing deadline
+        if(actionType === 'edit-deadline'){
+            sendEmpty(deadlineName, deadlineId,userId, userFirstName, userLastName, username, "Deadline");
+        }
+    });
+
+    /**
+     * send request to show the live notification's toast when an update on a deadline is saved by a user
+     * this function is triggered when save button on Deadline Modal is clicked
+     */
+    $("#deadlineModalButton").click(function() {
+        const actionType = document.getElementById('deadlineModal').querySelector('form').action.split('/')[3]; //getting the type of the request, this is necessary as same modal is being used for both adding and editing deadline
+        if(actionType === 'edit-deadline'){
+            sendNameReload(deadlineName, deadlineId,userId, userFirstName, userLastName, username, "Deadline");
+        }
+    })
+
+    /**
+     * send request to hide the live notification's toast when an update on a deadline is saved by a user
+     * this function is triggered when close button on Deadline Modal is clicked
+     */
+    $("#closeDeadlineModalButton").click(function() {
+        const actionType = document.getElementById('deadlineModal').querySelector('form').action.split('/')[3];
+        if(actionType === 'edit-deadline'){
+            sendEmpty(deadlineName, deadlineId,userId, userFirstName, userLastName, username, "Deadline");
+        }
+    })
 
 </script>
 
