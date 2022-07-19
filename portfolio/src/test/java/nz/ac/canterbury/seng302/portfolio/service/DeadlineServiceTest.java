@@ -3,6 +3,8 @@ package nz.ac.canterbury.seng302.portfolio.service;
 import java.util.ArrayList;
 import java.util.List;
 import nz.ac.canterbury.seng302.portfolio.model.Deadline;
+import nz.ac.canterbury.seng302.portfolio.model.Event;
+import nz.ac.canterbury.seng302.portfolio.model.Sprint;
 import nz.ac.canterbury.seng302.portfolio.repository.DeadlinesRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -39,6 +41,9 @@ class DeadlineServiceTest {
      */
     @InjectMocks
     private DeadlineService deadlineService;
+
+    @InjectMocks
+    private SprintService sprintService;
 
     /**
      * test UpdateDeadline method in DeadlineService class given the deadline exist in database
@@ -157,18 +162,24 @@ class DeadlineServiceTest {
 
     @Test
     void givenOneDeadlineExistAndDateInRange_returnBlueColor() {
+        Sprint sprint = new Sprint();
+        sprint.setName("Testing");
+        sprint.setStartDate(sprintService.calendarDateStringToDate("2001-12-20", false));
+        sprint.setEndDate(sprintService.calendarDateStringToDate("2001-12-22", true));
+        sprint.setColour("#5897fc");
+        List<Sprint> sprintList = new ArrayList<>();
+        sprintList.add(sprint);
+
         Deadline deadline = new Deadline();
-        deadline.setDeadlineName("Testing");
-        deadline.setDeadlineDateString("2001-12-20");
+        deadline.setDeadlineDate(sprintService.calendarDateStringToDate("2001-12-21", false));
         List<Deadline> deadlineList = new ArrayList<>();
         deadlineList.add(deadline);
-        deadline.setDeadlineColour("#5897fc");
 
-        when(deadlineService.getAllDeadlinesOrderedWithColour(deadlineList)).thenReturn(deadlineList);
+        when(deadlineService.getAllDeadlinesOrderedWithColour(sprintList)).thenReturn(deadlineList);
 
-        List<Deadline> outputDeadlineList = deadlineService.getAllDeadlinesOrderedWithColour(deadlineList);
+        List<Deadline> outputDeadlineList = deadlineService.getAllDeadlinesOrderedWithColour(sprintList);
         assertThat(outputDeadlineList.size()).isSameAs(deadlineList.size());
-        assertThat(outputDeadlineList.get(0).getDeadlineColour()).isSameAs(deadline.getDeadlineColour());
+        assertThat(outputDeadlineList.get(0).getDeadlineColour()).isSameAs(sprint.getColour());
     }
 
 }

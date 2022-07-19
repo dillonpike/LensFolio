@@ -4,6 +4,7 @@ import java.time.LocalTime;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import nz.ac.canterbury.seng302.portfolio.model.Deadline;
 import nz.ac.canterbury.seng302.portfolio.model.Event;
 import nz.ac.canterbury.seng302.portfolio.model.Project;
 import nz.ac.canterbury.seng302.portfolio.model.Sprint;
@@ -225,5 +226,15 @@ public class DateValidationService {
      */
     public boolean validateEventEndDateInSprintDate(Event event, Sprint sprint) {
         return event.getEventEndDate().compareTo(sprint.getStartDate()) >= 0 && event.getEventEndDate().compareTo(sprint.getEndDate()) <= 0;
+    }
+
+    /**
+     * Validate if particular event's start date is in sprint date range
+     * @param deadline The updated event
+     * @param sprint The sprint to compare with
+     * @return True if event start date is in sprint date range
+     */
+    public boolean validateDeadlineDateInSprintDate(Deadline deadline, Sprint sprint) {
+        return deadline.getDeadlineDate().compareTo(sprint.getStartDate()) >= 0 && deadline.getDeadlineDate().compareTo(sprint.getEndDate()) <= 0;
     }
 }

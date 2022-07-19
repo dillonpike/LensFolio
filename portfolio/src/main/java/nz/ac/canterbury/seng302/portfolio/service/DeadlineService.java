@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import nz.ac.canterbury.seng302.portfolio.model.Deadline;
 import nz.ac.canterbury.seng302.portfolio.model.Event;
+import nz.ac.canterbury.seng302.portfolio.model.Sprint;
 import nz.ac.canterbury.seng302.portfolio.repository.DeadlinesRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,6 +20,9 @@ public class DeadlineService {
 
     @Autowired
     private DeadlinesRepository repository;
+
+    @Autowired
+    private DateValidationService dateValidationService;
 
     /**
      * Updates a deadline
@@ -102,24 +106,23 @@ public class DeadlineService {
      * add colour for each deadline and save to repository
      *
      * @return deadline in chronological order
-     * @param deadlineList
+     * @param sprints
      */
-    public List<Deadline> getAllDeadlinesOrderedWithColour(
-        List<Deadline> deadlineList) {
-        List<Deadline> deadlines = getAllDeadlinesOrdered();
-        ArrayList<String> colours = new ArrayList<>(
-            Arrays.asList("#5897fc", "#a758fc", "#fc58c3", "#9e1212", "#c65102", "#d5b60a", "#004400", " #11887b"));
-        int colIndex = 0;
+    public List<Deadline> getAllDeadlinesOrderedWithColour(List<Sprint> sprints) {
+        List<Deadline> deadlinesList = getAllDeadlinesOrdered();
+        for (Deadline currentDeadline : deadlinesList) {
+            // Reset Event's color
+            currentDeadline.setDeadlineColour(null);
 
-        for (Deadline deadline : deadlines) {
-            deadline.setDeadlineColour(colours.get(colIndex));
-            repository.save(deadline);
-
-            if (colIndex == (colours.size() - 1)) { // List max
-                colIndex = 0;
-            } else {
-                colIndex++;
+            for (Sprint sprint : sprints) {
+                if (dateValidationService.validateDeadlineDateInSprintDate(currentDeadline, sprint)) {
+                    currentDeadline.setDeadlineColour(sprint.getColour());
+                }
+                if (dateValidationService.validateDeadlineDateInSprintDate(currentDeadline, sprint)) {
+                    currentDeadline.setDeadlineColour(sprint.getColour());
+                }
             }
+            repository.save(currentDeadline);
         }
         return getAllDeadlinesOrdered();
     }
