@@ -65,7 +65,7 @@ public class DetailsController {
      *
      * @param principal
      * @param model Parameters sent to thymeleaf template to be rendered into HTML
-     * @return TeacherProjectDetails or userProjectDetails which is dependent on user's role
+     * @return projectDetails page
      * @throws Exception
      */
     @GetMapping("/details")
@@ -169,7 +169,7 @@ public class DetailsController {
         model.addAttribute("newSprint", sprintService.getSuggestedSprint());
         model.addAttribute("sprintDateError", "");
 
-        return "ProjectDetails";
+        return "projectDetails";
     }
 
     /**
