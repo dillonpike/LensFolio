@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>Calendar</title>
     <link href="css/calendar.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.5/dist/umd/popper.min.js" integrity="sha384-Xe+8cL9oJa6tN/veChSP7q+mnSPaj5Bcu9mPX5F5xIGE0DVittaqT5lorf0EI7Vk" crossorigin="anonymous"></script>
     <link href="webjars/fullcalendar/5.10.2/main.min.css" rel="stylesheet">
     <link href="webjars/fullcalendar__bootstrap5/5.10.2/main.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
@@ -14,6 +15,10 @@
     <script src="webjars/jquery/3.6.0/dist/jquery.min.js"></script>
     <script th:inline="javascript">
         /*<![CDATA[*/
+        const eventImage = 'images/event.svg';
+        const deadlineImage = 'images/deadline.svg';
+        const milestoneImage = 'images/milestone.svg';
+
         let currentRole = /*[[${currentUserRole}]]*/ "";
         document.addEventListener('DOMContentLoaded', function() {
 
@@ -36,68 +41,117 @@
                     end: /*[[${endDate}]]*/ null
                 },
                 events: [
-                    /*[(${sprints})]*/ null
+                    /*[(${events})]*/ null
                 ],
+                eventContent: function(arg) {
+                    let arrayOfDomNodes = []
+                    // title event
+                    let titleEvent = document.createElement('div')
+                    if(arg.event._def.title) {
+                        titleEvent.innerHTML = arg.event._def.title
+                        titleEvent.classList = "fc-event-title fc-sticky"
+                    }
+
+                    // image event
+                    let imgEventWrap = document.createElement('div')
+
+                    if(arg.event.extendedProps.type === 'Deadline') {
+                        let imgEvent = '<img src= ' + deadlineImage + ' >'
+                        imgEventWrap.classList = "fc-event-img"
+                        imgEventWrap.innerHTML = imgEvent;
+                    }
+                    if(arg.event.extendedProps.type === 'Event') {
+                        let imgEvent = '<img src= ' + eventImage + ' >'
+                        imgEventWrap.classList = "fc-event-img"
+                        imgEventWrap.innerHTML = imgEvent;
+                    }
+                    if(arg.event.extendedProps.type === 'Milestone') {
+                        let imgEvent = '<img src= ' + milestoneImage + ' >'
+                        imgEventWrap.classList = "fc-event-img"
+                        imgEventWrap.innerHTML = imgEvent;
+                    }
+
+
+                    arrayOfDomNodes = [ imgEventWrap, titleEvent ]
+
+                    return { domNodes: arrayOfDomNodes }
+                },
                 eventDidMount: function(info) {
                     info.event.setProp("classNames", "event-border");
                 },
                 eventClick: function(info) {
+                    //event modal display
+                    $('#eventsModal .modal-body').html(info.event.extendedProps.description);
+                    $('#eventsModal .modal-title').text(info.event.extendedProps.type + "s");
+                    $('#eventsModal').modal('show');
+
                     // change the border color
                     let newEvent = calendar.getEventById(info.event.id);
-                    let selectedEvent = calendar.getEventById(selectedId);
-                    if (selectedId === -1) {
-                        //initial click on any event
-                        newEvent.setProp("classNames", "event-border");
-                        newEvent.setProp("borderColor", alternateColour(newEvent.backgroundColor));
-                        newEvent.setProp("editable", true);
-                        if(currentRole === 'student'){
-                            newEvent.setProp("editable", false);
-                        } else {
-                            newEvent.setProp("editable", true);
-                        }
-                        selectedId = info.event.id;
-                    } else {
-                        if (newEvent.id === selectedEvent.id) {
-                            newEvent.setProp("classNames", "event-border");
-                            newEvent.setProp("borderColor", newEvent.backgroundColor);
-                            newEvent.setProp("editable", false);
-                            selectedId = -1;
-                        } else {
-                            selectedEvent.setProp("classNames", "event-border");
-                            selectedEvent.setProp("borderColor", selectedEvent.backgroundColor)
-                            selectedEvent.setProp("editable", false);
+                    if (newEvent.extendedProps.type === 'Sprint') {
+                        let selectedEvent = calendar.getEventById(selectedId);
+                        if (selectedId === -1) {
+                            //initial click on any event
                             newEvent.setProp("classNames", "event-border");
                             newEvent.setProp("borderColor", alternateColour(newEvent.backgroundColor));
                             newEvent.setProp("editable", true);
-                            if(currentRole === 'student'){
+                            if (currentRole === 'student') {
                                 newEvent.setProp("editable", false);
                             } else {
                                 newEvent.setProp("editable", true);
                             }
                             selectedId = info.event.id;
+                        } else {
+                            if (newEvent.id === selectedEvent.id) {
+                                newEvent.setProp("classNames", "event-border");
+                                newEvent.setProp("borderColor", newEvent.backgroundColor);
+                                newEvent.setProp("editable", false);
+                                selectedId = -1;
+                            } else {
+                                selectedEvent.setProp("classNames", "event-border");
+                                selectedEvent.setProp("borderColor", selectedEvent.backgroundColor)
+                                selectedEvent.setProp("editable", false);
+                                newEvent.setProp("classNames", "event-border");
+                                newEvent.setProp("borderColor", alternateColour(newEvent.backgroundColor));
+                                newEvent.setProp("editable", true);
+                                if (currentRole === 'student') {
+                                    newEvent.setProp("editable", false);
+                                } else {
+                                    newEvent.setProp("editable", true);
+                                }
+                                selectedId = info.event.id;
+                            }
                         }
                     }
                 },
                 eventMouseEnter: function(info) {
                     // change the border color
                     let event = calendar.getEventById(info.event.id);
-                    if (event.borderColor !== alternateColour(event.backgroundColor)) {
-                        event.setProp("classNames", "event-border-hover");
-                        //event.setProp("borderColor", "black");
+
+                    if (event.extendedProps.type === 'Sprint') {
+                        if (event.borderColor !== alternateColour(event.backgroundColor)) {
+                            event.setProp("classNames", "event-border-hover");
+                            //event.setProp("borderColor", "black");
+                        }
                     }
                 },
                 eventMouseLeave: function(info) {
                     // change the border color
                     let event = calendar.getEventById(info.event.id);
-                    if (event.borderColor !== alternateColour(event.backgroundColor)) {
-                        event.setProp("classNames", "event-border");
-                        //event.setProp("borderColor", event.backgroundColor);
+                    if (event.extendedProps.type === 'Sprint') {
+                        if (event.borderColor !== alternateColour(event.backgroundColor)) {
+                            event.setProp("classNames", "event-border");
+                            //event.setProp("borderColor", event.backgroundColor);
+                        }
                     }
                 },
                 eventOverlap: function(stillEvent, movingEvent) {
-                    document.getElementById("overlapError").hidden = false;
-                    setTimeout( function () {document.getElementById("overlapError").hidden = true;}, 5000)
-                    return false;
+                    console.log(stillEvent);
+                    if (stillEvent.extendedProps.type === 'Sprint') {
+                        document.getElementById("overlapError").hidden = false;
+                        setTimeout( function () {document.getElementById("overlapError").hidden = true;}, 5000)
+                        return false;
+                    }
+                    return true;
                 },
                 eventResizableFromStart: function(info) {
                     return true;
@@ -130,6 +184,20 @@
         <div style="display: flex; justify-content: space-between;flex-direction: row; align-items: center;">
             <strong id="alertBannerText"></strong>
             <button id="removeUpdateAlert" type="button" class="btn btn-outline-success" onclick="removeAlertBanner()">X</button>
+        </div>
+    </div>
+    <div class="modal fade" id="eventsModal" tabindex="-1" role="dialog" aria-labelledby="eventsModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel"></h5>
+                    <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                </div>
+            </div>
         </div>
     </div>
 </div>
