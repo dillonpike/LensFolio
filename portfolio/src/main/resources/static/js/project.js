@@ -245,7 +245,7 @@ function eventModalSetup() {
 
 
         // Initial run of validation functions in case initial values are invalid
-        validateModalName('eventName', 'eventModalButton', 'eventAlertBanner', 'eventAlertMessage')
+        validateModalName('eventName', 'eventAlertBanner', 'eventAlertMessage')
         validateModalDateTime('eventStartDate', 'eventEndDate', 'eventStartTime', 'eventEndTime','eventModalButton', 'eventDateTimeAlertBanner', 'eventDateTimeAlertMessage')
         updateCharsLeft('eventName', 'eventNameLength', 50)
         $('#' + modalButton.getAttribute("id")).prop('hidden', false);
