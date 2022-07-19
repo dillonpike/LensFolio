@@ -7,6 +7,7 @@ import nz.ac.canterbury.seng302.portfolio.repository.MilestoneRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.Optional;
 
 import java.util.List;
@@ -111,12 +112,26 @@ public class MilestoneService {
             currentMilestone.setColour(null);
 
             for (Sprint sprint : sprints) {
-                if (dateValidationService.validateMilestoneDateInSprintDateRange(currentMilestone, sprint)) {
+                if (validateMilestoneDateInSprintDateRange(currentMilestone, sprint)) {
                     currentMilestone.setColour(sprint.getColour());
+                    break;
                 }
             }
             repository.save(currentMilestone);
         }
         return getAllMilestonesOrdered();
+    }
+
+    /**
+     * Validate if particular milestone date is in sprint date range
+     * @param milestone The update milestone
+     * @param sprint The sprint to compare with
+     * @return True if milestone end date is in sprint date range
+     */
+    public boolean validateMilestoneDateInSprintDateRange(Milestone milestone, Sprint sprint) {
+        Date milestoneDate = milestone.getMilestoneDate();
+        Date sprintStartDate = sprint.getStartDate();
+        Date sprintEndDate = sprint.getEndDate();
+        return sprintStartDate.compareTo(milestoneDate) * sprintEndDate.compareTo(milestoneDate) <= 0;
     }
 }
