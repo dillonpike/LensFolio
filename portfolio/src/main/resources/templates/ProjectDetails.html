@@ -60,7 +60,7 @@
             <p class="title-name" th:text="${project.getName}" />
             <span id="project-date" class="badge rounded-pill bg-custom text-dark" th:text="${project.getStartDateString} + ' - ' + ${project.getEndDateString}"></span>
         </div>
-        <div class="dropdown">
+        <div class="dropdown" th:if="${currentUserRole != 'student'}">
             <button class="edit-project-button" id="projectDropdownButton" type="button" data-bs-toggle="dropdown" aria-expanded="false" style="margin: 10px">
                 <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-three-dots-vertical" viewBox="0 0 16 16">
                     <path d="M9.5 13a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z"/>
@@ -136,7 +136,7 @@
                                     </div>
                                     <div>
                                         <div class="button-divider">
-                                            <div class="dropdown">
+                                            <div class="dropdown" th:if="${currentUserRole != 'student'}">
                                                 <button class="btn btn-default " type="button" id="sprintActions" data-bs-toggle="dropdown" aria-expanded="false" >
                                                     <i class='bi bi-gear-fill'></i>
                                                 </button>
@@ -212,7 +212,7 @@
                                                     <span class="widget-49-pro-title" th:text="${event.eventName}"></span>
                                                 </div>
                                                 <div class="ms-auto">
-                                                    <div class="dropdown">
+                                                    <div class="dropdown" th:if="${currentUserRole != 'student'}">
                                                         <button class="btn btn-default " type="button" id="eventActions" data-bs-toggle="dropdown" aria-expanded="false" >
                                                             <i class='bi bi-gear-fill'></i>
                                                         </button>
@@ -260,7 +260,7 @@
                                                     <span class="widget-49-pro-title" th:text="${milestone.milestoneName}"></span>
                                                 </div>
                                                 <div class="ms-auto">
-                                                    <div class="dropdown">
+                                                    <div class="dropdown" th:if="${currentUserRole != 'student'}">
                                                         <button class="btn btn-default " type="button" id="milestoneActions" data-bs-toggle="dropdown" aria-expanded="false" >
                                                             <i class='bi bi-gear-fill' id="milestoneActionsIcon"></i>
                                                         </button>
@@ -302,7 +302,7 @@
                                                 <span class="widget-49-pro-title" th:text="${deadline.getDeadlineName}"></span>
                                             </div>
                                             <div class="ms-auto">
-                                                <div class="dropdown">
+                                                <div class="dropdown" th:if="${currentUserRole != 'student'}">
                                                     <button class="btn btn-default " type="button" id="deadlineActions" data-bs-toggle="dropdown" aria-expanded="false" >
                                                         <i class='bi bi-gear-fill'></i>
                                                     </button>
