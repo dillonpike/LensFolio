@@ -105,10 +105,29 @@ public class EventDic {
     }
 
     /**
-     * Currently un-used.
-     * @param milestone ignore
+     * This method adds a milestone to the hashTable the hash is based on the day and type of event-JSON in this case a milestone event-JSON.
+     *
+     * @param milestone The Milestone object to convert to JSON.
      */
-    public void add(Milestone milestone) { //TODO Create a method for mileStone most likely can just use the code from Deadlines.
+    public void add(Milestone milestone) {
+        int amount = 1;
+        // Uses EventTypes costume hashCode() to hash based on type and date.
+        String eventData = datesToEvents.get(new EventTypes("Deadline", milestone.getMilestoneDateString()));
+        String description = milestone.getMilestoneName();
+        StringBuilder eventObject = new StringBuilder();
+        if (eventData == null) {
+            eventObject.append("{title: '").append(amount).append("' , start: '").append(milestone.getMilestoneDate()).append("', type: 'Milestone").append("', description: '").append(description).append("'},");
+        } else {
+            try {
+                amount += Integer.parseInt(eventData.split("'")[1]);
+                description = eventData.split("'")[7] + "<br>" + milestone.getMilestoneName();
+            } catch (Exception ignore) {
+                // Current uses -1 to represent error. May want to change this to a thrown error.
+                amount = -1;
+            }
+            eventObject.append("{title: '").append(amount).append("' , start: '").append(milestone.getMilestoneDate()).append("', type: 'Milestone").append("', description: '").append(description).append("'},");
+        }
+        datesToEvents.put(new EventTypes("Milestone", milestone.getMilestoneDateString()), eventObject.toString());
     }
 
 }

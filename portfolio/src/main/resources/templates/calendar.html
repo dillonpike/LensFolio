@@ -123,27 +123,27 @@
                         }
                     }
                 },
-                eventMouseEnter: function(info) {
-                    // change the border color
-                    let event = calendar.getEventById(info.event.id);
-
-                    if (event.extendedProps.type === 'Sprint') {
-                        if (event.borderColor !== alternateColour(event.backgroundColor)) {
-                            event.setProp("classNames", "event-border-hover");
-                            //event.setProp("borderColor", "black");
-                        }
-                    }
-                },
-                eventMouseLeave: function(info) {
-                    // change the border color
-                    let event = calendar.getEventById(info.event.id);
-                    if (event.extendedProps.type === 'Sprint') {
-                        if (event.borderColor !== alternateColour(event.backgroundColor)) {
-                            event.setProp("classNames", "event-border");
-                            //event.setProp("borderColor", event.backgroundColor);
-                        }
-                    }
-                },
+                // eventMouseEnter: function(info) { //TODO Remove?
+                //     // change the border color
+                //     let event = calendar.getEventById(info.event.id);
+                //
+                //     if (event.extendedProps.type === 'Sprint') {
+                //         if (event.borderColor !== alternateColour(event.backgroundColor)) {
+                //             event.setProp("classNames", "event-border-hover");
+                //             //event.setProp("borderColor", "black");
+                //         }
+                //     }
+                // },
+                // eventMouseLeave: function(info) {
+                //     // change the border color
+                //     let event = calendar.getEventById(info.event.id);
+                //     if (event.extendedProps.type === 'Sprint') {
+                //         if (event.borderColor !== alternateColour(event.backgroundColor)) {
+                //             event.setProp("classNames", "event-border");
+                //             //event.setProp("borderColor", event.backgroundColor);
+                //         }
+                //     }
+                // },
                 eventOverlap: function(stillEvent, movingEvent) {
                     console.log(stillEvent);
                     if (stillEvent.extendedProps.type === 'Sprint') {

@@ -1,9 +1,6 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
-import nz.ac.canterbury.seng302.portfolio.model.Deadline;
-import nz.ac.canterbury.seng302.portfolio.model.Event;
-import nz.ac.canterbury.seng302.portfolio.model.Project;
-import nz.ac.canterbury.seng302.portfolio.model.Sprint;
+import nz.ac.canterbury.seng302.portfolio.model.*;
 import nz.ac.canterbury.seng302.portfolio.service.*;
 import nz.ac.canterbury.seng302.portfolio.utility.EventDic;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
@@ -33,6 +30,9 @@ public class CalendarController {
 
     @Autowired
     private DeadlineService deadlineService;
+
+    @Autowired
+    private MilestoneService milestoneService;
 
     @Autowired
     private UserAccountClientService userAccountClientService;
@@ -95,15 +95,19 @@ public class CalendarController {
      * @param deadlines list of events from the database
      * @return JSON list for events to display on the calendar
      */
-    private String eventsToDisplay(List<Deadline> deadlines, List<Event> events) {
+    private String eventsToDisplay(List<Deadline> deadlines, List<Event> events, List<Milestone> milestones) {
         EventDic dic = new EventDic();
-        for (Deadline deadline : deadlines) {
-            dic.add(deadline);
-        }
         for (Event event : events) {
             dic.add(event);
 
         }
+        for (Deadline deadline : deadlines) {
+            dic.add(deadline);
+        }
+        for (Milestone milestone : milestones) {
+            dic.add(milestone);
+        }
+
         return dic.makeJSON();
     }
 
@@ -122,6 +126,7 @@ public class CalendarController {
         List<Sprint> sprints;
         List<Event> events;
         List<Deadline> deadlines;
+        List<Milestone> milestones;
         Integer id = userAccountClientService.getUserIDFromAuthState(principal);
         elementService.addHeaderAttributes(model, id);
         model.addAttribute("userId", id);
@@ -129,10 +134,11 @@ public class CalendarController {
             sprints = sprintService.getAllSprintsOrdered();
             events = eventService.getAllEventsOrdered();
             deadlines = deadlineService.getAllDeadlinesOrdered();
+            milestones = milestoneService.getAllMilestonesOrdered();
         } catch (Exception e) {
             return "500InternalServer";
         }
-        String calendarEvents = sprintListToJSON(sprints) + eventsToDisplay(deadlines, events);
+        String calendarEvents = sprintListToJSON(sprints) + eventsToDisplay(deadlines, events, milestones);
         model.addAttribute("events", calendarEvents);
         model.addAttribute("event-details", eventListToJSON(events));
         model.addAttribute("deadline-details", deadlineListToJSON(deadlines));
