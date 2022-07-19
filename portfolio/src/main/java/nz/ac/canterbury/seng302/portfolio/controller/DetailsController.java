@@ -17,6 +17,7 @@ import org.springframework.web.util.HtmlUtils;
 
 import java.time.Instant;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -64,7 +65,7 @@ public class DetailsController {
      *
      * @param principal
      * @param model Parameters sent to thymeleaf template to be rendered into HTML
-     * @return TeacherProjectDetails or userProjectDetails which is dependent on user's role
+     * @return projectDetails page
      * @throws Exception
      */
     @GetMapping("/details")
@@ -152,6 +153,11 @@ public class DetailsController {
 
         model.addAttribute("newDeadline", new Deadline(0, "", new Date()));
 
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(new Date());
+        calendar.add(Calendar.DATE, 3);
+        model.addAttribute("newEvent", new Event(0, "", new Date(), calendar.getTime(), LocalTime.now(), LocalTime.now()));
+
         String role = principal.getClaimsList().stream()
                 .filter(claim -> claim.getType().equals("role"))
                 .findFirst()
@@ -163,7 +169,7 @@ public class DetailsController {
         model.addAttribute("newSprint", sprintService.getSuggestedSprint());
         model.addAttribute("sprintDateError", "");
 
-        return "ProjectDetails";
+        return "projectDetails";
     }
 
     /**
