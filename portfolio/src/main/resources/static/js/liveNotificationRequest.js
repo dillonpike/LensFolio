@@ -4,7 +4,7 @@ let stompClient = null;
  * Then subscribes a method to the events/being-edited endpoint.
  */
 function connect() {
-    let socket = new SockJS('csse-s302g1.canterbury.ac.nz/test/portfolio/mywebsockets');
+    let socket = new SockJS('/test/portfolio/mywebsockets');
     stompClient = Stomp.over(socket);
     stompClient.connect({}, function (frame) {
         console.log('Connected: ' + frame);
