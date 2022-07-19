@@ -49,16 +49,16 @@ public class EventDic {
         String description = "- " + deadline.getDeadlineName();
         StringBuilder eventObject = new StringBuilder();
         if (eventData == null) {
-            eventObject.append("{title: '").append(amount).append("' , start: '").append(deadline.getDeadlineDate()).append("', type: 'Deadline").append("', description: '").append(description).append("'},");
+            eventObject.append("{title: '").append(amount).append("', start: '").append(deadline.getDeadlineDate()).append("', type: 'Deadline").append("', description: '").append(description).append("'},");
         } else {
             try {
                 amount += Integer.parseInt(eventData.split("'")[1]);
-                description = eventData.split("'")[7] + "<br> -" + deadline.getDeadlineName();
+                description = eventData.split("'")[7] + "<br>- " + deadline.getDeadlineName();
             } catch (Exception ignore) {
                 // Current uses -1 to represent error. May want to change this to a thrown error.
                 amount = -1;
             }
-            eventObject.append("{title: '").append(amount).append("' , start: '").append(deadline.getDeadlineDate()).append("', type: 'Deadline").append("', description: '").append(description).append("'},");
+            eventObject.append("{title: '").append(amount).append("', start: '").append(deadline.getDeadlineDate()).append("', type: 'Deadline").append("', description: '").append(description).append("'},");
         }
         datesToEvents.put(new EventTypes("Deadline", deadline.getDeadlineDateString()), eventObject.toString());
     }
