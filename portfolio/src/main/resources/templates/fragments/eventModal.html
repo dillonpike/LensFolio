@@ -25,7 +25,7 @@
           <div class="mb-3">
             <label for="eventStartDate" class="col-form-label">Event Start Date:</label>
             <div class="input-group date" id="eventStartDateInput">
-              <input onkeydown="return checkDateKeys(event)" onchange="validateModalDateTime('eventStartDate', 'eventEndDate', 'eventStartTime', 'eventEndTime', 'eventModalButton', 'eventDateTimeAlertBanner', 'eventDateTimeAlertBanner')" type="text" class="form-control" id="eventStartDate" th:name="eventStartDateString">
+              <input onkeydown="return checkDateKeys(event)" onchange="validateModalDateTime('eventStartDate', 'eventEndDate', 'eventStartTime', 'eventEndTime', 'eventModalButton', 'eventDateTimeAlertBanner', 'eventDateTimeAlertBanner')" type="text" class="form-control" id="eventStartDate" th:name="startDateString">
               <span class="input-group-append">
                   <span class="input-group-text bg-white">
                       <em class="bi bi-calendar"></em>
@@ -36,7 +36,7 @@
           <div class="mb-3">
             <label for="eventEndDate" class="col-form-label">Event End Date:</label>
             <div class="input-group date" id="eventEndDateInput">
-              <input onkeydown="return checkDateKeys(event)" onchange="validateModalDateTime('eventStartDate', 'eventEndDate', 'eventStartTime', 'eventEndTime', 'eventModalButton', 'eventDateTimeAlertBanner', 'eventDateTimeAlertBanner')" type="text" class="form-control" id="eventEndDate" th:name="eventEndDateString">
+              <input onkeydown="return checkDateKeys(event)" onchange="validateModalDateTime('eventStartDate', 'eventEndDate', 'eventStartTime', 'eventEndTime', 'eventModalButton', 'eventDateTimeAlertBanner', 'eventDateTimeAlertBanner')" type="text" class="form-control" id="eventEndDate" th:name="endDateString">
               <span class="input-group-append">
                   <span class="input-group-text bg-white">
                       <em class="bi bi-calendar"></em>
@@ -47,13 +47,13 @@
           <div class="mb-3">
             <label for="eventStartTime" class="col-form-label">Event Start Time:</label>
             <div class='input-group date' id='eventStartTimeInput'>
-              <input onkeydown="return checkTimeKeys(event)" onchange="validateModalDateTime('eventStartDate', 'eventEndDate', 'eventStartTime', 'eventEndTime', 'eventModalButton', 'eventDateTimeAlertBanner', 'eventDateTimeAlertBanner')" type="time" class="form-control" id="eventStartTime" th:name="eventStartTimeString">
+              <input onkeydown="return checkTimeKeys(event)" onchange="validateModalDateTime('eventStartDate', 'eventEndDate', 'eventStartTime', 'eventEndTime', 'eventModalButton', 'eventDateTimeAlertBanner', 'eventDateTimeAlertBanner')" type="time" class="form-control" id="eventStartTime" th:name="startTimeString">
             </div>
           </div>
           <div class="mb-3">
             <label for="eventEndTime" class="col-form-label">Event End Time:</label>
             <div class='input-group date' id='eventEndTimeInput'>
-              <input onkeydown="return checkTimeKeys(event)" onchange="validateModalDateTime('eventStartDate', 'eventEndDate', 'eventStartTime', 'eventEndTime', 'eventModalButton', 'eventDateTimeAlertBanner', 'eventDateTimeAlertBanner')" type="time" class="form-control" id="eventEndTime" th:name="eventEndTimeString">
+              <input onkeydown="return checkTimeKeys(event)" onchange="validateModalDateTime('eventStartDate', 'eventEndDate', 'eventStartTime', 'eventEndTime', 'eventModalButton', 'eventDateTimeAlertBanner', 'eventDateTimeAlertBanner')" type="time" class="form-control" id="eventEndTime" th:name="endTimeString">
             </div>
           </div>
         </div>

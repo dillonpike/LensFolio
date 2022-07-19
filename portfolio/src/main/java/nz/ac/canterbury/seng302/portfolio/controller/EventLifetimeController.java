@@ -1,10 +1,7 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
 import nz.ac.canterbury.seng302.portfolio.model.Event;
-import nz.ac.canterbury.seng302.portfolio.model.Milestone;
-import nz.ac.canterbury.seng302.portfolio.service.DateValidationService;
 import nz.ac.canterbury.seng302.portfolio.service.EventService;
-import nz.ac.canterbury.seng302.portfolio.service.ProjectService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -30,10 +27,6 @@ public class EventLifetimeController {
             @ModelAttribute("event") Event event,
             Model model
     ) {
-        event.setStartDateString(event.getStartDateString());
-        event.setEndDateString(event.getEndDateString());
-        event.setStartTimeString(event.getStartTimeString());
-        event.setEndTimeString(event.getEndTimeString());
         eventService.addEvent(event);
         return "redirect:/details";
     }
