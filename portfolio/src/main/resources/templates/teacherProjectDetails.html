@@ -352,7 +352,7 @@
                                                     <ul class="dropdown-menu" aria-labelledby="deadlineActions">
                                                         <li>
                                                             <a class="button-link" data-bs-toggle="modal" data-bs-target="#deadlineModal" th:data-bs-deadline="${deadline.toJSONString()}" data-bs-type="edit">
-                                                                <button id="editDeadlineButton" class="dropdown-item" type="button">
+                                                                <button id="editDeadlineButton" class="dropdown-item" type="button" th:attr="onclick='editDeadline(\'' + ${deadline.getDeadlineName()} + '\',\'' + ${deadline.getId()}+  '\');'">
                                                                     <span class='bi bi-pencil'></span> <i>Edit</i>
                                                                 </button>
                                                             </a>
@@ -448,6 +448,8 @@
     let username = [[${username}]];
     let milestoneName = '';
     let milestoneId = -1;
+    let deadlineName = '';
+    let deadlineId = -1;
 
     /**
      * Initialises functions/injections. When these are no longer being updated (edited) they will disappear after a certain period.
@@ -467,6 +469,11 @@
     function editMilestone(milestone, id){
         milestoneName = milestone;
         milestoneId = id;
+    }
+
+    function editDeadline(deadline, id) {
+        deadlineName = deadline;
+        deadlineId = id;
     }
 
     /**
@@ -517,6 +524,72 @@
             sendEmpty(milestoneName, milestoneId,userId, userFirstName, userLastName, username, "Milestone");
         }
     })
+</script>
+
+
+<script>
+    /**
+     * All inputs on deadline modal when being focused on (edited) will update and send a notification
+     * to the details page. When these are no longer being updated (edited) they will disappear after a certain period.
+     */
+    $("#deadlineName").on('focusin', function (ignore) {
+        const actionType = document.getElementById("deadlineModal").querySelector('form').action.split('/')[3];
+        if (actionType === 'edit-deadline') {
+            sendName(deadlineName, deadlineId, userId, userFirstName, userLastName, username, 'Deadline');
+        }
+    }).on('focusout', function (ignore) {
+        const actionType = document.getElementById('deadlineModal').querySelector('form').action.split('/')[3]; //getting the type of the request, this is necessary as same modal is being used for both adding and editing deadline
+        if(actionType === 'edit-deadline'){
+            sendEmpty(deadlineName, deadlineId,userId, userFirstName, userLastName, username, "Deadline");
+        }
+    });
+
+    $("#deadlineDate").on('focusin', function (ignore) {
+        const actionType = document.getElementById('deadlineModal').querySelector('form').action.split('/')[3]; //getting the type of the request, this is necessary as same modal is being used for both adding and editing deadline
+        if(actionType === 'edit-deadline'){
+            sendName(deadlineName,deadlineId,userId, userFirstName, userLastName, username, "Deadline");
+        }
+    }).on('focusout', function (ignore) {
+        const actionType = document.getElementById('deadlineModal').querySelector('form').action.split('/')[3]; //getting the type of the request, this is necessary as same modal is being used for both adding and editing deadline
+        if(actionType === 'edit-deadline'){
+            sendEmpty(deadlineName, deadlineId,userId, userFirstName, userLastName, username, "Deadline");
+        }
+    });
+
+    $("#deadlineTime").on('focusin', function (ignore) {
+        const actionType = document.getElementById('deadlineModal').querySelector('form').action.split('/')[3]; //getting the type of the request, this is necessary as same modal is being used for both adding and editing deadline
+        if(actionType === 'edit-deadline'){
+            sendName(deadlineName,deadlineId,userId, userFirstName, userLastName, username, "Deadline");
+        }
+    }).on('focusout', function (ignore) {
+        const actionType = document.getElementById('deadlineModal').querySelector('form').action.split('/')[3]; //getting the type of the request, this is necessary as same modal is being used for both adding and editing deadline
+        if(actionType === 'edit-deadline'){
+            sendEmpty(deadlineName, deadlineId,userId, userFirstName, userLastName, username, "Deadline");
+        }
+    });
+
+    /**
+     * send request to show the live notification's toast when an update on a deadline is saved by a user
+     * this function is triggered when save button on Deadline Modal is clicked
+     */
+    $("#deadlineModalButton").click(function() {
+        const actionType = document.getElementById('deadlineModal').querySelector('form').action.split('/')[3]; //getting the type of the request, this is necessary as same modal is being used for both adding and editing deadline
+        if(actionType === 'edit-deadline'){
+            sendNameReload(deadlineName, deadlineId,userId, userFirstName, userLastName, username, "Deadline");
+        }
+    })
+
+    /**
+     * send request to hide the live notification's toast when an update on a deadline is saved by a user
+     * this function is triggered when close button on Deadline Modal is clicked
+     */
+    $("#closeDeadlineModalButton").click(function() {
+        const actionType = document.getElementById('deadlineModal').querySelector('form').action.split('/')[3];
+        if(actionType === 'edit-deadline'){
+            sendEmpty(deadlineName, deadlineId,userId, userFirstName, userLastName, username, "Deadline");
+        }
+    })
+
 </script>
 
 <script>
