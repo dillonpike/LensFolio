@@ -46,14 +46,14 @@ public class EventDic {
         int amount = 1;
         // Uses EventTypes costume hashCode() to hash based on type and date.
         String eventData = datesToEvents.get(new EventTypes("Deadline", deadline.getDeadlineDateString()));
-        String description = deadline.getDeadlineName();
+        String description = "- " + deadline.getDeadlineName();
         StringBuilder eventObject = new StringBuilder();
         if (eventData == null) {
             eventObject.append("{title: '").append(amount).append("' , start: '").append(deadline.getDeadlineDate()).append("', type: 'Deadline").append("', description: '").append(description).append("'},");
         } else {
             try {
                 amount += Integer.parseInt(eventData.split("'")[1]);
-                description = eventData.split("'")[7] + "<br>" + deadline.getDeadlineName();
+                description = eventData.split("'")[7] + "<br> -" + deadline.getDeadlineName();
             } catch (Exception ignore) {
                 // Current uses -1 to represent error. May want to change this to a thrown error.
                 amount = -1;
@@ -85,14 +85,14 @@ public class EventDic {
             Instant date = current.getTime().toInstant();
             // Uses EventTypes costume hashCode() to hash based on type and date.
             String eventData = datesToEvents.get(new EventTypes("Event", Project.dateToString(Date.from(date))));
-            String description = event.getEventName();
+            String description = "- " + event.getEventName();
             StringBuilder eventObject = new StringBuilder();
             if (eventData == null) {
                 eventObject.append("{title: '").append(amount).append("', start: '").append(date).append("', type: 'Event").append("', description: '").append(description).append("'},");
             } else {
                 try {
                     amount += Integer.parseInt(eventData.split("'")[1]);
-                    description = eventData.split("'")[7] + " <br> " + event.getEventName();
+                    description = eventData.split("'")[7] + "<br>- " + event.getEventName();
                 } catch (Exception ignore) {
                     // Current uses -1 to represent error. May want to change this to a thrown error.
                     amount = -1;
@@ -113,14 +113,14 @@ public class EventDic {
         int amount = 1;
         // Uses EventTypes costume hashCode() to hash based on type and date.
         String eventData = datesToEvents.get(new EventTypes("Deadline", milestone.getMilestoneDateString()));
-        String description = milestone.getMilestoneName();
+        String description = "- " + milestone.getMilestoneName();
         StringBuilder eventObject = new StringBuilder();
         if (eventData == null) {
             eventObject.append("{title: '").append(amount).append("' , start: '").append(milestone.getMilestoneDate()).append("', type: 'Milestone").append("', description: '").append(description).append("'},");
         } else {
             try {
                 amount += Integer.parseInt(eventData.split("'")[1]);
-                description = eventData.split("'")[7] + "<br>" + milestone.getMilestoneName();
+                description = eventData.split("'")[7] + "<br>- " + milestone.getMilestoneName();
             } catch (Exception ignore) {
                 // Current uses -1 to represent error. May want to change this to a thrown error.
                 amount = -1;
