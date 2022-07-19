@@ -37,6 +37,8 @@ public class NotificationResponse {
         this.artefactType = artefactType;
     }
 
+    public NotificationResponse() {}
+
     public String getArtefactType() {
         return artefactType;
     }

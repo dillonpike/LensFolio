@@ -17,6 +17,7 @@ import org.springframework.web.util.HtmlUtils;
 
 import java.time.Instant;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -152,6 +153,11 @@ public class DetailsController {
 
         model.addAttribute("newDeadline", new Deadline(0, "", new Date()));
 
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(new Date());
+        calendar.add(Calendar.DATE, 3);
+        model.addAttribute("newEvent", new Event(0, "", new Date(), calendar.getTime(), LocalTime.now(), LocalTime.now()));
+
         String role = principal.getClaimsList().stream()
                 .filter(claim -> claim.getType().equals("role"))
                 .findFirst()
@@ -240,6 +246,30 @@ public class DetailsController {
         }
 
         return allEventsList;
+    }
+
+    /**
+     * This method maps @MessageMapping endpoint to the @SendTo endpoint. Called when something is sent to
+     * the MessageMapping endpoint. This method also triggers some sort of re-render of the events.
+//     * @param message NotificationMessage that holds information about the event being updated
+     */
+    @MessageMapping("/delete-artefact")
+    @SendTo("/test/portfolio/events/delete-artefact")
+    public NotificationResponse deleteArtefact(NotificationMessage ignore) {
+        //System.out.println("hellow");
+//        int eventId = message.getArtefactId();
+//        String username = message.getUsername();
+//        String firstName = message.getUserFirstName();
+//        String lastName = message.getUserLastName();
+//        long dateOfNotification = Date.from(Instant.now()).toInstant().getEpochSecond();
+//        String artefactType = message.getArtefactType();
+//        NotificationResponse response = new NotificationResponse(HtmlUtils.htmlEscape(message.getArtefactName()), eventId, username, firstName, lastName, dateOfNotification, artefactType);
+//        // Trigger reload and save the last event's information
+//        eventsToDisplay.add(response);
+//        while (eventsToDisplay.size() > 3) {
+//            eventsToDisplay.remove(0);
+//        }
+        return new NotificationResponse();
     }
 
 }

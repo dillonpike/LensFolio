@@ -46,3 +46,7 @@ body {
     border-right-width: 10px !important;
 }
 
+.fc-event-title {
+    padding-left: 5px;
+}
+
