@@ -87,6 +87,11 @@ function deleteModalSetup() {
     $("#deleteModalButton").on('click', function (ignore) {
         deleteReload();
     });
+
+    $("#eventModalButton").on('click', function (ignore) {
+        deleteReload();
+    });
+
 }
 
 /**
@@ -159,6 +164,10 @@ function milestoneModalSetup() {
         updateCharsLeft('milestoneName', 'milestoneNameLength', 50)
         $('#' + modalButton.getAttribute("id")).prop('hidden', false);
     })
+
+    $("#milestoneModalButton").on('click', function (ignore) {
+        pageReload();
+    });
 }
 
 /**
@@ -203,6 +212,10 @@ function deadlineModalSetup() {
         updateCharsLeft('deadlineName', 'deadlineNameLength', 50)
         $('#' + modalButton.getAttribute("id")).prop('hidden', false);
     })
+
+    $("#deadlineModalButton").on('click', function (ignore) {
+        pageReload();
+    });
 }
 
 

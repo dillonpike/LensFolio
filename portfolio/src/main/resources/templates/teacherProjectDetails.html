@@ -218,8 +218,8 @@
                                                         </button>
                                                         <ul class="dropdown-menu" aria-labelledby="eventActions">
                                                             <li>
-                                                                <a class="button-link" th:href="@{edit-event/{id} (id=${event.id})}">
-                                                                    <button class="dropdown-item" type="button">
+                                                                <a class="button-link" data-bs-toggle="modal" data-bs-target="#eventModal" th:data-bs-event="${event.toJSONString()}" data-bs-type="edit">
+                                                                    <button id="editEventButton" class="dropdown-item" type="button">
                                                                         <span class='bi bi-pencil'></span> <i>Edit</i>
                                                                     </button>
                                                                 </a>
@@ -401,7 +401,7 @@
     /**
      * Sends the message that an artefact(milestone, event, deadline) is deleted
      */
-    function deleteReload() {
+    function pageReload() {
         stompClient.send("/test/portfolio/app/delete-artefact", {}, JSON.stringify({}));
     }
 
@@ -593,6 +593,7 @@
     sprintModalSetup()
     projectModalSetup()
     milestoneModalSetup()
+    eventModalSetup()
     deadlineModalSetup()
     deleteModalSetup()
     validateModalDate("milestoneDate", "submitMilestoneButton")
