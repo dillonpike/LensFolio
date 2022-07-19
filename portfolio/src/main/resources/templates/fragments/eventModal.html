@@ -5,7 +5,7 @@
         <h5 class="modal-title" id="exampleModalLongTitle">Add event</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
-      <form method="post" id="eventForm" onsubmit="validateevent(); return false;" th:action="@{add-event}">
+      <form method="post" id="eventForm" onsubmit="validateEvent(); return false;" th:action="@{add-event}">
         <div class="modal-body">
           <div class="alert alert-danger alert-dismissible fade show" role="alert" id="eventAlertBanner" hidden>
             <span id="eventAlertMessage" data-test-id="alertMessage"></span>
@@ -18,14 +18,14 @@
               <span id="eventNameLength"></span>
             </div>
           </div>
-          <div class="alert alert-danger alert-dismissible fade show" role="alert" id="eventDateAlertBanner" hidden>
-            <span id="eventDateAlertMessage" data-test-id="alertMessage"></span>
-            <button type="button" class="btn-close" onclick="document.getElementById('eventDateAlertBanner').hidden = true" aria-label="Close"></button>
+          <div class="alert alert-danger alert-dismissible fade show" role="alert" id="eventDateTimeAlertBanner" hidden>
+            <span id="eventDateTimeAlertMessage" data-test-id="alertMessage"></span>
+            <button type="button" class="btn-close" onclick="document.getElementById('eventDateTimeAlertBanner').hidden = true" aria-label="Close"></button>
           </div>
           <div class="mb-3">
             <label for="eventStartDate" class="col-form-label">Event Start Date:</label>
             <div class="input-group date" id="eventStartDateInput">
-              <input onkeydown="return checkDateKeys(event)" onchange="validateModalDate('eventStartDate', 'eventModalButton', 'eventDateAlertBanner', 'eventDateAlertMessage')" type="text" class="form-control" id="eventStartDate" th:name="eventStartDateString">
+              <input onkeydown="return checkDateKeys(event)" onchange="validateModalDateTime('eventStartDate', 'eventEndDate', 'eventStartTime', 'eventEndTime', 'eventModalButton', 'eventDateTimeAlertBanner', 'eventDateTimeAlertBanner')" type="text" class="form-control" id="eventStartDate" th:name="eventStartDateString">
               <span class="input-group-append">
                   <span class="input-group-text bg-white">
                       <em class="bi bi-calendar"></em>
@@ -36,7 +36,7 @@
           <div class="mb-3">
             <label for="eventEndDate" class="col-form-label">Event End Date:</label>
             <div class="input-group date" id="eventEndDateInput">
-              <input onkeydown="return checkDateKeys(event)" onchange="validateModalDate('eventEndDate', 'eventModalButton', 'eventDateAlertBanner', 'eventDateAlertMessage')" type="text" class="form-control" id="eventEndDate" th:name="eventEndDateString">
+              <input onkeydown="return checkDateKeys(event)" onchange="validateModalDateTime('eventStartDate', 'eventEndDate', 'eventStartTime', 'eventEndTime', 'eventModalButton', 'eventDateTimeAlertBanner', 'eventDateTimeAlertBanner')" type="text" class="form-control" id="eventEndDate" th:name="eventEndDateString">
               <span class="input-group-append">
                   <span class="input-group-text bg-white">
                       <em class="bi bi-calendar"></em>
@@ -44,14 +44,10 @@
               </span>
             </div>
           </div>
-          <div class="alert alert-danger alert-dismissible fade show" role="alert" id="eventTimeAlertBanner" hidden>
-            <span id="eventTimeAlertMessage" data-test-id="alertMessage"></span>
-            <button type="button" class="btn-close" onclick="document.getElementById('eventTimeAlertBanner').hidden = true" aria-label="Close"></button>
-          </div>
           <div class="mb-3">
             <label for="eventStartTime" class="col-form-label">Event Start Time:</label>
             <div class='input-group date' id='eventStartTimeInput'>
-              <input onkeydown="return checkTimeKeys(event)" onchange="validateModalTime('eventStartTime', 'eventModalButton', 'eventTimeAlertBanner', 'eventTimeAlertMessage')" type="text" class="form-control" id="eventStartTime" th:name="eventStartTimeString">
+              <input onkeydown="return checkTimeKeys(event)" onchange="validateModalDateTime('eventStartDate', 'eventEndDate', 'eventStartTime', 'eventEndTime', 'eventModalButton', 'eventDateTimeAlertBanner', 'eventDateTimeAlertBanner')" type="text" class="form-control" id="eventStartTime" th:name="eventStartTimeString">
               <span class="input-group-append">
                 <span class="input-group-text bg-white">
                     <em class="bi bi-clock"></em>
@@ -62,7 +58,7 @@
           <div class="mb-3">
             <label for="eventEndTime" class="col-form-label">Event End Time:</label>
             <div class='input-group date' id='eventEndTimeInput'>
-              <input onkeydown="return checkTimeKeys(event)" onchange="validateModalTime('eventEndTime', 'eventModalButton', 'eventTimeAlertBanner', 'eventTimeAlertMessage')" type="text" class="form-control" id="eventEndTime" th:name="eventEndTimeString">
+              <input onkeydown="return checkTimeKeys(event)" onchange="validateModalDateTime('eventStartDate', 'eventEndDate', 'eventStartTime', 'eventEndTime', 'eventModalButton', 'eventDateTimeAlertBanner', 'eventDateTimeAlertBanner')" type="text" class="form-control" id="eventEndTime" th:name="eventEndTimeString">
               <span class="input-group-append">
                 <span class="input-group-text bg-white">
                     <em class="bi bi-clock"></em>
@@ -82,9 +78,8 @@
     /**
      * Validates the currently entered information for the event and submits the form if it's valid.
      */
-    async function validateevent() {
-      if (validateModalDate('eventStartDate', 'eventEndDate', 'submitEventButton', 'eventDateAlertBanner', 'eventDateAlertMessage') &&
-              validateModalTime('eventStartTime', 'eventEndTime', 'submitEventButton', 'eventTimeAlertBanner', 'eventTimeAlertMessage') &&
+    async function validateEvent() {
+      if (validateModalDateTime('eventStartDate', 'eventEndDate', 'eventStartTime', 'eventEndTime', 'submitEventButton', 'eventDateTimeAlertBanner', 'eventDateTimeAlertMessage') &&
               validateModalName('eventName', 'eventAlertBanner', 'eventAlertMessage')) {
         document.getElementById('eventForm').submit();
       }

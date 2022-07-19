@@ -193,7 +193,7 @@
                                                     </button>
                                                     <ul class="dropdown-menu" aria-labelledby="eventActions">
                                                         <li>
-                                                            <a class="button-link" data-bs-toggle="modal" data-bs-target="#eventModal" th:data-bs-deadline="${event.toJSONString()}" data-bs-type="edit">
+                                                            <a class="button-link" data-bs-toggle="modal" data-bs-target="#eventModal" th:data-bs-event="${event.toJSONString()}" data-bs-type="edit">
                                                                 <button id="editEventButton" class="dropdown-item" type="button">
                                                                     <span class='bi bi-pencil'></span> <i>Edit</i>
                                                                 </button>
@@ -378,6 +378,77 @@
         const dateInput = new Date(dateInputStr);
 
         if (dateInput < new Date(projectStartDate) || dateInput > new Date(projectEndDate)) {
+            $('#' + submitElementId).prop('disabled', true);
+            document.getElementById(alertBanner).hidden = false;
+            document.getElementById(alertMessage).innerText = "Date must be within the project's date range (" +
+                projectStartDate + " - " + projectEndDate + ").";
+            return false;
+        } else {
+            $('#' + submitElementId).prop('disabled', false);
+            document.getElementById(alertBanner).hidden = true;
+            return true;
+        }
+    }
+
+    function compareTime(timeValue1, timeValue2) {
+        if (timeValue1.match("") || timeValue2.match("")) {
+            return true;
+        }
+
+
+        if (timeValue1.match(/p/) && timeValue2.match(/a/)) {
+            return false;
+        }
+        else if (timeValue1.match(/a/) && timeValue2.match(/p/)) {
+            return true;
+        } else { // Same 12-hour time window.
+            let timeSplit1 = timeValue1.split(':');
+            let timeSplit2 = timeValue2.split(':');
+            if (parseInt(timeSplit1[0], 10) >= parseInt(timeSplit2[0], 10)) { // Will remove leading zeros
+                timeSplit1 = timeSplit1[1].split(' ');
+                timeSplit2 = timeSplit2[1].split(' ');
+                return parseInt(timeSplit1[0], 10) <= parseInt(timeSplit2[0], 10);
+            } else {
+                return true;
+            }
+        }
+    }
+
+    // Check if the date of the item that the user inputted is within the project dates range
+    // Show error banner with error message and disable the submit button if the inputted date is outside the project dates range
+    // @param elementId the ID of the date input HTML element
+    // @param submitElementId the ID of the submit button on the modal
+    function validateModalDateTime(dateStartId, dateEndId, timeStartId, timeEndId,  submitElementId, alertBanner, alertMessage) {
+        const dateStartInput = new Date(document.getElementById(dateStartId).value);
+        const dateEndInput = new Date(document.getElementById(dateEndId).value);
+        const timeStartInputStr = document.getElementById(timeStartId).value;
+        const timeEndInputStr = document.getElementById(timeEndId).value;
+
+
+        if ((!timeStartInputStr.match(/[0-2]?\d:[0-5]\d [a|p]m/) && !timeStartInputStr.match("")) ||
+            (!timeEndInputStr.match(/[0-2]?\d:[0-5]\d [a|p]m/) && !timeStartInputStr.match(""))) {
+            $('#' + submitElementId).prop('disabled', true);
+            document.getElementById(alertBanner).hidden = false;
+            document.getElementById(alertMessage).innerText = "Time should be in this format: \"hour:minute pm/am\" (e.g. 12:37 pm). ";
+            return false;
+        }
+
+        if (dateStartInput > dateEndInput) {
+            $('#' + submitElementId).prop('disabled', true);
+            document.getElementById(alertBanner).hidden = false;
+            document.getElementById(alertMessage).innerText = "The Start Date must be before the End Date (" +
+                dateEndInput + ").";
+            return false;
+        } else if (dateStartInput === dateEndInput) {
+            if (compareTime(timeStartInputStr, timeEndInputStr)) {
+                document.getElementById(alertBanner).hidden = false;
+                document.getElementById(alertMessage).innerText = "The Start Date/Time must be within the End Date/Time (" +
+                    dateEndInput + " : " + timeEndInputStr + ").";
+                return false;
+            }
+        }
+
+        if (dateStartInput < new Date(projectStartDate) || dateEndInput > new Date(projectEndDate)) {
             $('#' + submitElementId).prop('disabled', true);
             document.getElementById(alertBanner).hidden = false;
             document.getElementById(alertMessage).innerText = "Date must be within the project's date range (" +

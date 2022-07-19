@@ -214,8 +214,8 @@ function eventModalSetup() {
 
         // Extract info from data-bs-* attributes
         const events = JSON.parse(button.getAttribute('data-bs-event'))
-        const type = button.getAttribute('data-bs-type')
 
+        const type = button.getAttribute('data-bs-type')
         // Update the modal's content.
         const modalTitle = eventModal.querySelector('.modal-title')
         const modalBodyInput = eventModal.querySelector('.modal-body input')
@@ -234,12 +234,19 @@ function eventModalSetup() {
         }
 
         modalForm.setAttribute('object', events);
+
+
         modalBodyInput.value = events.eventName
-        $('#eventDateInput').datepicker('setDate', events.eventStartDateString)
+        $('#eventStartDateInput').datepicker('setDate', events.startDateString)
+        $('#eventEndDateInput').datepicker('setDate', events.endDateString)
+
+        //modalBodyInput[3].value = events.eventStartTimeString;
+        //modalBodyInput[4].value = events.eventEndTimeString;
+
 
         // Initial run of validation functions in case initial values are invalid
         validateModalName('eventName', 'eventModalButton', 'eventAlertBanner', 'eventAlertMessage')
-        validateModalDate('eventStartDate', 'eventEndDate', 'eventModalButton', 'eventDateAlertBanner', 'eventDateAlertMessage')
+        validateModalDateTime('eventStartDate', 'eventEndDate', 'eventStartTime', 'eventEndTime','eventModalButton', 'eventDateTimeAlertBanner', 'eventDateTimeAlertMessage')
         updateCharsLeft('eventName', 'eventNameLength', 50)
         $('#' + modalButton.getAttribute("id")).prop('hidden', false);
     })
