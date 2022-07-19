@@ -120,16 +120,37 @@ public class EventService {
             currentEvent.setEndDateColour(null);
 
             for (Sprint sprint : sprints) {
-                if (dateValidationService.validateEventStartDateInSprintDate(currentEvent, sprint)) {
+                if (validateEventStartDateInSprintDate(currentEvent, sprint)) {
                     currentEvent.setStartDateColour(sprint.getColour());
                 }
-                if (dateValidationService.validateEventEndDateInSprintDate(currentEvent, sprint)) {
+                if (validateEventEndDateInSprintDate(currentEvent, sprint)) {
                     currentEvent.setEndDateColour(sprint.getColour());
                 }
             }
             eventRepository.save(currentEvent);
         }
         return getAllEventsOrdered();
+    }
+
+    /**
+     * Validate if particular event's start date is in sprint date range
+     * @param event The updated event
+     * @param sprint The sprint to compare with
+     * @return True if event start date is in sprint date range
+     */
+    public boolean validateEventStartDateInSprintDate(Event event, Sprint sprint) {
+        return event.getEventStartDate().compareTo(sprint.getStartDate()) >= 0 && event.getEventStartDate().compareTo(sprint.getEndDate()) <= 0;
+    }
+
+
+    /**
+     * Validate if particular event's end date is in sprint date
+     * @param event The updated event
+     * @param sprint The sprint to compare with
+     * @return True if event end date is in sprint date range
+     */
+    public boolean validateEventEndDateInSprintDate(Event event, Sprint sprint) {
+        return event.getEventEndDate().compareTo(sprint.getStartDate()) >= 0 && event.getEventEndDate().compareTo(sprint.getEndDate()) <= 0;
     }
 
     /**

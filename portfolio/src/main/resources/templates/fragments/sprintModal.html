@@ -109,6 +109,8 @@
             if ((await checkSprintDates()).trim().length === 0 &&
                 validateModalName('sprintName', 'sprintAlertBanner', 'sprintAlertMessage')) {
                 document.getElementById('sprintForm').submit();
+            } else {
+                updateSprintDateError();
             }
         }
 
