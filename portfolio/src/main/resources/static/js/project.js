@@ -55,6 +55,9 @@ function sprintModalSetup() {
         updateCharsLeft('sprintName', 'sprintNameLength', 50);
         updateCharsLeft('sprintDescription', 'sprintDescriptionLength', 500);
     })
+    $("#sprintModalButton").on('click', function (ignore) {
+        pageReload();
+    });
 }
 
 /**
@@ -85,11 +88,11 @@ function deleteModalSetup() {
     })
 
     $("#deleteModalButton").on('click', function (ignore) {
-        deleteReload();
+        pageReload();
     });
 
     $("#eventModalButton").on('click', function (ignore) {
-        deleteReload();
+        pageReload();
     });
 
 }
@@ -121,6 +124,9 @@ function projectModalSetup() {
         updateCharsLeft('projectName', 'projectNameLength', 50);
         updateCharsLeft('projectDescription', 'projectDescriptionLength', 500);
     })
+    $("#projectModalButton").on('click', function (ignore) {
+        pageReload();
+    });
 }
 
 /**
