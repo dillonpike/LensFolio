@@ -218,7 +218,7 @@ function eventModalSetup() {
         const type = button.getAttribute('data-bs-type')
         // Update the modal's content.
         const modalTitle = eventModal.querySelector('.modal-title')
-        const modalBodyInput = eventModal.querySelector('.modal-body input')
+        const modalBodyInputs = eventModal.querySelectorAll('.modal-body input')
         const modalButton = eventModal.querySelector('.modal-footer button')
         const modalForm = eventModal.querySelector('form')
 
@@ -236,12 +236,12 @@ function eventModalSetup() {
         modalForm.setAttribute('object', events);
 
 
-        modalBodyInput.value = events.eventName
+        modalBodyInputs[0].value = events.eventName
         $('#eventStartDateInput').datepicker('setDate', events.startDateString)
         $('#eventEndDateInput').datepicker('setDate', events.endDateString)
 
-        //modalBodyInput[3].value = events.eventStartTimeString;
-        //modalBodyInput[4].value = events.eventEndTimeString;
+        modalBodyInputs[3].value = events.startTimeString.substring(0, events.startTimeString.length-3);
+        modalBodyInputs[4].value = events.endTimeString.substring(0, events.endTimeString.length-3);
 
 
         // Initial run of validation functions in case initial values are invalid

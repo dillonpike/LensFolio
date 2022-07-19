@@ -130,7 +130,10 @@ public class DetailsController {
 
         model.addAttribute("newDeadline", new Deadline(0, "", new Date()));
 
-        model.addAttribute("newEvent", new Event(0, "", new Date(), new Date(), LocalTime.now(), LocalTime.now()));
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(new Date());
+        calendar.add(Calendar.DATE, 3);
+        model.addAttribute("newEvent", new Event(0, "", new Date(), calendar.getTime(), LocalTime.now(), LocalTime.now()));
 
         String role = principal.getClaimsList().stream()
                 .filter(claim -> claim.getType().equals("role"))
