@@ -104,7 +104,9 @@ public class DetailsController {
         model.addAttribute("events", eventList);
 
         List<List<Event>> eventsForSprints = getAllEventsForAllSprints(sprintList);
+        List<List<Deadline>> deadlinesForSprints = getAllDeadlinesForAllSprints(sprintList);
         model.addAttribute("eventsForSprints", eventsForSprints);
+        model.addAttribute("deadlinesForSprints", deadlinesForSprints);
 
 
         // Runs if the reload was triggered by saving an event. Checks the notifications' creation time to see if 2 seconds has passed yet.
@@ -240,6 +242,16 @@ public class DetailsController {
         }
 
         return allEventsList;
+    }
+
+    private List<List<Deadline>> getAllDeadlinesForAllSprints(List<Sprint> sprintList) {
+        List<List<Deadline>> allDeadlinesList = new ArrayList<>();
+
+        for (Sprint sprint : sprintList) {
+            allDeadlinesList.add(deadlineService.getAllDeadlinesOverLappingWithSprint(sprint));
+        }
+
+        return allDeadlinesList;
     }
 
 }

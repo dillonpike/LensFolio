@@ -2,10 +2,14 @@ package nz.ac.canterbury.seng302.portfolio.service;
 
 import nz.ac.canterbury.seng302.portfolio.model.Deadline;
 import nz.ac.canterbury.seng302.portfolio.model.Event;
+import nz.ac.canterbury.seng302.portfolio.model.Milestone;
+import nz.ac.canterbury.seng302.portfolio.model.Sprint;
 import nz.ac.canterbury.seng302.portfolio.repository.DeadlinesRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -93,5 +97,36 @@ public class DeadlineService {
             Deadline deadline = sOptional.get();
             repository.deleteById(deadline.getId());
         }
+    }
+
+    /**
+     * Gets a list of deadlines that overlap with the given sprint in some way. This is to know what deadline should be
+     * displayed with this sprint. It does this by checking if either of the dates are within the sprints dates.
+     * @param sprint Sprint to check events against.
+     * @return List of deadline that overlap with the given sprint.
+     */
+    public List<Deadline> getAllDeadlinesOverLappingWithSprint(Sprint sprint) {
+        ArrayList<Deadline> deadlineList = (ArrayList<Deadline>) getAllDeadlinesOrdered();
+        ArrayList<Deadline> deadlinesOverlapped = new ArrayList<>();
+
+        for (Deadline currentDeadline : deadlineList) {
+            if (validateDeadlineDateInSprintDateRange(currentDeadline, sprint)) {
+                deadlinesOverlapped.add(currentDeadline);
+            }
+        }
+        return deadlinesOverlapped;
+    }
+
+    /**
+     * Validate if particular deadline date is in sprint date range
+     * @param deadline The update deadline
+     * @param sprint The sprint to compare with
+     * @return True if deadline end date is in sprint date range
+     */
+    public boolean validateDeadlineDateInSprintDateRange(Deadline deadline, Sprint sprint) {
+        Date deadlineDate = deadline.getDeadlineDate();
+        Date sprintStartDate = sprint.getStartDate();
+        Date sprintEndDate = sprint.getEndDate();
+        return sprintStartDate.compareTo(deadlineDate) * sprintEndDate.compareTo(deadlineDate) <= 0;
     }
 }
