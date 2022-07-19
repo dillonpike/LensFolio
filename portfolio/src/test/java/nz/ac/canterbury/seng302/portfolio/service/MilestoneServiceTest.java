@@ -1,6 +1,8 @@
 package nz.ac.canterbury.seng302.portfolio.service;
 
+import nz.ac.canterbury.seng302.portfolio.model.Event;
 import nz.ac.canterbury.seng302.portfolio.model.Milestone;
+import nz.ac.canterbury.seng302.portfolio.model.Sprint;
 import nz.ac.canterbury.seng302.portfolio.repository.MilestoneRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -9,7 +11,9 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -34,6 +38,9 @@ class MilestoneServiceTest {
      */
     @InjectMocks
     private MilestoneService milestoneService;
+
+    @InjectMocks
+    private SprintService sprintService;
 
     /**
      * Tests that the addMilestone method calls repository.save() to save the given deadline to the database, then
@@ -72,5 +79,46 @@ class MilestoneServiceTest {
         milestoneService.removeMilestone(1);
 
         verify(milestoneRepository, times(0)).deleteById(any(Integer.class));
+    }
+
+    @Test
+    void givenSprint_returnEventsThatOverlap() {
+        Sprint sprint = new Sprint();
+        sprint.setName("Testing");
+        sprint.setStartDate(sprintService.calendarDateStringToDate("2001-12-20", false));
+        sprint.setEndDate(sprintService.calendarDateStringToDate("2001-12-22", true));
+        sprint.setColour("#5897fc");
+
+        Milestone milestone1 = new Milestone();
+        Milestone milestone2 = new Milestone();
+        Milestone milestone3 = new Milestone();
+        Milestone milestone4 = new Milestone();
+
+        milestone1.setMilestoneName("Date is within");
+        milestone1.setMilestoneDate(sprintService.calendarDateStringToDate("2001-12-21", false));
+
+        milestone2.setMilestoneName("Date overlaps start");
+        milestone2.setMilestoneDate(sprintService.calendarDateStringToDate("2001-12-20", false));
+
+        milestone3.setMilestoneName("Date doesnt overlap");
+        milestone3.setMilestoneDate(sprintService.calendarDateStringToDate("2001-12-24", false));
+
+        milestone4.setMilestoneName("Date overlaps end");
+        milestone4.setMilestoneDate(sprintService.calendarDateStringToDate("2001-12-22", true));
+
+        List<Milestone> milestoneList = new ArrayList<>();
+        milestoneList.add(milestone1);
+        milestoneList.add(milestone2);
+        milestoneList.add(milestone3);
+        milestoneList.add(milestone4);
+
+        when(milestoneService.getAllMilestonesOrdered()).thenReturn(milestoneList);
+
+        List<Milestone> returnedEvents = milestoneService.getAllMilestonesOverlappingWithSprint(sprint);
+
+        assertEquals(milestone1.getMilestoneName(), returnedEvents.get(0).getMilestoneName());
+        assertEquals(milestone2.getMilestoneName(), returnedEvents.get(1).getMilestoneName());
+        assertEquals(milestone4.getMilestoneName(), returnedEvents.get(2).getMilestoneName());
+
     }
 }
