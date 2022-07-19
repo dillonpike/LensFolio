@@ -15,6 +15,9 @@ import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+/**
+ * Testing class that tests the GUI flow of the live updates on the calendar.
+ */
 public class CalendarUpdatesStepDefs {
 
     /**
@@ -32,9 +35,19 @@ public class CalendarUpdatesStepDefs {
      */
     private ArrayList<String> tabs;
 
+    /**
+     * Expected Values used for testing.
+     */
     private int expectedEventAmount = 0;
 
     private String expectedDate;
+
+    /**
+     * These values are needed because the event default length spans multiple days so
+     * They will increase the final event count by more.
+     */
+    private final int eventDefaultLength = 3;
+    private final int extraEvent = 1;
 
     /**
      * Sets up for scenario by getting a web driver.
@@ -55,6 +68,9 @@ public class CalendarUpdatesStepDefs {
         SeleniumService.tearDownWebDriver();
     }
 
+    /**
+     * Sets up the calendar tab.
+     */
     @And("I have the calendar page open on another tab")
     public void iHaveTheCalendarPageOpenOnAnotherTab() {
         ((JavascriptExecutor) webDriver).executeScript("window.open('http://localhost:9000/calendar')");
@@ -81,6 +97,10 @@ public class CalendarUpdatesStepDefs {
         webDriver.findElement(By.id("eventModalButton")).click();
     }
 
+    /**
+     * Counts the number of events present on the page.
+     * Compares them to the current expected value.
+     */
     @Then("the page is reloaded correctly")
     public void thePageIsReloadedCorrectly() {
         int actualEventAmount = 0;
@@ -90,16 +110,18 @@ public class CalendarUpdatesStepDefs {
                 actualEventAmount += Integer.parseInt(el.getText());
             } catch (Exception ignore) {}
         }
-        assertEquals(expectedEventAmount + 1, actualEventAmount);
+        assertEquals(expectedEventAmount + eventDefaultLength + extraEvent, actualEventAmount);
     }
 
-
+    /**
+     * Switch the calendar and get the new month it is on.
+     */
     @And("Im not on the default calendar page")
     public void imNotOnTheDefaultCalendarPage() {
         webDriver.switchTo().window(tabs.get(1));
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.className("title")));
         webDriver.findElement(By.className("fc-next-button")).click();
-        expectedDate = webDriver.findElement(By.className("fc-dom-1")).getText();
+        expectedDate = webDriver.findElement(By.id("fc-dom-1")).getText();
 
         webDriver.switchTo().window(tabs.get(0));
     }
@@ -110,23 +132,27 @@ public class CalendarUpdatesStepDefs {
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("calendar")));
     }
 
+    /**
+     * Counts the number of events present on the page.
+     */
     @And("I know about the events on the page")
     public void iKnowAboutTheEventsOnThePage() {
         webDriver.switchTo().window(tabs.get(1));
-        int val = 0;
         for(WebElement el : webDriver.findElements(By.className("fc-event-title"))) {
             try {
 
-                val += Integer.parseInt(el.getText());
+                expectedEventAmount += Integer.parseInt(el.getText());
             } catch (Exception ignore) {}
         }
-        expectedEventAmount = val;
         webDriver.switchTo().window(tabs.get(0));
     }
 
+    /**
+     * Compares the current page month to the expected.
+     */
     @Then("I remain on the calendar same page.")
     public void iRemainOnTheCalendarSamePage() {
-        String actualDate = webDriver.findElement(By.className("fc-dom-1")).getText();
+        String actualDate = webDriver.findElement(By.id("fc-dom-1")).getText();
         assertEquals(expectedDate, actualDate);
     }
 }
