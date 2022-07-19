@@ -103,6 +103,9 @@ public class DetailsController {
         model.addAttribute("sprints", sprintList);
         model.addAttribute("events", eventList);
 
+        List<List<Event>> eventsForSprints = getAllEventsForAllSprints(sprintList);
+        model.addAttribute("eventsForSprints", eventsForSprints);
+
 
         // Runs if the reload was triggered by saving an event. Checks the notifications' creation time to see if 2 seconds has passed yet.
         int count = 1;
@@ -131,7 +134,7 @@ public class DetailsController {
             eventsToDisplay.remove(event);
         }
 
-        List<Milestone> milestoneList = milestoneService.getAllMilestonesOrdered();
+        List<Milestone> milestoneList = milestoneService.getAllEventsOrderedWithColour(sprintList);
         model.addAttribute("milestones", milestoneList);
 
         List<Deadline> deadlineList = deadlineService.getAllDeadlines();
@@ -155,16 +158,12 @@ public class DetailsController {
                 .map(ClaimDTO::getValue)
                 .orElse("NOT FOUND");
 
+        model.addAttribute("currentUserRole", role);
+
         model.addAttribute("newSprint", sprintService.getSuggestedSprint());
         model.addAttribute("sprintDateError", "");
 
-        /* Return the name of the Thymeleaf template */
-        // detects the role of the current user and returns appropriate page
-        if (role.equals("teacher") || role.equals("admin")) {
-            return "teacherProjectDetails";
-        } else {
-            return "userProjectDetails";
-        }
+        return "ProjectDetails";
     }
 
     /**
@@ -225,6 +224,22 @@ public class DetailsController {
             eventsToDisplay.remove(0);
         }
         return response;
+    }
+
+    /**
+     * Gets a list where each element is a list of events that is a part of the sprint from sprintList with the same
+     * index.
+     * @param sprintList List of sprints to get the events of.
+     * @return List of lists of events that are within their given sprint.
+     */
+    private List<List<Event>> getAllEventsForAllSprints(List<Sprint> sprintList) {
+        List<List<Event>> allEventsList = new ArrayList<>();
+
+        for (Sprint sprint : sprintList) {
+            allEventsList.add(eventService.getAllEventsOverlappingWithSprint(sprint));
+        }
+
+        return allEventsList;
     }
 
 }

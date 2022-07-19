@@ -4,10 +4,7 @@ import java.time.LocalTime;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import nz.ac.canterbury.seng302.portfolio.model.Deadline;
-import nz.ac.canterbury.seng302.portfolio.model.Event;
-import nz.ac.canterbury.seng302.portfolio.model.Project;
-import nz.ac.canterbury.seng302.portfolio.model.Sprint;
+import nz.ac.canterbury.seng302.portfolio.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

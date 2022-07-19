@@ -97,7 +97,7 @@ a {
     background-origin: padding-box, border-box;
 
     /* Other styles */
-    height: 150px;
+    /*height: 150px;*/
     width: 100%;
     padding: 10px;
     margin: 5px;
