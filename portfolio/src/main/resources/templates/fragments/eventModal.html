@@ -47,23 +47,13 @@
           <div class="mb-3">
             <label for="eventStartTime" class="col-form-label">Event Start Time:</label>
             <div class='input-group date' id='eventStartTimeInput'>
-              <input onkeydown="return checkTimeKeys(event)" onchange="validateModalDateTime('eventStartDate', 'eventEndDate', 'eventStartTime', 'eventEndTime', 'eventModalButton', 'eventDateTimeAlertBanner', 'eventDateTimeAlertBanner')" type="text" class="form-control" id="eventStartTime" th:name="eventStartTimeString">
-              <span class="input-group-append">
-                <span class="input-group-text bg-white">
-                    <em class="bi bi-clock"></em>
-                </span>
-              </span>
+              <input onkeydown="return checkTimeKeys(event)" onchange="validateModalDateTime('eventStartDate', 'eventEndDate', 'eventStartTime', 'eventEndTime', 'eventModalButton', 'eventDateTimeAlertBanner', 'eventDateTimeAlertBanner')" type="time" class="form-control" id="eventStartTime" th:name="eventStartTimeString">
             </div>
           </div>
           <div class="mb-3">
             <label for="eventEndTime" class="col-form-label">Event End Time:</label>
             <div class='input-group date' id='eventEndTimeInput'>
-              <input onkeydown="return checkTimeKeys(event)" onchange="validateModalDateTime('eventStartDate', 'eventEndDate', 'eventStartTime', 'eventEndTime', 'eventModalButton', 'eventDateTimeAlertBanner', 'eventDateTimeAlertBanner')" type="text" class="form-control" id="eventEndTime" th:name="eventEndTimeString">
-              <span class="input-group-append">
-                <span class="input-group-text bg-white">
-                    <em class="bi bi-clock"></em>
-                </span>
-              </span>
+              <input onkeydown="return checkTimeKeys(event)" onchange="validateModalDateTime('eventStartDate', 'eventEndDate', 'eventStartTime', 'eventEndTime', 'eventModalButton', 'eventDateTimeAlertBanner', 'eventDateTimeAlertBanner')" type="time" class="form-control" id="eventEndTime" th:name="eventEndTimeString">
             </div>
           </div>
         </div>
