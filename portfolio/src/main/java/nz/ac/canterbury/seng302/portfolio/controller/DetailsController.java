@@ -179,7 +179,7 @@ public class DetailsController {
      * @return returns an NotificationResponse that holds information about the event being updated.
      */
     @MessageMapping("/editing-artefact")
-    @SendTo("/test/portfolio/events/being-edited")
+    @SendTo("/test/portfolio/artefact/being-edited")
     public NotificationResponse updatingArtefact(NotificationMessage message) {
         int eventId = message.getArtefactId();
         String username = message.getUsername();
@@ -197,7 +197,7 @@ public class DetailsController {
      * @return Returns the message given.
      */
     @MessageMapping("/stop-editing-artefact")
-    @SendTo("/test/portfolio/events/stop-being-edited")
+    @SendTo("/test/portfolio/artefact/stop-being-edited")
     public NotificationResponse stopUpdatingArtefact(NotificationMessage message) {
         int eventId = message.getArtefactId();
         String username = message.getUsername();
@@ -215,7 +215,7 @@ public class DetailsController {
      * @return returns an NotificationResponse that holds information about the event being updated.
      */
     @MessageMapping("/saved-edited-artefact")
-    @SendTo("/test/portfolio/events/save-edit")
+    @SendTo("/test/portfolio/artefact/save-edit")
     public NotificationResponse savingUpdatedArtefact(NotificationMessage message) {
         int eventId = message.getArtefactId();
         String username = message.getUsername();
@@ -254,21 +254,8 @@ public class DetailsController {
 //     * @param message NotificationMessage that holds information about the event being updated
      */
     @MessageMapping("/delete-artefact")
-    @SendTo("/test/portfolio/events/delete-artefact")
+    @SendTo("/test/portfolio/artefact/delete-artefact")
     public NotificationResponse deleteArtefact(NotificationMessage ignore) {
-        //System.out.println("hellow");
-//        int eventId = message.getArtefactId();
-//        String username = message.getUsername();
-//        String firstName = message.getUserFirstName();
-//        String lastName = message.getUserLastName();
-//        long dateOfNotification = Date.from(Instant.now()).toInstant().getEpochSecond();
-//        String artefactType = message.getArtefactType();
-//        NotificationResponse response = new NotificationResponse(HtmlUtils.htmlEscape(message.getArtefactName()), eventId, username, firstName, lastName, dateOfNotification, artefactType);
-//        // Trigger reload and save the last event's information
-//        eventsToDisplay.add(response);
-//        while (eventsToDisplay.size() > 3) {
-//            eventsToDisplay.remove(0);
-//        }
         return new NotificationResponse();
     }
 

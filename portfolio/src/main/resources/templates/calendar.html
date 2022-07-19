@@ -240,11 +240,11 @@
         stompClient.connect({}, function (frame) {
             console.log('Connected: ' + frame);
 
-            stompClient.subscribe('/test/portfolio/events/save-edit', function (ignore) {
+            stompClient.subscribe('/test/portfolio/artefact/save-edit', function (ignore) {
                 refreshEvents();
 
             });
-            stompClient.subscribe('/test/portfolio/events/delete-artefact', function (ignore) {
+            stompClient.subscribe('/test/portfolio/artefact/delete-artefact', function (ignore) {
                 refreshEvents();
             });
         });

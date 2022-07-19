@@ -21,7 +21,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     @Override
     public void configureMessageBroker(MessageBrokerRegistry config) {
         // Sets up broker for endpoint
-        config.enableSimpleBroker("/test/portfolio/events");
+        config.enableSimpleBroker("/test/portfolio/artefact");
         // Sets up endpoint the application back end is listening to (Where the front-end sends to)
         config.setApplicationDestinationPrefixes("/test/portfolio/app");
     }
