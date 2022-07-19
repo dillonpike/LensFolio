@@ -133,6 +133,28 @@ public class EventService {
     }
 
     /**
+     * Gets a list of events that overlap with the given sprint in some way. This is to know what events should be
+     * displayed with this sprint. It does this by checking if either of the dates are within the sprints dates.
+     * @param sprint Sprint to check events against.
+     * @return List of events that overlap with the given sprint.
+     */
+    public List<Event> getAllEventsOverlappingWithSprint(Sprint sprint) {
+        ArrayList<Event> eventsList = (ArrayList<Event>) getAllEventsOrdered();
+        ArrayList<Event> eventsOverlapped = new ArrayList<>();
+
+        for (Event currentEvent : eventsList) {
+            if (validateEventStartDateInSprintDate(currentEvent, sprint) ||
+                    validateEventEndDateInSprintDate(currentEvent, sprint) ||
+                    // For events that start before and go after the sprint (would not be present with above checks).
+                    (currentEvent.getEventStartDate().before(sprint.getStartDate()) && currentEvent.getEventEndDate().after(sprint.getEndDate()))
+            ) {
+                eventsOverlapped.add(currentEvent);
+            }
+        }
+        return eventsOverlapped;
+    }
+
+    /**
      * Validate if particular event's start date is in sprint date range
      * @param event The updated event
      * @param sprint The sprint to compare with
@@ -151,27 +173,5 @@ public class EventService {
      */
     public boolean validateEventEndDateInSprintDate(Event event, Sprint sprint) {
         return event.getEventEndDate().compareTo(sprint.getStartDate()) >= 0 && event.getEventEndDate().compareTo(sprint.getEndDate()) <= 0;
-    }
-
-    /**
-     * Gets a list of events that overlap with the given sprint in some way. This is to know what events should be
-     * displayed with this sprint. It does this by checking if either of the dates are within the sprints dates.
-     * @param sprint Sprint to check events against.
-     * @return List of events that overlap with the given sprint.
-     */
-    public List<Event> getAllEventsOverlappingWithSprint(Sprint sprint) {
-        ArrayList<Event> eventsList = (ArrayList<Event>) getAllEventsOrdered();
-        ArrayList<Event> eventsOverlapped = new ArrayList<>();
-
-        for (Event currentEvent : eventsList) {
-            if (dateValidationService.validateEventStartDateInSprintDate(currentEvent, sprint) ||
-                    dateValidationService.validateEventEndDateInSprintDate(currentEvent, sprint) ||
-                    // For events that start before and go after the sprint (would not be present with above checks).
-                    (currentEvent.getEventStartDate().before(sprint.getStartDate()) && currentEvent.getEventEndDate().after(sprint.getEndDate()))
-            ) {
-                eventsOverlapped.add(currentEvent);
-            }
-        }
-        return eventsOverlapped;
     }
 }
