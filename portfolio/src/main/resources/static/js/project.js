@@ -204,3 +204,54 @@ function deadlineModalSetup() {
         $('#' + modalButton.getAttribute("id")).prop('hidden', false);
     })
 }
+
+
+/**
+ * Customises the milestone modal attributes with depending on what milestone it should display and whether it's being
+ * used for adding or editing a milestone.
+ */
+function eventModalSetup() {
+    const eventModal = document.getElementById('eventModal')
+    eventModal.addEventListener('show.bs.modal', function (event) {
+        // Button that triggered the modal
+        const button = event.relatedTarget
+
+        // Extract info from data-bs-* attributes
+        const events = JSON.parse(button.getAttribute('data-bs-event'))
+
+        const type = button.getAttribute('data-bs-type')
+        // Update the modal's content.
+        const modalTitle = eventModal.querySelector('.modal-title')
+        const modalBodyInputs = eventModal.querySelectorAll('.modal-body input')
+        const modalButton = eventModal.querySelector('.modal-footer button')
+        const modalForm = eventModal.querySelector('form')
+
+        if (type === 'add') {
+            modalTitle.innerText = 'Add Event'
+            modalButton.innerHTML = 'Add Event'
+            modalForm.action = 'add-event'
+        } else {
+            modalTitle.innerText = 'Edit Event'
+            modalButton.innerHTML = 'Save Event'
+            modalForm.action = `edit-event/${events.id}`
+            modalForm.setAttribute('event', events)
+        }
+
+        modalForm.setAttribute('object', events);
+
+
+        modalBodyInputs[0].value = events.eventName
+        $('#eventStartDateInput').datepicker('setDate', events.startDateString)
+        $('#eventEndDateInput').datepicker('setDate', events.endDateString)
+
+        modalBodyInputs[3].value = events.startTimeString.substring(0, events.startTimeString.length-3);
+        modalBodyInputs[4].value = events.endTimeString.substring(0, events.endTimeString.length-3);
+
+
+        // Initial run of validation functions in case initial values are invalid
+        validateModalName('eventName', 'eventAlertBanner', 'eventAlertMessage')
+        validateModalDateTime('eventStartDate', 'eventEndDate', 'eventStartTime', 'eventEndTime','eventModalButton', 'eventDateTimeAlertBanner', 'eventDateTimeAlertMessage')
+        updateCharsLeft('eventName', 'eventNameLength', 50)
+        $('#' + modalButton.getAttribute("id")).prop('hidden', false);
+    })
+}

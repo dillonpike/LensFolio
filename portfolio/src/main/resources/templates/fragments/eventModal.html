@@ -1,0 +1,99 @@
+<div th:fragment="eventModal" class="modal fade" id="eventModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLongTitle">Add event</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <form method="post" id="eventForm" onsubmit="validateEvent(); return false;" th:action="@{add-event}">
+        <div class="modal-body">
+          <div class="alert alert-danger alert-dismissible fade show" role="alert" id="eventAlertBanner" hidden>
+            <span id="eventAlertMessage" data-test-id="alertMessage"></span>
+            <button type="button" class="btn-close" onclick="document.getElementById('eventAlertBanner').hidden = true" aria-label="Close"></button>
+          </div> 
+          <div class="mb-3">
+            <label for="eventName" class="col-form-label">Event Name:</label>
+            <input onkeyup="updateCharsLeft('eventName', 'eventNameLength', 50)" maxlength="50" type="text" class="form-control" id="eventName" name="eventName">
+            <div class="name-length-message">
+              <span id="eventNameLength"></span>
+            </div>
+          </div>
+          <div class="alert alert-danger alert-dismissible fade show" role="alert" id="eventDateTimeAlertBanner" hidden>
+            <span id="eventDateTimeAlertMessage" data-test-id="alertMessage"></span>
+            <button type="button" class="btn-close" onclick="document.getElementById('eventDateTimeAlertBanner').hidden = true" aria-label="Close"></button>
+          </div>
+          <div class="mb-3">
+            <label for="eventStartDate" class="col-form-label">Event Start Date:</label>
+            <div class="input-group date" id="eventStartDateInput">
+              <input onkeydown="return checkDateKeys(event)" onchange="validateModalDateTime('eventStartDate', 'eventEndDate', 'eventStartTime', 'eventEndTime', 'eventModalButton', 'eventDateTimeAlertBanner', 'eventDateTimeAlertBanner')" type="text" class="form-control" id="eventStartDate" th:name="startDateString">
+              <span class="input-group-append">
+                  <span class="input-group-text bg-white">
+                      <em class="bi bi-calendar"></em>
+                  </span>
+              </span>
+            </div>
+          </div>
+          <div class="mb-3">
+            <label for="eventEndDate" class="col-form-label">Event End Date:</label>
+            <div class="input-group date" id="eventEndDateInput">
+              <input onkeydown="return checkDateKeys(event)" onchange="validateModalDateTime('eventStartDate', 'eventEndDate', 'eventStartTime', 'eventEndTime', 'eventModalButton', 'eventDateTimeAlertBanner', 'eventDateTimeAlertBanner')" type="text" class="form-control" id="eventEndDate" th:name="endDateString">
+              <span class="input-group-append">
+                  <span class="input-group-text bg-white">
+                      <em class="bi bi-calendar"></em>
+                  </span>
+              </span>
+            </div>
+          </div>
+          <div class="mb-3">
+            <label for="eventStartTime" class="col-form-label">Event Start Time:</label>
+            <div class='input-group date' id='eventStartTimeInput'>
+              <input onkeydown="return checkTimeKeys(event)" onchange="validateModalDateTime('eventStartDate', 'eventEndDate', 'eventStartTime', 'eventEndTime', 'eventModalButton', 'eventDateTimeAlertBanner', 'eventDateTimeAlertBanner')" type="time" class="form-control" id="eventStartTime" th:name="startTimeString">
+            </div>
+          </div>
+          <div class="mb-3">
+            <label for="eventEndTime" class="col-form-label">Event End Time:</label>
+            <div class='input-group date' id='eventEndTimeInput'>
+              <input onkeydown="return checkTimeKeys(event)" onchange="validateModalDateTime('eventStartDate', 'eventEndDate', 'eventStartTime', 'eventEndTime', 'eventModalButton', 'eventDateTimeAlertBanner', 'eventDateTimeAlertBanner')" type="time" class="form-control" id="eventEndTime" th:name="endTimeString">
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-primary" id="eventModalButton" type="submit">Add event</button>
+        </div>
+      </form>
+    </div>
+  </div>
+  <script type="text/javascript">
+
+    /**
+     * Validates the currently entered information for the event and submits the form if it's valid.
+     */
+    async function validateEvent() {
+      if (validateModalDateTime('eventStartDate', 'eventEndDate', 'eventStartTime', 'eventEndTime', 'submitEventButton', 'eventDateTimeAlertBanner', 'eventDateTimeAlertMessage') &&
+              validateModalName('eventName', 'eventAlertBanner', 'eventAlertMessage')) {
+        document.getElementById('eventForm').submit();
+      }
+    }
+
+    // fills in the date pickers
+    $(function() {
+      $('#eventStartDateInput').datepicker({
+        format: 'dd/M/yyyy',
+        todayHighlight: true,
+        todayBtn: true,
+        clearBtn: true,
+        orientation: 'bottom'
+      });
+    });
+
+    $(function() {
+      $('#eventEndDateInput').datepicker({
+        format: 'dd/M/yyyy',
+        todayHighlight: true,
+        todayBtn: true,
+        clearBtn: true,
+        orientation: 'bottom'
+      });
+    });
+  </script>
+</div>

@@ -83,7 +83,7 @@
                         </button>
                     </li>
                     <li>
-                        <button id="addEventButton" class="dropdown-item" type="button">
+                        <button id="addEventButton" class="dropdown-item" type="button" data-bs-toggle="modal" data-bs-target="#eventModal" th:data-bs-event="${newEvent.toJSONString()}" data-bs-type="add">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-calendar-event" viewBox="0 0 16 16">
                                 <path d="M11 6.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1z"/>
                                 <path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5zM1 4v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4H1z"/>
@@ -345,12 +345,11 @@
 <div id="projectModal" th:replace="fragments/projectModal :: projectModal"></div>
 <div id="milestoneModal" th:replace="fragments/milestoneModal :: milestoneModal"></div>
 <div id="deadlineModal" th:replace="fragments/deadlineModal :: deadlineModal"></div>
+<div id="eventModal" th:replace="fragments/eventModal :: eventModal"></div>
 <div th:replace="fragments/deleteModalProject :: deleteModal"></div>
 
 
-</body>
-
-<script src="js/project.js"></script>
+<script src="../js/project.js"></script>
 <script src="js/detailsLive.js"></script>
 
 <script th:inline="javascript">
@@ -547,6 +546,35 @@
         }
     }
 
+    // Check if the date of the item that the user inputted is within the project dates range
+    // Show error banner with error message and disable the submit button if the inputted date is outside the project dates range
+    // @param elementId the ID of the date input HTML element
+    // @param submitElementId the ID of the submit button on the modal
+    function validateModalDateTime(dateStartId, dateEndId, timeStartId, timeEndId,  submitElementId, alertBanner, alertMessage) {
+        const dateStartInput = new Date(`${document.getElementById(dateStartId).value}  ${document.getElementById(timeStartId).value} :00`)
+        const dateEndInput = new Date(`${document.getElementById(dateEndId).value}  ${document.getElementById(timeEndId).value} :00`)
+
+
+        if (dateStartInput >= dateEndInput) {
+            $('#' + submitElementId).prop('disabled', true);
+            document.getElementById(alertBanner).hidden = false;
+            document.getElementById(alertMessage).innerText = "The start date must be before the end date.";
+            return false;
+        }
+
+        if (dateStartInput < new Date(projectStartDate) || dateEndInput > new Date(projectEndDate)) {
+            $('#' + submitElementId).prop('disabled', true);
+            document.getElementById(alertBanner).hidden = false;
+            document.getElementById(alertMessage).innerText = "Dates must be within the project's date range (" +
+                projectStartDate + " - " + projectEndDate + ").";
+            return false;
+        } else {
+            $('#' + submitElementId).prop('disabled', false);
+            document.getElementById(alertBanner).hidden = true;
+            return true;
+        }
+    }
+
     function validateModalTime(elementId, submitElementId, alertBanner, alertMessage) {
         const timeInputStr = document.getElementById(elementId).value;
 
@@ -569,6 +597,10 @@
     deleteModalSetup()
     validateModalDate("milestoneDate", "submitMilestoneButton")
     validateModalDate("deadlineDate", "submitDeadlineButton")
+    validateModalDate("eventStartDate", "submitEventButton")
+    validateModalDate("eventEndDate", "submitEventButton")
 </script>
 
+
+</body>
 </html>

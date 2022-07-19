@@ -17,6 +17,7 @@ import org.springframework.web.util.HtmlUtils;
 
 import java.time.Instant;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -148,6 +149,11 @@ public class DetailsController {
         model.addAttribute("newMilestone", new Milestone(0, "", new Date()));
 
         model.addAttribute("newDeadline", new Deadline(0, "", new Date()));
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(new Date());
+        calendar.add(Calendar.DATE, 3);
+        model.addAttribute("newEvent", new Event(0, "", new Date(), calendar.getTime(), LocalTime.now(), LocalTime.now()));
 
         String role = principal.getClaimsList().stream()
                 .filter(claim -> claim.getType().equals("role"))
