@@ -4,9 +4,7 @@ import java.time.LocalTime;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import nz.ac.canterbury.seng302.portfolio.model.Event;
-import nz.ac.canterbury.seng302.portfolio.model.Project;
-import nz.ac.canterbury.seng302.portfolio.model.Sprint;
+import nz.ac.canterbury.seng302.portfolio.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -205,25 +203,5 @@ public class DateValidationService {
         Date today = new Date();
         long diffInMs = today.getTime() - date.getTime();
         return TimeUnit.DAYS.convert(diffInMs, TimeUnit.MILLISECONDS);
-    }
-
-    /**
-     * Validate if particular event's start date is in sprint date range
-     * @param event The updated event
-     * @param sprint The sprint to compare with
-     * @return True if event start date is in sprint date range
-     */
-    public boolean validateEventStartDateInSprintDate(Event event, Sprint sprint) {
-        return event.getEventStartDate().compareTo(sprint.getStartDate()) >= 0 && event.getEventStartDate().compareTo(sprint.getEndDate()) <= 0;
-    }
-
-    /**
-     * Validate if particular event's end date is in sprint date
-     * @param event The updated event
-     * @param sprint The sprint to compare with
-     * @return True if event end date is in sprint date range
-     */
-    public boolean validateEventEndDateInSprintDate(Event event, Sprint sprint) {
-        return event.getEventEndDate().compareTo(sprint.getStartDate()) >= 0 && event.getEventEndDate().compareTo(sprint.getEndDate()) <= 0;
     }
 }

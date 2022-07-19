@@ -20,9 +20,6 @@ public class EventService {
     @Autowired
     private EventRepository eventRepository;
 
-    @Autowired
-    private DateValidationService dateValidationService;
-
     /**
      * Get list of all events
      * @return List of events
@@ -120,10 +117,10 @@ public class EventService {
             currentEvent.setEndDateColour(null);
 
             for (Sprint sprint : sprints) {
-                if (dateValidationService.validateEventStartDateInSprintDate(currentEvent, sprint)) {
+                if (validateEventStartDateInSprintDate(currentEvent, sprint)) {
                     currentEvent.setStartDateColour(sprint.getColour());
                 }
-                if (dateValidationService.validateEventEndDateInSprintDate(currentEvent, sprint)) {
+                if (validateEventEndDateInSprintDate(currentEvent, sprint)) {
                     currentEvent.setEndDateColour(sprint.getColour());
                 }
             }
@@ -143,8 +140,8 @@ public class EventService {
         ArrayList<Event> eventsOverlapped = new ArrayList<>();
 
         for (Event currentEvent : eventsList) {
-            if (dateValidationService.validateEventStartDateInSprintDate(currentEvent, sprint) ||
-                    dateValidationService.validateEventEndDateInSprintDate(currentEvent, sprint) ||
+            if (validateEventStartDateInSprintDate(currentEvent, sprint) ||
+                    validateEventEndDateInSprintDate(currentEvent, sprint) ||
                     // For events that start before and go after the sprint (would not be present with above checks).
                     (currentEvent.getEventStartDate().before(sprint.getStartDate()) && currentEvent.getEventEndDate().after(sprint.getEndDate()))
             ) {
@@ -152,5 +149,26 @@ public class EventService {
             }
         }
         return eventsOverlapped;
+    }
+
+    /**
+     * Validate if particular event's start date is in sprint date range
+     * @param event The updated event
+     * @param sprint The sprint to compare with
+     * @return True if event start date is in sprint date range
+     */
+    public boolean validateEventStartDateInSprintDate(Event event, Sprint sprint) {
+        return event.getEventStartDate().compareTo(sprint.getStartDate()) >= 0 && event.getEventStartDate().compareTo(sprint.getEndDate()) <= 0;
+    }
+
+
+    /**
+     * Validate if particular event's end date is in sprint date
+     * @param event The updated event
+     * @param sprint The sprint to compare with
+     * @return True if event end date is in sprint date range
+     */
+    public boolean validateEventEndDateInSprintDate(Event event, Sprint sprint) {
+        return event.getEventEndDate().compareTo(sprint.getStartDate()) >= 0 && event.getEventEndDate().compareTo(sprint.getEndDate()) <= 0;
     }
 }
