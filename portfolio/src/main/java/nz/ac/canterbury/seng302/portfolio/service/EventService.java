@@ -20,9 +20,6 @@ public class EventService {
     @Autowired
     private EventRepository eventRepository;
 
-    @Autowired
-    private DateValidationService dateValidationService;
-
     /**
      * Get list of all events
      * @return List of events
