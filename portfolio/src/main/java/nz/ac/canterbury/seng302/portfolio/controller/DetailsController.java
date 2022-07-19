@@ -107,6 +107,8 @@ public class DetailsController {
         List<List<Event>> eventsForSprints = getAllEventsForAllSprints(sprintList);
         model.addAttribute("eventsForSprints", eventsForSprints);
 
+        List<List<Milestone>> milestonesForSprints = getAllMilestonesForAllSprints(sprintList);
+        model.addAttribute("milestonesForSprints", milestonesForSprints);
 
         // Runs if the reload was triggered by saving an event. Checks the notifications' creation time to see if 2 seconds has passed yet.
         int count = 1;
@@ -246,6 +248,22 @@ public class DetailsController {
         }
 
         return allEventsList;
+    }
+
+    /**
+     * Gets a list where each element is a list of milestones that is a part of the sprint from sprintList with the same
+     * index.
+     * @param sprintList List of sprints to get the milestones of.
+     * @return List of lists of milestones that are within their given sprint.
+     */
+    private List<List<Milestone>> getAllMilestonesForAllSprints(List<Sprint> sprintList) {
+        List<List<Milestone>> allMilestonesList = new ArrayList<>();
+
+        for (Sprint sprint : sprintList) {
+            allMilestonesList.add(milestoneService.getAllMilestonesOverlappingWithSprint(sprint));
+        }
+
+        return allMilestonesList;
     }
 
 }
