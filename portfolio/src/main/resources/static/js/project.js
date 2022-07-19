@@ -150,7 +150,6 @@ function milestoneModalSetup() {
         $('#milestoneDateInput').datepicker('setDate', milestone.milestoneDateString)
 
         // Initial run of validation functions in case initial values are invalid
-        validateModalName('milestoneName', 'milestoneModalButton', 'milestoneAlertBanner', 'milestoneAlertMessage')
         validateModalDate('milestoneDate', 'milestoneModalButton', 'milestoneDateAlertBanner', 'milestoneDateAlertMessage')
         updateCharsLeft('milestoneName', 'milestoneNameLength', 50)
         $('#' + modalButton.getAttribute("id")).prop('hidden', false);
@@ -194,7 +193,6 @@ function deadlineModalSetup() {
         modalBodyInputs[2].value = deadline.deadlineTimeString;
 
         // Initial run of validation functions in case initial values are invalid
-        validateModalName('deadlineName', 'deadlineModalButton', 'deadlineAlertBanner', 'deadlineAlertMessage')
         validateModalDateTime('deadlineDate', 'deadlineTime', 'deadlineModalButton', 'deadlineDateAlertBanner', 'deadlineDateAlertMessage')
         updateCharsLeft('deadlineName', 'deadlineNameLength', 50)
         $('#' + modalButton.getAttribute("id")).prop('hidden', false);
@@ -245,7 +243,6 @@ function eventModalSetup() {
 
 
         // Initial run of validation functions in case initial values are invalid
-        validateModalName('eventName', 'eventAlertBanner', 'eventAlertMessage')
         validateModalDateTimeRange('eventStartDate', 'eventEndDate', 'eventStartTime', 'eventEndTime','eventModalButton', 'eventDateTimeAlertBanner', 'eventDateTimeAlertMessage')
         updateCharsLeft('eventName', 'eventNameLength', 50)
         $('#' + modalButton.getAttribute("id")).prop('hidden', false);

@@ -622,7 +622,6 @@
     // @param formId the ID of the form which contains the input HTML element
     function validateModalName(elementId, alertBanner, alertMessage) {
         const nameInput = document.getElementById(elementId).value;
-
         if (nameInput === "") {
             document.getElementById(alertBanner).hidden = false;
             document.getElementById(alertMessage).innerText = "Name cannot be empty!";
