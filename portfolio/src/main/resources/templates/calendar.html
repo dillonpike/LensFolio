@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>Calendar</title>
     <link href="css/calendar.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.5/dist/umd/popper.min.js" integrity="sha384-Xe+8cL9oJa6tN/veChSP7q+mnSPaj5Bcu9mPX5F5xIGE0DVittaqT5lorf0EI7Vk" crossorigin="anonymous"></script>
     <link href="webjars/fullcalendar/5.10.2/main.min.css" rel="stylesheet">
     <link href="webjars/fullcalendar__bootstrap5/5.10.2/main.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
@@ -79,6 +80,11 @@
                     info.event.setProp("classNames", "event-border");
                 },
                 eventClick: function(info) {
+                    //event modal display
+                    $('#eventsModal .modal-body').html(info.event.extendedProps.description);
+                    $('#eventsModal .modal-title').text(info.event.extendedProps.type + "s");
+                    $('#eventsModal').modal('show');
+
                     // change the border color
                     let newEvent = calendar.getEventById(info.event.id);
                     if (newEvent.extendedProps.type === 'Sprint') {
@@ -178,6 +184,20 @@
         <div style="display: flex; justify-content: space-between;flex-direction: row; align-items: center;">
             <strong id="alertBannerText"></strong>
             <button id="removeUpdateAlert" type="button" class="btn btn-outline-success" onclick="removeAlertBanner()">X</button>
+        </div>
+    </div>
+    <div class="modal fade" id="eventsModal" tabindex="-1" role="dialog" aria-labelledby="eventsModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel"></h5>
+                    <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                </div>
+            </div>
         </div>
     </div>
 </div>

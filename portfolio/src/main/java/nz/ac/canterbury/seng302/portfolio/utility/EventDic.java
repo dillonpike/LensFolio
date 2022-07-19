@@ -46,18 +46,19 @@ public class EventDic {
         int amount = 1;
         // Uses EventTypes costume hashCode() to hash based on type and date.
         String eventData = datesToEvents.get(new EventTypes("Deadline", deadline.getDeadlineDateString()));
-
+        String description = deadline.getDeadlineName();
         StringBuilder eventObject = new StringBuilder();
         if (eventData == null) {
-            eventObject.append("{title: '").append(amount).append("' , start: '").append(deadline.getDeadlineDate()).append("', type: 'Deadline").append("'},");
+            eventObject.append("{title: '").append(amount).append("' , start: '").append(deadline.getDeadlineDate()).append("', type: 'Deadline").append("', description: '").append(description).append("'},");
         } else {
             try {
                 amount += Integer.parseInt(eventData.split("'")[1]);
+                description = eventData.split("'")[7] + "<br>" + deadline.getDeadlineName();
             } catch (Exception ignore) {
                 // Current uses -1 to represent error. May want to change this to a thrown error.
                 amount = -1;
             }
-            eventObject.append("{title: '").append(amount).append("' , start: '").append(deadline.getDeadlineDate()).append("', type: 'Deadline").append("'},");
+            eventObject.append("{title: '").append(amount).append("' , start: '").append(deadline.getDeadlineDate()).append("', type: 'Deadline").append("', description: '").append(description).append("'},");
         }
         datesToEvents.put(new EventTypes("Deadline", deadline.getDeadlineDateString()), eventObject.toString());
     }
@@ -84,17 +85,19 @@ public class EventDic {
             Instant date = current.getTime().toInstant();
             // Uses EventTypes costume hashCode() to hash based on type and date.
             String eventData = datesToEvents.get(new EventTypes("Event", Project.dateToString(Date.from(date))));
+            String description = event.getEventName();
             StringBuilder eventObject = new StringBuilder();
             if (eventData == null) {
-                eventObject.append("{title: '").append(amount).append("', start: '").append(date).append("', type: 'Event").append("'},");
+                eventObject.append("{title: '").append(amount).append("', start: '").append(date).append("', type: 'Event").append("', description: '").append(description).append("'},");
             } else {
                 try {
                     amount += Integer.parseInt(eventData.split("'")[1]);
+                    description = eventData.split("'")[7] + " <br> " + event.getEventName();
                 } catch (Exception ignore) {
                     // Current uses -1 to represent error. May want to change this to a thrown error.
                     amount = -1;
                 }
-                eventObject.append("{title: '").append(amount).append("', start: '").append(date).append("', type: 'Event").append("'},");
+                eventObject.append("{title: '").append(amount).append("', start: '").append(date).append("', type: 'Event").append("', description: '").append(description).append("'},");
             }
             datesToEvents.put(new EventTypes("Event", Project.dateToString(Date.from(date))), eventObject.toString());
             current.add(Calendar.DATE, 1);
