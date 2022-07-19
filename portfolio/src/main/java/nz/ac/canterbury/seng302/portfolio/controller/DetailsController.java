@@ -227,4 +227,27 @@ public class DetailsController {
         return response;
     }
 
+    /**
+     * This method maps @MessageMapping endpoint to the @SendTo endpoint. Called when something is sent to
+     * the MessageMapping endpoint. This method also triggers some sort of re-render of the events.
+//     * @param message NotificationMessage that holds information about the event being updated
+     */
+    @MessageMapping("/delete-artefact")
+    @SendTo("/test/portfolio/events/delete-artefact")
+    public void deleteArtefact(NotificationMessage ignore) {
+//        int eventId = message.getArtefactId();
+//        String username = message.getUsername();
+//        String firstName = message.getUserFirstName();
+//        String lastName = message.getUserLastName();
+//        long dateOfNotification = Date.from(Instant.now()).toInstant().getEpochSecond();
+//        String artefactType = message.getArtefactType();
+//        NotificationResponse response = new NotificationResponse(HtmlUtils.htmlEscape(message.getArtefactName()), eventId, username, firstName, lastName, dateOfNotification, artefactType);
+//        // Trigger reload and save the last event's information
+//        eventsToDisplay.add(response);
+//        while (eventsToDisplay.size() > 3) {
+//            eventsToDisplay.remove(0);
+//        }
+//        return response;
+    }
+
 }

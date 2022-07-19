@@ -226,7 +226,7 @@
                                                             </li>
                                                             <li>
                                                                 <a class="button-link" data-bs-toggle="modal" data-bs-target="#deleteModal" th:data-bs-id="${event.id}" th:data-bs-name="${event.eventName}" data-bs-type="event">
-                                                                    <button class="dropdown-item" type="button">
+                                                                    <button class="dropdown-item delete-artefact-button" type="button">
                                                                         <span class='bi bi-trash' style='color: red'></span> <i style='color: red'>Delete</i>
                                                                     </button>
                                                                 </a>
@@ -274,7 +274,7 @@
                                                             </li>
                                                             <li>
                                                                 <a class="button-link" data-bs-toggle="modal" data-bs-target="#deleteModal" th:data-bs-id="${milestone.id}" th:data-bs-name="${milestone.milestoneName}" data-bs-type="milestone">
-                                                                    <button class="dropdown-item" type="button">
+                                                                    <button class="dropdown-item delete-artefact-button" type="button">
                                                                         <span class='bi bi-trash' style='color: red'></span> <i style='color: red'>Delete</i>
                                                                     </button>
                                                                 </a>
@@ -316,7 +316,7 @@
                                                         </li>
                                                         <li>
                                                             <a class="button-link" data-bs-toggle="modal" data-bs-target="#deleteModal" th:data-bs-id="${deadline.id}" th:data-bs-name="${deadline.deadlineName}" data-bs-type="deadline">
-                                                                <button class="dropdown-item" type="button">
+                                                                <button class="dropdown-item delete-artefact-button" type="button">
                                                                     <span class='bi bi-trash' style='color: red'></span> <i style='color: red'>Delete</i>
                                                                 </button>
                                                             </a>
@@ -339,7 +339,7 @@
             </div>
         </div>
     </div>
-
+    </div>
 <!-- Modals -->
 <div id="sprintModal" th:replace="fragments/sprintModal :: sprintModal"></div>
 <div id="projectModal" th:replace="fragments/projectModal :: projectModal"></div>
@@ -399,6 +399,13 @@
         }));
     }
 
+    /**
+     * Sends the message that an artefact(milestone, event, deadline) is deleted
+     */
+    function deleteReload() {
+        stompClient.send("/test/portfolio/app/delete-artefact", {}, JSON.stringify({}));
+    }
+
     let userId = [[${userId}]];
     let userFirstName = [[${userFirstName}]];
     let userLastName = [[${userLastName}]];
@@ -451,6 +458,10 @@
         if(actionType === 'edit-milestone'){
             sendEmpty(milestoneName, milestoneId,userId, userFirstName, userLastName, username, "Milestone");
         }
+    });
+
+    $(".delete-artefact-button").on('click', function (ignore) {
+        deleteReload();
     });
 
     /**
