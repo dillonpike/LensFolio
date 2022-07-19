@@ -177,8 +177,7 @@
                                         <div th:each="milestone, meta: ${milestonesForSprints.get(meta.index)}">
                                             <div class="artefact-info-block">
                                                 <div class="artefact-title" th:text="${milestone.getMilestoneName()}"/>
-                                                <div class="artefact-date event-start-date" th:text="Date + ': ' + ${milestone.getMilestoneDateString()}" />
-                                                <!--                                                         th:style="color + ':' + ${milestone.getMilestoneDateColour()}"/>-->
+                                                <div class="artefact-date event-start-date" th:text="Date + ': ' + ${milestone.getMilestoneDateString()}" th:style="color + ':' + ${milestone.getColour()}"/>
                                             </div>
                                         </div>
                                     </div>
