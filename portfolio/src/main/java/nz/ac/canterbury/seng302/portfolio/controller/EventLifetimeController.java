@@ -20,11 +20,6 @@ public class EventLifetimeController {
     @Autowired
     private EventService eventService;
 
-    @Autowired
-    private ProjectService projectService;
-
-    @Autowired
-    private DateValidationService dateValidationService;
 
     /**
      * Tries to save the new event to the database
@@ -35,6 +30,10 @@ public class EventLifetimeController {
             @ModelAttribute("event") Event event,
             Model model
     ) {
+        event.setStartDateString(event.getStartDateString());
+        event.setEndDateString(event.getEndDateString());
+        event.setStartTimeString(event.getStartTimeString());
+        event.setEndTimeString(event.getEndTimeString());
         eventService.addEvent(event);
         return "redirect:/details";
     }
