@@ -17,6 +17,7 @@ import org.springframework.web.util.HtmlUtils;
 
 import java.time.Instant;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -64,7 +65,7 @@ public class DetailsController {
      *
      * @param principal
      * @param model Parameters sent to thymeleaf template to be rendered into HTML
-     * @return TeacherProjectDetails or userProjectDetails which is dependent on user's role
+     * @return projectDetails page
      * @throws Exception
      */
     @GetMapping("/details")
@@ -108,6 +109,8 @@ public class DetailsController {
         model.addAttribute("eventsForSprints", eventsForSprints);
         model.addAttribute("deadlinesForSprints", deadlinesForSprints);
 
+        List<List<Milestone>> milestonesForSprints = getAllMilestonesForAllSprints(sprintList);
+        model.addAttribute("milestonesForSprints", milestonesForSprints);
 
         // Runs if the reload was triggered by saving an event. Checks the notifications' creation time to see if 2 seconds has passed yet.
         int count = 1;
@@ -154,6 +157,11 @@ public class DetailsController {
 
         model.addAttribute("newDeadline", new Deadline(0, "", new Date()));
 
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(new Date());
+        calendar.add(Calendar.DATE, 3);
+        model.addAttribute("newEvent", new Event(0, "", new Date(), calendar.getTime(), LocalTime.now(), LocalTime.now()));
+
         String role = principal.getClaimsList().stream()
                 .filter(claim -> claim.getType().equals("role"))
                 .findFirst()
@@ -165,7 +173,7 @@ public class DetailsController {
         model.addAttribute("newSprint", sprintService.getSuggestedSprint());
         model.addAttribute("sprintDateError", "");
 
-        return "ProjectDetails";
+        return "projectDetails";
     }
 
     /**
@@ -252,6 +260,22 @@ public class DetailsController {
         }
 
         return allDeadlinesList;
+    }
+
+    /**
+     * Gets a list where each element is a list of milestones that is a part of the sprint from sprintList with the same
+     * index.
+     * @param sprintList List of sprints to get the milestones of.
+     * @return List of lists of milestones that are within their given sprint.
+     */
+    private List<List<Milestone>> getAllMilestonesForAllSprints(List<Sprint> sprintList) {
+        List<List<Milestone>> allMilestonesList = new ArrayList<>();
+
+        for (Sprint sprint : sprintList) {
+            allMilestonesList.add(milestoneService.getAllMilestonesOverlappingWithSprint(sprint));
+        }
+
+        return allMilestonesList;
     }
 
 }
