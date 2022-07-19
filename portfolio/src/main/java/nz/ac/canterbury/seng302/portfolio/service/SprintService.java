@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.text.SimpleDateFormat;
+import java.util.*;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.util.Calendar;
@@ -199,5 +200,29 @@ public class SprintService {
             }
         }
         return blankSprint;
+    }
+
+    /***
+     * Function to get all sprints in chronological order,
+     * add colour for each sprint and save to repository
+     *
+     * @return sprints in chronological order
+     */
+    public List<Sprint> getAllSprintsOrderedWithColour() {
+        List<Sprint> sprints = getAllSprintsOrdered();
+        ArrayList<String> colours = new ArrayList<>(Arrays.asList("#5897fc", "#a758fc", "#fc58c3", "#9e1212", "#c65102", "#d5b60a", "#004400", " #11887b"));
+        int colIndex = 0;
+
+        for (Sprint sprint : sprints) {
+            sprint.setColour(colours.get(colIndex));
+            repository.save(sprint);
+
+            if (colIndex == (colours.size() - 1)) { // List max
+                colIndex = 0;
+            } else {
+                colIndex++;
+            }
+        }
+        return getAllSprintsOrdered();
     }
 }

@@ -2,6 +2,7 @@ package nz.ac.canterbury.seng302.portfolio.model;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sun.istack.NotNull;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -108,29 +109,38 @@ public class Deadline {
 
     /**
      * Gets the day of the month of the deadline
-     * @return day of the month of the deadline
+     * @return day of the month of the deadline. 0 if deadlineDate is null.
      */
     public int getDeadlineDay() {
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd");
-        return Integer.parseInt(dateFormat.format(deadlineDate));
+        if (deadlineDate != null) {
+            return Integer.parseInt(dateFormat.format(deadlineDate));
+        }
+        return 0;
     }
 
     /**
      * Gets the month of the year of the deadline
-     * @return month of the year of the deadline
+     * @return month of the year of the deadline. Null if deadlineDate is null.
      */
     public String getDeadlineMonth() {
         SimpleDateFormat dateFormat = new SimpleDateFormat("MMM");
-        return (dateFormat.format(deadlineDate));
+        if (deadlineDate != null) {
+            return (dateFormat.format(deadlineDate));
+        }
+        return null;
     }
 
     /**
      * Returns a string representation of the time of the deadline
-     * @return string representation of the time of the deadline
+     * @return string representation of the time of the deadline. Null if deadlineDate is null.
      */
     public String getDeadlineTimeString()  {
         SimpleDateFormat dateFormat = new SimpleDateFormat("h:mm a");
-        return (dateFormat.format(deadlineDate));
+        if (deadlineDate != null) {
+            return (dateFormat.format(deadlineDate));
+        }
+        return null;
     }
 
     /**
@@ -138,10 +148,13 @@ public class Deadline {
      * @param time Time in string format, formatted as: "h:mm a" (e.g. 12:37 am).
      * @throws ParseException Thrown if time parameter is given in the wrong format.
      */
-    public void setDeadlineTimeString(String time) throws ParseException {
+    public void setDeadlineTimeString(@NotNull String time) throws ParseException {
         SimpleDateFormat timeFormat = new SimpleDateFormat("h:mm a");
         Date dateWithTime = timeFormat.parse(time);
         Calendar cal = Calendar.getInstance();
+        if (deadlineDate == null) {
+            deadlineDate = new Date();
+        }
         cal.setTime(deadlineDate);
         SimpleDateFormat hourFormat = new SimpleDateFormat("HH");
         SimpleDateFormat minuteFormat = new SimpleDateFormat("mm");

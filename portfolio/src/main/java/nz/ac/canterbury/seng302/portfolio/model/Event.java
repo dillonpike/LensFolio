@@ -25,6 +25,8 @@ public class Event {
     private Date eventEndDate;
     private LocalTime eventStartTime;
     private LocalTime eventEndTime;
+    private String startDateColour;
+    private String endDateColour;
 
     public Event() {}
 
@@ -117,24 +119,53 @@ public class Event {
         return eventStartDate;
     }
 
+    /**
+     * Get event start date month as a 3 letter string.
+     * @return 3 letter string of the start month. Null if start date is null.
+     */
     public String getEventStartMonth() {
         SimpleDateFormat dateFormat = new SimpleDateFormat("MMM");
-        return (dateFormat.format(eventStartDate));
+        if (eventStartDate != null) {
+            return (dateFormat.format(eventStartDate));
+        }
+        return null;
     }
-
+    /**
+     * Get event start date as a detailed string.
+     * @return String of the start date. Null if start date is null.
+     */
     public String getStartDateDetail()  {
         DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("h:mm a");
-        return (Project.dateToString(eventStartDate)  + " " + eventStartTime.format(dateFormat));
+        if (eventStartDate != null) {
+            return (Project.dateToString(eventStartDate)  + " " + eventStartTime.format(dateFormat));
+        }
+        return null;
+
     }
 
+    /**
+     * Get event end date as a detailed string.
+     * @return String of the end date. Null if end date is null.
+     */
     public String getEndDateDetail()  {
         DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("h:mm a");
-        return (Project.dateToString(eventEndDate) + " " + eventEndTime.format(dateFormat));
+        if (eventStartDate != null) {
+            return (Project.dateToString(eventEndDate) + " " + eventEndTime.format(dateFormat));
+        }
+        return null;
     }
 
+    /**
+     * Get day of the start date as an integer.
+     * @return Integer of the start date day of the month. 0 if start date is null.
+     */
     public int getEventStartDay() {
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd");
-        return Integer.parseInt(dateFormat.format(eventStartDate));
+        if (eventStartDate != null) {
+            return Integer.parseInt(dateFormat.format(eventStartDate));
+        }
+        return 0;
+
     }
 
     public void setEventStartDate(Date eventStartDate) {
@@ -208,5 +239,21 @@ public class Event {
         ObjectMapper mapper = JsonMapper.builder().findAndAddModules().build();
         return mapper.writeValueAsString(this);
 
+    }
+
+    public String getStartDateColour() {
+        return startDateColour;
+    }
+
+    public void setStartDateColour(String startDateColour) {
+        this.startDateColour = startDateColour;
+    }
+
+    public String getEndDateColour() {
+        return endDateColour;
+    }
+
+    public void setEndDateColour(String endDateColour) {
+        this.endDateColour = endDateColour;
     }
 }
