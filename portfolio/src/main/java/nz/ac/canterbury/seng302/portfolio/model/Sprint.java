@@ -44,7 +44,7 @@ public class Sprint {
     }
 
     public void setId(int id) { this.id = id; }
-    public int getId(){
+    public int getId() {
         return id;
     }
     public int getParentProjectId() {
@@ -56,7 +56,7 @@ public class Sprint {
     public String getLabel() {
         return sprintLabel;
     }
-    public String getDescription(){
+    public String getDescription() {
         return sprintDescription;
     }
 

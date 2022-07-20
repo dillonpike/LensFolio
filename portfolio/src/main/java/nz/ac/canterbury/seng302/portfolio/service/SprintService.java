@@ -49,7 +49,7 @@ public class SprintService {
     public Sprint getSprintById(Integer id) throws Exception {
 
         Optional<Sprint> sprint = repository.findById(id);
-        if(sprint.isPresent()) {
+        if (sprint.isPresent()) {
             return sprint.get();
         } else {
             throw new Exception("Sprint not found");

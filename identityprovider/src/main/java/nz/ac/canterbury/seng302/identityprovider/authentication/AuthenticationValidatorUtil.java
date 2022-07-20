@@ -33,7 +33,7 @@ public class AuthenticationValidatorUtil {
             tokenIsValid = false;
         }
 
-        if(!tokenIsValid) {
+        if (!tokenIsValid) {
             reply.setIsAuthenticated(false);
         } else {
             reply.addAllClaims(jwtTokenUtil.getClaimDTOsForAuthStateCheck(sessionToken));

@@ -3,7 +3,7 @@
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="exampleModalLongTitle">Add event</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id=""closeEventModalButton></button>
       </div>
       <form method="post" id="eventForm" onsubmit="validateEvent(); return false;" th:action="@{add-event}">
         <div class="modal-body">
@@ -13,7 +13,7 @@
           </div> 
           <div class="mb-3">
             <label for="eventName" class="col-form-label">Event Name:</label>
-            <input onkeyup="updateCharsLeft('eventName', 'eventNameLength', 50)" maxlength="50" type="text" class="form-control" id="eventName" name="eventName">
+            <input onkeyup="updateCharsLeft('eventName', 'eventNameLength', 30)" maxlength="30" type="text" class="form-control" id="eventName" name="eventName">
             <div class="name-length-message">
               <span id="eventNameLength"></span>
             </div>

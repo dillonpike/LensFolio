@@ -19,7 +19,7 @@ public class FileSizeHandler {
     private UserAccountClientService userAccountClientService;
 
     @ExceptionHandler(MaxUploadSizeExceededException.class)
-    public String handle(@AuthenticationPrincipal AuthState principal, RedirectAttributes ra){
+    public String handle(@AuthenticationPrincipal AuthState principal, RedirectAttributes ra) {
         Integer id = userAccountClientService.getUserIDFromAuthState(principal);
         ra.addFlashAttribute("errors", "Uploaded file is too large.");
 

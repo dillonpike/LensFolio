@@ -64,7 +64,7 @@ public class ElementService {
      */
     public void addRoles(Model model, UserResponse userData) {
         ArrayList<String> rolesList = new ArrayList<String>();
-        for (int i = 0; i< userData.getRolesCount(); i++){
+        for (int i = 0; i< userData.getRolesCount(); i++) {
             String role = userData.getRoles(i).toString();
             rolesList.add(role.replace("_", " "));
         }
