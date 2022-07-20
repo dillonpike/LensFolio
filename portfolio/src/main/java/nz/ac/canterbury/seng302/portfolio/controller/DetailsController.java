@@ -142,7 +142,7 @@ public class DetailsController {
         List<Milestone> milestoneList = milestoneService.getAllEventsOrderedWithColour(sprintList);
         model.addAttribute("milestones", milestoneList);
 
-        List<Deadline> deadlineList = deadlineService.getAllDeadlinesOrdered();
+        List<Deadline> deadlineList = deadlineService.getAllDeadlinesOrderedWithColour(sprintList);
         model.addAttribute("deadlines", deadlineList);
 
         Integer id = userAccountClientService.getUserIDFromAuthState(principal);
