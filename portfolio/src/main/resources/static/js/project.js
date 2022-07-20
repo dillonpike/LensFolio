@@ -269,5 +269,9 @@ function eventModalSetup() {
         validateModalDateTimeRange('eventStartDate', 'eventEndDate', 'eventStartTime', 'eventEndTime','eventModalButton', 'eventDateTimeAlertBanner', 'eventDateTimeAlertMessage')
         updateCharsLeft('eventName', 'eventNameLength', 30)
         $('#' + modalButton.getAttribute("id")).prop('hidden', false);
+
+        $("#eventModalButton").on('click', function (ignore) {
+            pageReload();
+        });
     })
 }
