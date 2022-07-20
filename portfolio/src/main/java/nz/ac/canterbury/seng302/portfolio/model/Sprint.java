@@ -1,6 +1,9 @@
 package nz.ac.canterbury.seng302.portfolio.model;
 
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -19,6 +22,8 @@ public class Sprint {
     private String sprintDescription;
     private Date sprintStartDate;
     private Date sprintEndDate;
+    private String sprintColour;
+
 
     public Sprint() {}
 
@@ -102,4 +107,17 @@ public class Sprint {
     public void setName(String sprintName) {
         this.sprintName = sprintName;
     }
+
+    public String toJSONString() throws JsonProcessingException {
+        return new ObjectMapper().writeValueAsString(this);
+    }
+
+    public void setColour(String sprintColour) {
+        this.sprintColour = sprintColour;
+    }
+
+    public String getColour() {
+        return sprintColour;
+    }
+
 }

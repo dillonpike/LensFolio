@@ -29,7 +29,7 @@
         <div class="horizontal-group-element" >
             <label for="projectStartDate">Project Start Date</label> <br/>
             <div class="input-group date" id="projectStart">
-                <input type="text" class="form-control" id="projectStartDate" th:name="projectStartDate" th:value="*{projectStartDate}">
+                <input onkeydown="return checkDateKeys(event)" type="text" class="form-control" id="projectStartDate" th:name="projectStartDate" th:value="*{projectStartDate}">
                 <span class="input-group-append">
                             <span class="input-group-text bg-white">
                                 <i class="bi bi-calendar"></i>
@@ -40,7 +40,7 @@
         <div class="horizontal-group-element" >
             <label for="projectEndDate">Project End Date</label> <br/>
             <div class="input-group date" id="projectEnd">
-                <input type="text" class="form-control" id="projectEndDate" th:name="projectEndDate" th:value="*{projectEndDate}">
+                <input onkeydown="return checkDateKeys(event)" type="text" class="form-control" id="projectEndDate" th:name="projectEndDate" th:value="*{projectEndDate}">
                 <span class="input-group-append">
                             <span class="input-group-text bg-white">
                                 <i class="bi bi-calendar"></i>
@@ -61,7 +61,7 @@
 </form>
 </div>
 </body>
-
+<script src="js/project.js"></script>
 <script>
     /**
      * Checks the entered project dates in the input fields and displays an error message if there's a related error.
@@ -75,7 +75,7 @@
         $.post("edit-project/error?" + new URLSearchParams(data)).done(function (fragment) {
             console.log(fragment);
             $("#projectStartDateError").replaceWith(fragment);
-            document.getElementById("saveButton").disabled = document.getElementById("projectStartDateError").textContent.length > 2;
+            document.getElementById("saveButton").disabled = document.getElementById("projectStartDateError").textContent.trim().length > 0;
         });
     }
 
@@ -84,7 +84,7 @@
     document.getElementById("projectEndDate").onchange = updateProjectDateError;
 
     // Initial run of updateProjectDateError function in case initial values are invalid
-    updateSprintDateError();
+    updateProjectDateError();
 </script>
 <script type="text/javascript">
     // Fills in the date pickers

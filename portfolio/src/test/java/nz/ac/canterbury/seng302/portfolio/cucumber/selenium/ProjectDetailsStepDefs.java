@@ -17,6 +17,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 import java.util.List;
 
+import static nz.ac.canterbury.seng302.portfolio.DateTestHelper.addToDateString;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -92,10 +93,10 @@ public class ProjectDetailsStepDefs {
         webDriver.findElement(By.id("saveButton")).click();
 
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.className("title-name")));
-        assertEquals(webDriver.findElement(By.className("title-name")).getText(),"test project");
-        assertEquals(webDriver.findElement(By.className("project-desc")).getText(),"test project desc");
-        assertEquals(webDriver.findElement(By.id("project-date")).getText(), projectdtf.format(now) + " - "
-                + projectdtf.format(threeMonthsAfterNow));
+        assertEquals("test project", webDriver.findElement(By.className("title-name")).getText());
+        assertEquals("test project desc", webDriver.findElement(By.className("project-desc")).getText());
+        assertEquals(projectdtf.format(now) + " - " + projectdtf.format(threeMonthsAfterNow),
+                webDriver.findElement(By.id("project-date")).getText());
     }
 
     @When("I browse to the project page")
@@ -110,16 +111,18 @@ public class ProjectDetailsStepDefs {
     }
 
 
-    @When("I browse to the add sprint page")
-    public void iBrowseToTheAddSprintPage() {
+    @When("I open the add sprint modal")
+    public void iOpenTheAddSprintModal() {
         webDriver.findElement(By.id("addSprintButton")).click();
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[contains(., 'Add Sprint')]")));
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("sprintModalButton")));
     }
 
     @And("There are {int} sprints")
     public void thereAreSprints(int numSprints) {
         while (!webDriver.findElements(By.id("deleteSprintButton")).isEmpty()) {
             webDriver.findElement(By.id("deleteSprintButton")).click();
+            wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("deleteSprintModalButton")));
+            webDriver.findElement(By.id("deleteSprintModalButton")).click();
         }
         for (int i = 0; i < numSprints; i++) {
             iAddASprint();
@@ -131,25 +134,12 @@ public class ProjectDetailsStepDefs {
 
     @And("I add a sprint")
     public void iAddASprint() {
+        wait.until(ExpectedConditions.elementToBeClickable(By.id("addSprintButton")));
         webDriver.findElement(By.id("addSprintButton")).click();
-        wait.until(ExpectedConditions.elementToBeClickable(By.id("saveButton")));
-        webDriver.findElement(By.id("saveButton")).click();
+        wait.until(ExpectedConditions.elementToBeClickable(By.id("sprintModalButton")));
+        webDriver.findElement(By.id("sprintModalButton")).click();
+        wait.until(ExpectedConditions.invisibilityOfElementLocated(By.id("sprintModalButton")));
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//span[contains(., 'Project Description')]")));
-    }
-
-    /**
-     * Adds dateString to a calendar and adds the given amount of time from the given calendar field.
-     * Returns the updated date as a string.
-     * @param dateString string of the date to be added to
-     * @param field the calendar field
-     * @param amount amount of date or time to be added to the field
-     * @return updated date as a string
-     */
-    private String addToDateString(String dateString, int field, int amount) {
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(Project.stringToDate(dateString));
-        calendar.add(field, amount);
-        return Project.dateToString(calendar.getTime());
     }
 
     @Then("The start date should be {int} day after the end date of the previous sprint")
@@ -188,16 +178,16 @@ public class ProjectDetailsStepDefs {
 
     @Then("The following error is displayed: {string}")
     public void theFollowingErrorIsDisplayed(String expectedErrorMessage) {
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("sprintDateError")));
-        String actualErrorMessage = webDriver.findElement(By.id("sprintDateError")).getText();
-        System.err.println(actualErrorMessage);
-        assertTrue(actualErrorMessage.contains(expectedErrorMessage));
+//        wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("sprintDateError")));
+//        String actualErrorMessage = webDriver.findElement(By.id("sprintDateError")).getText();
+//        assertTrue(actualErrorMessage.contains(expectedErrorMessage));
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//span[@data-test-id='alertMessage'][contains(., '" + expectedErrorMessage + "')]")));
     }
 
-    @When("I browse to the edit sprint page for sprint {int}")
-    public void iBrowseToTheEditSprintPageForSprint(int sprintNum) {
+    @When("I open the edit modal for sprint {int}")
+    public void iOpenTheEditModalForSprint(int sprintNum) {
         webDriver.findElements(By.id("editSprintButton")).get(sprintNum-1).click();
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[contains(., 'Edit Sprint')]")));
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("sprintModalButton")));
     }
 
     @And("I move the end date forward by {int} day")
@@ -207,7 +197,7 @@ public class ProjectDetailsStepDefs {
 
 
     @And("I browse to edit project page")
-    public void iBrowseToEditProjectPage() throws InterruptedException {
+    public void iBrowseToEditProjectPage() {
         webDriver.findElement(By.id("editProjectButton")).click();
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[contains(., 'Edit Project')]")));
     }
@@ -225,7 +215,7 @@ public class ProjectDetailsStepDefs {
     }
 
     @Then("I should not be able to save the edit")
-    public void iShouldNotBeAbleToSaveTheEdit() throws InterruptedException {
+    public void iShouldNotBeAbleToSaveTheEdit() {
         assertFalse(webDriver.findElement(By.id("saveButton")).isEnabled());
     }
 

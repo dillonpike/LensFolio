@@ -1,8 +1,6 @@
 package nz.ac.canterbury.seng302.identityprovider.model;
 
 import com.google.protobuf.Timestamp;
-import org.hibernate.annotations.GenericGenerator;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -30,9 +28,6 @@ public class UserModel implements Serializable {
     private Timestamp dateAdded;
     private Blob photo;
 
-
-
-
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
     @JoinTable(name = "user_to_role",
             joinColumns =
@@ -44,6 +39,16 @@ public class UserModel implements Serializable {
 
     public void addRoles(Roles role) {
         this.roles.add(role);
+    }
+
+    public void deleteRole(Roles role) {
+        Set<Roles> filteredSet = new HashSet<>();
+        for(Roles userRole: roles){
+            if(!userRole.getRoleName().equals(role.getRoleName())){
+                filteredSet.add(userRole);
+            }
+        }
+        roles = filteredSet;
     }
 
     public Set<Roles> getRoles() {

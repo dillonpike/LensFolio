@@ -1,9 +1,11 @@
 package nz.ac.canterbury.seng302.identityprovider.service;
 
+import com.google.common.annotations.VisibleForTesting;
 import io.grpc.stub.StreamObserver;
 import net.devh.boot.grpc.server.service.GrpcService;
 import nz.ac.canterbury.seng302.identityprovider.model.Roles;
 import nz.ac.canterbury.seng302.identityprovider.model.UserModel;
+import nz.ac.canterbury.seng302.identityprovider.repository.RolesRepository;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserAccountServiceGrpc;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserRegisterRequest;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserRegisterResponse;
@@ -37,6 +39,9 @@ public class UserAccountServerService extends UserAccountServiceGrpc.UserAccount
     @Autowired
     private UserModelService userModelService;
 
+    @Autowired
+    private RolesRepository rolesRepository;
+
     /***
      * Attempts to register a user with a given username, password, first name, middle name, last name, email.
      */
@@ -52,7 +57,7 @@ public class UserAccountServerService extends UserAccountServiceGrpc.UserAccount
         try {
             // Any empty fields are because you can't add those fields when you create an account initially.
             if (uniqueUser != null) {
-                responseObserver.onNext(reply.setIsSuccess(false).build());
+                responseObserver.onNext(reply.setIsSuccess(false).setMessage("Username taken").build());
                 responseObserver.onCompleted();
                 return;
             }
@@ -73,9 +78,9 @@ public class UserAccountServerService extends UserAccountServiceGrpc.UserAccount
             System.err.println("Failed to create and add new user to database");
         }
         if (wasAdded) {
-            responseObserver.onNext(reply.setNewUserId(createdUser.getUserId()).setIsSuccess(true).build());
+            responseObserver.onNext(reply.setNewUserId(createdUser.getUserId()).setMessage("Successful").setIsSuccess(true).build());
         } else {
-            responseObserver.onNext(reply.setIsSuccess(false).build());
+            responseObserver.onNext(reply.setIsSuccess(false).setMessage("Unsuccessful").build());
         }
         responseObserver.onCompleted();
     }
@@ -364,7 +369,8 @@ public class UserAccountServerService extends UserAccountServiceGrpc.UserAccount
         response.setUsername(user.getUsername())
                 .setFirstName(user.getFirstName())
                 .setLastName(user.getLastName())
-                .setNickname(user.getNickname());
+                .setNickname(user.getNickname())
+                .setId(user.getUserId());
         Set<Roles> roles = user.getRoles();
         Roles[] rolesArray = roles.toArray(new Roles[roles.size()]);
 
@@ -372,6 +378,107 @@ public class UserAccountServerService extends UserAccountServiceGrpc.UserAccount
             response.addRolesValue(rolesArray[i].getId());
         }
         return response.build();
+    }
+
+    /***
+     * Helper method to build the UserRoleChangeResponse which the respond of adding role to user process
+     * @param request ModifyRoleOfUserRequest the request which contains the role that will be added to the user
+     * @return UserRoleChangeResponse which contains information whether adding a role to user was done successfully or not
+     */
+    @VisibleForTesting
+    UserRoleChangeResponse addRoleToUserHelper (ModifyRoleOfUserRequest request) {
+        UserRoleChangeResponse.Builder reply = UserRoleChangeResponse.newBuilder();
+        try {
+            UserModel user = userModelService.getUserById(request.getUserId());
+            UserRole role = request.getRole();
+            if (user != null) {
+                if (role.getNumber() == 0) {
+                    Roles studentRole = rolesRepository.findByRoleName("STUDENT");
+                    user.addRoles(studentRole);
+                    userModelService.saveEditedUser(user);
+                } else if (role.getNumber() == 1) {
+                    Roles studentRole = rolesRepository.findByRoleName("TEACHER");
+                    user.addRoles(studentRole);
+                    userModelService.saveEditedUser(user);
+                } else if (role.getNumber() == 2) {
+                    Roles studentRole = rolesRepository.findByRoleName("COURSE ADMINISTRATOR");
+                    user.addRoles(studentRole);
+                    userModelService.saveEditedUser(user);
+                }
+            }
+            reply.setIsSuccess(true);
+            return reply.build();
+        } catch (Exception e) {
+            System.err.println("Something went wrong");
+            reply.setIsSuccess(false);
+            return reply.build();
+        }
+    }
+
+    /***
+     * Add role to a user
+     * Call helper function addRoleToUserHelper() to build the respond
+     * @param request ModifyRoleOfUserRequest the request which contains the role that will be added to the user
+     */
+    @Override
+    public void addRoleToUser(ModifyRoleOfUserRequest request, StreamObserver<UserRoleChangeResponse> responseObserver) {
+        UserRoleChangeResponse reply = addRoleToUserHelper(request);
+
+        responseObserver.onNext(reply);
+        responseObserver.onCompleted();
+    }
+
+    /***
+     * Delete a role from a user
+     * Call helper function removeRoleFromUserHelper() to build the respond
+     * @param request ModifyRoleOfUserRequest the request which contains the role that will be deleted from the user
+     */
+    @Override
+    public void removeRoleFromUser(ModifyRoleOfUserRequest request, StreamObserver<UserRoleChangeResponse> responseObserver) {
+
+        UserRoleChangeResponse reply = removeRoleFromUserHelper(request);
+
+        responseObserver.onNext(reply);
+        responseObserver.onCompleted();
+
+    }
+
+    /***
+     * Helper method to build the UserRoleChangeResponse which the respond of deleting role from user process
+     * @param request ModifyRoleOfUserRequest the request which contains the role that will be deleted from the user
+     * @return UserRoleChangeResponse which contains information whether deleting a role to user was done successfully or not
+     */
+    @VisibleForTesting
+    UserRoleChangeResponse removeRoleFromUserHelper (ModifyRoleOfUserRequest request){
+        UserRoleChangeResponse.Builder reply = UserRoleChangeResponse.newBuilder();
+        try {
+            UserModel user = userModelService.getUserById(request.getUserId());
+            UserRole role = request.getRole();
+            if (user != null) {
+                if (role.getNumber() == 0) {
+                    Roles studentRole = rolesRepository.findByRoleName("STUDENT");
+                    user.deleteRole(studentRole);
+                    userModelService.saveEditedUser(user);
+                    reply.setIsSuccess(true);
+                }else if (role.getNumber() == 1) {
+                    Roles teacherRole = rolesRepository.findByRoleName("TEACHER");
+                    user.deleteRole(teacherRole);
+                    userModelService.saveEditedUser(user);
+                    reply.setIsSuccess(true);
+                } else {
+                    Roles adminRole = rolesRepository.findByRoleName("COURSE ADMINISTRATOR");
+                    user.deleteRole(adminRole);
+                    userModelService.saveEditedUser(user);
+                    reply.setIsSuccess(true);
+                }
+            }
+            return reply.build();
+        } catch (Exception e) {
+            System.err.println("Something went wrong");
+            reply.setIsSuccess(false);
+            return reply.build();
+        }
+
     }
 
 }

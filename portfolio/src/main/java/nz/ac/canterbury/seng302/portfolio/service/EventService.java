@@ -1,0 +1,174 @@
+package nz.ac.canterbury.seng302.portfolio.service;
+
+
+import nz.ac.canterbury.seng302.portfolio.model.Event;
+import nz.ac.canterbury.seng302.portfolio.model.Sprint;
+import nz.ac.canterbury.seng302.portfolio.repository.EventRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
+/***
+ * Contains methods for saving, deleting, updating and retrieving event objects to the database.
+ */
+@Service
+public class EventService {
+
+    @Autowired
+    private EventRepository eventRepository;
+
+    /**
+     * Get list of all events
+     * @return List of events
+     */
+    public List<Event> getAllEvents() {
+        return (List<Event>) eventRepository.findAll();
+    }
+
+    /**
+     * Get event by Id
+     * @param id id of event
+     * @return event with the id that is the input
+     * @throws Exception If event can't be found
+     */
+    public Event getEventById(Integer id) throws Exception {
+
+        Optional<Event> event = eventRepository.findById(id);
+        if(event.isPresent()) {
+            return event.get();
+        } else {
+            throw new Exception("Event not found");
+        }
+    }
+
+    /**
+     * Updates a event
+     * @param event Event to update it to
+     * @return Newly edited event
+     */
+    public Event updateEvent(Event event) {
+        Optional<Event> sOptional = eventRepository.findById((Integer) event.getId());
+
+        if (sOptional.isPresent()) {
+            Event eventUpdate = sOptional.get();
+            eventUpdate.setEventStartDate(event.getEventStartDate());
+            eventUpdate.setEventEndDate(event.getEventEndDate());
+            eventUpdate.setEventName(event.getEventName());
+            eventUpdate.setEventStartTime(event.getEventStartTime());
+            eventUpdate.setEventEndTime(event.getEventEndTime());
+
+            eventUpdate = eventRepository.save(eventUpdate);
+            return eventUpdate;
+        } else {
+            event = eventRepository.save(event);
+            return event;
+        }
+    }
+
+
+    /**
+     * Add a new event to the database. It gives the new event an ID based on eventIdCount.
+     * @param event New event to add
+     * @return Event that was added to the database
+     */
+    public Event addEvent(Event event) {
+        event = eventRepository.save(event);
+        return event;
+    }
+
+    /**
+     * Remove an event from the database.
+     * @param id ID of the event being removed
+     */
+    public void removeEvent(Integer id) {
+        Optional<Event> sOptional = eventRepository.findById(id);
+
+        if(sOptional.isPresent()) {
+            Event eventUpdate = sOptional.get();
+            eventRepository.deleteById(eventUpdate.getId());
+        }
+    }
+
+    /**
+     * Get list of all events in order
+     * @return List of events
+     */
+    public List<Event> getAllEventsOrdered() {
+        return eventRepository.findAllByOrderByEventStartDate();
+    }
+
+
+
+    /***
+     * For any events existing, get the sprints colour for its start date if it is within the sprint time slot,
+     * and the same is done with the events end date
+     *
+     * @param sprints sprints in chronological order
+     * @return events in chronological order
+     */
+    public List<Event> getAllEventsOrderedWithColour(List<Sprint> sprints) {
+        List<Event> eventList = getAllEventsOrdered();
+        for (Event currentEvent : eventList) {
+            // Reset Event's color
+            currentEvent.setStartDateColour(null);
+            currentEvent.setEndDateColour(null);
+
+            for (Sprint sprint : sprints) {
+                if (validateEventStartDateInSprintDate(currentEvent, sprint)) {
+                    currentEvent.setStartDateColour(sprint.getColour());
+                }
+                if (validateEventEndDateInSprintDate(currentEvent, sprint)) {
+                    currentEvent.setEndDateColour(sprint.getColour());
+                }
+            }
+            eventRepository.save(currentEvent);
+        }
+        return getAllEventsOrdered();
+    }
+
+    /**
+     * Gets a list of events that overlap with the given sprint in some way. This is to know what events should be
+     * displayed with this sprint. It does this by checking if either of the dates are within the sprints dates.
+     * @param sprint Sprint to check events against.
+     * @return List of events that overlap with the given sprint.
+     */
+    public List<Event> getAllEventsOverlappingWithSprint(Sprint sprint) {
+        ArrayList<Event> eventsList = (ArrayList<Event>) getAllEventsOrdered();
+        ArrayList<Event> eventsOverlapped = new ArrayList<>();
+
+        for (Event currentEvent : eventsList) {
+            if (validateEventStartDateInSprintDate(currentEvent, sprint) ||
+                    validateEventEndDateInSprintDate(currentEvent, sprint) ||
+                    // For events that start before and go after the sprint (would not be present with above checks).
+                    (currentEvent.getEventStartDate().before(sprint.getStartDate()) && currentEvent.getEventEndDate().after(sprint.getEndDate()))
+            ) {
+                eventsOverlapped.add(currentEvent);
+            }
+        }
+        return eventsOverlapped;
+    }
+
+    /**
+     * Validate if particular event's start date is in sprint date range
+     * @param event The updated event
+     * @param sprint The sprint to compare with
+     * @return True if event start date is in sprint date range
+     */
+    public boolean validateEventStartDateInSprintDate(Event event, Sprint sprint) {
+        return event.getEventStartDate().compareTo(sprint.getStartDate()) >= 0 && event.getEventStartDate().compareTo(sprint.getEndDate()) <= 0;
+    }
+
+
+    /**
+     * Validate if particular event's end date is in sprint date
+     * @param event The updated event
+     * @param sprint The sprint to compare with
+     * @return True if event end date is in sprint date range
+     */
+    public boolean validateEventEndDateInSprintDate(Event event, Sprint sprint) {
+        return event.getEventEndDate().compareTo(sprint.getStartDate()) >= 0 && event.getEventEndDate().compareTo(sprint.getEndDate()) <= 0;
+    }
+}

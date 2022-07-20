@@ -1,23 +1,58 @@
 package nz.ac.canterbury.seng302.portfolio.service;
 
+import java.time.LocalTime;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-import nz.ac.canterbury.seng302.portfolio.model.Project;
-import nz.ac.canterbury.seng302.portfolio.model.Sprint;
+
+import nz.ac.canterbury.seng302.portfolio.model.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
 
-/***
+/**
  * Contains help methods to check the validation for date
  */
 @Service
 public class DateValidationService {
+
     @Autowired
     private SprintService sprintService;
+
     @Autowired
     private ProjectService projectService;
+
+    private static final Logger logger = LoggerFactory.getLogger(DateValidationService.class);
+
+    /**
+     * Returns an error message if a given date is empty or null, otherwise returns a blank message.
+     * @param startDateString start date to be checked
+     * @param endDateString end date to be checked
+     * @return error message if a given date is empty or null, otherwise returns a blank message
+     */
+    public String validateDateRangeNotEmpty(String startDateString, String endDateString) {
+        String message = "";
+        if (startDateString.equals("") || endDateString.equals("")) {
+            message = "Dates can't be empty.";
+        }
+        return message;
+    }
+
+    /**
+     * Returns an error message if a given time is empty or null, otherwise returns a blank message.
+     * @param startTimeString start time to be checked
+     * @param endTimeString end time to be checked
+     * @return error message if a given time is empty or null, otherwise returns a blank message
+     */
+    public String validateTimeRangeNotEmpty(String startTimeString, String endTimeString) {
+        String message = "";
+        if (startTimeString.equals("") || endTimeString.equals("")) {
+            message = "Times can't be empty.";
+        }
+        return message;
+    }
 
     /**
      * Returns a blank message if the start date is before or on the end date, otherwise returns an error message.
@@ -27,10 +62,12 @@ public class DateValidationService {
      */
     public String validateStartDateNotAfterEndDate(String startDateString, String endDateString) {
         String message = "";
-        Date startDate = Project.stringToDate(startDateString);
-        Date endDate = Project.stringToDate(endDateString);
-        if (startDate.after(endDate)) {
-            message = "Start date must be on or before the end date.";
+        if (!startDateString.equals("") && !endDateString.equals("")) {
+            Date startDate = Project.stringToDate(startDateString);
+            Date endDate = Project.stringToDate(endDateString);
+            if (startDate.after(endDate)) {
+                message = "Start date must be on or before the end date.";
+            }
         }
         return message;
     }
@@ -45,13 +82,16 @@ public class DateValidationService {
      */
     public String validateSprintDateRange(String sprintStartDateString, String sprintEndDateString, int sprintId) {
         String message = "";
-        Date sprintStartDate = Project.stringToDate(sprintStartDateString);
-        Date sprintEndDate = Project.stringToDate(sprintEndDateString);
-        if (sprintStartDate != null && sprintEndDate != null) {
+        if (!sprintStartDateString.equals("") && !sprintEndDateString.equals("")) {
+            Date sprintStartDate = Project.stringToDate(sprintStartDateString);
+            Date sprintEndDate = Project.stringToDate(sprintEndDateString);
             for (Sprint sprint : sprintService.getAllSprints()) {
+                // Get date from the string to ignore time
+                Date startDate = Project.stringToDate(sprint.getStartDateString());
+                Date endDate = Project.stringToDate(sprint.getEndDateString());
                 if (sprint.getId() != sprintId && !(
-                        sprintStartDate.before(sprint.getStartDate()) && sprintEndDate.before(sprint.getStartDate()) ||
-                                sprintStartDate.after(sprint.getEndDate()) && sprintEndDate.after(sprint.getEndDate())
+                        sprintStartDate.before(startDate) && sprintEndDate.before(startDate) ||
+                                sprintStartDate.after(endDate) && sprintEndDate.after(endDate)
                 )) {
                     message = "Dates must not overlap with " + sprint.getName() + "'s dates (" +
                             sprint.getStartDateString() + " - " + sprint.getEndDateString() + ").";
@@ -63,27 +103,32 @@ public class DateValidationService {
     }
 
     /**
-     * Validates the given sprint date range based on the start date and end date of the new sprint, making sure the sprint
+     * Validates the given date range based on the start date and end date used for sprints and events, making sure the
      * dates are within the project dates
-     * @param sprintStartDateString Start date of the sprint
-     * @param sprintEndDateString End date of the sprint
+     * @param sprintStartDateString Start date being checked
+     * @param sprintEndDateString End date being checked
      * @return Message giving an error if the dates are not within the project dates, empty otherwise
      */
-    public String validateSprintInProjectDateRange(String sprintStartDateString, String sprintEndDateString) {
+    public String validateDatesInProjectDateRange(String sprintStartDateString, String sprintEndDateString) {
         String message = "";
-        Date sprintStartDate = Project.stringToDate(sprintStartDateString);
-        Date sprintEndDate = Project.stringToDate(sprintEndDateString);
-        Project project;
-        try {
-            project = projectService.getProjectById(0);
-        } catch (Exception e) {
-            System.err.println("No project exists");
-            return message;
-        }
-        if (sprintStartDate.before(project.getStartDate()) || sprintStartDate.after(project.getEndDate()) ||
-                sprintEndDate.before(project.getStartDate()) || sprintEndDate.after(project.getEndDate())) {
-            message = "Sprint dates must be within the project's date range (" +
-                    project.getStartDateString() + " - " + project.getEndDateString() + ").";
+        if (!sprintStartDateString.equals("") && !sprintEndDateString.equals("")) {
+            Date sprintStartDate = Project.stringToDate(sprintStartDateString);
+            Date sprintEndDate = Project.stringToDate(sprintEndDateString);
+            Project project;
+            try {
+                project = projectService.getProjectById(0);
+            } catch (Exception e) {
+                logger.debug("Project doesn't exist during date validation");
+                return message;
+            }
+            // Get date from the string to ignore time
+            Date projectStartDate = Project.stringToDate(project.getStartDateString());
+            Date projectEndDate = Project.stringToDate(project.getEndDateString());
+            if (sprintStartDate.before(projectStartDate) || sprintStartDate.after(projectEndDate) ||
+                    sprintEndDate.before(projectStartDate) || sprintEndDate.after(projectEndDate)) {
+                message = "Sprint dates must be within the project's date range (" +
+                        project.getStartDateString() + " - " + project.getEndDateString() + ").";
+            }
         }
         return message;
     }
@@ -95,10 +140,12 @@ public class DateValidationService {
      */
     public String validateDateNotOverAYearAgo(String dateString) {
         String message = "";
-        Date date = Project.stringToDate(dateString);
-        long diff = getDaysFromNow(date);
-        if (diff > 365) {
-            message = "Start date must be less than a year ago.";
+        if (!dateString.equals("")) {
+            Date date = Project.stringToDate(dateString);
+            long diff = getDaysFromNow(date);
+            if (diff > 365) {
+                message = "Start date must be less than a year ago.";
+            }
         }
         return message;
     }
@@ -112,9 +159,9 @@ public class DateValidationService {
      */
     public String validateProjectDatesContainSprints(String projectStartDateString, String projectEndDateString) {
         String message = "";
+        if (!projectStartDateString.equals("") && !projectEndDateString.equals("")) {
         Date projectStartDate = Project.stringToDate(projectStartDateString);
         Date projectEndDate = Project.stringToDate(projectEndDateString);
-        if (projectStartDate != null && projectEndDate != null) {
             List<Sprint> orderedSprints = sprintService.getAllSprintsOrdered();
             Sprint firstSprint = orderedSprints.get(0);
             Sprint lastSprint = orderedSprints.get(orderedSprints.size()-1);
@@ -122,6 +169,25 @@ public class DateValidationService {
                 message = "Start date must be on or before the start date of the first sprint (" +
                         firstSprint.getStartDateString() + ") and end date must be on or after the end date of " +
                         "the last sprint (" + lastSprint.getEndDateString() + ").";
+            }
+        }
+        return message;
+    }
+
+    /**
+     * Returns an error message if a given time is empty or null, otherwise returns a blank message.
+     * @param startTimeString start time to be checked
+     * @param endTimeString end time to be checked
+     * @return error message if a given start time is before an end time, otherwise returns a blank message
+     */
+    public String validateStartTimeNotAfterEndTime(String startTimeString, String endTimeString, String startDateString,
+                                                   String endDateString) {
+        String message = "";
+        if (!startTimeString.equals("") && !endTimeString.equals("")) {
+            LocalTime startTime = Event.stringToTime(startTimeString);
+            LocalTime endTime = Event.stringToTime(endTimeString);
+            if ((startTime.isAfter(endTime) || startTime == endTime) && startDateString.equals(endDateString)) {
+                message = "Start time must be before the end time.";
             }
         }
         return message;
@@ -137,31 +203,5 @@ public class DateValidationService {
         Date today = new Date();
         long diffInMs = today.getTime() - date.getTime();
         return TimeUnit.DAYS.convert(diffInMs, TimeUnit.MILLISECONDS);
-    }
-
-    /**
-     * Checks to see if a given date exists in the calendar, checking for days such as February 29th in certain years, and
-     * month lengths.
-     * @param date Given date to check
-     * @return Message if the date is invalid and why, empty otherwise
-     */
-    public String isDateValid(String date) {
-        String message = "";
-        int day = Integer.parseInt(date.substring(0, 2));
-        String month = date.substring(3, 6);
-        int year = Integer.parseInt(date.substring(7, 11));
-
-
-        if ("Feb".equals(month) && (day == 30 || day == 31)) {
-            message = "This is an invalid date for February";
-        }
-        if (year % 4 != 0 && "Feb".equals(month) && day == 29) {
-            message = String.format("This is an invalid date for February in the year %d", year);
-        }
-        if (day == 31 && ("Apr".equals(month) || "Jun".equals(month) || "Sep".equals(month) || "Nov".equals(month))) {
-            message = "There is no 31st of the chosen month";
-        }
-
-        return message;
     }
 }
