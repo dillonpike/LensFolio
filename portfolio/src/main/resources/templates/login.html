@@ -23,6 +23,9 @@
                         <div th:if="${param.forbidden}" class="alert alert-danger">
                             Forbidden access, please log in first
                         </div>
+                        <div th:if="${param.passwordFormatError}" class="alert alert-danger">
+                            Password must contain at least one uppercase letter
+                        </div>
                         <form th:action="@{login}" class="row g-3 needs-validation" novalidate method="post">
                             <div class="form-floating mb-3">
                                 <input type="text" class="form-control" id="usernameLogin" placeholder="username" th:name="usernameLogin" required>
