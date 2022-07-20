@@ -255,7 +255,7 @@ function reorderNotifications() {
  * Then subscribes methods to the required endpoints.
  */
 function connect() {
-    let socket = new SockJS('https://csse-s302g1.canterbury.ac.nz/test/portfolio');
+    let socket = new SockJS('/test/portfolio');
     stompClient = Stomp.over(socket);
     stompClient.connect({}, function (frame) {
         console.log('Connected: ' + frame);
