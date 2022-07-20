@@ -6,14 +6,22 @@ import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBr
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
 
+import java.io.File;
+
 @Configuration
 @EnableWebSocketMessageBroker
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
+        File file = new File("");
+        String url = file.getAbsolutePath();
+        String endpointName = "/test/portfolio/mywebsockets";
+        if (url.contains("test") || url.contains("prod") || url.contains("canterbury")) {
+            endpointName = "/mywebsockets";
+        }
         // Endpoint all websockets are set up at
-        registry.addEndpoint("/test/portfolio/mywebsockets")
+        registry.addEndpoint(endpointName)
                 .setAllowedOrigins("csse-s302g1.canterbury.ac.nz", "localhost:9000")
                 .withSockJS();
     }
