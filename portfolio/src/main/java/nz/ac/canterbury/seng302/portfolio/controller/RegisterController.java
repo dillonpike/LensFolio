@@ -1,5 +1,6 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import nz.ac.canterbury.seng302.portfolio.authentication.CookieUtil;
 import nz.ac.canterbury.seng302.portfolio.service.AuthenticateClientService;
