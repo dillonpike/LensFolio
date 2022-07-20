@@ -30,6 +30,12 @@ public class RegisterController {
     @Autowired
     private AuthenticateClientService authenticateClientService;
 
+    private static final String PASSWORD_PATTERN =
+            "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#&()–[{}]:;',.?/*~$^+=<>]).{8,20}$";
+
+    private static final Pattern pattern = Pattern.compile(PASSWORD_PATTERN);
+
+
     String defaultUsername = "defaultUsername";
     String defaultFirstName = "defaultFirstName";
     String defaultMiddleName = "defaultMiddleName";
@@ -90,6 +96,16 @@ public class RegisterController {
     ) {
         AuthenticateResponse loginReply;
         UserRegisterResponse registrationReply;
+
+        if (!isValid(password)) {
+            rm.addAttribute(defaultUsername, username);
+            rm.addAttribute(defaultFirstName, firstName);
+            rm.addAttribute(defaultMiddleName, middleName);
+            rm.addAttribute(defaultLastName, lastName);
+            rm.addAttribute(defaultEmail, email);
+            return "redirect:register?passwordFormatError";
+        }
+
         if (!password.equals(confirmPassword)) {
             rm.addAttribute(defaultUsername, username);
             rm.addAttribute(defaultFirstName, firstName);
@@ -163,5 +179,10 @@ public class RegisterController {
             }
 
         }
+    }
+
+    public boolean isValid(String password) {
+        Matcher matcher = pattern.matcher(password);
+        return matcher.matches();
     }
 }

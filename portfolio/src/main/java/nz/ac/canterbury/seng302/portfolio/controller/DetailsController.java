@@ -105,7 +105,9 @@ public class DetailsController {
         model.addAttribute("events", eventList);
 
         List<List<Event>> eventsForSprints = getAllEventsForAllSprints(sprintList);
+        List<List<Deadline>> deadlinesForSprints = getAllDeadlinesForAllSprints(sprintList);
         model.addAttribute("eventsForSprints", eventsForSprints);
+        model.addAttribute("deadlinesForSprints", deadlinesForSprints);
 
         List<List<Milestone>> milestonesForSprints = getAllMilestonesForAllSprints(sprintList);
         model.addAttribute("milestonesForSprints", milestonesForSprints);
@@ -140,7 +142,7 @@ public class DetailsController {
         List<Milestone> milestoneList = milestoneService.getAllEventsOrderedWithColour(sprintList);
         model.addAttribute("milestones", milestoneList);
 
-        List<Deadline> deadlineList = deadlineService.getAllDeadlines();
+        List<Deadline> deadlineList = deadlineService.getAllDeadlinesOrdered();
         model.addAttribute("deadlines", deadlineList);
 
         Integer id = userAccountClientService.getUserIDFromAuthState(principal);
@@ -248,6 +250,21 @@ public class DetailsController {
         }
 
         return allEventsList;
+    }
+
+    /**
+     * Get a list where each element is a list of deadline that is a part of the sprint from sprintList with the same index
+     * @param sprintList List of sprints to get the deadlines of.
+     * @return List of lists of deadlines that are within their given sprint
+     */
+    private List<List<Deadline>> getAllDeadlinesForAllSprints(List<Sprint> sprintList) {
+        List<List<Deadline>> allDeadlinesList = new ArrayList<>();
+
+        for (Sprint sprint : sprintList) {
+            allDeadlinesList.add(deadlineService.getAllDeadlinesOverLappingWithSprint(sprint));
+        }
+
+        return allDeadlinesList;
     }
 
     /**

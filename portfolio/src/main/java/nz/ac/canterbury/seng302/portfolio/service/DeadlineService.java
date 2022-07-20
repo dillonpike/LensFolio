@@ -1,12 +1,14 @@
 package nz.ac.canterbury.seng302.portfolio.service;
 
 import nz.ac.canterbury.seng302.portfolio.model.Deadline;
+import nz.ac.canterbury.seng302.portfolio.model.Event;
+import nz.ac.canterbury.seng302.portfolio.model.Milestone;
+import nz.ac.canterbury.seng302.portfolio.model.Sprint;
 import nz.ac.canterbury.seng302.portfolio.repository.DeadlinesRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 /***
  * Service class for saving, deleting, updating and retrieving event objects to the database.
@@ -92,5 +94,60 @@ public class DeadlineService {
             Deadline deadline = sOptional.get();
             repository.deleteById(deadline.getId());
         }
+    }
+
+    /**
+     * Gets a list of deadlines that overlap with the given sprint in some way. This is to know what deadline should be
+     * displayed with this sprint. It does this by checking if either of the dates are within the sprints dates.
+     * @param sprint Sprint to check events against.
+     * @return List of deadline that overlap with the given sprint.
+     */
+    public List<Deadline> getAllDeadlinesOverLappingWithSprint(Sprint sprint) {
+        ArrayList<Deadline> deadlineList = (ArrayList<Deadline>) getAllDeadlinesOrdered();
+        ArrayList<Deadline> deadlinesOverlapped = new ArrayList<>();
+
+        for (Deadline currentDeadline : deadlineList) {
+            if (validateDeadlineDateInSprintDateRange(currentDeadline, sprint)) {
+                deadlinesOverlapped.add(currentDeadline);
+            }
+        }
+        return deadlinesOverlapped;
+    }
+
+    /**
+     * Validate if particular deadline date is in sprint date range
+     * @param deadline The update deadline
+     * @param sprint The sprint to compare with
+     * @return True if deadline end date is in sprint date range
+     */
+    public boolean validateDeadlineDateInSprintDateRange(Deadline deadline, Sprint sprint) {
+        Date deadlineDate = deadline.getDeadlineDate();
+        Date sprintStartDate = sprint.getStartDate();
+        Date sprintEndDate = sprint.getEndDate();
+
+        // Convert deadlineDate to Calendar object
+        Calendar calendar1 = Calendar.getInstance();
+        calendar1.setTime(deadlineDate);
+
+        // Convert sprint Start Date to Calendar object
+        Calendar calendar2 = Calendar.getInstance();
+        calendar2.setTime(sprintStartDate);
+
+        // Convert sprint End Date to Calendar object
+        Calendar calendar3 = Calendar.getInstance();
+        calendar3.setTime(sprintEndDate);
+
+        // Check if deadline is the sprint start day
+        boolean isStartDay = calendar1.get(Calendar.YEAR) == calendar2.get(Calendar.YEAR)
+                && calendar1.get(Calendar.MONTH) == calendar2.get(Calendar.MONTH)
+                && calendar1.get(Calendar.DAY_OF_MONTH) == calendar2.get(Calendar.DAY_OF_MONTH);
+
+        // Check if deadline is the sprint end day
+        boolean isEndDay = calendar1.get(Calendar.YEAR) == calendar3.get(Calendar.YEAR)
+                && calendar1.get(Calendar.MONTH) == calendar3.get(Calendar.MONTH)
+                && calendar1.get(Calendar.DAY_OF_MONTH) == calendar3.get(Calendar.DAY_OF_MONTH);
+
+        return (deadlineDate.compareTo(sprintStartDate) >= 0 && deadlineDate.compareTo(sprintEndDate) <= 0)
+                || isStartDay || isEndDay;
     }
 }
