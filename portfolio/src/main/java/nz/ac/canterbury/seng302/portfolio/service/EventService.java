@@ -17,14 +17,17 @@ import java.util.Optional;
 public class EventService {
 
     @Autowired
-    private EventRepository repository;
+    private EventRepository eventRepository;
+
+    @Autowired
+    private DateValidationService dateValidationService;
 
     /**
      * Get list of all events
      * @return List of events
      */
     public List<Event> getAllEvents() {
-        return (List<Event>) repository.findAll();
+        return (List<Event>) eventRepository.findAll();
     }
 
     /**
@@ -35,7 +38,7 @@ public class EventService {
      */
     public Event getEventById(Integer id) throws Exception {
 
-        Optional<Event> event = repository.findById(id);
+        Optional<Event> event = eventRepository.findById(id);
         if(event.isPresent()) {
             return event.get();
         } else {
@@ -49,7 +52,7 @@ public class EventService {
      * @return Newly edited event
      */
     public Event updateEvent(Event event) {
-        Optional<Event> sOptional = repository.findById((Integer) event.getId());
+        Optional<Event> sOptional = eventRepository.findById((Integer) event.getId());
 
         if (sOptional.isPresent()) {
             Event eventUpdate = sOptional.get();
@@ -59,10 +62,10 @@ public class EventService {
             eventUpdate.setEventStartTime(event.getEventStartTime());
             eventUpdate.setEventEndTime(event.getEventEndTime());
 
-            eventUpdate = repository.save(eventUpdate);
+            eventUpdate = eventRepository.save(eventUpdate);
             return eventUpdate;
         } else {
-            event = repository.save(event);
+            event = eventRepository.save(event);
             return event;
         }
     }
@@ -74,7 +77,7 @@ public class EventService {
      * @return Event that was added to the database
      */
     public Event addEvent(Event event) {
-        event = repository.save(event);
+        event = eventRepository.save(event);
         return event;
     }
 
@@ -83,19 +86,48 @@ public class EventService {
      * @param id ID of the event being removed
      */
     public void removeEvent(Integer id) {
-        Optional<Event> sOptional = repository.findById(id);
+        Optional<Event> sOptional = eventRepository.findById(id);
 
         if(sOptional.isPresent()) {
             Event eventUpdate = sOptional.get();
-            repository.deleteById(eventUpdate.getId());
+            eventRepository.deleteById(eventUpdate.getId());
         }
     }
 
     /**
-     * Get list of all events
+     * Get list of all events in order
      * @return List of events
      */
     public List<Event> getAllEventsOrdered() {
-        return repository.findAllByOrderByEventStartDate();
+        return eventRepository.findAllByOrderByEventStartDate();
+    }
+
+
+
+    /***
+     * For any events existing, get the sprints colour for its start date if it is within the sprint time slot,
+     * and the same is done with the events end date
+     *
+     * @param sprints sprints in chronological order
+     * @return events in chronological order
+     */
+    public List<Event> getAllEventsOrderedWithColour(List<Sprint> sprints) {
+        List<Event> eventList = getAllEventsOrdered();
+        for (Event currentEvent : eventList) {
+            // Reset Event's color
+            currentEvent.setStartDateColour(null);
+            currentEvent.setEndDateColour(null);
+
+            for (Sprint sprint : sprints) {
+                if (dateValidationService.validateEventStartDateInSprintDate(currentEvent, sprint)) {
+                    currentEvent.setStartDateColour(sprint.getColour());
+                }
+                if (dateValidationService.validateEventEndDateInSprintDate(currentEvent, sprint)) {
+                    currentEvent.setEndDateColour(sprint.getColour());
+                }
+            }
+            eventRepository.save(currentEvent);
+        }
+        return getAllEventsOrdered();
     }
 }

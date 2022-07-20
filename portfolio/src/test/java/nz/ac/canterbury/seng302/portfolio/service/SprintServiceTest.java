@@ -2,6 +2,8 @@ package nz.ac.canterbury.seng302.portfolio.service;
 
 import nz.ac.canterbury.seng302.portfolio.model.Sprint;
 import nz.ac.canterbury.seng302.portfolio.repository.SprintRepository;
+import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -9,10 +11,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
@@ -27,6 +26,13 @@ class SprintServiceTest {
 
     @InjectMocks
     private SprintService sprintService;
+
+    private ArrayList<String> colours;
+
+    @BeforeEach
+    public void init() {
+        colours = new ArrayList<>(Arrays.asList("#5897fc", "#a758fc", "#fc58c3", "#9e1212", "#c65102", "#d5b60a", "#004400", " #11887b"));
+    }
 
 
     @Test
@@ -115,5 +121,53 @@ class SprintServiceTest {
     void testCalendarDateStringToDateInvalid() {
         Date date = sprintService.calendarDateStringToDate("20/Jan/2001", true);
         assertNull(date);
+    }
+
+    @Test
+    void givenOneSprint_returnFirstColour() {
+        Sprint sprint = new Sprint();
+        sprint.setName("Test");
+        List<Sprint> sprintList = new ArrayList<>();
+        sprintList.add(sprint);
+        when(sprintRepository.findAllByOrderBySprintStartDate()).thenReturn(sprintList);
+
+        List<Sprint> outputSprints = sprintService.getAllSprintsOrderedWithColour();
+        assertThat(outputSprints.get(0).getColour()).isSameAs(colours.get(0));
+    }
+
+    @Test
+    void givenMultipleSprints_returnSprintsWithColorInOrder() {
+        Sprint sprint1 = new Sprint();
+        Sprint sprint2 = new Sprint();
+        Sprint sprint3 = new Sprint();
+        Sprint sprint4 = new Sprint();
+        Sprint sprint5 = new Sprint();
+        Sprint sprint6 = new Sprint();
+        Sprint sprint7 = new Sprint();
+        Sprint sprint8 = new Sprint();
+
+        List<Sprint> sprintList = new ArrayList<>();
+        sprintList.add(sprint1);
+        sprintList.add(sprint2);
+        sprintList.add(sprint3);
+        sprintList.add(sprint4);
+        sprintList.add(sprint5);
+        sprintList.add(sprint6);
+        sprintList.add(sprint7);
+        sprintList.add(sprint8);
+
+        when(sprintRepository.findAllByOrderBySprintStartDate()).thenReturn(sprintList);
+        List<Sprint> outputSprints = sprintService.getAllSprintsOrderedWithColour();
+
+        assertThat(outputSprints.get(0).getColour()).isSameAs(colours.get(0));
+        assertThat(outputSprints.get(1).getColour()).isSameAs(colours.get(1));
+        assertThat(outputSprints.get(2).getColour()).isSameAs(colours.get(2));
+        assertThat(outputSprints.get(3).getColour()).isSameAs(colours.get(3));
+        assertThat(outputSprints.get(4).getColour()).isSameAs(colours.get(4));
+        assertThat(outputSprints.get(5).getColour()).isSameAs(colours.get(5));
+        assertThat(outputSprints.get(6).getColour()).isSameAs(colours.get(6));
+        assertThat(outputSprints.get(7).getColour()).isSameAs(colours.get(7));
+
+
     }
 }

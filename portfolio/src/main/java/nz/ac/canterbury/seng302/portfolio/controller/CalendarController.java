@@ -50,6 +50,7 @@ public class CalendarController {
         ArrayList<String> colours = new ArrayList<>(Arrays.asList("#5897fc", "#a758fc", "#fc58c3", "#9e1212", "#c65102", "#d5b60a", "#004400"," #11887b"));
         int colIndex = 0;
         for (Sprint sprint : sprints) {
+            sprint.setColour(colours.get(colIndex));
             Date endDate = SprintLifetimeController.getUpdatedDate(sprint.getEndDate(), 1, 0);
             json.append("{id: '").append(sprint.getId()).append("', title: '").append(sprint.getName()).append("', start: '").append(sprint.getStartDate()).append("', end: '").append(endDate.toInstant()).append("', allDay: true, color: '").append(colours.get(colIndex)).append("', type: 'Sprint").append("'},");
 

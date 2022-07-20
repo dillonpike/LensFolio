@@ -3,7 +3,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="exampleModalLongTitle">Add Milestone</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="closeMilestoneModalButton"></button>
             </div>
             <form method="post" id="milestoneForm" onsubmit="validateMilestone(); return false;" th:action="@{add-milestone}">
                 <div class="modal-body">
@@ -13,7 +13,7 @@
                     </div>
                     <div class="mb-3">
                         <label for="milestoneName" class="col-form-label">Milestone Name:</label>
-                        <input onkeyup="updateCharsLeft('milestoneName', 'milestoneNameLength', 50)" maxlength="50" type="text" class="form-control" id="milestoneName" name="milestoneName">
+                        <input onkeyup="updateCharsLeft('milestoneName', 'milestoneNameLength', 30)" maxlength="30" type="text" class="form-control" id="milestoneName" name="milestoneName">
                         <div class="name-length-message">
                             <span id="milestoneNameLength"></span>
                         </div>

@@ -11,6 +11,9 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
     <link href='https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css' rel='stylesheet'>
 
+    <script src="webjars/sockjs-client/1.0.2/sockjs.min.js"></script>
+    <script src="webjars/stomp-websocket/2.3.3/stomp.min.js"></script>
+
     <script src="js/sprint.js"></script>
     <script src="js/banner.js"></script>
     <script src="webjars/jquery/3.6.0/dist/jquery.min.js"></script>
@@ -19,7 +22,7 @@
         const eventImage = 'images/event.svg';
         const deadlineImage = 'images/deadline.svg';
         const milestoneImage = 'images/milestone.svg';
-
+        let calendar;
         let currentRole = /*[[${currentUserRole}]]*/ "";
         document.addEventListener('DOMContentLoaded', function() {
 
@@ -29,7 +32,7 @@
 
             let calendarEl = document.getElementById('calendar');
             let selectedId = -1;
-            let calendar = new FullCalendar.Calendar(calendarEl, {
+            calendar = new FullCalendar.Calendar(calendarEl, {
                 themeSystem: 'bootstrap5',
                 initialView: 'dayGridMonth',
                 buttonText: {
@@ -147,7 +150,6 @@
                     saveSprint(sprint);
                 }
             });
-
             calendar.render();
             refreshTooltips();
 
@@ -164,12 +166,20 @@
             }
 
             $('.fc-prev-button').click(function(){
+                const date = calendar.getDate();
+                localStorage.setItem("currentDate", date);
                 refreshTooltips();
             });
 
             $('.fc-next-button').click(function(){
+                const date = calendar.getDate();
+                localStorage.setItem("currentDate", date);
                 refreshTooltips();
             });
+
+            if (localStorage.getItem("currentDate") !== null) {
+                calendar.gotoDate(new Date(localStorage.getItem("currentDate")).toISOString());
+            }
 
         });
         /*]]>*/
@@ -203,3 +213,36 @@
 
 <script src="webjars/fullcalendar/5.10.2/main.min.js"></script>
 </html>
+
+<script>
+    function connect() {
+        let socket = new SockJS('/test/portfolio/mywebsockets');
+        stompClient = Stomp.over(socket);
+        stompClient.connect({}, function (frame) {
+            console.log('Connected: ' + frame);
+
+            stompClient.subscribe('/test/portfolio/events/save-edit', function (ignore) {
+                refreshEvents();
+
+            });
+            stompClient.subscribe('/test/portfolio/events/delete-artefact', function (ignore) {
+                refreshEvents();
+            });
+        });
+    }
+
+    /**
+     * Refresh the DOM after some delay, to account for the saving function completing.
+     */
+    function refreshEvents() {
+        const date = calendar.getDate();
+        localStorage.setItem("currentDate", date);
+        setTimeout(() => {
+            document.location.reload();
+        }, 100);
+    }
+
+    connect();
+
+
+</script>
