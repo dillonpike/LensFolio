@@ -84,10 +84,6 @@ public class LoginController {
             if (loginReply.getMessage().equals("Log in attempt failed: username incorrect")) {
                 return "redirect:login?usernameError";
             }
-            if (!password.chars().anyMatch(Character::isUpperCase)) {
-                return "redirect:login?passwordFormatError";
-            }
-
             else {
                 return "redirect:login?passwordError";
             }
