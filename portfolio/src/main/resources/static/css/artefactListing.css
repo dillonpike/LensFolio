@@ -2,11 +2,12 @@
     padding: 3px;
 }
 
-.event-title {
+.artefact-title {
     padding-left: 2px;
+    word-break: break-all;
 }
 
-.event-date {
+.artefact-date {
     font-size: small;
     color: #727686;
     padding-left: 5px;

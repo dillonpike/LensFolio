@@ -25,7 +25,7 @@
           <div class="mb-3">
             <label for="deadlineDate" class="col-form-label">Deadline Date:</label>
             <div class="input-group date" id="deadlineDateInput">
-              <input onkeydown="return checkDateKeys(event)" onchange="validateModalDate('deadlineDate', 'deadlineModalButton', 'deadlineDateAlertBanner', 'deadlineDateAlertMessage')" type="text" class="form-control" id="deadlineDate" th:name="deadlineDateString">
+              <input onkeydown="return checkDateKeys(event)" onchange="validateModalDateTime('deadlineDate', 'deadlineTime', 'deadlineModalButton', 'deadlineDateAlertBanner', 'deadlineDateAlertMessage')" type="text" class="form-control" id="deadlineDate" th:name="deadlineDateString">
               <span class="input-group-append">
                   <span class="input-group-text bg-white">
                       <em class="bi bi-calendar"></em>
@@ -33,19 +33,10 @@
               </span>
             </div>
           </div>
-          <div class="alert alert-danger alert-dismissible fade show" role="alert" id="deadlineTimeAlertBanner" hidden>
-            <span id="deadlineTimeAlertMessage" data-test-id="alertMessage"></span>
-            <button type="button" class="btn-close" onclick="document.getElementById('deadlineTimeAlertBanner').hidden = true" aria-label="Close"></button>
-          </div>
           <div class="mb-3">
             <label for="deadlineTime" class="col-form-label">Deadline Time:</label>
             <div class='input-group date' id='deadlineTimeInput'>
-              <input onkeydown="return checkTimeKeys(event)" onchange="validateModalTime('deadlineTime', 'deadlineModalButton', 'deadlineTimeAlertBanner', 'deadlineTimeAlertMessage')" type="text" class="form-control" id="deadlineTime" th:name="deadlineTimeString">
-              <span class="input-group-append">
-                <span class="input-group-text bg-white">
-                    <em class="bi bi-clock"></em>
-                </span>
-              </span>
+              <input onkeydown="return checkTimeKeys(event)" onchange="validateModalDateTime('deadlineDate', 'deadlineTime', 'deadlineModalButton', 'deadlineDateAlertBanner', 'deadlineDateAlertMessage')" type="time" class="form-control" id="deadlineTime" th:name="deadlineTimeString">
             </div>
           </div>
         </div>
@@ -61,8 +52,7 @@
      * Validates the currently entered information for the deadline and submits the form if it's valid.
      */
     async function validateDeadline() {
-      if (validateModalDate('deadlineDate', 'submitDeadlineButton', 'deadlineDateAlertBanner', 'deadlineDateAlertMessage') &&
-              validateModalTime('deadlineTime', 'submitDeadlineButton', 'deadlineTimeAlertBanner', 'deadlineTimeAlertMessage') &&
+      if (validateModalDateTime('deadlineDate', 'deadlineTime', 'deadlineModalButton', 'deadlineDateAlertBanner', 'deadlineDateAlertMessage') &&
               validateModalName('deadlineName', 'deadlineAlertBanner', 'deadlineAlertMessage')) {
         document.getElementById('deadlineForm').submit();
       }

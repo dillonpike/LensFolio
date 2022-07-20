@@ -6,7 +6,6 @@ import nz.ac.canterbury.seng302.portfolio.service.EventService;
 import nz.ac.canterbury.seng302.portfolio.service.RegisterClientService;
 import nz.ac.canterbury.seng302.portfolio.service.UserAccountClientService;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
-import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
@@ -28,32 +27,6 @@ public class EditEventController {
     @Autowired
     private RegisterClientService registerClientService;
 
-    /**
-     * Gets data for editing a given event.
-     * @param id Id of event
-     * @param model Used to display the event data to the UI
-     * @throws Exception If getting the event from the given id fails
-     */
-    @GetMapping("/edit-event/{id}")
-    public String eventEditForm(@PathVariable("id") Integer id, Model model, @AuthenticationPrincipal AuthState principal ) throws Exception {
-        Event event = eventService.getEventById(id);
-        /* Add Event details to the model */
-        model.addAttribute("eventId", id);
-        model.addAttribute("event", event);
-        model.addAttribute("eventDateError", "");
-
-        // Get user information for sending with live updates
-        Integer userId = userAccountClientService.getUserIDFromAuthState(principal);
-        model.addAttribute("userId", userId);
-        UserResponse user = registerClientService.getUserData(userId);
-        model.addAttribute("username", user.getUsername());
-        model.addAttribute("userFirstName", user.getFirstName());
-        model.addAttribute("userLastName", user.getLastName());
-
-
-        /* Return the name of the Thymeleaf template */
-        return "editEvent";
-    }
 
     /**
      * Tries to save new data to event with given eventId to the database.
@@ -77,28 +50,5 @@ public class EditEventController {
 
         return "redirect:/details";
     }
-
-    /**
-     * Handles adding errors to the edit event page if any errors are found to be made.
-     * @param eventStartDate Current event start date
-     * @param eventEndDate Current event end date
-     * @param eventStartTime Current event start time
-     * @param eventEndTime Current event end time
-     * @param model Model of page
-     */
-    @PostMapping(value="/edit-event/error")
-    public String updateEventRangeErrors(@RequestParam(value="eventStartDate") String eventStartDate,
-                                         @RequestParam(value="eventEndDate") String eventEndDate,
-                                         @RequestParam(value="eventStartTime") String eventStartTime,
-                                         @RequestParam(value="eventEndTime") String eventEndTime,
-                                         Model model) {
-        model.addAttribute("eventDateError",
-                dateValidationService.validateDateRangeNotEmpty(eventStartDate, eventEndDate) + " " +
-                        dateValidationService.validateStartDateNotAfterEndDate(eventStartDate, eventEndDate) + " " +
-                        dateValidationService.validateDatesInProjectDateRange(eventStartDate, eventEndDate) + " " +
-                        dateValidationService.validateStartTimeNotAfterEndTime(eventStartTime, eventEndTime, eventStartDate, eventEndDate));
-        return "editEvent :: #eventDateError";
-    }
-
 
 }

@@ -148,6 +148,7 @@ a {
     font-weight: bold;
     color: #453737;
     font-size: large;
+    word-break: break-all;
 }
 
 .sprint-date {
@@ -158,6 +159,7 @@ a {
 .sprint-description {
     color: #636363;
     padding-top: 5px;
+    word-break: break-all;
 }
 /* Sprints-Display End */
 
@@ -252,7 +254,7 @@ body{
     display: flex;
     flex-direction: column;
     min-width: 0;
-    word-wrap: break-word;
+    word-break: break-all;
     background-color: #ffffff;
     background-clip: border-box;
     border: 1px solid #e6e4e9;

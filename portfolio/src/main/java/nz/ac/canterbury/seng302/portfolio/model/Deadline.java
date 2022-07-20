@@ -158,7 +158,7 @@ public class Deadline {
      * @return string representation of the time of the deadline. Null if deadlineDate is null.
      */
     public String getDeadlineTimeString()  {
-        SimpleDateFormat dateFormat = new SimpleDateFormat("h:mm a");
+        SimpleDateFormat dateFormat = new SimpleDateFormat("kk:mm");
         if (deadlineDate != null) {
             return (dateFormat.format(deadlineDate));
         }
@@ -167,11 +167,11 @@ public class Deadline {
 
     /**
      * Sets the time of the date stored in deadlineDate.
-     * @param time Time in string format, formatted as: "h:mm a" (e.g. 12:37 am).
+     * @param time Time in string 24-hour format, formatted as: "kk:mm" (e.g. 15:37).
      * @throws ParseException Thrown if time parameter is given in the wrong format.
      */
     public void setDeadlineTimeString(@NotNull String time) throws ParseException {
-        SimpleDateFormat timeFormat = new SimpleDateFormat("h:mm a");
+        SimpleDateFormat timeFormat = new SimpleDateFormat("kk:mm");
         Date dateWithTime = timeFormat.parse(time);
         Calendar cal = Calendar.getInstance();
         if (deadlineDate == null) {

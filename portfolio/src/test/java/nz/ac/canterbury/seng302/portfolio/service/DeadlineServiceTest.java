@@ -2,10 +2,13 @@ package nz.ac.canterbury.seng302.portfolio.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import io.cucumber.java.hu.De;
 import nz.ac.canterbury.seng302.portfolio.model.Deadline;
 import nz.ac.canterbury.seng302.portfolio.model.Event;
 import nz.ac.canterbury.seng302.portfolio.model.Sprint;
 import nz.ac.canterbury.seng302.portfolio.repository.DeadlinesRepository;
+import nz.ac.canterbury.seng302.portfolio.repository.EventRepository;
+import nz.ac.canterbury.seng302.portfolio.repository.SprintRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -15,7 +18,9 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -39,6 +44,12 @@ class DeadlineServiceTest {
     /**
      * Mocked repository of DateValidationService objects.
      */
+    @Mock
+    private DateValidationService dateValidationService;
+
+    @Mock
+    private SprintRepository sprintRepository;
+
     @Mock
     private DateValidationService dateValidationService;
 
@@ -164,6 +175,115 @@ class DeadlineServiceTest {
         deadlineService.removeDeadline(1);
 
         verify(deadlinesRepository, times(0)).deleteById(any(Integer.class));
+    }
+
+    @Test
+    void testValidateDeadlineDateInSprintDateRange_givenDeadlineInSprintDateRange_returnTrue() {
+        Sprint sprint = new Sprint();
+        sprint.setName("Testing");
+        sprint.setStartDate(sprintService.calendarDateStringToDate("2001-12-20", false));
+        sprint.setEndDate(sprintService.calendarDateStringToDate("2001-12-29", true));
+
+        Deadline deadline = new Deadline();
+
+        deadline.setDeadlineName("Date In Sprint Range");
+        deadline.setDeadlineDate(sprintService.calendarDateStringToDate("2001-12-21", false));
+
+        boolean expectResult = deadlineService.validateDeadlineDateInSprintDateRange(deadline, sprint);
+
+        assertTrue(expectResult);
+    }
+
+    @Test
+    void testValidateDeadlineDateInSprintDateRange_givenDeadlineNotInSprintDateRange_returnFalse() {
+        Sprint sprint = new Sprint();
+        sprint.setName("Testing");
+        sprint.setStartDate(sprintService.calendarDateStringToDate("2001-12-20", false));
+        sprint.setEndDate(sprintService.calendarDateStringToDate("2001-12-29", true));
+
+        Deadline deadline = new Deadline();
+
+        deadline.setDeadlineName("Date In Sprint Range");
+        deadline.setDeadlineDate(sprintService.calendarDateStringToDate("2001-12-19", false));
+
+        boolean expectResult = deadlineService.validateDeadlineDateInSprintDateRange(deadline, sprint);
+
+        assertFalse(expectResult);
+    }
+
+    @Test
+    void testValidateDeadlineDateInSprintDateRange_givenDeadlineDateInSprintStartDay_returnTrue() {
+        Sprint sprint = new Sprint();
+        sprint.setName("Testing");
+        sprint.setStartDate(sprintService.calendarDateStringToDate("2001-12-20", false));
+        sprint.setEndDate(sprintService.calendarDateStringToDate("2001-12-29", true));
+
+        Deadline deadline = new Deadline();
+
+        deadline.setDeadlineName("Date In Sprint Range");
+        deadline.setDeadlineDate(sprintService.calendarDateStringToDate("2001-12-20", false));
+
+        boolean expectResult = deadlineService.validateDeadlineDateInSprintDateRange(deadline, sprint);
+
+        assertTrue(expectResult);
+    }
+
+    @Test
+    void testValidateDeadlineDateInSprintDateRange_givenDeadlineDateInSprintEndDay_returnTrue() {
+        Sprint sprint = new Sprint();
+        sprint.setName("Testing");
+        sprint.setStartDate(sprintService.calendarDateStringToDate("2001-12-20", false));
+        sprint.setEndDate(sprintService.calendarDateStringToDate("2001-12-29", true));
+
+        Deadline deadline = new Deadline();
+
+        deadline.setDeadlineName("Date In Sprint Range");
+        deadline.setDeadlineDate(sprintService.calendarDateStringToDate("2001-12-29", true));
+
+        boolean expectResult = deadlineService.validateDeadlineDateInSprintDateRange(deadline, sprint);
+
+        assertTrue(expectResult);
+    }
+
+    @Test
+    void givenOneSprint_returnDeadlinesThatOverlap() {
+        Sprint sprint = new Sprint();
+        sprint.setName("Testing");
+        sprint.setStartDate(sprintService.calendarDateStringToDate("2001-12-20", false));
+        sprint.setEndDate(sprintService.calendarDateStringToDate("2001-12-29", true));
+        sprint.setColour("#5897fc");
+
+        Deadline deadline1 = new Deadline();
+        Deadline deadline2 = new Deadline();
+        Deadline deadline3 = new Deadline();
+        Deadline deadline4 = new Deadline();
+
+        deadline1.setDeadlineName("Date Overlaps");
+        deadline1.setDeadlineDate(sprintService.calendarDateStringToDate("2001-12-21", false));
+
+        deadline2.setDeadlineName("Date not in sprint");
+        deadline2.setDeadlineDate(sprintService.calendarDateStringToDate("2001-12-19", false));
+
+        deadline3.setDeadlineName("No Dates Overlap");
+        deadline3.setDeadlineDate(sprintService.calendarDateStringToDate("2001-12-23", false));
+
+        deadline4.setDeadlineName("Sprint start date");
+        deadline4.setDeadlineDate(sprintService.calendarDateStringToDate("2001-12-20", false));
+
+        List<Deadline> deadlineList = new ArrayList<>();
+        deadlineList.add(deadline1);
+        deadlineList.add(deadline2);
+        deadlineList.add(deadline3);
+        deadlineList.add(deadline4);
+
+        when(deadlineService.getAllDeadlinesOrdered()).thenReturn(deadlineList);
+
+        List<Deadline> returnedDeadlines = deadlineService.getAllDeadlinesOverLappingWithSprint(sprint);
+
+        assertEquals(deadline1.getDeadlineName(), returnedDeadlines.get(0).getDeadlineName());
+        assertEquals(deadline3.getDeadlineName(), returnedDeadlines.get(1).getDeadlineName());
+        assertEquals(deadline4.getDeadlineName(), returnedDeadlines.get(2).getDeadlineName());
+
     }
 
     /**
