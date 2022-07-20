@@ -50,8 +50,6 @@ class DeadlineServiceTest {
     @Mock
     private SprintRepository sprintRepository;
 
-    @Mock
-    private DateValidationService dateValidationService;
 
     /**
      * DeadlineService object.
