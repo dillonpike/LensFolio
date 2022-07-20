@@ -47,7 +47,7 @@ public class DeadlineService {
      */
     public Deadline getDeadlineById(Integer id) throws Exception {
         Optional<Deadline> deadline = repository.findById(id);
-        if(deadline.isPresent()) {
+        if (deadline.isPresent()) {
             return deadline.get();
         } else {
 

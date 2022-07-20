@@ -43,8 +43,8 @@ public class UserModel implements Serializable {
 
     public void deleteRole(Roles role) {
         Set<Roles> filteredSet = new HashSet<>();
-        for(Roles userRole: roles){
-            if(!userRole.getRoleName().equals(role.getRoleName())){
+        for(Roles userRole: roles) {
+            if (!userRole.getRoleName().equals(role.getRoleName())) {
                 filteredSet.add(userRole);
             }
         }

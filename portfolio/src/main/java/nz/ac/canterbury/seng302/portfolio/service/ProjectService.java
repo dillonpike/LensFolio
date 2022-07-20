@@ -36,7 +36,7 @@ public class ProjectService {
     public Project getProjectById(Integer id) throws Exception {
 
         Optional<Project> project = repository.findById(id);
-        if(project.isPresent()) {
+        if (project.isPresent()) {
             return project.get();
         } else {
             throw new Exception("Project not found");
@@ -52,7 +52,7 @@ public class ProjectService {
     public Project UpdateProjectById(Integer id) throws Exception {
 
         Optional<Project> project = repository.findById(id);
-        if(project.isPresent()) {
+        if (project.isPresent()) {
             return project.get();
         } else {
             throw new Exception("Project not found");
@@ -67,7 +67,7 @@ public class ProjectService {
     public Project updateProject(Project project) {
         Optional<Project> pOptional = repository.findById((Integer) project.getId());
 
-        if(pOptional.isPresent()) {
+        if (pOptional.isPresent()) {
             Project projectUpdate = pOptional.get();
             projectUpdate.setDescription(project.getDescription());
             projectUpdate.setStartDate(project.getStartDate());

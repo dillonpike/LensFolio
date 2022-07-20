@@ -449,7 +449,7 @@ public class UserAccountServerService extends UserAccountServiceGrpc.UserAccount
      * @return UserRoleChangeResponse which contains information whether deleting a role to user was done successfully or not
      */
     @VisibleForTesting
-    UserRoleChangeResponse removeRoleFromUserHelper (ModifyRoleOfUserRequest request){
+    UserRoleChangeResponse removeRoleFromUserHelper (ModifyRoleOfUserRequest request) {
         UserRoleChangeResponse.Builder reply = UserRoleChangeResponse.newBuilder();
         try {
             UserModel user = userModelService.getUserById(request.getUserId());

@@ -76,7 +76,7 @@ public class EditAccountController {
         elementService.addUpdateMessage(model, request);
         try {
             int userId = Integer.parseInt(userIdInput);
-            if(id == userId){
+            if (id == userId) {
                 model.addAttribute("isAuthorised", true);
             } else {
                 model.addAttribute("isAuthorised", false);
@@ -171,7 +171,7 @@ public class EditAccountController {
     ) {
         try {
             EditUserResponse saveUserdata = registerClientService.setUserData(userId, firstName, middleName, lastName, email, bio, nickName, personalPronouns);
-            if(saveUserdata.getIsSuccess()){
+            if (saveUserdata.getIsSuccess()) {
                 rm.addFlashAttribute("isUpdateSuccess", true);
             } else {
                 rm.addFlashAttribute("isUpdateSuccess", false);

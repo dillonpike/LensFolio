@@ -275,12 +275,6 @@ function connect() {
 
         });
 
-        // stompClient.subscribe('/test/portfolio/calendar/save-edit', function (eventResponseArg) {
-        //     const eventResponse = JSON.parse(eventResponseArg.body);
-        //     refreshEvents();
-        //     //showToastSave(eventResponse.artefactName, eventResponse.artefactId, eventResponse.username, eventResponse.userFirstName, eventResponse.userLastName, eventResponse.artefactType);
-        //
-        // });
     });
 }
 
