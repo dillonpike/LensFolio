@@ -56,13 +56,12 @@
 
                     // image event
                     let imgEventWrap = document.createElement('div')
+                    imgEventWrap.setAttribute("id", "events");
                     imgEventWrap.setAttribute("title", arg.event.extendedProps.description);
-                    imgEventWrap.setAttribute("data-toggle", "tooltip");
-                    imgEventWrap.setAttribute("data-bs-html", "true");
 
                     if(arg.event.extendedProps.type === 'Deadline') {
                         let imgEvent = '<img src= ' + deadlineImage + ' >'
-                        imgEventWrap.classList.add("fc-event-img");
+                        imgEventWrap.classList.add("fc-deadline-img");
                         imgEventWrap.innerHTML = imgEvent;
                     }
                     if(arg.event.extendedProps.type === 'Event') {
@@ -72,11 +71,16 @@
                     }
                     if(arg.event.extendedProps.type === 'Milestone') {
                         let imgEvent = '<img src= ' + milestoneImage + ' >'
-                        imgEventWrap.classList.add("fc-event-img");
+                        imgEventWrap.classList.add("fc-milestone-img");
                         imgEventWrap.innerHTML = imgEvent;
                     }
 
-                    arrayOfDomNodes = [ imgEventWrap, titleEvent ]
+                    if (arg.event.extendedProps.type === 'Sprint') {
+                        arrayOfDomNodes = [ titleEvent ]
+                    } else {
+                        arrayOfDomNodes = [ imgEventWrap, titleEvent ]
+                    }
+
 
                     return { domNodes: arrayOfDomNodes }
                 },
@@ -122,27 +126,6 @@
                         }
                     }
                 },
-                // eventMouseEnter: function(info) { //TODO Remove?
-                //     // change the border color
-                //     let event = calendar.getEventById(info.event.id);
-                //
-                //     if (event.extendedProps.type === 'Sprint') {
-                //         if (event.borderColor !== alternateColour(event.backgroundColor)) {
-                //             event.setProp("classNames", "event-border-hover");
-                //             //event.setProp("borderColor", "black");
-                //         }
-                //     }
-                // },
-                // eventMouseLeave: function(info) {
-                //     // change the border color
-                //     let event = calendar.getEventById(info.event.id);
-                //     if (event.extendedProps.type === 'Sprint') {
-                //         if (event.borderColor !== alternateColour(event.backgroundColor)) {
-                //             event.setProp("classNames", "event-border");
-                //             //event.setProp("borderColor", event.backgroundColor);
-                //         }
-                //     }
-                // },
                 eventOverlap: function(stillEvent, movingEvent) {
                     console.log(stillEvent);
                     if (stillEvent.extendedProps.type === 'Sprint') {
@@ -164,10 +147,30 @@
                     saveSprint(sprint);
                 }
             });
+
             calendar.render();
-            $(function () {
-                $('[data-toggle="tooltip"]').tooltip()
-            })
+            refreshTooltips();
+
+            function refreshTooltips() {
+                $("[id='events']" ).each(function (ignore) {
+                    $(this).parent().get(0).setAttribute("title", $(this).get(0).getAttribute("title"))
+                    $(this).parent().get(0).setAttribute("data-bs-html", "true");
+                    $(this).parent().get(0).setAttribute("data-toggle", "tooltip");
+                });
+
+                $(function () {
+                    $('[data-toggle="tooltip"]').tooltip()
+                })
+            }
+
+            $('.fc-prev-button').click(function(){
+                refreshTooltips();
+            });
+
+            $('.fc-next-button').click(function(){
+                refreshTooltips();
+            });
+
         });
         /*]]>*/
     </script>

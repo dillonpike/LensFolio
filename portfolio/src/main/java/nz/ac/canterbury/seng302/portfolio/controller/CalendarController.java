@@ -140,8 +140,6 @@ public class CalendarController {
         }
         String calendarEvents = sprintListToJSON(sprints) + eventsToDisplay(deadlines, events, milestones);
         model.addAttribute("events", calendarEvents);
-        model.addAttribute("event-details", eventListToJSON(events));
-        model.addAttribute("deadline-details", deadlineListToJSON(deadlines));
 
         Project project;
         try {
