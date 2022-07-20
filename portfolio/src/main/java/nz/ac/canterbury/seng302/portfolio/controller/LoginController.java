@@ -83,8 +83,7 @@ public class LoginController {
             model.addAttribute("loginMessage", loginReply.getMessage());
             if (loginReply.getMessage().equals("Log in attempt failed: username incorrect")) {
                 return "redirect:login?usernameError";
-            }
-            else {
+            } else {
                 return "redirect:login?passwordError";
             }
 
