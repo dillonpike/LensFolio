@@ -197,9 +197,9 @@
                                         </div>
                                         <div class="collapse" th:id="collapseDeadline + ${sprint.getId()}">
                                             <div th:each="deadline, meta: ${deadlinesForSprints.get(meta.index)}">
-                                                <div class="event-block">
-                                                    <div class="event-title" th:text="${deadline.getDeadlineName()}"/>
-                                                    <div class="event-date event-start-date" th:text="From + ': ' + ${deadline.getDeadlineDateString()}"/>
+                                                <div class="artefact-info-block">
+                                                    <div class="artefact-title" th:text="${deadline.getDeadlineName()}"/>
+                                                    <div class="artefact-date event-start-date" th:text="From + ': ' + ${deadline.getDeadlineDateString()}"/>
                                                 </div>
                                             </div>
                                         </div>
