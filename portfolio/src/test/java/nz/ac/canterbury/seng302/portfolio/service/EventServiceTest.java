@@ -206,9 +206,6 @@ class EventServiceTest {
         eventList.add(event3);
         eventList.add(event4);
 
-        when(eventService.validateEventStartDateInSprintDate(event1, sprint)).thenReturn(true);
-        when(eventService.validateEventEndDateInSprintDate(event2, sprint)).thenReturn(true);
-
         when(eventService.getAllEventsOrdered()).thenReturn(eventList);
 
         List<Event> returnedEvents = eventService.getAllEventsOverlappingWithSprint(sprint);
