@@ -1,10 +1,6 @@
 package nz.ac.canterbury.seng302.portfolio.model;
 
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import java.util.Date;
 import java.text.SimpleDateFormat;
@@ -12,7 +8,6 @@ import java.util.Objects;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.springframework.format.annotation.DateTimeFormat;
 
 @Entity // this is an entity, assumed to be in a table called Project
 public class Project {
