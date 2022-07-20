@@ -1,8 +1,8 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
-import nz.ac.canterbury.seng302.portfolio.model.Project;
-import nz.ac.canterbury.seng302.portfolio.model.Sprint;
+import nz.ac.canterbury.seng302.portfolio.model.*;
 import nz.ac.canterbury.seng302.portfolio.service.*;
+import nz.ac.canterbury.seng302.portfolio.utility.EventDic;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import nz.ac.canterbury.seng302.shared.identityprovider.ClaimDTO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,19 +26,33 @@ public class CalendarController {
     private ProjectService projectService;
 
     @Autowired
+    private EventService eventService;
+
+    @Autowired
+    private DeadlineService deadlineService;
+
+    @Autowired
+    private MilestoneService milestoneService;
+
+    @Autowired
     private UserAccountClientService userAccountClientService;
 
     @Autowired
     private ElementService elementService;
 
-    public String listToJSON(List<Sprint> sprints) {
+    /***
+     * Produces a JSON list that fullcalendar can read to display sprints on the calendar
+     * @param sprints list of sprints from the database
+     * @return JSON list for sprints to display on the calendar
+     */
+    public String sprintListToJSON(List<Sprint> sprints) {
         StringBuilder json = new StringBuilder();
         ArrayList<String> colours = new ArrayList<>(Arrays.asList("#5897fc", "#a758fc", "#fc58c3", "#9e1212", "#c65102", "#d5b60a", "#004400"," #11887b"));
         int colIndex = 0;
         for (Sprint sprint : sprints) {
             sprint.setColour(colours.get(colIndex));
             Date endDate = SprintLifetimeController.getUpdatedDate(sprint.getEndDate(), 1, 0);
-            json.append("{id: '").append(sprint.getId()).append("', title: '").append(sprint.getName()).append("', start: '").append(sprint.getStartDate()).append("', end: '").append(endDate.toInstant()).append("', allDay: true, color: '").append(colours.get(colIndex)).append("'},");
+            json.append("{id: '").append(sprint.getId()).append("', title: '").append(sprint.getName()).append("', start: '").append(sprint.getStartDate()).append("', end: '").append(endDate.toInstant()).append("', allDay: true, color: '").append(colours.get(colIndex)).append("', type: 'Sprint").append("'},");
 
             if (colIndex == (colours.size() - 1)) { // List max
                 colIndex = 0;
@@ -50,6 +64,55 @@ public class CalendarController {
         return json.toString();
     }
 
+    /***
+     * Produces a JSON list that fullcalendar can read to display events on the calendar
+     * @param events list of events from the database
+     * @return JSON list for events to display on the calendar
+     */
+    public String eventListToJSON(List<Event> events) {
+        StringBuilder json = new StringBuilder();
+        for (Event event : events) {
+            Date endDate = SprintLifetimeController.getUpdatedDate(event.getEventEndDate(), 1, 0);
+            json.append("{id: '").append(event.getId()).append("', title: '").append(event.getEventName()).append("', start: '").append(event.getEventStartDate()).append("', end: '").append(endDate.toInstant()).append("', type: 'Event").append("'},");
+        }
+        return json.toString();
+    }
+
+    /***
+     * Produces a JSON list that fullcalendar can read to display events on the calendar
+     * @param deadlines list of events from the database
+     * @return JSON list for events to display on the calendar
+     */
+    public String deadlineListToJSON(List<Deadline> deadlines) {
+        StringBuilder json = new StringBuilder();
+        for (Deadline deadline : deadlines) {
+            json.append("{id: '").append(deadline.getId()).append("', title: '").append(deadline.getDeadlineName()).append("', start: '").append(deadline.getDeadlineDate()).append("', type: 'Deadline").append("'},");
+        }
+        return json.toString();
+    }
+
+    /***
+     * Produces a JSON list that fullcalendar can read to display events on the calendar
+     * @param deadlines list of events from the database
+     * @return JSON list for events to display on the calendar
+     */
+    private String eventsToDisplay(List<Deadline> deadlines, List<Event> events, List<Milestone> milestones) {
+        EventDic dic1 = new EventDic();
+        EventDic dic2 = new EventDic();
+        EventDic dic3 = new EventDic();
+        for (Event event : events) {
+            dic1.add(event);
+
+        }
+        for (Deadline deadline : deadlines) {
+            dic2.add(deadline);
+        }
+        for (Milestone milestone : milestones) {
+            dic3.add(milestone);
+        }
+
+        return dic1.makeJSON() + dic2.makeJSON() + dic3.makeJSON();
+    }
 
 
     /***
@@ -64,15 +127,22 @@ public class CalendarController {
             Model model,
             @AuthenticationPrincipal AuthState principal) throws Exception {
         List<Sprint> sprints;
+        List<Event> events;
+        List<Deadline> deadlines;
+        List<Milestone> milestones;
         Integer id = userAccountClientService.getUserIDFromAuthState(principal);
         elementService.addHeaderAttributes(model, id);
         model.addAttribute("userId", id);
         try {
             sprints = sprintService.getAllSprintsOrdered();
+            events = eventService.getAllEventsOrdered();
+            deadlines = deadlineService.getAllDeadlinesOrdered();
+            milestones = milestoneService.getAllMilestonesOrdered();
         } catch (Exception e) {
             return "500InternalServer";
         }
-        model.addAttribute("sprints", listToJSON(sprints));
+        String calendarEvents = sprintListToJSON(sprints) + eventsToDisplay(deadlines, events, milestones);
+        model.addAttribute("events", calendarEvents);
 
         Project project;
         try {
@@ -98,4 +168,6 @@ public class CalendarController {
         model.addAttribute("currentUserRole", role);
         return "calendar";
     }
+
+
 }

@@ -85,7 +85,7 @@
     //reload the page after the call is finished
     // @param id an Integer indicating the user id of a user that a role will be deleted from
     // @param a String object indicating the user role that will be deleted
-    function  deleteUserRole(id, role){
+    function  deleteUserRole(id, role) {
         const url = "delete_role?userId="+id+"&deletedRole="+role;
         $.post(url);
         window.location.reload();

@@ -183,15 +183,15 @@ public class DetailsController {
      * @return returns an NotificationResponse that holds information about the event being updated.
      */
     @MessageMapping("/editing-artefact")
-    @SendTo("/test/portfolio/events/being-edited")
+    @SendTo("/test/portfolio/artefact/being-edited")
     public NotificationResponse updatingArtefact(NotificationMessage message) {
-        int eventId = message.getArtefactId();
+        int artefactId = message.getArtefactId();
         String username = message.getUsername();
         String firstName = message.getUserFirstName();
         String lastName = message.getUserLastName();
         String artefactType = message.getArtefactType();
         long dateOfNotification = Date.from(Instant.now()).toInstant().getEpochSecond();
-        return new NotificationResponse(HtmlUtils.htmlEscape(message.getArtefactName()), eventId, username, firstName, lastName, dateOfNotification, artefactType);
+        return new NotificationResponse(HtmlUtils.htmlEscape(message.getArtefactName()), artefactId, username, firstName, lastName, dateOfNotification, artefactType);
     }
 
     /**
@@ -201,15 +201,15 @@ public class DetailsController {
      * @return Returns the message given.
      */
     @MessageMapping("/stop-editing-artefact")
-    @SendTo("/test/portfolio/events/stop-being-edited")
+    @SendTo("/test/portfolio/artefact/stop-being-edited")
     public NotificationResponse stopUpdatingArtefact(NotificationMessage message) {
-        int eventId = message.getArtefactId();
+        int artefactId = message.getArtefactId();
         String username = message.getUsername();
         String firstName = message.getUserFirstName();
         String lastName = message.getUserLastName();
         String artefactType = message.getArtefactType();
         long dateOfNotification = Date.from(Instant.now()).toInstant().getEpochSecond();
-        return new NotificationResponse(HtmlUtils.htmlEscape(message.getArtefactName()), eventId, username, firstName, lastName, dateOfNotification, artefactType);
+        return new NotificationResponse(HtmlUtils.htmlEscape(message.getArtefactName()), artefactId, username, firstName, lastName, dateOfNotification, artefactType);
     }
 
     /**
@@ -219,15 +219,15 @@ public class DetailsController {
      * @return returns an NotificationResponse that holds information about the event being updated.
      */
     @MessageMapping("/saved-edited-artefact")
-    @SendTo("/test/portfolio/events/save-edit")
+    @SendTo("/test/portfolio/artefact/save-edit")
     public NotificationResponse savingUpdatedArtefact(NotificationMessage message) {
-        int eventId = message.getArtefactId();
+        int artefactId = message.getArtefactId();
         String username = message.getUsername();
         String firstName = message.getUserFirstName();
         String lastName = message.getUserLastName();
         long dateOfNotification = Date.from(Instant.now()).toInstant().getEpochSecond();
         String artefactType = message.getArtefactType();
-        NotificationResponse response = new NotificationResponse(HtmlUtils.htmlEscape(message.getArtefactName()), eventId, username, firstName, lastName, dateOfNotification, artefactType);
+        NotificationResponse response = new NotificationResponse(HtmlUtils.htmlEscape(message.getArtefactName()), artefactId, username, firstName, lastName, dateOfNotification, artefactType);
         // Trigger reload and save the last event's information
         eventsToDisplay.add(response);
         while (eventsToDisplay.size() > 3) {
@@ -250,6 +250,16 @@ public class DetailsController {
         }
 
         return allEventsList;
+    }
+
+    /**
+     * This method used to mainly reload the calendar page when an artefact is being edited or deleted on the project details
+     * @param ignore this parameter, even though it is not used, is necessary to exist in order to send the request to websocket
+     */
+    @MessageMapping("/delete-artefact")
+    @SendTo("/test/portfolio/artefact/delete-artefact")
+    public NotificationResponse deleteArtefact(NotificationMessage ignore) {
+        return new NotificationResponse();
     }
 
     /**
