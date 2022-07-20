@@ -255,7 +255,7 @@ function reorderNotifications() {
  * Then subscribes methods to the required endpoints.
  */
 function connect() {
-    let socket = new SockJS('/mywebsockets');
+    let socket = new SockJS('/test/portfolio/mywebsockets');
     stompClient = Stomp.over(socket);
     stompClient.connect({}, function (frame) {
         console.log('Connected: ' + frame);
