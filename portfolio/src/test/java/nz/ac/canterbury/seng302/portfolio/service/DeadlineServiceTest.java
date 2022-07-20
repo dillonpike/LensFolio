@@ -37,6 +37,12 @@ class DeadlineServiceTest {
     private DeadlinesRepository deadlinesRepository;
 
     /**
+     * Mocked repository of DateValidationService objects.
+     */
+    @Mock
+    private DateValidationService dateValidationService;
+
+    /**
      * DeadlineService object.
      */
     @InjectMocks
@@ -165,13 +171,14 @@ class DeadlineServiceTest {
         Sprint sprint = new Sprint();
         sprint.setName("Testing");
         sprint.setStartDate(sprintService.calendarDateStringToDate("2001-12-20", false));
-        sprint.setEndDate(sprintService.calendarDateStringToDate("2001-12-22", true));
+        sprint.setEndDate(sprintService.calendarDateStringToDate("2001-12-25", true));
         sprint.setColour("#5897fc");
         List<Sprint> sprintList = new ArrayList<>();
         sprintList.add(sprint);
 
         Deadline deadline = new Deadline();
-        deadline.setDeadlineDate(sprintService.calendarDateStringToDate("2001-12-21", false));
+        deadline.setDeadlineDate(sprintService.calendarDateStringToDate("2001-12-23", false));
+        deadline.setDeadlineName("Test Deadline");
         List<Deadline> deadlineList = new ArrayList<>();
         deadlineList.add(deadline);
 
