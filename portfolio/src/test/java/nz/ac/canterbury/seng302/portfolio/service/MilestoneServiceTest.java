@@ -1,5 +1,6 @@
 package nz.ac.canterbury.seng302.portfolio.service;
 
+import nz.ac.canterbury.seng302.portfolio.model.Event;
 import nz.ac.canterbury.seng302.portfolio.model.Milestone;
 import nz.ac.canterbury.seng302.portfolio.model.Sprint;
 import nz.ac.canterbury.seng302.portfolio.repository.EventRepository;
@@ -202,5 +203,46 @@ class MilestoneServiceTest {
         assertThat(outputMilestoneList.get(1).getColour()).isSameAs(sprint.getColour());
         assertThat(outputMilestoneList.get(2).getColour()).isNull();
         assertThat(outputMilestoneList.get(3).getColour()).isSameAs(sprint.getColour());
+    }
+
+    @Test
+    void givenSprint_returnEventsThatOverlap() {
+        Sprint sprint = new Sprint();
+        sprint.setName("Testing");
+        sprint.setStartDate(sprintService.calendarDateStringToDate("2001-12-20", false));
+        sprint.setEndDate(sprintService.calendarDateStringToDate("2001-12-22", true));
+        sprint.setColour("#5897fc");
+
+        Milestone milestone1 = new Milestone();
+        Milestone milestone2 = new Milestone();
+        Milestone milestone3 = new Milestone();
+        Milestone milestone4 = new Milestone();
+
+        milestone1.setMilestoneName("Date is within");
+        milestone1.setMilestoneDate(sprintService.calendarDateStringToDate("2001-12-21", false));
+
+        milestone2.setMilestoneName("Date overlaps start");
+        milestone2.setMilestoneDate(sprintService.calendarDateStringToDate("2001-12-20", false));
+
+        milestone3.setMilestoneName("Date doesnt overlap");
+        milestone3.setMilestoneDate(sprintService.calendarDateStringToDate("2001-12-24", false));
+
+        milestone4.setMilestoneName("Date overlaps end");
+        milestone4.setMilestoneDate(sprintService.calendarDateStringToDate("2001-12-22", true));
+
+        List<Milestone> milestoneList = new ArrayList<>();
+        milestoneList.add(milestone1);
+        milestoneList.add(milestone2);
+        milestoneList.add(milestone3);
+        milestoneList.add(milestone4);
+
+        when(milestoneService.getAllMilestonesOrdered()).thenReturn(milestoneList);
+
+        List<Milestone> returnedEvents = milestoneService.getAllMilestonesOverlappingWithSprint(sprint);
+
+        assertEquals(milestone1.getMilestoneName(), returnedEvents.get(0).getMilestoneName());
+        assertEquals(milestone2.getMilestoneName(), returnedEvents.get(1).getMilestoneName());
+        assertEquals(milestone4.getMilestoneName(), returnedEvents.get(2).getMilestoneName());
+
     }
 }

@@ -1,6 +1,5 @@
 package nz.ac.canterbury.seng302.portfolio.service;
 
-import nz.ac.canterbury.seng302.portfolio.model.Event;
 import nz.ac.canterbury.seng302.portfolio.model.Milestone;
 import nz.ac.canterbury.seng302.portfolio.model.Sprint;
 import nz.ac.canterbury.seng302.portfolio.repository.MilestoneRepository;
@@ -8,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.ArrayList;
 import java.util.Optional;
 
 import java.util.List;
@@ -133,5 +133,28 @@ public class MilestoneService {
         Date sprintStartDate = sprint.getStartDate();
         Date sprintEndDate = sprint.getEndDate();
         return sprintStartDate.compareTo(milestoneDate) * sprintEndDate.compareTo(milestoneDate) <= 0;
+    }
+
+    /**
+     * Gets a list of milestones that overlap with the given sprint in some way. This is to know what milestones should be
+     * displayed with this sprint. It does this by checking if the date is within the sprints dates.
+     * @param sprint Sprint to check milestones against.
+     * @return List of milestones that are within the given sprint.
+     */
+    public List<Milestone> getAllMilestonesOverlappingWithSprint(Sprint sprint) {
+        ArrayList<Milestone> milestonesList = (ArrayList<Milestone>) getAllMilestonesOrdered();
+        ArrayList<Milestone> milestonesOverlapped = new ArrayList<>();
+
+        for (Milestone currentMilestone : milestonesList) {
+            if (currentMilestone.getMilestoneDate().equals(sprint.getStartDate()) ||
+                    currentMilestone.getMilestoneDate().equals(sprint.getEndDate()) ||
+                    (currentMilestone.getMilestoneDate().after(sprint.getStartDate()) &&
+                            currentMilestone.getMilestoneDate().before(sprint.getEndDate())
+                    )
+            ) {
+                milestonesOverlapped.add(currentMilestone);
+            }
+        }
+        return milestonesOverlapped;
     }
 }

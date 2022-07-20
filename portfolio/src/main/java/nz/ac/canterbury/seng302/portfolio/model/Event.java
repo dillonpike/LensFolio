@@ -230,6 +230,17 @@ public class Event {
         return Event.timeToString(this.eventEndTime);
     }
 
+    /**
+     * Returns the deadline as a JSON string.
+     * @return deadline as a JSON string
+     * @throws JsonProcessingException when the deadline cannot be converted to a JSON string
+     */
+    public String toJSONString() throws JsonProcessingException {
+        ObjectMapper mapper = JsonMapper.builder().findAndAddModules().build();
+        return mapper.writeValueAsString(this);
+
+    }
+
     public String getStartDateColour() {
         return startDateColour;
     }
@@ -244,15 +255,5 @@ public class Event {
 
     public void setEndDateColour(String endDateColour) {
         this.endDateColour = endDateColour;
-    }
-    /**
-     * Returns the deadline as a JSON string.
-     * @return deadline as a JSON string
-     * @throws JsonProcessingException when the deadline cannot be converted to a JSON string
-     */
-    public String toJSONString() throws JsonProcessingException {
-        ObjectMapper mapper = JsonMapper.builder().findAndAddModules().build();
-        return mapper.writeValueAsString(this);
-
     }
 }

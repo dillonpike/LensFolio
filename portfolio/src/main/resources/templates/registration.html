@@ -16,6 +16,8 @@
                         <h3 class="mb-5">Registration</h3>
                         <div th:if="${param.passwordError}" class="alert alert-danger">
                             Passwords do not match, please try again</div>
+                        <div th:if="${param.passwordFormatError}" class="alert alert-danger">
+                            Passwords must be 8-20 characters long, contain at least one uppercase letter and a special character </div>
                         <div id="usernameTaken" th:if="${param.usernameError}" class="alert alert-danger">
                             Invalid registration, username taken
                         </div>

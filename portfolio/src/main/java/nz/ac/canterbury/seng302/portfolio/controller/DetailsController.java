@@ -65,7 +65,7 @@ public class DetailsController {
      *
      * @param principal
      * @param model Parameters sent to thymeleaf template to be rendered into HTML
-     * @return TeacherProjectDetails or userProjectDetails which is dependent on user's role
+     * @return projectDetails page
      * @throws Exception
      */
     @GetMapping("/details")
@@ -105,8 +105,12 @@ public class DetailsController {
         model.addAttribute("events", eventList);
 
         List<List<Event>> eventsForSprints = getAllEventsForAllSprints(sprintList);
+        List<List<Deadline>> deadlinesForSprints = getAllDeadlinesForAllSprints(sprintList);
         model.addAttribute("eventsForSprints", eventsForSprints);
+        model.addAttribute("deadlinesForSprints", deadlinesForSprints);
 
+        List<List<Milestone>> milestonesForSprints = getAllMilestonesForAllSprints(sprintList);
+        model.addAttribute("milestonesForSprints", milestonesForSprints);
 
         // Runs if the reload was triggered by saving an event. Checks the notifications' creation time to see if 2 seconds has passed yet.
         int count = 1;
@@ -138,7 +142,7 @@ public class DetailsController {
         List<Milestone> milestoneList = milestoneService.getAllEventsOrderedWithColour(sprintList);
         model.addAttribute("milestones", milestoneList);
 
-        List<Deadline> deadlineList = deadlineService.getAllDeadlines();
+        List<Deadline> deadlineList = deadlineService.getAllDeadlinesOrdered();
         model.addAttribute("deadlines", deadlineList);
 
         Integer id = userAccountClientService.getUserIDFromAuthState(principal);
@@ -169,7 +173,7 @@ public class DetailsController {
         model.addAttribute("newSprint", sprintService.getSuggestedSprint());
         model.addAttribute("sprintDateError", "");
 
-        return "ProjectDetails";
+        return "projectDetails";
     }
 
     /**
@@ -256,6 +260,37 @@ public class DetailsController {
     @SendTo("/test/portfolio/artefact/delete-artefact")
     public NotificationResponse deleteArtefact(NotificationMessage ignore) {
         return new NotificationResponse();
+    }
+
+    /**
+     * Get a list where each element is a list of deadline that is a part of the sprint from sprintList with the same index
+     * @param sprintList List of sprints to get the deadlines of.
+     * @return List of lists of deadlines that are within their given sprint
+     */
+    private List<List<Deadline>> getAllDeadlinesForAllSprints(List<Sprint> sprintList) {
+        List<List<Deadline>> allDeadlinesList = new ArrayList<>();
+
+        for (Sprint sprint : sprintList) {
+            allDeadlinesList.add(deadlineService.getAllDeadlinesOverLappingWithSprint(sprint));
+        }
+
+        return allDeadlinesList;
+    }
+
+    /**
+     * Gets a list where each element is a list of milestones that is a part of the sprint from sprintList with the same
+     * index.
+     * @param sprintList List of sprints to get the milestones of.
+     * @return List of lists of milestones that are within their given sprint.
+     */
+    private List<List<Milestone>> getAllMilestonesForAllSprints(List<Sprint> sprintList) {
+        List<List<Milestone>> allMilestonesList = new ArrayList<>();
+
+        for (Sprint sprint : sprintList) {
+            allMilestonesList.add(milestoneService.getAllMilestonesOverlappingWithSprint(sprint));
+        }
+
+        return allMilestonesList;
     }
 
 }
