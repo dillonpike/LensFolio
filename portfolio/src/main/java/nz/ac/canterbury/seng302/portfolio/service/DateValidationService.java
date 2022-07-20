@@ -24,6 +24,15 @@ public class DateValidationService {
     @Autowired
     private ProjectService projectService;
 
+    @Autowired
+    private EventService eventService;
+
+    @Autowired
+    private MilestoneService milestoneService;
+
+    @Autowired
+    private DeadlineService deadlineService;
+
     private static final Logger logger = LoggerFactory.getLogger(DateValidationService.class);
 
     /**
@@ -151,28 +160,134 @@ public class DateValidationService {
     }
 
     /**
+     * Validates the given project date range based on the dates of the artefacts (sprints, events, milestones, and
+     * deadlines), ensuring that the date range contains all the current artefacts.
+     * @param projectStartDateString start date of the project
+     * @param projectEndDateString end date of the project
+     * @return Message giving an error if the project date range doesn't contain all artefacts, empty otherwise
+     */
+    public String validateProjectDatesContainArtefacts(String projectStartDateString, String projectEndDateString) {
+        String message = validateProjectDatesContainSprints(projectStartDateString, projectEndDateString);
+        if (message.length() > 0) {
+            return message;
+        }
+        message = validateProjectDatesContainEvents(projectStartDateString, projectEndDateString);
+        if (message.length() > 0) {
+            return message;
+        }
+        message = validateProjectDatesContainMilestones(projectStartDateString, projectEndDateString);
+        if (message.length() > 0) {
+            return message;
+        }
+        message = validateProjectDatesContainDeadlines(projectStartDateString, projectEndDateString);
+        return message;
+    }
+
+    /**
      * Validates the given project date range based on the dates of the sprints, ensuring that the date range contains
      * all the current sprints.
      * @param projectStartDateString start date of the project
      * @param projectEndDateString end date of the project
      * @return Message giving an error if the project date range doesn't contain all sprints, empty otherwise
      */
-    public String validateProjectDatesContainSprints(String projectStartDateString, String projectEndDateString) {
+    private String validateProjectDatesContainSprints(String projectStartDateString, String projectEndDateString) {
         String message = "";
         if (!projectStartDateString.equals("") && !projectEndDateString.equals("")) {
-        Date projectStartDate = Project.stringToDate(projectStartDateString);
-        Date projectEndDate = Project.stringToDate(projectEndDateString);
-            List<Sprint> orderedSprints = sprintService.getAllSprintsOrdered();
-            Sprint firstSprint = orderedSprints.get(0);
-            Sprint lastSprint = orderedSprints.get(orderedSprints.size()-1);
-            if (projectStartDate.after(firstSprint.getStartDate()) || projectEndDate.before(lastSprint.getEndDate())) {
-                message = "Start date must be on or before the start date of the first sprint (" +
-                        firstSprint.getStartDateString() + ") and end date must be on or after the end date of " +
-                        "the last sprint (" + lastSprint.getEndDateString() + ").";
+            Date projectStartDate = Project.stringToDate(projectStartDateString);
+            Date projectEndDate = Project.stringToDate(projectEndDateString);
+            List<Sprint> ordered = sprintService.getAllSprintsOrdered();
+            if (!ordered.isEmpty()) {
+                Sprint first = ordered.get(0);
+                Sprint last = ordered.get(ordered.size() - 1);
+                if (projectStartDate.after(first.getStartDate()) || projectEndDate.before(last.getEndDate())) {
+                    message = "Start date must be on or before the start date of the first sprint (" +
+                            first.getStartDateString() + ") and end date must be on or after the end date of " +
+                            "the last sprint (" + last.getEndDateString() + ").";
+                }
             }
         }
         return message;
     }
+
+    /**
+     * Validates the given project date range based on the dates of the events, ensuring that the date range contains
+     * all the current events.
+     * @param projectStartDateString start date of the project
+     * @param projectEndDateString end date of the project
+     * @return Message giving an error if the project date range doesn't contain all events, empty otherwise
+     */
+    private String validateProjectDatesContainEvents(String projectStartDateString, String projectEndDateString) {
+        String message = "";
+        if (!projectStartDateString.equals("") && !projectEndDateString.equals("")) {
+            Date projectStartDate = Project.stringToDate(projectStartDateString);
+            Date projectEndDate = Project.stringToDate(projectEndDateString);
+            List<Event> orderedStartDate = eventService.getAllEventsOrderedStartDate();
+            List<Event> orderedEndDate = eventService.getAllEventsOrderedEndDate();
+            if (!orderedStartDate.isEmpty()) {
+                Event first = orderedStartDate.get(0);
+                Event last = orderedEndDate.get(orderedEndDate.size() - 1);
+                if (projectStartDate.after(first.getEventStartDate()) || projectEndDate.before(last.getEventEndDate())) {
+                    message = "Start date must be on or before the start date of the first event (" +
+                            first.getStartDateString() + ") and end date must be on or after the end date of " +
+                            "the last event (" + last.getEndDateString() + ").";
+                }
+            }
+        }
+        return message;
+    }
+
+    /**
+     * Validates the given project date range based on the dates of the milestones, ensuring that the date range contains
+     * all the current milestones.
+     * @param projectStartDateString start date of the project
+     * @param projectEndDateString end date of the project
+     * @return Message giving an error if the project date range doesn't contain all milestones, empty otherwise
+     */
+    private String validateProjectDatesContainMilestones(String projectStartDateString, String projectEndDateString) {
+        String message = "";
+        if (!projectStartDateString.equals("") && !projectEndDateString.equals("")) {
+            Date projectStartDate = Project.stringToDate(projectStartDateString);
+            Date projectEndDate = Project.stringToDate(projectEndDateString);
+            List<Milestone> ordered = milestoneService.getAllMilestonesOrdered();
+            if (!ordered.isEmpty()) {
+                Milestone first = ordered.get(0);
+                Milestone last = ordered.get(ordered.size() - 1);
+                if (projectStartDate.after(first.getMilestoneDate()) || projectEndDate.before(last.getMilestoneDate())) {
+                    message = "Start date must be on or before the date of the first milestone (" +
+                            first.getMilestoneDateString() + ") and end date must be on or after the date of " +
+                            "the last milestone (" + last.getMilestoneDateString() + ").";
+                }
+            }
+        }
+        return message;
+    }
+
+    /**
+     * Validates the given project date range based on the dates of the deadlines, ensuring that the date range contains
+     * all the current deadlines.
+     * @param projectStartDateString start date of the project
+     * @param projectEndDateString end date of the project
+     * @return Message giving an error if the project date range doesn't contain all deadlines, empty otherwise
+     */
+    private String validateProjectDatesContainDeadlines(String projectStartDateString, String projectEndDateString) {
+        String message = "";
+        if (!projectStartDateString.equals("") && !projectEndDateString.equals("")) {
+            Date projectStartDate = Project.stringToDate(projectStartDateString);
+            Date projectEndDate = Project.stringToDate(projectEndDateString);
+            List<Deadline> ordered = deadlineService.getAllDeadlinesOrdered();
+            if (!ordered.isEmpty()) {
+                Deadline first = ordered.get(0);
+                Deadline last = ordered.get(ordered.size() - 1);
+                if (projectStartDate.after(first.getDeadlineDate()) || projectEndDate.before(last.getDeadlineDate())) {
+                    message = "Start date must be on or before the date of the first deadline (" +
+                            first.getDeadlineDateString() + ") and end date must be on or after the date of " +
+                            "the last deadline (" + last.getDeadlineDateString() + ").";
+                }
+            }
+        }
+        return message;
+    }
+
 
     /**
      * Returns an error message if a given time is empty or null, otherwise returns a blank message.
