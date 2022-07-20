@@ -52,7 +52,7 @@
 
                     // title event
                     let titleEvent = document.createElement('div')
-                    if(arg.event._def.title) {
+                    if (arg.event._def.title) {
                         titleEvent.innerHTML = arg.event._def.title
                         titleEvent.classList = "fc-event-title fc-sticky"
                     }
@@ -62,17 +62,17 @@
                     imgEventWrap.setAttribute("id", "events");
                     imgEventWrap.setAttribute("title", arg.event.extendedProps.description);
 
-                    if(arg.event.extendedProps.type === 'Deadline') {
+                    if (arg.event.extendedProps.type === 'Deadline') {
                         let imgEvent = '<img src= ' + deadlineImage + ' >'
                         imgEventWrap.classList.add("fc-deadline-img");
                         imgEventWrap.innerHTML = imgEvent;
                     }
-                    if(arg.event.extendedProps.type === 'Event') {
+                    if (arg.event.extendedProps.type === 'Event') {
                         let imgEvent = '<img src= ' + eventImage + ' >'
                         imgEventWrap.classList.add("fc-event-img");
                         imgEventWrap.innerHTML = imgEvent;
                     }
-                    if(arg.event.extendedProps.type === 'Milestone') {
+                    if (arg.event.extendedProps.type === 'Milestone') {
                         let imgEvent = '<img src= ' + milestoneImage + ' >'
                         imgEventWrap.classList.add("fc-milestone-img");
                         imgEventWrap.innerHTML = imgEvent;
@@ -165,13 +165,13 @@
                 })
             }
 
-            $('.fc-prev-button').click(function(){
+            $('.fc-prev-button').click(function() {
                 const date = calendar.getDate();
                 localStorage.setItem("currentDate", date);
                 refreshTooltips();
             });
 
-            $('.fc-next-button').click(function(){
+            $('.fc-next-button').click(function() {
                 const date = calendar.getDate();
                 localStorage.setItem("currentDate", date);
                 refreshTooltips();
@@ -221,11 +221,11 @@
         stompClient.connect({}, function (frame) {
             console.log('Connected: ' + frame);
 
-            stompClient.subscribe('/test/portfolio/events/save-edit', function (ignore) {
+            stompClient.subscribe('/test/portfolio/artefact/save-edit', function (ignore) {
                 refreshEvents();
 
             });
-            stompClient.subscribe('/test/portfolio/events/delete-artefact', function (ignore) {
+            stompClient.subscribe('/test/portfolio/artefact/delete-artefact', function (ignore) {
                 refreshEvents();
             });
         });

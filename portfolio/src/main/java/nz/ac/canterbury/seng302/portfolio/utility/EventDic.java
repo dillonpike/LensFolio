@@ -30,7 +30,7 @@ public class EventDic {
         Enumeration<String> values = datesToEvents.elements();
 
         // Iterate the values
-        while(values.hasMoreElements() ){
+        while(values.hasMoreElements() ) {
             JSONList.append(values.nextElement());
         }
 

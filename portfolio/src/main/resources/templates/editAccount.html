@@ -236,14 +236,14 @@
 	});
 </script>
 <script>
-  function settingsMenuToggle(){
+  function settingsMenuToggle() {
     var settingmenu = document.querySelector(".setting-menu");
     settingmenu.classList.toggle('setting-menu-height');
-    settingmenu.addEventListener('click',function(){event.stopPropagation()})
+    settingmenu.addEventListener('click',function() {event.stopPropagation()})
   }
   // Updates the inputs when the information entered is incorrect
   document.getElementById("confirmPasswordInput").onkeyup = function() {
-    if(document.getElementById("newPasswordInput").value !== document.getElementById("confirmPasswordInput").value) {
+    if (document.getElementById("newPasswordInput").value !== document.getElementById("confirmPasswordInput").value) {
       document.getElementById("newPasswordInput").style.borderColor = "red";
       document.getElementById("confirmPasswordInput").style.borderColor = "red";
     } else {
@@ -261,7 +261,7 @@
 
 <script th:inline="javascript">
 
-  function refreshPage(){
+  function refreshPage() {
     /*<![CDATA[*/
     let pronoun = /*[[${personalPronouns}]]*/ "Error";
     /*]]>*/

@@ -199,7 +199,7 @@ public class DateValidationService {
      * @param date date to get the time difference from
      * @return days since the given date from now
      */
-    public long getDaysFromNow(Date date){
+    public long getDaysFromNow(Date date) {
         Date today = new Date();
         long diffInMs = today.getTime() - date.getTime();
         return TimeUnit.DAYS.convert(diffInMs, TimeUnit.MILLISECONDS);
