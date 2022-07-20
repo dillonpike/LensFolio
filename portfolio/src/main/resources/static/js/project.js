@@ -165,7 +165,6 @@ function milestoneModalSetup() {
         $('#milestoneDateInput').datepicker('setDate', milestone.milestoneDateString)
 
         // Initial run of validation functions in case initial values are invalid
-        validateModalName('milestoneName', 'milestoneModalButton', 'milestoneAlertBanner', 'milestoneAlertMessage')
         validateModalDate('milestoneDate', 'milestoneModalButton', 'milestoneDateAlertBanner', 'milestoneDateAlertMessage')
         updateCharsLeft('milestoneName', 'milestoneNameLength', 30)
         $('#' + modalButton.getAttribute("id")).prop('hidden', false);
@@ -192,7 +191,7 @@ function deadlineModalSetup() {
 
         // Update the modal's content.
         const modalTitle = deadlineModal.querySelector('.modal-title')
-        const modalBodyInput = deadlineModal.querySelectorAll('.modal-body input')
+        const modalBodyInputs = deadlineModal.querySelectorAll('.modal-body input')
         const modalButton = deadlineModal.querySelector('.modal-footer button')
         const modalForm = deadlineModal.querySelector('form')
 
@@ -208,13 +207,12 @@ function deadlineModalSetup() {
         }
 
         modalForm.setAttribute('object', deadline);
-        modalBodyInput[0].value = deadline.deadlineName;
+        modalBodyInputs[0].value = deadline.deadlineName;
         $('#deadlineDateInput').datepicker('setDate', deadline.deadlineDateString);
-        modalBodyInput[2].value = deadline.deadlineTimeString;
+        modalBodyInputs[2].value = deadline.deadlineTimeString;
 
         // Initial run of validation functions in case initial values are invalid
-        validateModalName('deadlineName', 'deadlineModalButton', 'deadlineAlertBanner', 'deadlineAlertMessage')
-        validateModalDate('deadlineDate', 'deadlineModalButton', 'deadlineDateAlertBanner', 'deadlineDateAlertMessage')
+        validateModalDateTime('deadlineDate', 'deadlineTime', 'deadlineModalButton', 'deadlineDateAlertBanner', 'deadlineDateAlertMessage')
         updateCharsLeft('deadlineName', 'deadlineNameLength', 30)
         $('#' + modalButton.getAttribute("id")).prop('hidden', false);
     })
@@ -268,8 +266,7 @@ function eventModalSetup() {
 
 
         // Initial run of validation functions in case initial values are invalid
-        validateModalName('eventName', 'eventAlertBanner', 'eventAlertMessage')
-        validateModalDateTime('eventStartDate', 'eventEndDate', 'eventStartTime', 'eventEndTime','eventModalButton', 'eventDateTimeAlertBanner', 'eventDateTimeAlertMessage')
+        validateModalDateTimeRange('eventStartDate', 'eventEndDate', 'eventStartTime', 'eventEndTime','eventModalButton', 'eventDateTimeAlertBanner', 'eventDateTimeAlertMessage')
         updateCharsLeft('eventName', 'eventNameLength', 30)
         $('#' + modalButton.getAttribute("id")).prop('hidden', false);
     })

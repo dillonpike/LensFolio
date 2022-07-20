@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -26,6 +27,9 @@ class EventServiceTest {
 
     @Mock
     private EventRepository eventRepository;
+
+    @Mock
+    private DateValidationService dateValidationService;
 
     @InjectMocks
     private EventService eventService;
@@ -165,5 +169,50 @@ class EventServiceTest {
         assertThat(outputEventList.get(0).getEndDateColour()).isSameAs(sprint.getColour());
         assertThat(outputEventList.get(1).getEndDateColour()).isSameAs(sprint.getColour());
         assertThat(outputEventList.get(2).getEndDateColour()).isNull();
+    }
+
+    @Test
+    void givenSprint_returnEventsThatOverlap() {
+        Sprint sprint = new Sprint();
+        sprint.setName("Testing");
+        sprint.setStartDate(sprintService.calendarDateStringToDate("2001-12-20", false));
+        sprint.setEndDate(sprintService.calendarDateStringToDate("2001-12-22", true));
+        sprint.setColour("#5897fc");
+
+        Event event1 = new Event();
+        Event event2 = new Event();
+        Event event3 = new Event();
+        Event event4 = new Event();
+
+        event1.setEventName("Start Date Overlaps");
+        event1.setEventStartDate(sprintService.calendarDateStringToDate("2001-12-21", false));
+        event1.setEventEndDate(sprintService.calendarDateStringToDate("2001-12-23", true));
+
+        event2.setEventName("End Date Overlaps");
+        event2.setEventStartDate(sprintService.calendarDateStringToDate("2001-12-19", false));
+        event2.setEventEndDate(sprintService.calendarDateStringToDate("2001-12-21", true));
+
+        event3.setEventName("No Dates Overlap");
+        event3.setEventStartDate(sprintService.calendarDateStringToDate("2001-12-23", false));
+        event3.setEventEndDate(sprintService.calendarDateStringToDate("2001-12-23", true));
+
+        event4.setEventName("Dates encapsulate sprint");
+        event4.setEventStartDate(sprintService.calendarDateStringToDate("2001-12-18", false));
+        event4.setEventEndDate(sprintService.calendarDateStringToDate("2001-12-24", true));
+
+        List<Event> eventList = new ArrayList<>();
+        eventList.add(event1);
+        eventList.add(event2);
+        eventList.add(event3);
+        eventList.add(event4);
+
+        when(eventService.getAllEventsOrdered()).thenReturn(eventList);
+
+        List<Event> returnedEvents = eventService.getAllEventsOverlappingWithSprint(sprint);
+
+        assertEquals(event1.getEventName(), returnedEvents.get(0).getEventName());
+        assertEquals(event2.getEventName(), returnedEvents.get(1).getEventName());
+        assertEquals(event4.getEventName(), returnedEvents.get(2).getEventName());
+
     }
 }
