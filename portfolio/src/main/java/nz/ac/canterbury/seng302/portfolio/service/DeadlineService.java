@@ -112,10 +112,10 @@ public class DeadlineService {
         List<Deadline> deadlinesList = getAllDeadlinesOrdered();
         for (Deadline currentDeadline : deadlinesList) {
             // Reset Deadline's color
-            currentDeadline.setDeadlineColour("test");
+            currentDeadline.setDeadlineColour(null);
 
             for (Sprint sprint : sprints) {
-                if ((currentDeadline.getDeadlineDate().compareTo(sprint.getStartDate()) >= 0 && currentDeadline.getDeadlineDate().compareTo(sprint.getEndDate()) <= 0)) {
+                if ((currentDeadline.getDeadlineDate().compareTo(sprint.getStartDate()) >= 0 && currentDeadline.getDeadlineDate().compareTo(sprint.getEndDate()) < 1)) {
                     currentDeadline.setDeadlineColour(sprint.getColour());
                 }
             }

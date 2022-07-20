@@ -166,6 +166,10 @@ class DeadlineServiceTest {
         verify(deadlinesRepository, times(0)).deleteById(any(Integer.class));
     }
 
+    /**
+     * Tests that the getAllDeadlinesOrderedWithColour method returns the correct colour given
+     * comfortable date range.
+     */
     @Test
     void givenOneDeadlineExistAndDateInRange_returnBlueColor() {
         Sprint sprint = new Sprint();
@@ -187,6 +191,87 @@ class DeadlineServiceTest {
         List<Deadline> outputDeadlineList = deadlineService.getAllDeadlinesOrderedWithColour(sprintList);
         assertThat(outputDeadlineList.size()).isSameAs(deadlineList.size());
         assertThat(outputDeadlineList.get(0).getDeadlineColour()).isSameAs(sprint.getColour());
+    }
+
+    /**
+     * Tests that the getAllDeadlinesOrderedWithColour method returns the correct colour given
+     * the deadline is the same day as the sprint start date.
+     */
+    @Test
+    void givenOneDeadlineExistAndDateIsTheSameAsStart_returnBlueColor() {
+        Sprint sprint = new Sprint();
+        sprint.setName("Testing");
+        sprint.setStartDate(sprintService.calendarDateStringToDate("2001-12-20", false));
+        sprint.setEndDate(sprintService.calendarDateStringToDate("2001-12-25", true));
+        sprint.setColour("#5897fc");
+        List<Sprint> sprintList = new ArrayList<>();
+        sprintList.add(sprint);
+
+        Deadline deadline = new Deadline();
+        deadline.setDeadlineDate(sprintService.calendarDateStringToDate("2001-12-20", false));
+        deadline.setDeadlineName("Test Deadline");
+        List<Deadline> deadlineList = new ArrayList<>();
+        deadlineList.add(deadline);
+
+        when(deadlineService.getAllDeadlinesOrderedWithColour(sprintList)).thenReturn(deadlineList);
+
+        List<Deadline> outputDeadlineList = deadlineService.getAllDeadlinesOrderedWithColour(sprintList);
+        assertThat(outputDeadlineList.size()).isSameAs(deadlineList.size());
+        assertThat(outputDeadlineList.get(0).getDeadlineColour()).isSameAs(sprint.getColour());
+    }
+
+    /**
+     * Tests that the getAllDeadlinesOrderedWithColour method returns the correct colour given
+     * the deadline is the same day as the sprint end date.
+     */
+    @Test
+    void givenOneDeadlineExistAndDateIsTheSameAsEnd_returnNotBlueColor() {
+        Sprint sprint = new Sprint();
+        sprint.setName("Testing");
+        sprint.setStartDate(sprintService.calendarDateStringToDate("2001-12-20", false));
+        sprint.setEndDate(sprintService.calendarDateStringToDate("2001-12-25", true));
+        sprint.setColour("#5897fc");
+        List<Sprint> sprintList = new ArrayList<>();
+        sprintList.add(sprint);
+
+        Deadline deadline = new Deadline();
+        deadline.setDeadlineDate(sprintService.calendarDateStringToDate("2001-12-25", false));
+        deadline.setDeadlineName("Test Deadline");
+        List<Deadline> deadlineList = new ArrayList<>();
+        deadlineList.add(deadline);
+
+        when(deadlineService.getAllDeadlinesOrderedWithColour(sprintList)).thenReturn(deadlineList);
+
+        List<Deadline> outputDeadlineList = deadlineService.getAllDeadlinesOrderedWithColour(sprintList);
+        assertThat(outputDeadlineList.size()).isSameAs(deadlineList.size());
+        assertThat(outputDeadlineList.get(0).getDeadlineColour()).isNotSameAs(sprint.getColour());
+    }
+
+    /**
+     * Tests that the getAllDeadlinesOrderedWithColour method returns the correct colour given
+     * the deadline is the same day as the sprint start date.
+     */
+    @Test
+    void givenOneDeadlineExistAndDateIsOneDayAfterEnd_returnNotBlueColor() {
+        Sprint sprint = new Sprint();
+        sprint.setName("Testing");
+        sprint.setStartDate(sprintService.calendarDateStringToDate("2001-12-20", false));
+        sprint.setEndDate(sprintService.calendarDateStringToDate("2001-12-25", true));
+        sprint.setColour("#5897fc");
+        List<Sprint> sprintList = new ArrayList<>();
+        sprintList.add(sprint);
+
+        Deadline deadline = new Deadline();
+        deadline.setDeadlineDate(sprintService.calendarDateStringToDate("2001-12-26", false));
+        deadline.setDeadlineName("Test Deadline");
+        List<Deadline> deadlineList = new ArrayList<>();
+        deadlineList.add(deadline);
+
+        when(deadlineService.getAllDeadlinesOrderedWithColour(sprintList)).thenReturn(deadlineList);
+
+        List<Deadline> outputDeadlineList = deadlineService.getAllDeadlinesOrderedWithColour(sprintList);
+        assertThat(outputDeadlineList.size()).isSameAs(deadlineList.size());
+        assertThat(outputDeadlineList.get(0).getDeadlineColour()).isNotSameAs(sprint.getColour());
     }
 
 }

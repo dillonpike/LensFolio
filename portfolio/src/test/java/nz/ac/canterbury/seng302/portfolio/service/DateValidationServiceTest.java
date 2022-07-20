@@ -1,5 +1,6 @@
 package nz.ac.canterbury.seng302.portfolio.service;
 
+import nz.ac.canterbury.seng302.portfolio.model.Deadline;
 import nz.ac.canterbury.seng302.portfolio.model.Project;
 import nz.ac.canterbury.seng302.portfolio.model.Sprint;
 import org.junit.jupiter.api.BeforeAll;

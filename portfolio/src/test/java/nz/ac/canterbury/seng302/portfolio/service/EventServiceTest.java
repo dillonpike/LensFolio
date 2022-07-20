@@ -206,8 +206,8 @@ class EventServiceTest {
         eventList.add(event3);
         eventList.add(event4);
 
-        when(dateValidationService.validateEventStartDateInSprintDate(event1, sprint)).thenReturn(true);
-        when(dateValidationService.validateEventEndDateInSprintDate(event2, sprint)).thenReturn(true);
+        when(eventService.validateEventStartDateInSprintDate(event1, sprint)).thenReturn(true);
+        when(eventService.validateEventEndDateInSprintDate(event2, sprint)).thenReturn(true);
 
         when(eventService.getAllEventsOrdered()).thenReturn(eventList);
 
