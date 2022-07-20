@@ -2,8 +2,9 @@
     padding: 3px;
 }
 
-.event-title {
+.artefact-title {
     padding-left: 2px;
+    word-break: break-all;
 }
 
 .artefact-date {
