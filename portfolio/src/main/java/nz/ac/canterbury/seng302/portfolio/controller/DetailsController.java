@@ -252,6 +252,11 @@ public class DetailsController {
         return allEventsList;
     }
 
+    /**
+     * Get a list where each element is a list of deadline that is a part of the sprint from sprintList with the same index
+     * @param sprintList List of sprints to get the deadlines of.
+     * @return List of lists of deadlines that are within their given sprint
+     */
     private List<List<Deadline>> getAllDeadlinesForAllSprints(List<Sprint> sprintList) {
         List<List<Deadline>> allDeadlinesList = new ArrayList<>();
 
