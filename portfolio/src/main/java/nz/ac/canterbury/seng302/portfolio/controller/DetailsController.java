@@ -181,13 +181,13 @@ public class DetailsController {
     @MessageMapping("/editing-artefact")
     @SendTo("/test/portfolio/artefact/being-edited")
     public NotificationResponse updatingArtefact(NotificationMessage message) {
-        int eventId = message.getArtefactId();
+        int artefactId = message.getArtefactId();
         String username = message.getUsername();
         String firstName = message.getUserFirstName();
         String lastName = message.getUserLastName();
         String artefactType = message.getArtefactType();
         long dateOfNotification = Date.from(Instant.now()).toInstant().getEpochSecond();
-        return new NotificationResponse(HtmlUtils.htmlEscape(message.getArtefactName()), eventId, username, firstName, lastName, dateOfNotification, artefactType);
+        return new NotificationResponse(HtmlUtils.htmlEscape(message.getArtefactName()), artefactId, username, firstName, lastName, dateOfNotification, artefactType);
     }
 
     /**
@@ -199,13 +199,13 @@ public class DetailsController {
     @MessageMapping("/stop-editing-artefact")
     @SendTo("/test/portfolio/artefact/stop-being-edited")
     public NotificationResponse stopUpdatingArtefact(NotificationMessage message) {
-        int eventId = message.getArtefactId();
+        int artefactId = message.getArtefactId();
         String username = message.getUsername();
         String firstName = message.getUserFirstName();
         String lastName = message.getUserLastName();
         String artefactType = message.getArtefactType();
         long dateOfNotification = Date.from(Instant.now()).toInstant().getEpochSecond();
-        return new NotificationResponse(HtmlUtils.htmlEscape(message.getArtefactName()), eventId, username, firstName, lastName, dateOfNotification, artefactType);
+        return new NotificationResponse(HtmlUtils.htmlEscape(message.getArtefactName()), artefactId, username, firstName, lastName, dateOfNotification, artefactType);
     }
 
     /**
@@ -217,13 +217,13 @@ public class DetailsController {
     @MessageMapping("/saved-edited-artefact")
     @SendTo("/test/portfolio/artefact/save-edit")
     public NotificationResponse savingUpdatedArtefact(NotificationMessage message) {
-        int eventId = message.getArtefactId();
+        int artefactId = message.getArtefactId();
         String username = message.getUsername();
         String firstName = message.getUserFirstName();
         String lastName = message.getUserLastName();
         long dateOfNotification = Date.from(Instant.now()).toInstant().getEpochSecond();
         String artefactType = message.getArtefactType();
-        NotificationResponse response = new NotificationResponse(HtmlUtils.htmlEscape(message.getArtefactName()), eventId, username, firstName, lastName, dateOfNotification, artefactType);
+        NotificationResponse response = new NotificationResponse(HtmlUtils.htmlEscape(message.getArtefactName()), artefactId, username, firstName, lastName, dateOfNotification, artefactType);
         // Trigger reload and save the last event's information
         eventsToDisplay.add(response);
         while (eventsToDisplay.size() > 3) {
@@ -249,9 +249,8 @@ public class DetailsController {
     }
 
     /**
-     * This method maps @MessageMapping endpoint to the @SendTo endpoint. Called when something is sent to
-     * the MessageMapping endpoint. This method also triggers some sort of re-render of the events.
-//     * @param message NotificationMessage that holds information about the event being updated
+     * This method used to mainly reload the calendar page when an artefact is being edited or deleted on the project details
+     * @param ignore this parameter, even though it is not used, is necessary to exist in order to send the request to websocket
      */
     @MessageMapping("/delete-artefact")
     @SendTo("/test/portfolio/artefact/delete-artefact")
