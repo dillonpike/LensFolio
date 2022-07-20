@@ -1,8 +1,7 @@
 package nz.ac.canterbury.seng302.portfolio.service;
 
+import java.util.ArrayList;
 import nz.ac.canterbury.seng302.portfolio.model.Deadline;
-import nz.ac.canterbury.seng302.portfolio.model.Event;
-import nz.ac.canterbury.seng302.portfolio.model.Milestone;
 import nz.ac.canterbury.seng302.portfolio.model.Sprint;
 import nz.ac.canterbury.seng302.portfolio.repository.DeadlinesRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +17,9 @@ public class DeadlineService {
 
     @Autowired
     private DeadlinesRepository repository;
+
+    @Autowired
+    private DateValidationService dateValidationService;
 
     /**
      * Updates a deadline
@@ -150,4 +152,28 @@ public class DeadlineService {
         return (deadlineDate.compareTo(sprintStartDate) >= 0 && deadlineDate.compareTo(sprintEndDate) <= 0)
                 || isStartDay || isEndDay;
     }
+
+    /***
+     * Function to get all deadlines in chronological order,
+     * add colour for each deadline and save to repository
+     *
+     * @return deadline in chronological order
+     * @param sprints
+     */
+    public List<Deadline> getAllDeadlinesOrderedWithColour(List<Sprint> sprints) {
+        List<Deadline> deadlinesList = getAllDeadlinesOrdered();
+        for (Deadline currentDeadline : deadlinesList) {
+            // Reset Deadline's color
+            currentDeadline.setDeadlineColour(null);
+
+            for (Sprint sprint : sprints) {
+                if ((currentDeadline.getDeadlineDate().compareTo(sprint.getStartDate()) >= 0 && currentDeadline.getDeadlineDate().compareTo(sprint.getEndDate()) < 1)) {
+                    currentDeadline.setDeadlineColour(sprint.getColour());
+                }
+            }
+            repository.save(currentDeadline);
+        }
+        return getAllDeadlinesOrdered();
+    }
+
 }
