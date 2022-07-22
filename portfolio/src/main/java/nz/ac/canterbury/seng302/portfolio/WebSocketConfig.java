@@ -14,16 +14,11 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        File file = new File("");
-        String url = file.getAbsolutePath();
-        String endpointName = "/test/portfolio/mywebsockets";
-        if (url.contains("test") || url.contains("prod") || url.contains("canterbury")) {
-            endpointName = "/mywebsockets";
-        }
         // Endpoint all websockets are set up at
-        registry.addEndpoint(endpointName)
-                .setAllowedOrigins("csse-s302g1.canterbury.ac.nz", "localhost:9000")
-                .withSockJS();
+        registry.addEndpoint("/mywebsockets")
+                .setAllowedOrigins("https://*.canterbury.ac.nz")
+                .withSockJS()
+                .setClientLibraryUrl("https://cdn.jsdelivr.net/sockjs/1.0.2/sockjs.min.js");
     }
 
     @Override
