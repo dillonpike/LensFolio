@@ -160,6 +160,12 @@
                 refreshTooltips();
             });
 
+            $('.fc-today-button').click(function() {
+                const date = calendar.getDate();
+                localStorage.setItem("currentDate", date);
+                refreshTooltips();
+            });
+
             $('.fc-next-button').click(function() {
                 const date = calendar.getDate();
                 localStorage.setItem("currentDate", date);
