@@ -6,7 +6,10 @@ import nz.ac.canterbury.seng302.portfolio.model.Milestone;
 import nz.ac.canterbury.seng302.portfolio.model.Project;
 import org.springframework.web.util.HtmlUtils;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 
 /**
@@ -43,12 +46,16 @@ public class EventDic {
      */
     public void add(Deadline deadline) {
         int amount = 1;
+
+        DateFormat df = new SimpleDateFormat("yyyy-MM-dd' 'HH:mm");
+
         // Uses EventTypes costume hashCode() to hash based on type and date.
         String eventData = datesToEvents.get(new EventTypes("Deadline", deadline.getDeadlineDateString()));
         String description = "- " + HtmlUtils.htmlEscape(deadline.getDeadlineName());
         StringBuilder eventObject = new StringBuilder();
+        String date = df.format(Date.from(deadline.getDeadlineDate().toInstant().truncatedTo(ChronoUnit.DAYS)));  // To fix error with times at 11pm ranging 2 days rather than 1.
         if (eventData == null) {
-            eventObject.append("{title: '").append(amount).append("', start: '").append(deadline.getDeadlineDate()).append("', type: 'Deadline").append("', description: '").append(description).append("'},");
+            eventObject.append("{title: '").append(amount).append("', start: '").append(date).append("', type: 'Deadline").append("', description: '").append(description).append("'},");
         } else {
             try {
                 amount += Integer.parseInt(eventData.split("'")[1]);
@@ -57,7 +64,7 @@ public class EventDic {
                 // Current uses -1 to represent error. May want to change this to a thrown error.
                 amount = -1;
             }
-            eventObject.append("{title: '").append(amount).append("', start: '").append(deadline.getDeadlineDate()).append("', type: 'Deadline").append("', description: '").append(description).append("'},");
+            eventObject.append("{title: '").append(amount).append("', start: '").append(date).append("', type: 'Deadline").append("', description: '").append(description).append("'},");
         }
         datesToEvents.put(new EventTypes("Deadline", deadline.getDeadlineDateString()), eventObject.toString());
     }
@@ -111,7 +118,7 @@ public class EventDic {
     public void add(Milestone milestone) {
         int amount = 1;
         // Uses EventTypes costume hashCode() to hash based on type and date.
-        String eventData = datesToEvents.get(new EventTypes("Deadline", milestone.getMilestoneDateString()));
+        String eventData = datesToEvents.get(new EventTypes("Milestone", milestone.getMilestoneDateString()));
         String description = "- " + HtmlUtils.htmlEscape(milestone.getMilestoneName());
         StringBuilder eventObject = new StringBuilder();
         if (eventData == null) {
