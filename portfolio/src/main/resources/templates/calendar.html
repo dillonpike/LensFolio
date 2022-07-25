@@ -92,18 +92,13 @@
                 eventClick: function(info) {
                     // change the border color
                     let newEvent = calendar.getEventById(info.event.id);
-                    if (newEvent.extendedProps.type === 'Sprint') {
+                    if ((newEvent.extendedProps.type === 'Sprint' )&& (currentRole !== 'student')) {
                         let selectedEvent = calendar.getEventById(selectedId);
                         if (selectedId === -1) {
                             //initial click on any event
                             newEvent.setProp("classNames", "event-border");
                             newEvent.setProp("borderColor", alternateColour(newEvent.backgroundColor));
                             newEvent.setProp("editable", true);
-                            if (currentRole === 'student') {
-                                newEvent.setProp("editable", false);
-                            } else {
-                                newEvent.setProp("editable", true);
-                            }
                             selectedId = info.event.id;
                         } else {
                             if (newEvent.id === selectedEvent.id) {
@@ -118,11 +113,6 @@
                                 newEvent.setProp("classNames", "event-border");
                                 newEvent.setProp("borderColor", alternateColour(newEvent.backgroundColor));
                                 newEvent.setProp("editable", true);
-                                if (currentRole === 'student') {
-                                    newEvent.setProp("editable", false);
-                                } else {
-                                    newEvent.setProp("editable", true);
-                                }
                                 selectedId = info.event.id;
                             }
                         }
