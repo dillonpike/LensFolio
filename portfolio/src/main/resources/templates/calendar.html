@@ -59,7 +59,7 @@
                     // image event
                     let imgEventWrap = document.createElement('div')
                     imgEventWrap.setAttribute("id", "events");
-                    imgEventWrap.setAttribute("title", arg.event.extendedProps.description);
+                    imgEventWrap.setAttribute("desc", arg.event.extendedProps.description);
 
                     if (arg.event.extendedProps.type === 'Deadline') {
                         let imgEvent = '<img src= ' + deadlineImage + ' >'
@@ -154,7 +154,7 @@
 
             function refreshTooltips() {
                 $("[id='events']" ).each(function (ignore) {
-                    $(this).parent().get(0).setAttribute("title", $(this).get(0).getAttribute("title"))
+                    $(this).parent().get(0).setAttribute("title", $(this).get(0).getAttribute("desc"))
                     $(this).parent().get(0).setAttribute("data-bs-html", "true");
                     $(this).parent().get(0).setAttribute("data-toggle", "tooltip");
                 });
