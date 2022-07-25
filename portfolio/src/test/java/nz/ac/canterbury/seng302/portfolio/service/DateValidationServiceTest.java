@@ -1,5 +1,6 @@
 package nz.ac.canterbury.seng302.portfolio.service;
 
+import nz.ac.canterbury.seng302.portfolio.model.*;
 import nz.ac.canterbury.seng302.portfolio.model.Deadline;
 import nz.ac.canterbury.seng302.portfolio.model.Project;
 import nz.ac.canterbury.seng302.portfolio.model.Sprint;
@@ -10,6 +11,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -41,6 +43,24 @@ class DateValidationServiceTest {
     private SprintService sprintService = new SprintService();
 
     /**
+     * Mocked EventService object.
+     */
+    @Mock
+    private EventService eventService = new EventService();
+
+    /**
+     * Mocked MilestoneService object.
+     */
+    @Mock
+    private MilestoneService milestoneService = new MilestoneService();
+
+    /**
+     * Mocked DeadlineService object.
+     */
+    @Mock
+    private DeadlineService deadlineService = new DeadlineService();
+
+    /**
      * DateValidationService object.
      */
     @InjectMocks
@@ -55,6 +75,21 @@ class DateValidationServiceTest {
      * List of sprints used for tests.
      */
     private static List<Sprint> testSprints;
+
+    /**
+     * List of events used for tests.
+     */
+    private static List<Event> testEvents;
+
+    /**
+     * List of milestones used for tests.
+     */
+    private static List<Milestone> testMilestones;
+
+    /**
+     * List of deadlines used for tests.
+     */
+    private static List<Deadline> testDeadlines;
 
     /**
      * Calendar object used for tests.
@@ -75,6 +110,18 @@ class DateValidationServiceTest {
         Sprint testSprint1 = new Sprint(testProject.getId(), "Test Sprint", "1", "", monthsFromNow.get(1), monthsFromNow.get(2));
         Sprint testSprint2 = new Sprint(testProject.getId(), "Test Sprint", "2", "", monthsFromNow.get(3), monthsFromNow.get(4));
         testSprints = List.of(testSprint1, testSprint2);
+
+        Event testEvent1 = new Event(0, testProject.getId(), "Test Event", monthsFromNow.get(1), monthsFromNow.get(2), LocalTime.of(0, 0), LocalTime.of(0, 0));
+        Event testEvent2 = new Event(1, testProject.getId(), "Test Event", monthsFromNow.get(3), monthsFromNow.get(4), LocalTime.of(0, 0), LocalTime.of(0, 0));
+        testEvents = List.of(testEvent1, testEvent2);
+
+        Milestone testMilestone1 = new Milestone(testProject.getId(), "Test Milestone", monthsFromNow.get(1));
+        Milestone testMilestone2 = new Milestone(testProject.getId(), "Test Milestone", monthsFromNow.get(4));
+        testMilestones = List.of(testMilestone1, testMilestone2);
+
+        Deadline testDeadline1 = new Deadline(testProject.getId(), "Test Deadline", monthsFromNow.get(1));
+        Deadline testDeadline2 = new Deadline(testProject.getId(), "Test Deadline", monthsFromNow.get(4));
+        testDeadlines = List.of(testDeadline1, testDeadline2);
     }
 
     /**
@@ -258,53 +305,210 @@ class DateValidationServiceTest {
     }
 
     /**
-     * Checks that validateProjectDatesContainSprints gives a blank output when the given dates start on the same day
+     * Checks that validateProjectDatesContainArtefacts gives a blank output when the given dates start on the same day
      * as the first sprint and end on the same day as the last sprint (boundary valid case).
      */
     @Test
-    void givenValidBoundaryDates_whenValidateProjectDatesContainSprints_thenBlankOutput() {
+    void givenValidBoundaryDatesSprint_whenValidateProjectDatesContainArtefacts_thenBlankOutput() {
         when(sprintService.getAllSprintsOrdered()).thenReturn(testSprints);
-        String output = dateValidationService.validateProjectDatesContainSprints(
+        String output = dateValidationService.validateProjectDatesContainArtefacts(
                 testProject.getStartDateString(), testProject.getEndDateString());
         assertEquals(0, output.length());
     }
 
     /**
-     * Checks that validateProjectDatesContainSprints gives an error message when the start date is the day after the
+     * Checks that validateProjectDatesContainArtefacts gives an error message when the start date is the day after the
      * start date of the first sprint (boundary invalid case).
      */
     @Test
-    void givenInvalidStartDate_whenValidateProjectDatesContainSprints_thenBlankOutput() {
+    void givenInvalidStartDateSprint_whenValidateProjectDatesContainArtefacts_thenBlankOutput() {
         when(sprintService.getAllSprintsOrdered()).thenReturn(testSprints);
-        String output = dateValidationService.validateProjectDatesContainSprints(
+        String output = dateValidationService.validateProjectDatesContainArtefacts(
                 addToDateString(testSprints.get(0).getStartDateString(), Calendar.DAY_OF_YEAR, 1),
                 testProject.getEndDateString());
         assertTrue(output.length() > 0);
     }
 
     /**
-     * Checks that validateProjectDatesContainSprints gives an error message when the end date is the day before the
+     * Checks that validateProjectDatesContainArtefacts gives an error message when the end date is the day before the
      * end date of the last sprint (boundary invalid case).
      */
     @Test
-    void givenInvalidEndDate_whenValidateProjectDatesContainSprints_thenBlankOutput() {
+    void givenInvalidEndDateSprint_whenValidateProjectDatesContainArtefacts_thenBlankOutput() {
         when(sprintService.getAllSprintsOrdered()).thenReturn(testSprints);
-        String output = dateValidationService.validateProjectDatesContainSprints(
+        String output = dateValidationService.validateProjectDatesContainArtefacts(
                 testProject.getStartDateString(),
                 addToDateString(testSprints.get(1).getEndDateString(), Calendar.DAY_OF_YEAR, -1));
         assertTrue(output.length() > 0);
     }
 
     /**
-     * Checks that validateProjectDatesContainSprints gives an error message when the dates given are between two
+     * Checks that validateProjectDatesContainArtefacts gives an error message when the dates given are between two
      * sprints (invalid case).
      */
     @Test
-    void givenInvalidDates_whenValidateProjectDatesContainSprints_thenBlankOutput() {
+    void givenInvalidDatesSprint_whenValidateProjectDatesContainArtefacts_thenBlankOutput() {
         when(sprintService.getAllSprintsOrdered()).thenReturn(testSprints);
-        String output = dateValidationService.validateProjectDatesContainSprints(
+        String output = dateValidationService.validateProjectDatesContainArtefacts(
                 addToDateString(testSprints.get(0).getEndDateString(), Calendar.DAY_OF_YEAR, 1),
                 addToDateString(testSprints.get(1).getStartDateString(), Calendar.DAY_OF_YEAR, -1));
+        assertTrue(output.length() > 0);
+    }
+
+    /**
+     * Checks that validateProjectDatesContainArtefacts gives a blank output when the given dates start on the same day
+     * as the first event and end on the same day as the last event (boundary valid case).
+     */
+    @Test
+    void givenValidBoundaryDatesEvent_whenValidateProjectDatesContainArtefacts_thenBlankOutput() {
+        when(eventService.getAllEventsOrderedStartDate()).thenReturn(testEvents);
+        when(eventService.getAllEventsOrderedEndDate()).thenReturn(testEvents);
+        String output = dateValidationService.validateProjectDatesContainArtefacts(
+                testProject.getStartDateString(), testProject.getEndDateString());
+        assertEquals(0, output.length());
+    }
+
+    /**
+     * Checks that validateProjectDatesContainArtefacts gives an error message when the start date is the day after the
+     * start date of the first event (boundary invalid case).
+     */
+    @Test
+    void givenInvalidStartDateEvent_whenValidateProjectDatesContainArtefacts_thenBlankOutput() {
+        when(eventService.getAllEventsOrderedStartDate()).thenReturn(testEvents);
+        when(eventService.getAllEventsOrderedEndDate()).thenReturn(testEvents);
+        String output = dateValidationService.validateProjectDatesContainArtefacts(
+                addToDateString(testEvents.get(0).getStartDateString(), Calendar.DAY_OF_YEAR, 1),
+                testProject.getEndDateString());
+        assertTrue(output.length() > 0);
+    }
+
+    /**
+     * Checks that validateProjectDatesContainArtefacts gives an error message when the end date is the day before the
+     * end date of the last event (boundary invalid case).
+     */
+    @Test
+    void givenInvalidEndDateEvent_whenValidateProjectDatesContainArtefacts_thenBlankOutput() {
+        when(eventService.getAllEventsOrderedStartDate()).thenReturn(testEvents);
+        when(eventService.getAllEventsOrderedEndDate()).thenReturn(testEvents);
+        String output = dateValidationService.validateProjectDatesContainArtefacts(
+                testProject.getStartDateString(),
+                addToDateString(testEvents.get(1).getEndDateString(), Calendar.DAY_OF_YEAR, -1));
+        assertTrue(output.length() > 0);
+    }
+
+    /**
+     * Checks that validateProjectDatesContainArtefacts gives an error message when the dates given are between two
+     * events (invalid case).
+     */
+    @Test
+    void givenInvalidDatesEvent_whenValidateProjectDatesContainArtefacts_thenBlankOutput() {
+        when(eventService.getAllEventsOrderedStartDate()).thenReturn(testEvents);
+        when(eventService.getAllEventsOrderedEndDate()).thenReturn(testEvents);
+        String output = dateValidationService.validateProjectDatesContainArtefacts(
+                addToDateString(testEvents.get(0).getEndDateString(), Calendar.DAY_OF_YEAR, 1),
+                addToDateString(testEvents.get(1).getStartDateString(), Calendar.DAY_OF_YEAR, -1));
+        assertTrue(output.length() > 0);
+    }
+
+    /**
+     * Checks that validateProjectDatesContainArtefacts gives a blank output when the given dates start on the same day
+     * as the first event and end on the same day as the last event (boundary valid case).
+     */
+    @Test
+    void givenValidBoundaryDatesMilestone_whenValidateProjectDatesContainArtefacts_thenBlankOutput() {
+        when(milestoneService.getAllMilestonesOrdered()).thenReturn(testMilestones);
+        String output = dateValidationService.validateProjectDatesContainArtefacts(
+                testProject.getStartDateString(), testProject.getEndDateString());
+        assertEquals(0, output.length());
+    }
+
+    /**
+     * Checks that validateProjectDatesContainArtefacts gives an error message when the start date is the day after the
+     * start date of the first event (boundary invalid case).
+     */
+    @Test
+    void givenInvalidStartDateMilestone_whenValidateProjectDatesContainArtefacts_thenBlankOutput() {
+        when(milestoneService.getAllMilestonesOrdered()).thenReturn(testMilestones);
+        String output = dateValidationService.validateProjectDatesContainArtefacts(
+                addToDateString(testMilestones.get(0).getMilestoneDateString(), Calendar.DAY_OF_YEAR, 1),
+                testProject.getEndDateString());
+        assertTrue(output.length() > 0);
+    }
+
+    /**
+     * Checks that validateProjectDatesContainArtefacts gives an error message when the end date is the day before the
+     * end date of the last event (boundary invalid case).
+     */
+    @Test
+    void givenInvalidEndDateMilestone_whenValidateProjectDatesContainArtefacts_thenBlankOutput() {
+        when(milestoneService.getAllMilestonesOrdered()).thenReturn(testMilestones);
+        String output = dateValidationService.validateProjectDatesContainArtefacts(
+                testProject.getStartDateString(),
+                addToDateString(testMilestones.get(1).getMilestoneDateString(), Calendar.DAY_OF_YEAR, -1));
+        assertTrue(output.length() > 0);
+    }
+
+    /**
+     * Checks that validateProjectDatesContainArtefacts gives an error message when the dates given are between two
+     * events (invalid case).
+     */
+    @Test
+    void givenInvalidDatesMilestone_whenValidateProjectDatesContainArtefacts_thenBlankOutput() {
+        when(milestoneService.getAllMilestonesOrdered()).thenReturn(testMilestones);
+        String output = dateValidationService.validateProjectDatesContainArtefacts(
+                addToDateString(testMilestones.get(0).getMilestoneDateString(), Calendar.DAY_OF_YEAR, 1),
+                addToDateString(testMilestones.get(1).getMilestoneDateString(), Calendar.DAY_OF_YEAR, -1));
+        assertTrue(output.length() > 0);
+    }
+
+    /**
+     * Checks that validateProjectDatesContainArtefacts gives a blank output when the given dates start on the same day
+     * as the first event and end on the same day as the last event (boundary valid case).
+     */
+    @Test
+    void givenValidBoundaryDatesDeadline_whenValidateProjectDatesContainArtefacts_thenBlankOutput() {
+        when(deadlineService.getAllDeadlinesOrdered()).thenReturn(testDeadlines);
+        String output = dateValidationService.validateProjectDatesContainArtefacts(
+                testProject.getStartDateString(), testProject.getEndDateString());
+        assertEquals(0, output.length());
+    }
+
+    /**
+     * Checks that validateProjectDatesContainArtefacts gives an error message when the start date is the day after the
+     * start date of the first event (boundary invalid case).
+     */
+    @Test
+    void givenInvalidStartDateDeadline_whenValidateProjectDatesContainArtefacts_thenBlankOutput() {
+        when(deadlineService.getAllDeadlinesOrdered()).thenReturn(testDeadlines);
+        String output = dateValidationService.validateProjectDatesContainArtefacts(
+                addToDateString(testDeadlines.get(0).getDeadlineDateString(), Calendar.DAY_OF_YEAR, 1),
+                testProject.getEndDateString());
+        assertTrue(output.length() > 0);
+    }
+
+    /**
+     * Checks that validateProjectDatesContainArtefacts gives an error message when the end date is the day before the
+     * end date of the last event (boundary invalid case).
+     */
+    @Test
+    void givenInvalidEndDateDeadline_whenValidateProjectDatesContainArtefacts_thenBlankOutput() {
+        when(deadlineService.getAllDeadlinesOrdered()).thenReturn(testDeadlines);
+        String output = dateValidationService.validateProjectDatesContainArtefacts(
+                testProject.getStartDateString(),
+                addToDateString(testDeadlines.get(1).getDeadlineDateString(), Calendar.DAY_OF_YEAR, -1));
+        assertTrue(output.length() > 0);
+    }
+
+    /**
+     * Checks that validateProjectDatesContainArtefacts gives an error message when the dates given are between two
+     * events (invalid case).
+     */
+    @Test
+    void givenInvalidDatesDeadline_whenValidateProjectDatesContainArtefacts_thenBlankOutput() {
+        when(deadlineService.getAllDeadlinesOrdered()).thenReturn(testDeadlines);
+        String output = dateValidationService.validateProjectDatesContainArtefacts(
+                addToDateString(testDeadlines.get(0).getDeadlineDateString(), Calendar.DAY_OF_YEAR, 1),
+                addToDateString(testDeadlines.get(1).getDeadlineDateString(), Calendar.DAY_OF_YEAR, -1));
         assertTrue(output.length() > 0);
     }
 }

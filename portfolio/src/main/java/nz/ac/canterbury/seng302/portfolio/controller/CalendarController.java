@@ -135,7 +135,7 @@ public class CalendarController {
         model.addAttribute("userId", id);
         try {
             sprints = sprintService.getAllSprintsOrdered();
-            events = eventService.getAllEventsOrdered();
+            events = eventService.getAllEventsOrderedStartDate();
             deadlines = deadlineService.getAllDeadlinesOrdered();
             milestones = milestoneService.getAllMilestonesOrdered();
         } catch (Exception e) {

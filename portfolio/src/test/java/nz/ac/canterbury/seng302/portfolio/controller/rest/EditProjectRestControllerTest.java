@@ -56,7 +56,7 @@ class EditProjectRestControllerTest {
         when(dateValidationService.validateDateRangeNotEmpty(anyString(), anyString())).thenReturn("1");
         when(dateValidationService.validateStartDateNotAfterEndDate(anyString(), anyString())).thenReturn("2");
         when(dateValidationService.validateDateNotOverAYearAgo(anyString())).thenReturn("3");
-        when(dateValidationService.validateProjectDatesContainSprints(anyString(), anyString())).thenReturn("4");
+        when(dateValidationService.validateProjectDatesContainArtefacts(anyString(), anyString())).thenReturn("4");
         mockMvc.perform(get("/edit-project/error")
                         .param("projectStartDate", "2001-10-20")
                         .param("projectEndDate", "2001-10-21"))

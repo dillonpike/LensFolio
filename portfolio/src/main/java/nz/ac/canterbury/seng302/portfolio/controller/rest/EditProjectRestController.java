@@ -29,7 +29,7 @@ public class EditProjectRestController {
         return dateValidationService.validateDateRangeNotEmpty(projectStartDate, projectEndDate) + " " +
                 dateValidationService.validateStartDateNotAfterEndDate(projectStartDate, projectEndDate) + " " +
                 dateValidationService.validateDateNotOverAYearAgo(projectStartDate) + " " +
-                dateValidationService.validateProjectDatesContainSprints(projectStartDate, projectEndDate);
+                dateValidationService.validateProjectDatesContainArtefacts(projectStartDate, projectEndDate);
     }
 
 }

@@ -14,4 +14,5 @@ public interface EventRepository extends CrudRepository<Event, Integer> {
     void deleteById(int id);
 
     List<Event> findAllByOrderByEventStartDate();
+    List<Event> findAllByOrderByEventEndDate();
 }
