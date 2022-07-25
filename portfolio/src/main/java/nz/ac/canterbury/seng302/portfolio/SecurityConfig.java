@@ -43,7 +43,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .formLogin().disable();
 
         // let the H2 console embed itself in a frame
-        //security.headers().frameOptions().sameOrigin();
+        security.headers().frameOptions().sameOrigin();
     }
 
     @Override
