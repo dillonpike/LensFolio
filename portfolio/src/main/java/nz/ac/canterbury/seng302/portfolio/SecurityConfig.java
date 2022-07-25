@@ -44,6 +44,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
         // let the H2 console embed itself in a frame
         security.headers().frameOptions().sameOrigin();
+        security.headers().contentTypeOptions().disable();
     }
 
     @Override
