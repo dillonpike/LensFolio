@@ -166,6 +166,18 @@ public class Deadline {
     }
 
     /**
+     * Returns a string representation of the time of the deadline in 12-hour format
+     * @return string representation of the time of the deadline in 12-hour format. Null if deadlineDate is null.
+     */
+    public String getDeadlineTimeString12Hour()  {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("h:mm a");
+        if (deadlineDate != null) {
+            return (dateFormat.format(deadlineDate));
+        }
+        return null;
+    }
+
+    /**
      * Sets the time of the date stored in deadlineDate.
      * @param time Time in string 24-hour format, formatted as: "kk:mm" (e.g. 15:37).
      * @throws ParseException Thrown if time parameter is given in the wrong format.
