@@ -1,12 +1,14 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
 import nz.ac.canterbury.seng302.portfolio.model.Milestone;
+import nz.ac.canterbury.seng302.portfolio.repository.MilestoneRepository;
 import nz.ac.canterbury.seng302.portfolio.service.MilestoneService;
 import nz.ac.canterbury.seng302.portfolio.service.UserAccountClientService;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import nz.ac.canterbury.seng302.shared.identityprovider.ClaimDTO;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -19,12 +21,12 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.Date;
+import java.util.Optional;
 
 import static org.mockito.AdditionalAnswers.returnsFirstArg;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -91,7 +93,7 @@ class MilestoneLifetimeControllerTest {
 
         Milestone expectedMilestone = new Milestone(0,"Test Milestone", new Date());
 
-        mockMvc.perform(delete("/delete-milestone/" + expectedMilestone.getId()))
+        mockMvc.perform(get("/delete-milestone/" + expectedMilestone.getId()))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/details"));
 
