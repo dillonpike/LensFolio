@@ -289,14 +289,14 @@
                                                         <ul class="dropdown-menu" aria-labelledby="eventActions">
                                                             <li>
                                                                 <a class="button-link" data-bs-toggle="modal" data-bs-target="#eventModal" th:data-bs-event="${event.toJSONString()}" data-bs-type="edit">
-                                                                    <button id="editEventButton" class="dropdown-item" type="button">
+                                                                    <button id="editEventButton" class="dropdown-item" type="button" th:attr="onclick='editArtefact(\'' + ${event.getEventName()} + '\',\'' + ${event.getId()}+  '\');'">
                                                                         <span class='bi bi-pencil'></span> <i>Edit</i>
                                                                     </button>
                                                                 </a>
                                                             </li>
                                                             <li>
                                                                 <a class="button-link" data-bs-toggle="modal" data-bs-target="#deleteModal" th:data-bs-id="${event.id}" th:data-bs-name="${event.eventName}" data-bs-type="event">
-                                                                    <button class="dropdown-item" type="button">
+                                                                    <button class="dropdown-item delete-artefact-button" type="button">
                                                                         <span class='bi bi-trash' style='color: red'></span> <i style='color: red'>Delete</i>
                                                                     </button>
                                                                 </a>
@@ -337,14 +337,14 @@
                                                         <ul class="dropdown-menu" aria-labelledby="milestoneActions">
                                                             <li>
                                                                 <a class="button-link" data-bs-toggle="modal" data-bs-target="#milestoneModal" th:data-bs-milestone="${milestone.toJSONString()}" data-bs-type="edit">
-                                                                    <button id="editMilestoneButton" class="dropdown-item" type="button" th:attr="onclick='editMilestone(\'' + ${milestone.getMilestoneName()} + '\',\'' + ${milestone.getId()}+  '\');'">
+                                                                    <button id="editMilestoneButton" class="dropdown-item" type="button" th:attr="onclick='editArtefact(\'' + ${milestone.getMilestoneName()} + '\',\'' + ${milestone.getId()}+  '\');'">
                                                                         <span class='bi bi-pencil'></span> <i>Edit</i>
                                                                     </button>
                                                                 </a>
                                                             </li>
                                                             <li>
                                                                 <a class="button-link" data-bs-toggle="modal" data-bs-target="#deleteModal" th:data-bs-id="${milestone.id}" th:data-bs-name="${milestone.milestoneName}" data-bs-type="milestone">
-                                                                    <button class="dropdown-item" type="button">
+                                                                    <button class="dropdown-item delete-artefact-button" type="button">
                                                                         <span class='bi bi-trash' style='color: red'></span> <i style='color: red'>Delete</i>
                                                                     </button>
                                                                 </a>
@@ -382,14 +382,14 @@
                                                     <ul class="dropdown-menu" aria-labelledby="deadlineActions">
                                                         <li>
                                                             <a class="button-link" data-bs-toggle="modal" data-bs-target="#deadlineModal" th:data-bs-deadline="${deadline.toJSONString()}" data-bs-type="edit">
-                                                                <button id="editDeadlineButton" class="dropdown-item" type="button" th:attr="onclick='editDeadline(\'' + ${deadline.getDeadlineName()} + '\',\'' + ${deadline.getId()}+  '\');'">
+                                                                <button id="editDeadlineButton" class="dropdown-item" type="button" th:attr="onclick='editArtefact(\'' + ${deadline.getDeadlineName()} + '\',\'' + ${deadline.getId()}+  '\');'">
                                                                     <span class='bi bi-pencil'></span> <i>Edit</i>
                                                                 </button>
                                                             </a>
                                                         </li>
                                                         <li>
                                                             <a class="button-link" data-bs-toggle="modal" data-bs-target="#deleteModal" th:data-bs-id="${deadline.id}" th:data-bs-name="${deadline.deadlineName}" data-bs-type="deadline">
-                                                                <button class="dropdown-item" type="button">
+                                                                <button class="dropdown-item delete-artefact-button" type="button">
                                                                     <span class='bi bi-trash' style='color: red'></span> <i style='color: red'>Delete</i>
                                                                 </button>
                                                             </a>
@@ -414,6 +414,7 @@
         </div>
     </div>
 
+</body>
 <!-- Modals -->
 <div id="sprintModal" th:replace="fragments/sprintModal :: sprintModal"></div>
 <div id="projectModal" th:replace="fragments/projectModal :: projectModal"></div>
@@ -422,8 +423,7 @@
 <div id="eventModal" th:replace="fragments/eventModal :: eventModal"></div>
 <div th:replace="fragments/deleteModalProject :: deleteModal"></div>
 
-    </div>
-</body>
+
 <script src="js/project.js"></script>
 <script src="js/detailsLive.js"></script>
 
@@ -473,6 +473,13 @@
         }));
     }
 
+    /**
+     * Sends the message that an artefact(milestone, event, deadline) is deleted
+     */
+    function pageReload() {
+        stompClient.send("/test/portfolio/app/delete-artefact", {}, JSON.stringify({}));
+    }
+
     let userId = [[${userId}]];
     let userFirstName = [[${userFirstName}]];
     let userLastName = [[${userLastName}]];
@@ -481,6 +488,11 @@
     let milestoneId = -1;
     let deadlineName = '';
     let deadlineId = -1;
+    let selectedEventName = '';
+    let eventId = -1;
+
+    let selectedArtefactName = '';
+    let selectedArtefactId = -1;
 
     /**
      * Initialises functions/injections. When these are no longer being updated (edited) they will disappear after a certain period.
@@ -497,9 +509,11 @@
     /**
      * get the selected milestone to edit then set it in global variable
      */
-    function editMilestone(milestone, id){
+    function editArtefact(milestone, id) {
         milestoneName = milestone;
         milestoneId = id;
+        selectedArtefactName = milestone;
+        selectedArtefactId = id;
     }
 
     function editDeadline(deadline, id) {
@@ -507,119 +521,97 @@
         deadlineId = id;
     }
 
+    function editEvent(event, id) {
+        selectedEventName = event;
+        eventId = id;
+    }
+
     /**
-     * All inputs on milestone modal when being focused on (edited) will update and send a notification
+     * this function is triggered when inputs on modal when being focused on (edited) will update and send a notification
      * to the details page. When these are no longer being updated (edited) they will disappear after a certain period.
-    */
-    $("#milestoneName").on('focusin', function (ignore) {
-        const actionType = document.getElementById('milestoneModal').querySelector('form').action.split('/')[3]; //getting the type of the request, this is necessary as same modal is being used for both adding and editing milestone
-        if(actionType === 'edit-milestone'){
-            sendName(milestoneName,milestoneId,userId, userFirstName, userLastName, username, "Milestone");
-        }
-    }).on('focusout', function (ignore) {
-        const actionType = document.getElementById('milestoneModal').querySelector('form').action.split('/')[3]; //getting the type of the request, this is necessary as same modal is being used for both adding and editing milestone
-        if(actionType === 'edit-milestone'){
-            sendEmpty(milestoneName, milestoneId,userId, userFirstName, userLastName, username, "Milestone");
-        }
-    });
-    $("#milestoneDate").on('focusin', function (ignore) {
-        const actionType = document.getElementById('milestoneModal').querySelector('form').action.split('/')[3]; //getting the type of the request, this is necessary as same modal is being used for both adding and editing milestone
-        if(actionType === 'edit-milestone'){
-            sendName(milestoneName,milestoneId,userId, userFirstName, userLastName, username, "Milestone");
-        }
-    }).on('focusout', function (ignore) {
-        const actionType = document.getElementById('milestoneModal').querySelector('form').action.split('/')[3]; //getting the type of the request, this is necessary as same modal is being used for both adding and editing milestone
-        if(actionType === 'edit-milestone'){
-            sendEmpty(milestoneName, milestoneId,userId, userFirstName, userLastName, username, "Milestone");
-        }
-    });
+     * @param inputElementName the id of the input element
+     * @param modal the modal that currently open
+     * @param action what action that the currently open modal does (must be editing-...)
+     * @param artefactType either Milestone, Deadline, or Milestone
+     */
+    function sendEditingLiveNotificationRequest(inputElementName, modal, action, artefactType){
+        $(inputElementName).on('focusin', function (ignore) {
+            const actionType = document.getElementById(modal).querySelector('form').action.split('/')[3]; //getting the type of the request, this is necessary as same modal is being used for both adding and editing milestone
+            if (actionType === action) {
+                sendName(selectedArtefactName,selectedArtefactId,userId, userFirstName, userLastName, username, artefactType);
+            }
+        }).on('focusout', function (ignore) {
+            const actionType = document.getElementById(modal).querySelector('form').action.split('/')[3]; //getting the type of the request, this is necessary as same modal is being used for both adding and editing milestone
+            if (actionType === action) {
+                sendEmpty(selectedArtefactName, selectedArtefactId,userId, userFirstName, userLastName, username, artefactType);
+            }
+        });
+    }
 
     /**
      * send request to show the live notification's toast when an update on a milestone is saved by a user
-     * this function is triggered when save button on Milestone Modal is clicked
+     * this function is triggered when save button on Modal is clicked
+     * @param inputElementName the id of the input element
+     * @param modal the modal that currently open
+     * @param action what action that the currently open modal does (must be editing-...)
+     * @param artefactType either Milestone, Deadline, or Milestone
      */
-    $("#milestoneModalButton").click(function() {
-        const actionType = document.getElementById('milestoneModal').querySelector('form').action.split('/')[3]; //getting the type of the request, this is necessary as same modal is being used for both adding and editing milestone
-        if(actionType === 'edit-milestone'){
-            sendNameReload(milestoneName, milestoneId,userId, userFirstName, userLastName, username, "Milestone");
-        }
-    })
+    function sendSavedLiveNotificationRequest(inputElementName, modal, action, artefactType){
+        $(inputElementName).click(function() {
+            const actionType = document.getElementById(modal).querySelector('form').action.split('/')[3]; //getting the type of the request, this is necessary as same modal is being used for both adding and editing milestone
+            if (actionType === action) {
+                sendNameReload(selectedArtefactName, selectedArtefactId,userId, userFirstName, userLastName, username, artefactType);
+            }
+        })
+    }
 
     /**
-     * send request to hide the live notification's toast when an update on a milestone is saved by a user
-     * this function is triggered when close button on Milestone Modal is clicked
+     * send request to hide the live notification's toast when an update is saved by a user
+     * this function is triggered when close button on Modal is clicked
+     * @param inputElementName the id of the input element
+     * @param modal the modal that currently open
+     * @param action what action that the currently open modal does (must be editing-...)
+     * @param artefactType either Milestone, Deadline, or Milestone
      */
-    $("#closeMilestoneModalButton").click(function() {
-        const actionType = document.getElementById('milestoneModal').querySelector('form').action.split('/')[3];
-        if(actionType === 'edit-milestone'){
-            sendEmpty(milestoneName, milestoneId,userId, userFirstName, userLastName, username, "Milestone");
-        }
-    })
+    function sendStopEditingLiveNotificationRequest(inputElementName, modal, action, artefactType){
+        $(inputElementName).click(function() {
+            const actionType = document.getElementById(modal).querySelector('form').action.split('/')[3];
+            if (actionType === action) {
+                sendEmpty(milestoneName, milestoneId,userId, userFirstName, userLastName, username, artefactType);
+            }
+        })
+    }
+
+    sendEditingLiveNotificationRequest('#milestoneName', 'milestoneModal', 'edit-milestone', "Milestone");
+    sendEditingLiveNotificationRequest("#milestoneDate", 'milestoneModal', 'edit-milestone', "Milestone");
+
+    sendSavedLiveNotificationRequest("#milestoneModalButton", 'milestoneModal', 'edit-milestone', "Milestone")
+
+    sendStopEditingLiveNotificationRequest("#closeMilestoneModalButton", 'milestoneModal', 'edit-milestone', "Milestone");
 </script>
 
 
 <script>
-    /**
-     * All inputs on deadline modal when being focused on (edited) will update and send a notification
-     * to the details page. When these are no longer being updated (edited) they will disappear after a certain period.
-     */
-    $("#deadlineName").on('focusin', function (ignore) {
-        const actionType = document.getElementById("deadlineModal").querySelector('form').action.split('/')[3];
-        if (actionType === 'edit-deadline') {
-            sendName(deadlineName, deadlineId, userId, userFirstName, userLastName, username, 'Deadline');
-        }
-    }).on('focusout', function (ignore) {
-        const actionType = document.getElementById('deadlineModal').querySelector('form').action.split('/')[3]; //getting the type of the request, this is necessary as same modal is being used for both adding and editing deadline
-        if(actionType === 'edit-deadline'){
-            sendEmpty(deadlineName, deadlineId,userId, userFirstName, userLastName, username, "Deadline");
-        }
-    });
+    sendEditingLiveNotificationRequest("#deadlineName", "deadlineModal", 'edit-deadline', "Deadline");
+    sendEditingLiveNotificationRequest("#deadlineDate", "deadlineModal", 'edit-deadline', "Deadline");
+    sendEditingLiveNotificationRequest("#deadlineTime", "deadlineModal", 'edit-deadline', "Deadline");
 
-    $("#deadlineDate").on('focusin', function (ignore) {
-        const actionType = document.getElementById('deadlineModal').querySelector('form').action.split('/')[3]; //getting the type of the request, this is necessary as same modal is being used for both adding and editing deadline
-        if(actionType === 'edit-deadline'){
-            sendName(deadlineName,deadlineId,userId, userFirstName, userLastName, username, "Deadline");
-        }
-    }).on('focusout', function (ignore) {
-        const actionType = document.getElementById('deadlineModal').querySelector('form').action.split('/')[3]; //getting the type of the request, this is necessary as same modal is being used for both adding and editing deadline
-        if(actionType === 'edit-deadline'){
-            sendEmpty(deadlineName, deadlineId,userId, userFirstName, userLastName, username, "Deadline");
-        }
-    });
+    sendSavedLiveNotificationRequest("#deadlineModalButton", 'deadlineModal', 'edit-deadline', "Deadline");
 
-    $("#deadlineTime").on('focusin', function (ignore) {
-        const actionType = document.getElementById('deadlineModal').querySelector('form').action.split('/')[3]; //getting the type of the request, this is necessary as same modal is being used for both adding and editing deadline
-        if(actionType === 'edit-deadline'){
-            sendName(deadlineName,deadlineId,userId, userFirstName, userLastName, username, "Deadline");
-        }
-    }).on('focusout', function (ignore) {
-        const actionType = document.getElementById('deadlineModal').querySelector('form').action.split('/')[3]; //getting the type of the request, this is necessary as same modal is being used for both adding and editing deadline
-        if(actionType === 'edit-deadline'){
-            sendEmpty(deadlineName, deadlineId,userId, userFirstName, userLastName, username, "Deadline");
-        }
-    });
+    sendStopEditingLiveNotificationRequest("#closeDeadlineModalButton", 'deadlineModal', 'edit-deadline', "Deadline");
 
-    /**
-     * send request to show the live notification's toast when an update on a deadline is saved by a user
-     * this function is triggered when save button on Deadline Modal is clicked
-     */
-    $("#deadlineModalButton").click(function() {
-        const actionType = document.getElementById('deadlineModal').querySelector('form').action.split('/')[3]; //getting the type of the request, this is necessary as same modal is being used for both adding and editing deadline
-        if(actionType === 'edit-deadline'){
-            sendNameReload(deadlineName, deadlineId,userId, userFirstName, userLastName, username, "Deadline");
-        }
-    })
 
-    /**
-     * send request to hide the live notification's toast when an update on a deadline is saved by a user
-     * this function is triggered when close button on Deadline Modal is clicked
-     */
-    $("#closeDeadlineModalButton").click(function() {
-        const actionType = document.getElementById('deadlineModal').querySelector('form').action.split('/')[3];
-        if(actionType === 'edit-deadline'){
-            sendEmpty(deadlineName, deadlineId,userId, userFirstName, userLastName, username, "Deadline");
-        }
-    })
+    sendEditingLiveNotificationRequest("#eventName", 'eventModal', 'edit-event', "Event");
+    sendEditingLiveNotificationRequest("#eventStartDate", 'eventModal', 'edit-event', "Event");
+    sendEditingLiveNotificationRequest("#eventEndDate", 'eventModal', 'edit-event', "Event");
+    sendEditingLiveNotificationRequest("#eventStartTime", 'eventModal', 'edit-event', "Event");
+    sendEditingLiveNotificationRequest("#eventEndTime", 'eventModal', 'edit-event', "Event");
+
+    sendSavedLiveNotificationRequest("#eventModalButton", 'eventModal', 'edit-event', "Event");
+
+    sendStopEditingLiveNotificationRequest("#closeEventModalButton", 'eventModal', 'edit-event', "Event");
+
+
 
 </script>
 
@@ -644,11 +636,12 @@
     let projectEndDate = /*[[${project.getEndDateString()}]]*/ "Error";
     let projectStartDate = /*[[${project.getStartDateString()}]]*/ "Error";
     /*]]>*/
-
-    // Check if the name of the item that the user inputted is not an empty string
-    // Submit the form and return true if the input is not empty string, otherwise show error banner with the error message and return false
-    // @param elementId the ID of the text input HTML element for item's name
-    // @param formId the ID of the form which contains the input HTML element
+    /**
+     Check if the name of the item that the user inputted is not an empty string
+     Submit the form and return true if the input is not empty string, otherwise show error banner with the error message and return false
+     @param elementId the ID of the text input HTML element for item's name
+     @param formId the ID of the form which contains the input HTML element
+     */
     function validateModalName(elementId, alertBanner, alertMessage) {
         const nameInput = document.getElementById(elementId).value;
         if (nameInput === "") {

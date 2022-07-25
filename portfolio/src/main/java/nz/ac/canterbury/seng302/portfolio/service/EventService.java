@@ -37,7 +37,7 @@ public class EventService {
     public Event getEventById(Integer id) throws Exception {
 
         Optional<Event> event = eventRepository.findById(id);
-        if(event.isPresent()) {
+        if (event.isPresent()) {
             return event.get();
         } else {
             throw new Exception("Event not found");
@@ -86,7 +86,7 @@ public class EventService {
     public void removeEvent(Integer id) {
         Optional<Event> sOptional = eventRepository.findById(id);
 
-        if(sOptional.isPresent()) {
+        if (sOptional.isPresent()) {
             Event eventUpdate = sOptional.get();
             eventRepository.deleteById(eventUpdate.getId());
         }

@@ -86,7 +86,7 @@ public class Project {
 
     /* Getters/Setters */
 
-    public int getId(){
+    public int getId() {
         return  id;
     }
 
@@ -102,7 +102,7 @@ public class Project {
         this.projectName = newName;
     }
 
-    public String getDescription(){
+    public String getDescription() {
         return projectDescription;
     }
 

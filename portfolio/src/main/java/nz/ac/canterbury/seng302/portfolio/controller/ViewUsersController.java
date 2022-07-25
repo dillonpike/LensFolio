@@ -130,14 +130,14 @@ public class ViewUsersController {
                               @RequestParam(value = "userId") int userId
     ) {
         UserRoleChangeResponse roleChangeResponse;
-        if(Objects.equals(role, "STUDENT")){
+        if (Objects.equals(role, "STUDENT")) {
             roleChangeResponse = userAccountClientService.deleteRoleFromUser(userId, UserRole.STUDENT);
-        } else if(Objects.equals(role, "TEACHER")){
+        } else if (Objects.equals(role, "TEACHER")) {
             roleChangeResponse = userAccountClientService.deleteRoleFromUser(userId, UserRole.TEACHER);
         } else {
             roleChangeResponse = userAccountClientService.deleteRoleFromUser(userId, UserRole.COURSE_ADMINISTRATOR);
         }
-        if(roleChangeResponse.getIsSuccess()){
+        if (roleChangeResponse.getIsSuccess()) {
             return "redirect:viewUsers";
         } else {
             model.addAttribute("errorMessage", "Error deleting user");

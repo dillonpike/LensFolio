@@ -48,7 +48,7 @@ public class UserModelServiceTests {
     private RolesRepository rolesRepository;
 
     @Before
-    public void setUp(){
+    public void setUp() {
         MockitoAnnotations.openMocks(this);
 
         userModelService = new UserModelService(userModelRepository, rolesRepository);

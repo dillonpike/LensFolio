@@ -126,7 +126,7 @@ public class RegisteringStepDefs {
         } else if (Objects.equals(outcomeMessage, "Invalid username, please try again")) {
             Boolean outcomeMes = webDriver.findElement(By.id("usernameInvalidMessage")).isDisplayed();
             assertNotNull(outcomeMes);
-        } else if(Objects.equals(outcomeMessage, "Logged in")) {
+        } else if (Objects.equals(outcomeMessage, "Logged in")) {
             Boolean hasFirstName = webDriver.findElement(By.id("firstName")).isDisplayed();
             Boolean hasLastName = webDriver.findElement(By.id("lastNameInput")).isDisplayed();
             assertNotNull(hasFirstName);
