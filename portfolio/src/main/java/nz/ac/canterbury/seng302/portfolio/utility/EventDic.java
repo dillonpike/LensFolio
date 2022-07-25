@@ -4,12 +4,10 @@ import nz.ac.canterbury.seng302.portfolio.model.Deadline;
 import nz.ac.canterbury.seng302.portfolio.model.Event;
 import nz.ac.canterbury.seng302.portfolio.model.Milestone;
 import nz.ac.canterbury.seng302.portfolio.model.Project;
+import org.springframework.web.util.HtmlUtils;
 
 import java.time.Instant;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Enumeration;
-import java.util.Hashtable;
+import java.util.*;
 
 /**
  * This Dictionary is used for adding events together that have matching types and dates.
@@ -18,7 +16,8 @@ import java.util.Hashtable;
 public class EventDic {
     // Creating a HashTable Dictionary
     // Because we want to separate the types of events we store the JSON objects as the values rather than just the amounts.
-    Hashtable<EventTypes, String> datesToEvents = new Hashtable<>();
+
+    HashMap<EventTypes, String> datesToEvents = new HashMap<>();
 
     /**
      * Method used to combine the JSON lists together for the events.
@@ -27,11 +26,11 @@ public class EventDic {
      */
     public String makeJSON() {
         StringBuilder JSONList = new StringBuilder();
-        Enumeration<String> values = datesToEvents.elements();
+        Collection<String> values = datesToEvents.values();
 
         // Iterate the values
-        while(values.hasMoreElements() ) {
-            JSONList.append(values.nextElement());
+        for (String val : values) {
+            JSONList.append(val);
         }
 
         return JSONList.toString();
@@ -46,14 +45,14 @@ public class EventDic {
         int amount = 1;
         // Uses EventTypes costume hashCode() to hash based on type and date.
         String eventData = datesToEvents.get(new EventTypes("Deadline", deadline.getDeadlineDateString()));
-        String description = "- " + deadline.getDeadlineName();
+        String description = "- " + HtmlUtils.htmlEscape(deadline.getDeadlineName());
         StringBuilder eventObject = new StringBuilder();
         if (eventData == null) {
             eventObject.append("{title: '").append(amount).append("', start: '").append(deadline.getDeadlineDate()).append("', type: 'Deadline").append("', description: '").append(description).append("'},");
         } else {
             try {
                 amount += Integer.parseInt(eventData.split("'")[1]);
-                description = eventData.split("'")[7] + "<br>- " + deadline.getDeadlineName();
+                description = eventData.split("'")[7] + "<br>- " + HtmlUtils.htmlEscape(deadline.getDeadlineName());
             } catch (Exception ignore) {
                 // Current uses -1 to represent error. May want to change this to a thrown error.
                 amount = -1;
@@ -85,14 +84,14 @@ public class EventDic {
             Instant date = current.getTime().toInstant();
             // Uses EventTypes costume hashCode() to hash based on type and date.
             String eventData = datesToEvents.get(new EventTypes("Event", Project.dateToString(Date.from(date))));
-            String description = "- " + event.getEventName();
+            String description = "- " + HtmlUtils.htmlEscape(event.getEventName());
             StringBuilder eventObject = new StringBuilder();
             if (eventData == null) {
                 eventObject.append("{title: '").append(amount).append("', start: '").append(date).append("', type: 'Event").append("', description: '").append(description).append("'},");
             } else {
                 try {
                     amount += Integer.parseInt(eventData.split("'")[1]);
-                    description = eventData.split("'")[7] + "<br>- " + event.getEventName();
+                    description = eventData.split("'")[7] + "<br>- " + HtmlUtils.htmlEscape(event.getEventName());
                 } catch (Exception ignore) {
                     // Current uses -1 to represent error. May want to change this to a thrown error.
                     amount = -1;
@@ -113,14 +112,14 @@ public class EventDic {
         int amount = 1;
         // Uses EventTypes costume hashCode() to hash based on type and date.
         String eventData = datesToEvents.get(new EventTypes("Deadline", milestone.getMilestoneDateString()));
-        String description = "- " + milestone.getMilestoneName();
+        String description = "- " + HtmlUtils.htmlEscape(milestone.getMilestoneName());
         StringBuilder eventObject = new StringBuilder();
         if (eventData == null) {
             eventObject.append("{title: '").append(amount).append("' , start: '").append(milestone.getMilestoneDate()).append("', type: 'Milestone").append("', description: '").append(description).append("'},");
         } else {
             try {
                 amount += Integer.parseInt(eventData.split("'")[1]);
-                description = eventData.split("'")[7] + "<br>- " + milestone.getMilestoneName();
+                description = eventData.split("'")[7] + "<br>- " + HtmlUtils.htmlEscape(milestone.getMilestoneName());
             } catch (Exception ignore) {
                 // Current uses -1 to represent error. May want to change this to a thrown error.
                 amount = -1;
