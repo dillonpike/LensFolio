@@ -47,4 +47,22 @@ body {
     transition-duration: 500ms; !important;
 }
 
+.milestone {
+    position: absolute !important;
+}
+
+.deadline {
+    position: absolute !important;
+}
+
+.event {
+    position: absolute !important;
+}
+
+.fc-daygrid-day-frame {
+    position: relative !important;
+}
+.fc-daygrid-day:not(.fc-day-disabled){
+    height: 150px !important;
+}
 

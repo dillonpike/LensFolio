@@ -83,7 +83,6 @@
                         arrayOfDomNodes = [ imgEventWrap, titleEvent ]
                     }
 
-
                     return { domNodes: arrayOfDomNodes }
                 },
                 eventDidMount: function(info) {
@@ -142,12 +141,20 @@
             });
             calendar.render();
 
+            refreshTooltips()
 
             function refreshTooltips() {
                 $("[id='events']" ).each(function (ignore) {
                     $(this).parent().get(0).setAttribute("data-bs-original-title", $(this).get(0).getAttribute("desc"))
                     $(this).parent().get(0).setAttribute("data-bs-html", "true");
                     $(this).parent().get(0).setAttribute("data-toggle", "tooltip");
+                    if ($(this).hasClass("fc-milestone-img")) {
+                        $(this).parent().addClass("milestone");
+                    } else if ($(this).hasClass("fc-deadline-img")) {
+                        $(this).parent().addClass("deadline");
+                    } else if ($(this).hasClass("fc-event-img")) {
+                        $(this).parent().addClass("event");
+                    }
                 });
 
                 $(function () {
