@@ -255,11 +255,11 @@ function reorderNotifications() {
  * Then subscribes methods to the required endpoints.
  */
 function connect() {
-    let socket = new SockJS('/test/portfolio/mywebsockets');
+    let socket = new SockJS('/mywebsockets');
     stompClient = Stomp.over(socket);
     stompClient.connect({}, function (frame) {
         console.log('Connected: ' + frame);
-        stompClient.subscribe('/artefact/being-edited', function (eventResponseArg) {
+        stompClient.subscribe('/test/portfolio/artefact/being-edited', function (eventResponseArg) {
             const eventResponse = JSON.parse(eventResponseArg.body);
             showToast(eventResponse.artefactName, eventResponse.artefactId, eventResponse.username, eventResponse.userFirstName, eventResponse.userLastName, false, eventResponse.artefactType);
         });
