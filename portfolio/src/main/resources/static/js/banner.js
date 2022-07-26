@@ -13,3 +13,12 @@ function showAlertBanner(text) {
     document.getElementById("alertBanner").hidden = false;
     document.getElementById("alertBannerText").innerText = text;
 }
+
+/**
+ * Displays the alert toast with the given text.
+ * @param text text to be shown in the alert toast
+ */
+function showAlertToast(text) {
+    $("#alertToast").toast('show')
+    document.getElementById("alertToastText").textContent = text;
+}

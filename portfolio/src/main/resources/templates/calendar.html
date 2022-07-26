@@ -119,7 +119,6 @@
                     }
                 },
                 eventOverlap: function(stillEvent, movingEvent) {
-                    console.log(stillEvent);
                     if (stillEvent.extendedProps.type === 'Sprint') {
                         document.getElementById("overlapError").hidden = false;
                         setTimeout( function () {document.getElementById("overlapError").hidden = true;}, 5000)
@@ -132,7 +131,7 @@
                 },
                 eventResize: function(info) {
                     let sprint = calendar.getEventById(info.event.id);
-                    saveSprint(sprint, "alertBanner")
+                    saveSprint(sprint)
                 },
                 eventDrop: function(info) {
                     let sprint = calendar.getEventById(info.event.id);
@@ -189,12 +188,12 @@
     <h2 class="title" th:text="${projectName}"/>
     <span class="badge rounded-pill title-date align-middle" th:text="${projectStartDateString} + ' - ' + ${projectEndDateString}" />
 </div>
-
-<div style="display: flex; justify-content: center; width: 100%;margin: 15px">
-    <div class="alert alert-success alert-dismissible" role="alert" id="alertBanner" style="width: 25%;padding-right: 16px!important" hidden>
-        <div style="display: flex; justify-content: space-between;flex-direction: row; align-items: center;">
-            <strong id="alertBannerText"></strong>
-            <button id="removeUpdateAlert" type="button" class="btn btn-outline-success" onclick="removeAlertBanner()">X</button>
+<!-- TOAST FOR ERRORS AND WHEN SPRINTS ARE UPDATED -->
+<div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 2000">
+    <div class="toast hide text-white bg-primary" role="alert" aria-live="assertive" aria-atomic="true" id="alertToast" data-bs-animation="true" data-bs-autohide="false">
+        <div class="toast-body">
+            <span id="alertToastText">Hidden</span>
+            <button id="toastBtn" type="button" class="btn-close btn-close-white me-2 m-auto float-end" data-bs-dismiss="toast" aria-label="Close"></button>
         </div>
     </div>
 </div>
