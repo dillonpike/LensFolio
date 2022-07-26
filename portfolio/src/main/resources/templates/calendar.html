@@ -145,7 +145,7 @@
 
             function refreshTooltips() {
                 $("[id='events']" ).each(function (ignore) {
-                    $(this).parent().get(0).setAttribute("title", $(this).get(0).getAttribute("desc"))
+                    $(this).parent().get(0).setAttribute("data-bs-original-title", $(this).get(0).getAttribute("desc"))
                     $(this).parent().get(0).setAttribute("data-bs-html", "true");
                     $(this).parent().get(0).setAttribute("data-toggle", "tooltip");
                 });
