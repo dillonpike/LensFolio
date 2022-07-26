@@ -89,6 +89,9 @@
                 eventDidMount: function(info) {
                     info.event.setProp("classNames", "event-border");
                 },
+                eventMouseEnter: function(info) {
+                    refreshTooltips();
+                },
                 eventClick: function(info) {
                     // change the border color
                     let newEvent = calendar.getEventById(info.event.id);
@@ -138,7 +141,7 @@
                 }
             });
             calendar.render();
-            refreshTooltips();
+
 
             function refreshTooltips() {
                 $("[id='events']" ).each(function (ignore) {
