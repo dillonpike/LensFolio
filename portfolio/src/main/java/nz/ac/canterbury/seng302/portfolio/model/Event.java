@@ -3,7 +3,9 @@ package nz.ac.canterbury.seng302.portfolio.model;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;
+import com.sun.istack.NotNull;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalTime;
 import javax.persistence.Entity;
@@ -11,6 +13,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import java.time.format.DateTimeFormatter;
+import java.util.Calendar;
 import java.util.Date;
 
 @Entity
@@ -169,7 +172,12 @@ public class Event {
     }
 
     public void setEventStartDate(Date eventStartDate) {
-        this.eventStartDate = eventStartDate;
+        if (this.eventStartTime != null) {
+            this.eventStartDate = addTimeToDate(eventStartDate, this.eventStartTime);
+        } else {
+            this.eventStartDate = eventStartDate;
+        }
+
     }
 
     public Date getEventEndDate() {
@@ -177,7 +185,12 @@ public class Event {
     }
 
     public void setEventEndDate(Date eventEndDate) {
-        this.eventEndDate = eventEndDate;
+        if (this.eventEndTime != null) {
+            this.eventEndDate = addTimeToDate(eventEndDate, this.eventEndTime);
+        } else {
+            this.eventEndDate = eventEndDate;
+        }
+
     }
 
     public LocalTime getEventStartTime() {
@@ -186,6 +199,9 @@ public class Event {
 
     public void setEventStartTime(LocalTime eventStartTime) {
         this.eventStartTime = eventStartTime;
+        if (this.eventStartDate != null) {
+            this.eventStartDate = addTimeToDate(this.eventStartDate, eventStartTime);
+        }
     }
 
     public LocalTime getEventEndTime() {
@@ -194,12 +210,42 @@ public class Event {
 
     public void setEventEndTime(LocalTime eventEndTime) {
         this.eventEndTime = eventEndTime;
+        if (this.eventEndDate != null) {
+            this.eventEndDate = addTimeToDate(this.eventEndDate, eventEndTime);
+        }
+
+    }
+
+    /**
+     * Takes a time and a date and adds the time to the date object and returns the changed date.
+     * @param date Date that as no time.
+     * @param time LocalTime time.
+     * @return Date with time added to it.
+     */
+    private Date addTimeToDate(@NotNull Date date, @NotNull LocalTime time){
+        SimpleDateFormat timeFormat = new SimpleDateFormat("kk:mm");
+        try {
+            System.out.println(String.valueOf(time));
+            Date dateWithTime = timeFormat.parse(String.valueOf(time));
+            Calendar cal = Calendar.getInstance();
+            cal.setTime(date);
+            SimpleDateFormat hourFormat = new SimpleDateFormat("HH");
+            SimpleDateFormat minuteFormat = new SimpleDateFormat("mm");
+            cal.add(Calendar.HOUR_OF_DAY, Integer.parseInt(hourFormat.format(dateWithTime)));
+            cal.add(Calendar.MINUTE, Integer.parseInt(minuteFormat.format(dateWithTime)));
+            return cal.getTime();
+        } catch (ParseException e) {
+            return date;
+        }
     }
 
 
-
     public void setStartDateString(String date) {
-        this.eventStartDate = Project.stringToDate(date);
+        if (this.eventStartTime == null) {
+            this.eventStartDate = Project.stringToDate(date);
+        } else {
+            this.eventStartDate = addTimeToDate(Project.stringToDate(date), this.eventStartTime);
+        }
     }
 
     public String getStartDateString() {
@@ -207,7 +253,11 @@ public class Event {
     }
 
     public void setEndDateString(String date) {
-        this.eventEndDate = Project.stringToDate(date);
+        if (this.eventEndTime == null) {
+            this.eventEndDate = Project.stringToDate(date);
+        } else {
+            this.eventEndDate = addTimeToDate(Project.stringToDate(date), this.eventEndTime);
+        }
     }
 
     public String getEndDateString() {
@@ -216,6 +266,9 @@ public class Event {
 
     public void setStartTimeString(String time) {
         this.eventStartTime = Event.stringToTime(time);
+        if (this.eventStartDate != null) {
+            this.eventStartDate = addTimeToDate(this.eventStartDate, this.eventStartTime);
+        }
     }
 
     public String getStartTimeString() {
@@ -224,6 +277,9 @@ public class Event {
 
     public void setEndTimeString(String time) {
         this.eventEndTime = Event.stringToTime(time);
+        if (this.eventEndDate != null) {
+            this.eventEndDate = addTimeToDate(this.eventEndDate, this.eventEndTime);
+        }
     }
 
     public String getEndTimeString() {
