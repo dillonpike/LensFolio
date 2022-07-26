@@ -13,3 +13,10 @@ function saveSprint(sprint) {
         }
     });
 }
+
+/**
+ * Calls the error toast display
+ */
+function errorSprints(message) {
+    showAlertErrorToast(message);
+}

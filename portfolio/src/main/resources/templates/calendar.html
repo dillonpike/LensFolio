@@ -120,8 +120,7 @@
                 },
                 eventOverlap: function(stillEvent, movingEvent) {
                     if (stillEvent.extendedProps.type === 'Sprint') {
-                        document.getElementById("overlapError").hidden = false;
-                        setTimeout( function () {document.getElementById("overlapError").hidden = true;}, 5000)
+                        errorSprints("Error: sprints cannot overlap");
                         return false;
                     }
                     return true;
@@ -190,7 +189,7 @@
 </div>
 <!-- TOAST FOR ERRORS AND WHEN SPRINTS ARE UPDATED -->
 <div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 2000">
-    <div class="toast hide text-white" role="alert" aria-live="assertive" aria-atomic="true" id="alertToast" data-bs-animation="true" data-bs-autohide="false">
+    <div class="toast hide text-white" role="alert" aria-live="assertive" aria-atomic="true" id="alertToast" data-bs-animation="true" data-bs-autohide="true" data-bs-delay="7000">
         <div class="toast-body">
             <span id="alertToastText">Hidden</span>
             <button id="toastBtn" type="button" class="btn-close btn-close-white me-2 m-auto float-end" data-bs-dismiss="toast" aria-label="Close"></button>
@@ -201,9 +200,6 @@
 
 
 <div class='calendar' id='calendar'></div>
-<div class="error">
-    <span id="overlapError" style="color:red" th:hidden="true">Error: sprints cannot overlap</span>
-</div>
 </body>
 
 <script src="webjars/fullcalendar/5.10.2/main.min.js"></script>
