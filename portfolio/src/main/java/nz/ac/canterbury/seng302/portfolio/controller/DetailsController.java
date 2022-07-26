@@ -184,7 +184,7 @@ public class DetailsController {
      * @return returns an NotificationResponse that holds information about the event being updated.
      */
     @MessageMapping("/editing-artefact")
-    @SendTo("/test/portfolio/artefact/being-edited")
+    @SendTo("/artefact/being-edited")
     public NotificationResponse updatingArtefact(NotificationMessage message) {
         int artefactId = message.getArtefactId();
         String username = message.getUsername();
@@ -202,7 +202,7 @@ public class DetailsController {
      * @return Returns the message given.
      */
     @MessageMapping("/stop-editing-artefact")
-    @SendTo("/test/portfolio/artefact/stop-being-edited")
+    @SendTo("/artefact/stop-being-edited")
     public NotificationResponse stopUpdatingArtefact(NotificationMessage message) {
         int artefactId = message.getArtefactId();
         String username = message.getUsername();
@@ -220,7 +220,7 @@ public class DetailsController {
      * @return returns an NotificationResponse that holds information about the event being updated.
      */
     @MessageMapping("/saved-edited-artefact")
-    @SendTo("/test/portfolio/artefact/save-edit")
+    @SendTo("/artefact/save-edit")
     public NotificationResponse savingUpdatedArtefact(NotificationMessage message) {
         int artefactId = message.getArtefactId();
         String username = message.getUsername();
@@ -258,7 +258,7 @@ public class DetailsController {
      * @param ignore this parameter, even though it is not used, is necessary to exist in order to send the request to websocket
      */
     @MessageMapping("/delete-artefact")
-    @SendTo("/test/portfolio/artefact/delete-artefact")
+    @SendTo("/artefact/delete-artefact")
     public NotificationResponse deleteArtefact(NotificationMessage ignore) {
         return new NotificationResponse();
     }

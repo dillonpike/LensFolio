@@ -432,7 +432,7 @@
      * Sends the message that an event is being updated, and sends the events names with it.
      */
     function sendName(artefactName, artefactId,userId, userFirstName, userLastName, username, artefactType) {
-        stompClient.send("/test/portfolio/app/editing-artefact", {}, JSON.stringify({
+        stompClient.send("/app/editing-artefact", {}, JSON.stringify({
             'artefactName': artefactName,
             'artefactId' : artefactId,
             'artefactType' : artefactType,
@@ -447,7 +447,7 @@
      * Sends an empty message so that the other end can realise to close any popups it may have activated.
      */
     function sendEmpty(artefactName, artefactId,userId, userFirstName, userLastName, username, artefactType) {
-        stompClient.send("/test/portfolio/app/stop-editing-artefact", {}, JSON.stringify({
+        stompClient.send("/app/stop-editing-artefact", {}, JSON.stringify({
             'artefactName': artefactName,
             'artefactId' : artefactId,
             'userId': userId,
@@ -462,7 +462,7 @@
      * Sends the message that an event has been updated (saved), and sends the events names with it.
      */
     function sendNameReload(artefactName, artefactId,userId, userFirstName, userLastName, username, artefactType) {
-        stompClient.send("/test/portfolio/app/saved-edited-artefact", {}, JSON.stringify({
+        stompClient.send("/app/saved-edited-artefact", {}, JSON.stringify({
             'artefactName': artefactName,
             'artefactId' : artefactId,
             'userId': userId,
@@ -477,7 +477,7 @@
      * Sends the message that an artefact(milestone, event, deadline) is deleted
      */
     function pageReload() {
-        stompClient.send("/test/portfolio/app/delete-artefact", {}, JSON.stringify({}));
+        stompClient.send("/app/delete-artefact", {}, JSON.stringify({}));
     }
 
     let userId = [[${userId}]];
