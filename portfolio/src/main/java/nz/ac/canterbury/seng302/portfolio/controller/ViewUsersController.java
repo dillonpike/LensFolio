@@ -6,11 +6,13 @@ import nz.ac.canterbury.seng302.portfolio.service.RegisterClientService;
 import nz.ac.canterbury.seng302.portfolio.service.UserAccountClientService;
 import nz.ac.canterbury.seng302.portfolio.service.UserSortingService;
 import nz.ac.canterbury.seng302.shared.identityprovider.*;
+import org.apache.catalina.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.management.relation.Role;
 import java.util.List;
@@ -51,12 +53,7 @@ public class ViewUsersController {
         Integer id = userAccountClientService.getUserIDFromAuthState(principal);
         elementService.addHeaderAttributes(model, id);
         getUserByIdReply = registerClientService.getUserData(id);
-        String role = principal.getClaimsList().stream()
-                .filter(claim -> claim.getType().equals("role"))
-                .findFirst()
-                .map(ClaimDTO::getValue)
-                .orElse("NOT FOUND");
-
+        String role = elementService.getUserHighestRole(getUserByIdReply);
 
         model.addAttribute("currentUserRole", role);
         model.addAttribute("currentUsername", getUserByIdReply.getUsername());
@@ -102,20 +99,25 @@ public class ViewUsersController {
      * @return list of users page(html)
      */
     @RequestMapping(value="/add_role", method=RequestMethod.POST)
-    public String addRole(
+    public String addRole(Model model,
                               @RequestParam(value = "role") String role,
-                              @RequestParam(value = "userId") int userId
-    ) {
-
-        if (role.equals("student")) {
-            UserRoleChangeResponse roleChangeResponse = userAccountClientService.addRoleToUser(userId, UserRole.STUDENT);
-        } else if (role.equals("teacher")) {
-            UserRoleChangeResponse roleChangeResponse = userAccountClientService.addRoleToUser(userId, UserRole.TEACHER);
-        } else {
-            UserRoleChangeResponse roleChangeResponse = userAccountClientService.addRoleToUser(userId, UserRole.COURSE_ADMINISTRATOR);
+                              @RequestParam(value = "userId") int userId,
+                              @AuthenticationPrincipal AuthState principal
+                              ) {
+        // Check if current user's operation is valid, if invalid, access denied error is displayed to user
+        if (isValid(role, principal, model)) {
+            if (role.equals("student")) {
+                UserRoleChangeResponse roleChangeResponse = userAccountClientService.addRoleToUser(userId, UserRole.STUDENT);
+            } else if (role.equals("teacher")) {
+                UserRoleChangeResponse roleChangeResponse = userAccountClientService.addRoleToUser(userId, UserRole.TEACHER);
+            } else {
+                UserRoleChangeResponse roleChangeResponse = userAccountClientService.addRoleToUser(userId, UserRole.COURSE_ADMINISTRATOR);
+            }
+            return "redirect:viewUsers";
         }
         return "redirect:viewUsers";
     }
+
 
     /***
      * POST method request handler when the url is "/delete_role"
@@ -127,22 +129,57 @@ public class ViewUsersController {
     @RequestMapping(value="/delete_role", method=RequestMethod.POST)
     public String deleteRole(Model model,
                               @RequestParam(value = "deletedRole") String role,
-                              @RequestParam(value = "userId") int userId
-    ) {
-        UserRoleChangeResponse roleChangeResponse;
-        if (Objects.equals(role, "STUDENT")) {
-            roleChangeResponse = userAccountClientService.deleteRoleFromUser(userId, UserRole.STUDENT);
-        } else if (Objects.equals(role, "TEACHER")) {
-            roleChangeResponse = userAccountClientService.deleteRoleFromUser(userId, UserRole.TEACHER);
-        } else {
-            roleChangeResponse = userAccountClientService.deleteRoleFromUser(userId, UserRole.COURSE_ADMINISTRATOR);
+                              @RequestParam(value = "userId") int userId,
+                             @AuthenticationPrincipal AuthState principal
+                             ) {
+        // Check if current user's operation is valid, if invalid, access denied error is displayed to user
+        if (isValid(role,principal, model)) {
+            UserRoleChangeResponse roleChangeResponse;
+            if (Objects.equals(role, "STUDENT")) {
+                roleChangeResponse = userAccountClientService.deleteRoleFromUser(userId, UserRole.STUDENT);
+            } else if (Objects.equals(role, "TEACHER")) {
+                roleChangeResponse = userAccountClientService.deleteRoleFromUser(userId, UserRole.TEACHER);
+            } else {
+                roleChangeResponse = userAccountClientService.deleteRoleFromUser(userId, UserRole.COURSE_ADMINISTRATOR);
+            }
+            if (roleChangeResponse.getIsSuccess()) {
+                return "redirect:viewUsers";
+            } else {
+                model.addAttribute("errorMessage", "Error deleting user");
+                return "redirect:error";
+            }
         }
-        if (roleChangeResponse.getIsSuccess()) {
-            return "redirect:viewUsers";
-        } else {
-            model.addAttribute("errorMessage", "Error deleting user");
-            return "redirect:error";
-        }
+//        rm.addFlashAttribute("isAccessDenied", true);
+        return "redirect:viewUsers";
+    }
 
+    /**
+     * Function to validate user's current operation(Delete/add role).
+     * This function is to help get user's permission update immediately, make sure user cannot overstep.
+     *
+     * @param targetRole The target role object user want to modify
+     * @param model Parameters sent to thymeleaf template to be rendered into HTML
+     * @return True if current user has the permission
+     */
+    private boolean isValid(String targetRole,
+                            @AuthenticationPrincipal AuthState principal,
+                            Model model
+                            ) {
+        UserResponse getUserByIdReply;
+        Integer id = userAccountClientService.getUserIDFromAuthState(principal);
+        elementService.addHeaderAttributes(model, id);
+        getUserByIdReply = registerClientService.getUserData(id);
+
+        //Get the current user's highest role
+        String highestRole = elementService.getUserHighestRole(getUserByIdReply);
+        // Decline users' request if they are current a student
+        if (highestRole.equals("student")) {
+            return false;
+        }
+        // Decline users' request to course admin if they are current a teacher
+        if (highestRole.equals("teacher")) {
+            return !targetRole.equals("admin") && !Objects.equals(targetRole, "COURSE_ADMINISTRATOR");
+        }
+        return true;
     }
 }

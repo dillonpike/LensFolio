@@ -71,4 +71,25 @@ public class ElementService {
         Collections.sort(rolesList);
         model.addAttribute("rolesList", rolesList);
     }
+
+    /**
+     * Set the current user's permission based on user's role by adding role attribute to the model
+     * @param userResponse UserResponse object of the currently signed on user
+     */
+    public String getUserHighestRole(UserResponse userResponse) {
+        List<Integer> roleList = userResponse.getRolesValueList();
+        //Check if user is a course administrator. Otherwise, check current user is a teacher
+        if (!roleList.contains(2)) {
+            if (!roleList.contains(1)) {
+                //User must have one role, therefore set user permission to student
+                return "student";
+            } else {
+                //If roleList contains 1(teacher role), set user permission to teacher
+                return "teacher";
+            }
+        } else {
+            //If roleList contains 2(admin role), set user permission to admin
+            return "admin";
+        }
+    }
 }
