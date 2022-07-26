@@ -19,6 +19,9 @@ function showAlertBanner(text) {
  * @param text text to be shown in the alert toast
  */
 function showAlertToast(text) {
-    $("#alertToast").toast('show')
+    let toastEl = $("#alertToast");
+    toastEl.addClass("bg-success")
+    toastEl.removeClass("bg-danger")
+    toastEl.toast('show')
     document.getElementById("alertToastText").textContent = text;
 }
