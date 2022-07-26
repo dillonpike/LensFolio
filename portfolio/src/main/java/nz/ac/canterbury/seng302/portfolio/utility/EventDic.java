@@ -51,7 +51,7 @@ public class EventDic {
 
         // Uses EventTypes costume hashCode() to hash based on type and date.
         String eventData = datesToEvents.get(new EventTypes("Deadline", deadline.getDeadlineDateString()));
-        String description = "<strong>Dealine:</strong><br>- " + HtmlUtils.htmlEscape(deadline.getDeadlineName());
+        String description = "<strong>Deadlines:</strong><br>- " + HtmlUtils.htmlEscape(deadline.getDeadlineName());
         StringBuilder eventObject = new StringBuilder();
         String date = df.format(Date.from(deadline.getDeadlineDate().toInstant().truncatedTo(ChronoUnit.DAYS)));  // To fix error with times at 11pm ranging 2 days rather than 1.
         if (eventData == null) {
@@ -91,7 +91,7 @@ public class EventDic {
             Instant date = current.getTime().toInstant();
             // Uses EventTypes costume hashCode() to hash based on type and date.
             String eventData = datesToEvents.get(new EventTypes("Event", Project.dateToString(Date.from(date))));
-            String description = "<strong>Event:</strong><br>- " + HtmlUtils.htmlEscape(event.getEventName());
+            String description = "<strong>Events:</strong><br>- " + HtmlUtils.htmlEscape(event.getEventName());
             StringBuilder eventObject = new StringBuilder();
             if (eventData == null) {
                 eventObject.append("{title: '").append(amount).append("', start: '").append(date).append("', type: 'Event").append("', description: '").append(description).append("'},");
@@ -119,7 +119,7 @@ public class EventDic {
         int amount = 1;
         // Uses EventTypes costume hashCode() to hash based on type and date.
         String eventData = datesToEvents.get(new EventTypes("Milestone", milestone.getMilestoneDateString()));
-        String description = "<strong>Milestone:</strong><br>- " + HtmlUtils.htmlEscape(milestone.getMilestoneName());
+        String description = "<strong>Milestones:</strong><br>- " + HtmlUtils.htmlEscape(milestone.getMilestoneName());
         StringBuilder eventObject = new StringBuilder();
         if (eventData == null) {
             eventObject.append("{title: '").append(amount).append("' , start: '").append(milestone.getMilestoneDate()).append("', type: 'Milestone").append("', description: '").append(description).append("'},");
