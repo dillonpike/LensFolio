@@ -29,7 +29,7 @@ import java.util.List;
  * Controller for the display project details page
  */
 @Controller
-@CrossOrigin(origins = "*")
+@CrossOrigin(origins = "https://*.canterbury.ac.nz")
 public class DetailsController {
 
     @Autowired
