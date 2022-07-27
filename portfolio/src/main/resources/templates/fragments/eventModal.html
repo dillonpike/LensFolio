@@ -24,12 +24,12 @@
           </div>
           <div class="mb-3">
             <label for="eventStartDate" class="col-form-label">Event Start Date:</label>
-            <div class="input-group" id="eventStartDateInput" data-td-target-input="nearest" data-td-target-toggle="nearest">
-              <input id="eventStartDate" type="text" class="form-control" data-td-target="#eventStartDateInput"
+            <div class="input-group" id="eventStartDateInput" data-td-target-input="nearest" data-td-target-toggle="nearest" >
+              <input id="eventStartDate" type="text" class="form-control" data-td-target="#eventStartDateInput" data-td-toggle="datetimepicker"
                      onkeydown="return false" th:name="startDateDetail" onchange="validateModalDateTimeRange(
                              'eventStartDate', 'eventEndDate', 'eventModalButton', 'eventDateTimeAlertBanner',
                              'eventDateTimeAlertMessage')"/>
-              <span class="input-group-text" data-td-target="#eventStartDateInput" data-td-toggle="datetimepicker">
+              <span class="input-group-text bg-white">
                 <span class="bi bi-calendar"></span>
               </span>
             </div>
@@ -37,11 +37,11 @@
           <div class="mb-3">
             <label for="eventEndDate" class="col-form-label">Event End Date:</label>
             <div class="input-group" id="eventEndDateInput" data-td-target-input="nearest" data-td-target-toggle="nearest">
-              <input id="eventEndDate" type="text" class="form-control" data-td-target="#eventEndDateInput"
+              <input id="eventEndDate" type="text" class="form-control" data-td-target="#eventEndDateInput" data-td-toggle="datetimepicker"
                      onkeydown="return false" th:name="endDateDetail" onchange="validateModalDateTimeRange(
                              'eventStartDate', 'eventEndDate', 'eventModalButton', 'eventDateTimeAlertBanner',
                              'eventDateTimeAlertMessage')"/>
-              <span class="input-group-text" data-td-target="#eventEndDateInput" data-td-toggle="datetimepicker">
+              <span class="input-group-text bg-white">
                 <span class="bi bi-calendar"></span>
               </span>
             </div>
@@ -53,6 +53,7 @@
       </form>
     </div>
   </div>
+  <script src="js/datepicker.js"></script>
   <script type="text/javascript">
 
     /**
@@ -65,53 +66,8 @@
       }
     }
 
-    eventStartDatePicker = new tempusDominus.TempusDominus(
-            document.getElementById('eventStartDateInput'),
-            {
-              useCurrent: false,
-              display: {
-                icons: {
-                    time: 'bi bi-clock',
-                    date: 'bi bi-calendar',
-                    up: 'bi bi-arrow-up',
-                    down: 'bi bi-arrow-down',
-                    previous: 'bi bi-chevron-left',
-                    next: 'bi bi-chevron-right',
-                    today: 'bi bi-calendar-check',
-                },
-                buttons: {
-                  today: true,
-                },
-                  components: {
-                    useTwentyfourHour: false
-                  }
-                },
-            }
-    );
-    eventStartDatePicker.dates.formatInput = function(date) { { return moment(date).format('DD/MMM/yyyy h:mm a') } }
-    eventEndDatePicker = new tempusDominus.TempusDominus(
-            document.getElementById('eventEndDateInput'),
-            {
-              useCurrent: false,
-              display: {
-                icons: {
-                  time: 'bi bi-clock',
-                  date: 'bi bi-calendar',
-                  up: 'bi bi-arrow-up',
-                  down: 'bi bi-arrow-down',
-                  previous: 'bi bi-chevron-left',
-                  next: 'bi bi-chevron-right',
-                  today: 'bi bi-calendar-check',
-                },
-                buttons: {
-                  today: true,
-                },
-                components: {
-                  useTwentyfourHour: false
-                }
-              },
-            }
-    );
-    eventEndDatePicker.dates.formatInput = function(date) { { return moment(date).format('DD/MMM/yyyy h:mm a') } }
+    eventStartDatePicker = configureDateTimePicker('eventStartDateInput');
+    eventEndDatePicker = configureDateTimePicker('eventEndDateInput');
+
   </script>
 </div>

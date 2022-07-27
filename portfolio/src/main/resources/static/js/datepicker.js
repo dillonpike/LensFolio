@@ -1,5 +1,11 @@
+/**
+ * Configures the element with the given id to be a date and time picker. Returns the object of the datetime picker
+ * for setting to a variable so changes can be made with code (e.g. setting the date).
+ * @param elementId id of element to configure
+ * @returns {tempusDominus.TempusDominus} returns the object of the datetime picker
+ */
 function configureDateTimePicker(elementId) {
-    datepicker = new tempusDominus.TempusDominus(
+    const datepicker = new tempusDominus.TempusDominus(
         document.getElementById(elementId),
         {
             useCurrent: false,
@@ -18,10 +24,11 @@ function configureDateTimePicker(elementId) {
                 },
                 components: {
                     useTwentyfourHour: false
-                }
+                },
+                theme: 'light'
             },
         }
     );
     datepicker.dates.formatInput = function(date) { { return moment(date).format('DD/MMM/yyyy h:mm a') } }
-    console.log("Done")
+    return datepicker
 }
