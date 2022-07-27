@@ -1,5 +1,5 @@
 ## Summary:
-_[Summarize the bug encountered concisely]_
+_[Summarize the bug encountered concisely.]_
 
 ## Steps to Reproduce:
 _[How can this issue be reproduce]_
