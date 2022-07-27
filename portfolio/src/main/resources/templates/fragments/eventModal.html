@@ -24,84 +24,29 @@
           </div>
           <div class="mb-3">
             <label for="eventStartDate" class="col-form-label">Event Start Date:</label>
-            <div class="input-group date" id="eventStartDateInput2">
-              <input onkeydown="return checkDateKeys(event)" onchange="validateModalDateTimeRange('eventStartDate', 'eventEndDate', 'eventStartTime', 'eventEndTime', 'eventModalButton', 'eventDateTimeAlertBanner', 'eventDateTimeAlertBanner')" type="text" class="form-control" id="eventStartDate" th:name="startDateString">
-              <span class="input-group-append">
-                  <span class="input-group-text bg-white">
-                      <em class="bi bi-calendar"></em>
-                  </span>
+            <div class="input-group" id="eventStartDateInput" data-td-target-input="nearest" data-td-target-toggle="nearest">
+              <input id="eventStartDate" type="text" class="form-control" data-td-target="#eventStartDateInput"
+                     onkeydown="return false" th:name="startDateDetail" onchange="validateModalDateTimeRange(
+                             'eventStartDate', 'eventEndDate', 'eventModalButton', 'eventDateTimeAlertBanner',
+                             'eventDateTimeAlertMessage')"/>
+              <span class="input-group-text" data-td-target="#eventStartDateInput" data-td-toggle="datetimepicker">
+                <span class="bi bi-calendar"></span>
               </span>
             </div>
           </div>
           <div class="mb-3">
             <label for="eventEndDate" class="col-form-label">Event End Date:</label>
-            <div class="input-group date" id="eventEndDateInput1">
-              <input onkeydown="return checkDateKeys(event)" onchange="validateModalDateTimeRange('eventStartDate', 'eventEndDate', 'eventStartTime', 'eventEndTime', 'eventModalButton', 'eventDateTimeAlertBanner', 'eventDateTimeAlertBanner')" type="text" class="form-control" id="eventEndDate" th:name="endDateString">
-              <span class="input-group-append">
-                  <span class="input-group-text bg-white">
-                      <em class="bi bi-calendar"></em>
-                  </span>
+            <div class="input-group" id="eventEndDateInput" data-td-target-input="nearest" data-td-target-toggle="nearest">
+              <input id="eventEndDate" type="text" class="form-control" data-td-target="#eventEndDateInput"
+                     onkeydown="return false" th:name="endDateDetail" onchange="validateModalDateTimeRange(
+                             'eventStartDate', 'eventEndDate', 'eventModalButton', 'eventDateTimeAlertBanner',
+                             'eventDateTimeAlertMessage')"/>
+              <span class="input-group-text" data-td-target="#eventEndDateInput" data-td-toggle="datetimepicker">
+                <span class="bi bi-calendar"></span>
               </span>
             </div>
           </div>
-          <div class="mb-3">
-            <label for="eventStartTime" class="col-form-label">Event Start Time:</label>
-            <div class='input-group date' id='eventStartTimeInput'>
-              <input onkeydown="return checkTimeKeys(event)" onchange="validateModalDateTimeRange('eventStartDate', 'eventEndDate', 'eventStartTime', 'eventEndTime', 'eventModalButton', 'eventDateTimeAlertBanner', 'eventDateTimeAlertBanner')" type="time" class="form-control" id="eventStartTime" th:name="startTimeString">
-            </div>
-          </div>
-          <div class="mb-3">
-            <label for="eventEndTime" class="col-form-label">Event End Time:</label>
-            <div class='input-group date' id='eventEndTimeInput'>
-              <input onkeydown="return checkTimeKeys(event)" onchange="validateModalDateTimeRange('eventStartDate', 'eventEndDate', 'eventStartTime', 'eventEndTime', 'eventModalButton', 'eventDateTimeAlertBanner', 'eventDateTimeAlertBanner')" type="time" class="form-control" id="eventEndTime" th:name="endTimeString">
-            </div>
-          </div>
-          <div
-                  class="input-group"
-                  id="eventStartDateInput"
-                  data-td-target-input="nearest"
-                  data-td-target-toggle="nearest"
-          >
-            <input
-                    id="eventStartDate"
-                    type="text"
-                    class="form-control"
-                    data-td-target="#eventStartDateInput"
-                    onkeydown="return false"
-                    th:name="datetestString"
-            />
-            <span
-                    class="input-group-text"
-                    data-td-target="#eventStartDateInput"
-                    data-td-toggle="datetimepicker"
-            >
-              <span class="fa-solid fa-calendar"></span>
-            </span>
-          </div>
-
-          <div
-                  class="input-group"
-                  id="eventEndDateInput"
-                  data-td-target-input="nearest"
-                  data-td-target-toggle="nearest"
-          >
-            <input
-                    id="eventEndDate"
-                    type="text"
-                    class="form-control"
-                    data-td-target="#eventEndDateInout"
-                    onkeydown="return false"
-                    th:name="datetestString"
-            />
-            <span
-                    class="input-group-text"
-                    data-td-target="#eventEndDateInout"
-                    data-td-toggle="datetimepicker"
-            >
-              <span class="fa-solid fa-calendar"></span>
-            </span>
-          </div>
-
+        </div>
         <div class="modal-footer">
           <button class="btn btn-primary" id="eventModalButton" type="submit">Add event</button>
         </div>
@@ -114,36 +59,14 @@
      * Validates the currently entered information for the event and submits the form if it's valid.
      */
     async function validateEvent() {
-      if (validateModalDateTimeRange('eventStartDate', 'eventEndDate', 'eventStartTime', 'eventEndTime', 'submitEventButton', 'eventDateTimeAlertBanner', 'eventDateTimeAlertMessage') &&
+      if (validateModalDateTimeRange('eventStartDate', 'eventEndDate', 'submitEventButton', 'eventDateTimeAlertBanner', 'eventDateTimeAlertMessage') &&
               validateModalName('eventName', 'eventAlertBanner', 'eventAlertMessage')) {
         document.getElementById('eventForm').submit();
       }
     }
 
-    // fills in the date pickers
-    $(function() {
-      $('#eventStartDateInput').datepicker({
-        format: 'dd/M/yyyy',
-        todayHighlight: true,
-        todayBtn: true,
-        clearBtn: true,
-        orientation: 'bottom'
-      });
-    });
-
-    $(function() {
-      $('#eventEndDateInput').datepicker({
-        format: 'dd/M/yyyy',
-        todayHighlight: true,
-        todayBtn: true,
-        clearBtn: true,
-        orientation: 'bottom'
-      });
-    });
-
-    //using "window" is just for the stackblitz, you do not need to do this
-    datetimepicker1 = new tempusDominus.TempusDominus(
-            document.getElementById('datetimepicker1'),
+    eventStartDatePicker = new tempusDominus.TempusDominus(
+            document.getElementById('eventStartDateInput'),
             {
               useCurrent: false,
               display: {
@@ -165,6 +88,30 @@
                 },
             }
     );
-    datetimepicker1.dates.formatInput = function(date) { { return moment(date).format('DD/MMM/yyyy h:mm a') } }
+    eventStartDatePicker.dates.formatInput = function(date) { { return moment(date).format('DD/MMM/yyyy h:mm a') } }
+    eventEndDatePicker = new tempusDominus.TempusDominus(
+            document.getElementById('eventEndDateInput'),
+            {
+              useCurrent: false,
+              display: {
+                icons: {
+                  time: 'bi bi-clock',
+                  date: 'bi bi-calendar',
+                  up: 'bi bi-arrow-up',
+                  down: 'bi bi-arrow-down',
+                  previous: 'bi bi-chevron-left',
+                  next: 'bi bi-chevron-right',
+                  today: 'bi bi-calendar-check',
+                },
+                buttons: {
+                  today: true,
+                },
+                components: {
+                  useTwentyfourHour: false
+                }
+              },
+            }
+    );
+    eventEndDatePicker.dates.formatInput = function(date) { { return moment(date).format('DD/MMM/yyyy h:mm a') } }
   </script>
 </div>

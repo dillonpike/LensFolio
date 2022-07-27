@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalTime;
 import javax.persistence.Entity;
@@ -144,6 +145,17 @@ public class Event {
     }
 
     /**
+     * Sets the start date and time with a detailed string. Format example: 12/Jun/2022 12:53pm
+     * @param startDateDetail start date to set
+     * @throws ParseException when the given string isn't in the right format
+     */
+    public void setStartDateDetail(String startDateDetail) throws ParseException {
+        SimpleDateFormat formatter = new SimpleDateFormat("dd/MMM/yyyy h:mm a");
+        eventStartDate = formatter.parse(startDateDetail);
+        eventStartTime = LocalTime.of(eventStartDate.getHours(), eventStartDate.getMinutes());
+    }
+
+    /**
      * Get event end date as a detailed string.
      * @return String of the end date. Null if end date is null.
      */
@@ -153,6 +165,17 @@ public class Event {
             return (Project.dateToString(eventEndDate) + " " + eventEndTime.format(dateFormat));
         }
         return null;
+    }
+
+    /**
+     * Sets the end date and time with a detailed string. Format example: 12/Jun/2022 12:53pm
+     * @param endDateDetail start date to set
+     * @throws ParseException when the given string isn't in the right format
+     */
+    public void setEndDateDetail(String endDateDetail) throws ParseException {
+        SimpleDateFormat formatter = new SimpleDateFormat("dd/MMM/yyyy h:mm a");
+        eventEndDate = formatter.parse(endDateDetail);
+        eventEndTime = LocalTime.of(eventEndDate.getHours(), eventEndDate.getMinutes());
     }
 
     /**

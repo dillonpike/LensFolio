@@ -233,19 +233,14 @@ function eventModalSetup() {
 
         modalForm.setAttribute('object', events);
 
-
         modalBodyInputs[0].value = events.eventName
-        $('#eventStartDateInput').datepicker('setDate', events.startDateString)
-        $('#eventEndDateInput').datepicker('setDate', events.endDateString)
-        document.getElementById('eventStartDateInput').value = `${events.startDateString} ${events.startTimeString}`
-        document.getElementById('eventEndDateInput').value = `${events.startDateString} ${events.startTimeString}`
-
-        modalBodyInputs[3].value = events.startTimeString.substring(0, events.startTimeString.length-3);
-        modalBodyInputs[4].value = events.endTimeString.substring(0, events.endTimeString.length-3);
-
+        const startDate = moment(`${events.startDateDetail}`, 'DD/MMM/yyyy h:mm a').toDate();
+        eventStartDatePicker.dates.setValue(tempusDominus.DateTime.convert(startDate));
+        const endDate = moment(`${events.endDateDetail}`, 'DD/MMM/yyyy h:mm a').toDate();
+        eventEndDatePicker.dates.setValue(tempusDominus.DateTime.convert(endDate));
 
         // Initial run of validation functions in case initial values are invalid
-        validateModalDateTimeRange('eventStartDate', 'eventEndDate', 'eventStartTime', 'eventEndTime','eventModalButton', 'eventDateTimeAlertBanner', 'eventDateTimeAlertMessage')
+        validateModalDateTimeRange('eventStartDate', 'eventEndDate', 'eventModalButton', 'eventDateTimeAlertBanner', 'eventDateTimeAlertMessage')
         updateCharsLeft('eventName', 'eventNameLength', 50)
         $('#' + modalButton.getAttribute("id")).prop('hidden', false);
     })

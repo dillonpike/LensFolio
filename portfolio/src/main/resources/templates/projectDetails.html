@@ -14,25 +14,9 @@
     <script src="webjars/stomp-websocket/2.3.3/stomp.min.js"></script>
     <script src="webjars/jquery/3.6.0/dist/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
-    <script
-            src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/js/solid.min.js"
-            integrity="sha512-C92U8X5fKxCN7C6A/AttDsqXQiB7gxwvg/9JCxcqR6KV+F0nvMBwL4wuQc+PwCfQGfazIe7Cm5g0VaHaoZ/BOQ=="
-            crossorigin="anonymous"
-            referrerpolicy="no-referrer"
-    ></script>
-    <script
-            src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/js/fontawesome.min.js"
-            integrity="sha512-5qbIAL4qJ/FSsWfIq5Pd0qbqoZpk5NcUVeAAREV2Li4EKzyJDEGlADHhHOSSCw0tHP7z3Q4hNHJXa81P92borQ=="
-            crossorigin="anonymous"
-            referrerpolicy="no-referrer"
-    ></script>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="https://cdn.jsdelivr.net/gh/Eonasdan/tempus-dominus@master/dist/js/tempus-dominus.js"></script>
-
-    <link
-            href="https://cdn.jsdelivr.net/gh/Eonasdan/tempus-dominus@master/dist/css/tempus-dominus.css"
-            rel="stylesheet"
-    />
+    <link href="https://cdn.jsdelivr.net/gh/Eonasdan/tempus-dominus@master/dist/css/tempus-dominus.css" rel="stylesheet"/>
 </head>
 <body>
 <header th:replace="fragments/header"></header>
@@ -699,22 +683,15 @@
     // Show error banner with error message and disable the submit button if the inputted date is outside the project dates range
     // @param elementId the ID of the date input HTML element
     // @param submitElementId the ID of the submit button on the modal
-    function validateModalDateTimeRange(dateStartId, dateEndId, timeStartId, timeEndId,  submitElementId, alertBanner, alertMessage) {
+    function validateModalDateTimeRange(dateStartId, dateEndId, submitElementId, alertBanner, alertMessage) {
         if (!checkEmpty(dateStartId, 'Start date', submitElementId, alertBanner, alertMessage)) {
             return false
         }
         if (!checkEmpty(dateEndId, 'End date', submitElementId, alertBanner, alertMessage)) {
             return false
         }
-        if (!checkEmpty(timeStartId, 'Start time', submitElementId, alertBanner, alertMessage)) {
-            return false
-        }
-        if (!checkEmpty(timeEndId, 'End time', submitElementId, alertBanner, alertMessage)) {
-            return false
-        }
-
-        const dateStartInput = new Date(`${document.getElementById(dateStartId).value}  ${document.getElementById(timeStartId).value} :00`)
-        const dateEndInput = new Date(`${document.getElementById(dateEndId).value}  ${document.getElementById(timeEndId).value} :00`)
+        const dateStartInput = new Date(`${document.getElementById(dateStartId).value}`)
+        const dateEndInput = new Date(`${document.getElementById(dateEndId).value}`)
 
         if (dateStartInput >= dateEndInput) {
             $('#' + submitElementId).prop('disabled', true);
