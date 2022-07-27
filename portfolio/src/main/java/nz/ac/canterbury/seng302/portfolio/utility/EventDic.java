@@ -9,7 +9,6 @@ import org.springframework.web.util.HtmlUtils;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
-import java.time.temporal.ChronoUnit;
 import java.util.*;
 
 /**
@@ -47,13 +46,21 @@ public class EventDic {
     public void add(Deadline deadline) {
         int amount = 1;
 
-        DateFormat df = new SimpleDateFormat("yyyy-MM-dd' 'HH:mm");
-
         // Uses EventTypes costume hashCode() to hash based on type and date.
         String eventData = datesToEvents.get(new EventTypes("Deadline", deadline.getDeadlineDateString()));
         String description = "<strong>Deadlines:</strong><br>- " + HtmlUtils.htmlEscape(deadline.getDeadlineName());
         StringBuilder eventObject = new StringBuilder();
-        String date = df.format(Date.from(deadline.getDeadlineDate().toInstant().truncatedTo(ChronoUnit.DAYS)));  // To fix error with times at 11pm ranging 2 days rather than 1.
+
+        // Changes the date to the start of the day so that it is added to the correct date.
+        DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(deadline.getDeadlineDate());
+        cal.set(Calendar.HOUR_OF_DAY, 0);
+        cal.set(Calendar.MINUTE,0);
+        cal.set(Calendar.SECOND,0);
+        cal.set(Calendar.MILLISECOND, 0);
+        String date = df.format(cal.getTime());  // To fix error with times at 11pm ranging 2 days rather than 1.
+
         if (eventData == null) {
             eventObject.append("{title: '").append(amount).append("', start: '").append(date).append("', type: 'Deadline").append("', description: '").append(description).append("'},");
         } else {
