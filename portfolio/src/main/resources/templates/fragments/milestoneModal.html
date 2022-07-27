@@ -48,6 +48,7 @@
         async function validateMilestone() {
             if (validateModalDate('milestoneDate', 'submitMilestoneButton', 'milestoneDateAlertBanner', 'milestoneDateAlertMessage') &&
                 validateModalName('milestoneName', 'milestoneAlertBanner', 'milestoneAlertMessage')) {
+                document.getElementById('milestoneForm').onsubmit = () => { return false };
                 document.getElementById('milestoneForm').submit();
             }
         }
