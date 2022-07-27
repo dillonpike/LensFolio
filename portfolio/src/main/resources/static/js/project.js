@@ -55,9 +55,6 @@ function sprintModalSetup() {
         updateCharsLeft('sprintName', 'sprintNameLength', 50);
         updateCharsLeft('sprintDescription', 'sprintDescriptionLength', 500);
     })
-    $("#sprintModalButton").on('click', function (ignore) {
-        pageReload();
-    });
 }
 
 /**
@@ -86,15 +83,6 @@ function deleteModalSetup() {
         modalButton.innerHTML = `Delete ${type.charAt(0).toUpperCase() + type.slice(1)}`
         modalLink.href = `delete-${type}/${id}`
     })
-
-    $("#deleteModalButton").on('click', function (ignore) {
-        pageReload();
-    });
-
-    $("#eventModalButton").on('click', function (ignore) {
-        pageReload();
-    });
-
 }
 
 /**
@@ -124,9 +112,6 @@ function projectModalSetup() {
         updateCharsLeft('projectName', 'projectNameLength', 50);
         updateCharsLeft('projectDescription', 'projectDescriptionLength', 500);
     })
-    $("#projectModalButton").on('click', function (ignore) {
-        pageReload();
-    });
 }
 
 /**
@@ -166,13 +151,9 @@ function milestoneModalSetup() {
 
         // Initial run of validation functions in case initial values are invalid
         validateModalDate('milestoneDate', 'milestoneModalButton', 'milestoneDateAlertBanner', 'milestoneDateAlertMessage')
-        updateCharsLeft('milestoneName', 'milestoneNameLength', 30)
+        updateCharsLeft('milestoneName', 'milestoneNameLength', 50)
         $('#' + modalButton.getAttribute("id")).prop('hidden', false);
     })
-
-    $("#milestoneModalButton").on('click', function (ignore) {
-        pageReload();
-    });
 }
 
 /**
@@ -213,13 +194,9 @@ function deadlineModalSetup() {
 
         // Initial run of validation functions in case initial values are invalid
         validateModalDateTime('deadlineDate', 'deadlineTime', 'deadlineModalButton', 'deadlineDateAlertBanner', 'deadlineDateAlertMessage')
-        updateCharsLeft('deadlineName', 'deadlineNameLength', 30)
+        updateCharsLeft('deadlineName', 'deadlineNameLength', 50)
         $('#' + modalButton.getAttribute("id")).prop('hidden', false);
     })
-
-    $("#deadlineModalButton").on('click', function (ignore) {
-        pageReload();
-    });
 }
 
 
@@ -260,6 +237,8 @@ function eventModalSetup() {
         modalBodyInputs[0].value = events.eventName
         $('#eventStartDateInput').datepicker('setDate', events.startDateString)
         $('#eventEndDateInput').datepicker('setDate', events.endDateString)
+        document.getElementById('eventStartDateInput').value = `${events.startDateString} ${events.startTimeString}`
+        document.getElementById('eventEndDateInput').value = `${events.startDateString} ${events.startTimeString}`
 
         modalBodyInputs[3].value = events.startTimeString.substring(0, events.startTimeString.length-3);
         modalBodyInputs[4].value = events.endTimeString.substring(0, events.endTimeString.length-3);
@@ -267,11 +246,7 @@ function eventModalSetup() {
 
         // Initial run of validation functions in case initial values are invalid
         validateModalDateTimeRange('eventStartDate', 'eventEndDate', 'eventStartTime', 'eventEndTime','eventModalButton', 'eventDateTimeAlertBanner', 'eventDateTimeAlertMessage')
-        updateCharsLeft('eventName', 'eventNameLength', 30)
+        updateCharsLeft('eventName', 'eventNameLength', 50)
         $('#' + modalButton.getAttribute("id")).prop('hidden', false);
-
-        $("#eventModalButton").on('click', function (ignore) {
-            pageReload();
-        });
     })
 }

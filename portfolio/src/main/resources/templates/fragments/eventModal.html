@@ -3,17 +3,17 @@
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="exampleModalLongTitle">Add event</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id=""closeEventModalButton></button>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <form method="post" id="eventForm" onsubmit="validateEvent(); return false;" th:action="@{add-event}">
         <div class="modal-body">
           <div class="alert alert-danger alert-dismissible fade show" role="alert" id="eventAlertBanner" hidden>
             <span id="eventAlertMessage" data-test-id="alertMessage"></span>
             <button type="button" class="btn-close" onclick="document.getElementById('eventAlertBanner').hidden = true" aria-label="Close"></button>
-          </div> 
+          </div>
           <div class="mb-3">
             <label for="eventName" class="col-form-label">Event Name:</label>
-            <input onkeyup="updateCharsLeft('eventName', 'eventNameLength', 30)" maxlength="30" type="text" class="form-control" id="eventName" name="eventName">
+            <input onkeyup="updateCharsLeft('eventName', 'eventNameLength', 50)" maxlength="50" type="text" class="form-control" id="eventName" name="eventName">
             <div class="name-length-message">
               <span id="eventNameLength"></span>
             </div>
@@ -24,7 +24,7 @@
           </div>
           <div class="mb-3">
             <label for="eventStartDate" class="col-form-label">Event Start Date:</label>
-            <div class="input-group date" id="eventStartDateInput">
+            <div class="input-group date" id="eventStartDateInput2">
               <input onkeydown="return checkDateKeys(event)" onchange="validateModalDateTimeRange('eventStartDate', 'eventEndDate', 'eventStartTime', 'eventEndTime', 'eventModalButton', 'eventDateTimeAlertBanner', 'eventDateTimeAlertBanner')" type="text" class="form-control" id="eventStartDate" th:name="startDateString">
               <span class="input-group-append">
                   <span class="input-group-text bg-white">
@@ -35,7 +35,7 @@
           </div>
           <div class="mb-3">
             <label for="eventEndDate" class="col-form-label">Event End Date:</label>
-            <div class="input-group date" id="eventEndDateInput">
+            <div class="input-group date" id="eventEndDateInput1">
               <input onkeydown="return checkDateKeys(event)" onchange="validateModalDateTimeRange('eventStartDate', 'eventEndDate', 'eventStartTime', 'eventEndTime', 'eventModalButton', 'eventDateTimeAlertBanner', 'eventDateTimeAlertBanner')" type="text" class="form-control" id="eventEndDate" th:name="endDateString">
               <span class="input-group-append">
                   <span class="input-group-text bg-white">
@@ -56,7 +56,52 @@
               <input onkeydown="return checkTimeKeys(event)" onchange="validateModalDateTimeRange('eventStartDate', 'eventEndDate', 'eventStartTime', 'eventEndTime', 'eventModalButton', 'eventDateTimeAlertBanner', 'eventDateTimeAlertBanner')" type="time" class="form-control" id="eventEndTime" th:name="endTimeString">
             </div>
           </div>
-        </div>
+          <div
+                  class="input-group"
+                  id="eventStartDateInput"
+                  data-td-target-input="nearest"
+                  data-td-target-toggle="nearest"
+          >
+            <input
+                    id="eventStartDate"
+                    type="text"
+                    class="form-control"
+                    data-td-target="#eventStartDateInput"
+                    onkeydown="return false"
+                    th:name="datetestString"
+            />
+            <span
+                    class="input-group-text"
+                    data-td-target="#eventStartDateInput"
+                    data-td-toggle="datetimepicker"
+            >
+              <span class="fa-solid fa-calendar"></span>
+            </span>
+          </div>
+
+          <div
+                  class="input-group"
+                  id="eventEndDateInput"
+                  data-td-target-input="nearest"
+                  data-td-target-toggle="nearest"
+          >
+            <input
+                    id="eventEndDate"
+                    type="text"
+                    class="form-control"
+                    data-td-target="#eventEndDateInout"
+                    onkeydown="return false"
+                    th:name="datetestString"
+            />
+            <span
+                    class="input-group-text"
+                    data-td-target="#eventEndDateInout"
+                    data-td-toggle="datetimepicker"
+            >
+              <span class="fa-solid fa-calendar"></span>
+            </span>
+          </div>
+
         <div class="modal-footer">
           <button class="btn btn-primary" id="eventModalButton" type="submit">Add event</button>
         </div>
@@ -95,5 +140,31 @@
         orientation: 'bottom'
       });
     });
+
+    //using "window" is just for the stackblitz, you do not need to do this
+    datetimepicker1 = new tempusDominus.TempusDominus(
+            document.getElementById('datetimepicker1'),
+            {
+              useCurrent: false,
+              display: {
+                icons: {
+                    time: 'bi bi-clock',
+                    date: 'bi bi-calendar',
+                    up: 'bi bi-arrow-up',
+                    down: 'bi bi-arrow-down',
+                    previous: 'bi bi-chevron-left',
+                    next: 'bi bi-chevron-right',
+                    today: 'bi bi-calendar-check',
+                },
+                buttons: {
+                  today: true,
+                },
+                  components: {
+                    useTwentyfourHour: false
+                  }
+                },
+            }
+    );
+    datetimepicker1.dates.formatInput = function(date) { { return moment(date).format('DD/MMM/yyyy h:mm a') } }
   </script>
 </div>
