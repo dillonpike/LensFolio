@@ -13,10 +13,10 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         // Endpoint all websockets are set up at
-        registry.addEndpoint("/mywebsockets")
+        registry.addEndpoint("mywebsockets")
                 .setAllowedOrigins("https://*.canterbury.ac.nz")
                 .withSockJS()
-                .setClientLibraryUrl("webjars/sockjs-client/1.5.1/sockjs.min.js");
+                .setClientLibraryUrl("webjars/sockjs-client/1.4.0/sockjs.min.js");
     }
 
     @Override
