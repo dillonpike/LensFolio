@@ -6,11 +6,9 @@ import com.fasterxml.jackson.databind.json.JsonMapper;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
 
@@ -28,6 +26,13 @@ public class Event {
     private LocalTime eventEndTime;
     private String startDateColour;
     private String endDateColour;
+
+    @Transient
+    private final SimpleDateFormat simpleDateFormatter = new SimpleDateFormat("dd/MMM/yyyy h:mm a");
+
+    @Transient
+    private final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MMM/yyyy h:mm a");
+
 
     public Event() {}
 
@@ -150,9 +155,10 @@ public class Event {
      * @throws ParseException when the given string isn't in the right format
      */
     public void setStartDateDetail(String startDateDetail) throws ParseException {
-        SimpleDateFormat formatter = new SimpleDateFormat("dd/MMM/yyyy h:mm a");
-        eventStartDate = formatter.parse(startDateDetail);
-        eventStartTime = LocalTime.of(eventStartDate.getHours(), eventStartDate.getMinutes());
+        eventStartDate = simpleDateFormatter.parse(startDateDetail);
+
+        LocalDateTime date = LocalDateTime.parse(startDateDetail, dateFormatter);
+        eventStartTime = LocalTime.of(date.getHour(), date.getMinute());
     }
 
     /**
@@ -173,9 +179,10 @@ public class Event {
      * @throws ParseException when the given string isn't in the right format
      */
     public void setEndDateDetail(String endDateDetail) throws ParseException {
-        SimpleDateFormat formatter = new SimpleDateFormat("dd/MMM/yyyy h:mm a");
-        eventEndDate = formatter.parse(endDateDetail);
-        eventEndTime = LocalTime.of(eventEndDate.getHours(), eventEndDate.getMinutes());
+        eventEndDate = simpleDateFormatter.parse(endDateDetail);
+
+        LocalDateTime date = LocalDateTime.parse(endDateDetail, dateFormatter);
+        eventEndTime = LocalTime.of(date.getHour(), date.getMinute());
     }
 
     /**
