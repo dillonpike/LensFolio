@@ -532,6 +532,18 @@
     }
 
     /**
+     * get the action type of the modal that is currently open
+     * @param modal the modal that is currently open
+     * @returns {string} the action type
+     */
+    function getModalActionType(modal){
+        const requestURLList = document.getElementById(modal).querySelector('form').action.split('/')
+        const actionTypeIndex = requestURLList.length - 2;
+        return requestURLList[actionTypeIndex]
+
+    }
+
+    /**
      * this function is triggered when inputs on modal when being focused on (edited) will update and send a notification
      * to the details page. When these are no longer being updated (edited) they will disappear after a certain period.
      * @param inputElementName the id of the input element
@@ -540,17 +552,12 @@
      * @param artefactType either Milestone, Deadline, or Milestone
      */
     function sendEditingLiveNotificationRequest(inputElementName, modal, action, artefactType){
-
         $(inputElementName).on('focusin', function (ignore) {
-            const actionType = document.getElementById(modal).querySelector('form').action.split('/')[3]; //getting the type of the request, this is necessary as same modal is being used for both adding and editing milestone
-            console.log(document.getElementById(modal).querySelector('form').action)
-            if (actionType === action) {
+            if (getModalActionType(modal) === action) {
                 sendName(selectedArtefactName,selectedArtefactId,userId, userFirstName, userLastName, username, artefactType);
             }
         }).on('focusout', function (ignore) {
-            const actionType = document.getElementById(modal).querySelector('form').action.split('/')[3]; //getting the type of the request, this is necessary as same modal is being used for both adding and editing milestone
-            console.log(document.getElementById(modal).querySelector('form').action)
-            if (actionType === action) {
+            if (getModalActionType(modal) === action) {
                 sendEmpty(selectedArtefactName, selectedArtefactId,userId, userFirstName, userLastName, username, artefactType);
             }
         });
@@ -566,9 +573,7 @@
      */
     function sendSavedLiveNotificationRequest(inputElementName, modal, action, artefactType){
         $(inputElementName).click(function() {
-            const actionType = document.getElementById(modal).querySelector('form').action.split('/')[3]; //getting the type of the request, this is necessary as same modal is being used for both adding and editing milestone
-            console.log(document.getElementById(modal).querySelector('form').action)
-            if (actionType === action) {
+            if (getModalActionType(modal) === action) {
                 sendNameReload(selectedArtefactName, selectedArtefactId,userId, userFirstName, userLastName, username, artefactType);
             }
         })
@@ -584,9 +589,7 @@
      */
     function sendStopEditingLiveNotificationRequest(inputElementName, modal, action, artefactType){
         $(inputElementName).click(function() {
-            const actionType = document.getElementById(modal).querySelector('form').action.split('/')[3];
-            console.log(document.getElementById(modal).querySelector('form').action)
-            if (actionType === action) {
+            if (getModalActionType(modal) === action) {
                 sendEmpty(milestoneName, milestoneId,userId, userFirstName, userLastName, username, artefactType);
             }
         })
