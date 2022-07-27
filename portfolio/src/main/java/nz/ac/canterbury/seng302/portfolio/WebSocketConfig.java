@@ -16,7 +16,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         registry.addEndpoint("/mywebsockets")
                 .setAllowedOrigins("https://*.canterbury.ac.nz")
                 .withSockJS()
-                .setClientLibraryUrl("https://cdn.jsdelivr.net/sockjs/1.0.2/sockjs.min.js");
+                .setClientLibraryUrl("webjars/sockjs-client/1.5.1/sockjs.min.js");
     }
 
     @Override
