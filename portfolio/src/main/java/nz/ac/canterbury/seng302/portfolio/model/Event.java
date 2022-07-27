@@ -225,14 +225,13 @@ public class Event {
     private Date addTimeToDate(@NotNull Date date, @NotNull LocalTime time){
         SimpleDateFormat timeFormat = new SimpleDateFormat("kk:mm");
         try {
-            System.out.println(String.valueOf(time));
             Date dateWithTime = timeFormat.parse(String.valueOf(time));
             Calendar cal = Calendar.getInstance();
             cal.setTime(date);
             SimpleDateFormat hourFormat = new SimpleDateFormat("HH");
             SimpleDateFormat minuteFormat = new SimpleDateFormat("mm");
-            cal.add(Calendar.HOUR_OF_DAY, Integer.parseInt(hourFormat.format(dateWithTime)));
-            cal.add(Calendar.MINUTE, Integer.parseInt(minuteFormat.format(dateWithTime)));
+            cal.set(Calendar.HOUR_OF_DAY, Integer.parseInt(hourFormat.format(dateWithTime)));
+            cal.set(Calendar.MINUTE, Integer.parseInt(minuteFormat.format(dateWithTime)));
             return cal.getTime();
         } catch (ParseException e) {
             return date;
