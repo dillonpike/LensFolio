@@ -434,6 +434,7 @@
      * Sends the message that an event is being updated, and sends the events names with it.
      */
     function sendName(artefactName, artefactId,userId, userFirstName, userLastName, username, artefactType) {
+        console.log("Send Name")
         stompClient.send("/webSocketPost/editing-artefact", {}, JSON.stringify({
             'artefactName': artefactName,
             'artefactId' : artefactId,
@@ -449,6 +450,7 @@
      * Sends an empty message so that the other end can realise to close any popups it may have activated.
      */
     function sendEmpty(artefactName, artefactId,userId, userFirstName, userLastName, username, artefactType) {
+        console.log("send empty")
         stompClient.send("/webSocketPost/stop-editing-artefact", {}, JSON.stringify({
             'artefactName': artefactName,
             'artefactId' : artefactId,
@@ -464,6 +466,7 @@
      * Sends the message that an event has been updated (saved), and sends the events names with it.
      */
     function sendNameReload(artefactName, artefactId,userId, userFirstName, userLastName, username, artefactType) {
+        console.log("send name reload")
         stompClient.send("/webSocketPost/saved-edited-artefact", {}, JSON.stringify({
             'artefactName': artefactName,
             'artefactId' : artefactId,
@@ -537,13 +540,16 @@
      * @param artefactType either Milestone, Deadline, or Milestone
      */
     function sendEditingLiveNotificationRequest(inputElementName, modal, action, artefactType){
+
         $(inputElementName).on('focusin', function (ignore) {
             const actionType = document.getElementById(modal).querySelector('form').action.split('/')[3]; //getting the type of the request, this is necessary as same modal is being used for both adding and editing milestone
+            console.log(actionType)
             if (actionType === action) {
                 sendName(selectedArtefactName,selectedArtefactId,userId, userFirstName, userLastName, username, artefactType);
             }
         }).on('focusout', function (ignore) {
             const actionType = document.getElementById(modal).querySelector('form').action.split('/')[3]; //getting the type of the request, this is necessary as same modal is being used for both adding and editing milestone
+            console.log(actionType)
             if (actionType === action) {
                 sendEmpty(selectedArtefactName, selectedArtefactId,userId, userFirstName, userLastName, username, artefactType);
             }
@@ -561,6 +567,7 @@
     function sendSavedLiveNotificationRequest(inputElementName, modal, action, artefactType){
         $(inputElementName).click(function() {
             const actionType = document.getElementById(modal).querySelector('form').action.split('/')[3]; //getting the type of the request, this is necessary as same modal is being used for both adding and editing milestone
+            console.log(actionType)
             if (actionType === action) {
                 sendNameReload(selectedArtefactName, selectedArtefactId,userId, userFirstName, userLastName, username, artefactType);
             }
@@ -578,6 +585,7 @@
     function sendStopEditingLiveNotificationRequest(inputElementName, modal, action, artefactType){
         $(inputElementName).click(function() {
             const actionType = document.getElementById(modal).querySelector('form').action.split('/')[3];
+            console.log(actionType)
             if (actionType === action) {
                 sendEmpty(milestoneName, milestoneId,userId, userFirstName, userLastName, username, artefactType);
             }
