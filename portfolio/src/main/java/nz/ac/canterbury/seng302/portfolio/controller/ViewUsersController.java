@@ -11,6 +11,9 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.Objects;
 
@@ -43,6 +46,7 @@ public class ViewUsersController {
     @GetMapping("/viewUsers")
     public String showUserTablePage(
             Model model,
+            HttpServletRequest request,
             @AuthenticationPrincipal AuthState principal
     ) {
         UserResponse getUserByIdReply;
@@ -50,14 +54,13 @@ public class ViewUsersController {
         elementService.addHeaderAttributes(model, id);
         getUserByIdReply = registerClientService.getUserData(id);
         String role = elementService.getUserHighestRole(getUserByIdReply);
-
+        elementService.addDeniedMessage(model, request);
         model.addAttribute("currentUserRole", role);
         model.addAttribute("currentUsername", getUserByIdReply.getUsername());
         model.addAttribute("userId", id);
         model.addAttribute("studentRole", UserRole.STUDENT);
         model.addAttribute("teacherRole", UserRole.TEACHER);
         model.addAttribute("adminRole", UserRole.COURSE_ADMINISTRATOR);
-
         PaginatedUsersResponse response = userAccountClientService.getAllUsers();
         userResponseList = response.getUsersList();
         model.addAttribute("users", userResponseList);
@@ -96,6 +99,7 @@ public class ViewUsersController {
      */
     @RequestMapping(value="/add_role", method=RequestMethod.POST)
     public String addRole(Model model,
+                              RedirectAttributes rm,
                               @RequestParam(value = "role") String role,
                               @RequestParam(value = "userId") int userId,
                               @AuthenticationPrincipal AuthState principal
@@ -111,6 +115,7 @@ public class ViewUsersController {
             }
             return "redirect:viewUsers";
         }
+        rm.addFlashAttribute("isAccessDenied", true);
         return "redirect:viewUsers";
     }
 

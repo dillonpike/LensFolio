@@ -46,6 +46,17 @@ public class ElementService {
         }
     }
 
+    public void addDeniedMessage(Model model, HttpServletRequest request) {
+        Map<String, ?> inputFlashMap = RequestContextUtils.getInputFlashMap(request);
+        if (inputFlashMap != null) {
+            boolean isUpdateSuccess = (boolean) inputFlashMap.get("isAccessDenied");
+            if (isUpdateSuccess) {
+                model.addAttribute("isUpdateSuccess", true);
+                model.addAttribute("updateMessage", "Access Denied, Please log out and try again");
+            }
+        }
+    }
+
     /**
      * Updates the given model with the user's full name for display in the header.
      * @param model model from controller method that attributes will be added to
