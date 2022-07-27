@@ -14,7 +14,7 @@ _[Explain clearly what changes have been made.]_
 ### What was the issue fixed:
 _[Explain clearly what was the issue you were fixing.]_
 
-#### Link to the Relvant Issue:
+### Link to the Relvant Issue:
 _[If there is an issue open this hotfix fixs link to that here.]_
 - [issue](exampleLink)
 
