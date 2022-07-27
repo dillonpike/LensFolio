@@ -107,6 +107,7 @@
         async function validateProject() {
             if ((await checkProjectDates()).trim().length === 0 &&
                 validateModalName('projectName', 'projectAlertBanner', 'projectAlertMessage')) {
+                document.getElementById('projectForm').onsubmit = () => { return false };
                 document.getElementById('projectForm').submit();
             }
         }
