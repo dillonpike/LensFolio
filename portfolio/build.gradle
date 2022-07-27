@@ -75,10 +75,10 @@ dependencies {
     // https://mvnrepository.com/artifact/ru.yandex.qatools.ashot/ashot
     testImplementation group: 'ru.yandex.qatools.ashot', name: 'ashot', version: '1.5.4'
 
-    implementation 'org.springframework.boot:spring-boot-starter-websocket:2.7.0'
-
-    implementation 'org.webjars:sockjs-client:1.5.1'
-    implementation 'org.webjars:stomp-websocket:2.3.3'
+//    implementation 'org.springframework.boot:spring-boot-starter-websocket:2.7.0'
+//    implementation 'org.webjars:sockjs-client:1.5.1'
+//    implementation 'org.webjars:stomp-websocket:2.3.3'
+    implementation 'org.springframework.boot:spring-boot-starter-websocket'
 
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.3.0-rc1'
 
