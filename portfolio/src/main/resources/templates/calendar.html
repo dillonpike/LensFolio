@@ -221,11 +221,11 @@
         stompClient.connect({}, function (frame) {
             console.log('Connected: ' + frame);
 
-            stompClient.subscribe('/test/portfolio/artefact/save-edit', function (ignore) {
+            stompClient.subscribe('/webSocketGet/save-edit', function (ignore) {
                 refreshEvents();
 
             });
-            stompClient.subscribe('/test/portfolio/artefact/delete-artefact', function (ignore) {
+            stompClient.subscribe('/webSocketGet/delete-artefact', function (ignore) {
                 refreshEvents();
             });
         });
