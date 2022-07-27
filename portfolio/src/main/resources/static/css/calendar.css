@@ -47,16 +47,23 @@ body {
     transition-duration: 500ms; !important;
 }
 
+.milestone, .deadline, .event {
+    bottom: -10px;
+}
+
 .milestone {
     position: absolute !important;
+    bottom: -25px;
 }
 
 .deadline {
     position: absolute !important;
+    bottom: -55px;
 }
 
 .event {
     position: absolute !important;
+    bottom: -85px;
 }
 
 .fc-daygrid-day-frame {
