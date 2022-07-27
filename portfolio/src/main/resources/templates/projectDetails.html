@@ -543,13 +543,13 @@
 
         $(inputElementName).on('focusin', function (ignore) {
             const actionType = document.getElementById(modal).querySelector('form').action.split('/')[3]; //getting the type of the request, this is necessary as same modal is being used for both adding and editing milestone
-            console.log(actionType)
+            console.log(document.getElementById(modal).querySelector('form').action)
             if (actionType === action) {
                 sendName(selectedArtefactName,selectedArtefactId,userId, userFirstName, userLastName, username, artefactType);
             }
         }).on('focusout', function (ignore) {
             const actionType = document.getElementById(modal).querySelector('form').action.split('/')[3]; //getting the type of the request, this is necessary as same modal is being used for both adding and editing milestone
-            console.log(actionType)
+            console.log(document.getElementById(modal).querySelector('form').action)
             if (actionType === action) {
                 sendEmpty(selectedArtefactName, selectedArtefactId,userId, userFirstName, userLastName, username, artefactType);
             }
@@ -567,7 +567,7 @@
     function sendSavedLiveNotificationRequest(inputElementName, modal, action, artefactType){
         $(inputElementName).click(function() {
             const actionType = document.getElementById(modal).querySelector('form').action.split('/')[3]; //getting the type of the request, this is necessary as same modal is being used for both adding and editing milestone
-            console.log(actionType)
+            console.log(document.getElementById(modal).querySelector('form').action)
             if (actionType === action) {
                 sendNameReload(selectedArtefactName, selectedArtefactId,userId, userFirstName, userLastName, username, artefactType);
             }
@@ -585,7 +585,7 @@
     function sendStopEditingLiveNotificationRequest(inputElementName, modal, action, artefactType){
         $(inputElementName).click(function() {
             const actionType = document.getElementById(modal).querySelector('form').action.split('/')[3];
-            console.log(actionType)
+            console.log(document.getElementById(modal).querySelector('form').action)
             if (actionType === action) {
                 sendEmpty(milestoneName, milestoneId,userId, userFirstName, userLastName, username, artefactType);
             }
