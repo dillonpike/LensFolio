@@ -24,24 +24,6 @@ public class EditSprintController {
     private DateValidationService dateValidationService;
 
     /**
-     * Gets data for editing a given sprint.
-     * @param id Id of sprint
-     * @param model Used to display the sprint data to the UI
-     * @throws Exception If getting the sprint from the given id fails
-     */
-    @GetMapping("/edit-sprint/{id}")
-    public String sprintForm(@PathVariable("id") Integer id, Model model ) throws Exception {
-        Sprint sprint = sprintService.getSprintById(id);
-        /* Add sprint details to the model */
-        model.addAttribute("sprint", sprint);
-        model.addAttribute("sprintId", id);
-        model.addAttribute("sprintDateError", "");
-
-        /* Return the name of the Thymeleaf template */
-        return "editSprint";
-    }
-
-    /**
      * Tries to save new data to sprint with given sprintId to the database.
      * @param id Id of sprint edited
      * @param sprint New sprint object
@@ -64,18 +46,5 @@ public class EditSprintController {
         sprintService.updateSprint(newSprint);
 
         return "redirect:/details";
-    }
-
-    @RequestMapping(value="/edit-sprint/error", method=RequestMethod.POST)
-    public String updateSprintRangeErrors(@RequestParam(value="id") Integer id,
-                                          @RequestParam(value="sprintStartDate") String sprintStartDate,
-                                          @RequestParam(value="sprintEndDate") String sprintEndDate,
-                                          Model model) {
-        model.addAttribute("sprintDateError",
-                dateValidationService.validateDateRangeNotEmpty(sprintStartDate, sprintEndDate) + " " +
-                dateValidationService.validateStartDateNotAfterEndDate(sprintStartDate, sprintEndDate) + " " +
-                dateValidationService.validateSprintDateRange(sprintStartDate, sprintEndDate, id) + " " +
-                dateValidationService.validateDatesInProjectDateRange(sprintStartDate, sprintEndDate));
-        return "editSprint :: #sprintDateError";
     }
 }
