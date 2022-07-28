@@ -1,0 +1,8 @@
+.button {
+    padding: 5px;
+}
+
+.right-side {
+    postion: sticky;
+    top: 0;
+}
