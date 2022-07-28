@@ -186,6 +186,7 @@ public class CalendarController {
         Date endDate = SprintLifetimeController.getUpdatedDate(project.getEndDate(), 1, 0);
         model.addAttribute("startDate", project.getStartDate());
         model.addAttribute("endDate", endDate);
+        model.addAttribute("trueEndDate", project.getEndDate());
 
         model.addAttribute("fullStartDate", getStartMonths(project.getStartDate()));
         model.addAttribute("fullEndDate", getEndMonths(endDate));

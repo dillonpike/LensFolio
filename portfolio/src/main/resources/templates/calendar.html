@@ -16,6 +16,7 @@
     <script src="js/sprint.js"></script>
     <script src="js/banner.js"></script>
     <script src="webjars/jquery/3.6.0/dist/jquery.min.js"></script>
+
     <script th:inline="javascript">
         /*<![CDATA[*/
         const eventImage = 'images/event.svg';
@@ -25,14 +26,12 @@
         let currentRole = /*[[${currentUserRole}]]*/ "";
         document.addEventListener('DOMContentLoaded', function() {
 
-            const alternateColour = (colour) => {
-                return "red";
-            }
 
             let calendarEl = document.getElementById('calendar');
             let selectedId = -1;
             calendar = new FullCalendar.Calendar(calendarEl, {
                 themeSystem: 'bootstrap5',
+                aspectRatio: 1.5,
                 initialView: 'dayGridMonth',
                 buttonText: {
                     today: 'Today'
@@ -43,7 +42,41 @@
                     end: /*[[${fullEndDate}]]*/ null
                 },
                 events: [
-                    /*[(${events})]*/ null
+                    {
+                        start: /*[[${fullStartDate}]]*/ null,
+                        end: /*[[${startDate}]]*/ null,
+                        allDay: true,
+                        display: 'background',
+                        color: '#CCCCCC',
+                        type: "Background"
+                    },
+
+                    {
+                        start: /*[[${endDate}]]*/ null,
+                        end: /*[[${fullEndDate}]]*/ null,
+                        allDay: true,
+                        display: 'background',
+                        color: '#CCCCCC',
+                        type: "Background"
+                    },
+                    {
+                        title: 'Project Start',
+                        start: /*[[${startDate}]]*/ null,
+                        allDay: true,
+                        display: 'background',
+                        color: '#ffffff',
+                        type: "Project-Range"
+                    },
+
+                    {
+                        title: 'Project End',
+                        start: /*[[${trueEndDate}]]*/ null,
+                        allDay: true,
+                        display: 'background',
+                        color: '#ffffff',
+                        type: "Project-Range"
+                    },
+                    /*[(${events})]*/
                 ],
                 eventContent: function(arg) {
                     let arrayOfDomNodes = []
@@ -59,30 +92,29 @@
                     let imgEventWrap = document.createElement('div')
                     imgEventWrap.setAttribute("id", "events");
                     imgEventWrap.setAttribute("desc", arg.event.extendedProps.description);
-
-                    if (arg.event.extendedProps.type === 'Deadline') {
+                    let type = arg.event.extendedProps.type;
+                    if (type === 'Deadline') {
                         let imgEvent = '<img src= ' + deadlineImage + ' >'
                         imgEventWrap.classList.add("fc-deadline-img");
                         imgEventWrap.innerHTML = imgEvent;
                     }
-                    if (arg.event.extendedProps.type === 'Event') {
+                    if (type === 'Event') {
                         let imgEvent = '<img src= ' + eventImage + ' >'
                         imgEventWrap.classList.add("fc-event-img");
                         imgEventWrap.innerHTML = imgEvent;
                     }
-                    if (arg.event.extendedProps.type === 'Milestone') {
+                    if (type === 'Milestone') {
                         let imgEvent = '<img src= ' + milestoneImage + ' >'
                         imgEventWrap.classList.add("fc-milestone-img");
                         imgEventWrap.innerHTML = imgEvent;
                     }
-                    if (arg.event.extendedProps.type === 'Sprint') {
+                    if ((type === 'Sprint') || (type === 'Background') || (type === 'Project-Range')) {
                         arrayOfDomNodes = [ titleEvent ]
                     } else {
                         arrayOfDomNodes = [ imgEventWrap, titleEvent ]
                     }
 
                     setEventClasses();
-
                     return { domNodes: arrayOfDomNodes }
                 },
                 eventDidMount: function(info) {
@@ -92,6 +124,9 @@
                     refreshTooltips();
                 },
                 eventClick: function(info) {
+                    if (info === "initial-reload") {
+                        return;
+                    }
                     // change the border color
                     let newEvent = calendar.getEventById(info.event.id);
                     if ((newEvent.extendedProps.type === 'Sprint') && (currentRole !== 'student')) {
@@ -99,7 +134,7 @@
                         if (selectedId === -1) {
                             //initial click on any event
                             newEvent.setProp("classNames", "event-border");
-                            newEvent.setProp("borderColor", alternateColour(newEvent.backgroundColor));
+                            newEvent.setProp("borderColor", "red");
                             newEvent.setProp("editable", true);
                             selectedId = info.event.id;
                         } else {
@@ -113,7 +148,7 @@
                                 selectedEvent.setProp("borderColor", selectedEvent.backgroundColor)
                                 selectedEvent.setProp("editable", false);
                                 newEvent.setProp("classNames", "event-border");
-                                newEvent.setProp("borderColor", alternateColour(newEvent.backgroundColor));
+                                newEvent.setProp("borderColor", "red");
                                 newEvent.setProp("editable", true);
                                 selectedId = info.event.id;
                             }
@@ -123,6 +158,9 @@
                 eventOverlap: function(stillEvent, movingEvent) {
                     if (stillEvent.extendedProps.type === 'Sprint') {
                         errorSprints("Error: sprints cannot overlap");
+                        return false;
+                    } else if (stillEvent.extendedProps.type === 'Background') {
+                        errorSprints("Error: sprints cannot be outside project dates")
                         return false;
                     }
                     return true;
@@ -141,10 +179,10 @@
             });
             calendar.render();
             refreshTooltips();
+            setTimeout(() => { // Set a time-out as the calendar seems to not position all elements correctly unless first fully rendered.
+                setEventClasses();
+            }, 100);
 
-            refreshTooltips();
-
-            setEventClasses();
 
             function setEventClasses() {
                 $("[id='events']" ).each(function (ignore) {
@@ -222,7 +260,6 @@
 </body>
 
 <script src="webjars/fullcalendar/5.10.2/main.min.js"></script>
-</html>
 
 <script>
     function connect() {
@@ -251,8 +288,7 @@
             document.location.reload();
         }, 100);
     }
-
     connect();
-
-
 </script>
+
+</html>

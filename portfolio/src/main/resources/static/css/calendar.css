@@ -1,6 +1,7 @@
 .calendar {
     padding-left: 6%;
     padding-right: 6%;
+    height: 1000px !important;
 }
 
 .title-date {
@@ -13,7 +14,7 @@
 }
 
 body {
-    padding-bottom: 50px;
+    padding-bottom: 100px;
 }
 
 .event-border {
@@ -43,30 +44,34 @@ body {
     padding-left: 5px;
 }
 
-
 .milestone, .deadline, .event {
-    bottom: -10px;
+    position: absolute !important;
+    width: 100%;
 }
 
 .milestone {
-    position: absolute !important;
-    bottom: -55px;
+    bottom: -60px;
 }
 
 .deadline {
-    position: absolute !important;
-    bottom: -80px;
+    bottom: -85px;
 }
 
 .event {
-    position: absolute !important;
-    bottom: -105px;
+    bottom: -110px;
 }
 
 .fc-daygrid-day-frame {
     position: relative !important;
 }
-.fc-daygrid-day:not(.fc-day-disabled){
-    height: 150px !important;
+
+.fc-daygrid-event-harness {
+    top: 0 !important;
+    margin-top: 0 !important;
 }
+
+.fc-daygrid-day:not(.fc-day-disabled){
+    height: 100px !important;
+}
+
 
