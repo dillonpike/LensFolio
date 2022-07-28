@@ -2,7 +2,7 @@ package nz.ac.canterbury.seng302.portfolio.utility;
 
 import com.google.protobuf.Timestamp;
 
-import java.sql.Date;
+import java.util.Date;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.Period;
@@ -89,5 +89,15 @@ public class Utility {
         } else {
             return 0;
         }
+    }
+
+    private static Date stringToDateTime(String dateTimeString) {
+        Date date = null;
+        try {
+            date = new SimpleDateFormat("dd/MMM/yyyy h:mm a").parse(dateTimeString);
+        } catch (Exception e) {
+            System.err.println("Error parsing date: " + e.getMessage());
+        }
+        return date;
     }
 }

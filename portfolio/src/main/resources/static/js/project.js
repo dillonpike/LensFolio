@@ -189,11 +189,10 @@ function deadlineModalSetup() {
 
         modalForm.setAttribute('object', deadline);
         modalBodyInputs[0].value = deadline.deadlineName;
-        $('#deadlineDateInput').datepicker('setDate', deadline.deadlineDateString);
-        modalBodyInputs[2].value = deadline.deadlineTimeString;
+        deadlineDatePicker.dates.setValue(tempusDominus.DateTime.convert(new Date(deadline.deadlineDate)));
 
         // Initial run of validation functions in case initial values are invalid
-        validateModalDateTime('deadlineDate', 'deadlineTime', 'deadlineModalButton', 'deadlineDateAlertBanner', 'deadlineDateAlertMessage')
+        validateModalDateTime('deadlineDate', 'deadlineModalButton', 'deadlineDateAlertBanner', 'deadlineDateAlertMessage')
         updateCharsLeft('deadlineName', 'deadlineNameLength', 50)
         $('#' + modalButton.getAttribute("id")).prop('hidden', false);
     })
