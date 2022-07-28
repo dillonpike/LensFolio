@@ -86,9 +86,9 @@ public class ViewUsersController {
      * @return viewUsers html page
      */
     @RequestMapping(value="/viewUsers/saveSort", method=RequestMethod.POST)
-    public String updateSprintRangeErrors(@RequestParam(value="columnIndex") Integer columnIndex,
-                                          @RequestParam(value="sortOrder") String sortOrder,
-                                          @AuthenticationPrincipal AuthState principal) {
+    public String saveSort(@RequestParam(value="columnIndex") Integer columnIndex,
+                           @RequestParam(value="sortOrder") String sortOrder,
+                           @AuthenticationPrincipal AuthState principal) {
         Integer id = userAccountClientService.getUserIDFromAuthState(principal);
         UserSorting userSorting = new UserSorting(id, columnIndex, sortOrder);
         userSortingService.updateUserSorting(userSorting);

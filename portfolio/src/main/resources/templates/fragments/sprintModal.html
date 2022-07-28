@@ -106,10 +106,12 @@
          * Validates the currently entered information for the sprint and submits the form if it's valid.
          */
         async function validateSprint() {
+            document.getElementById('sprintForm').onsubmit = () => { return false };
             if ((await checkSprintDates()).trim().length === 0 &&
                 validateModalName('sprintName', 'sprintAlertBanner', 'sprintAlertMessage')) {
                 document.getElementById('sprintForm').submit();
             } else {
+                document.getElementById('sprintForm').onsubmit = () => { validateSprint(); return false };
                 updateSprintDateError();
             }
         }
