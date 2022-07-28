@@ -18,10 +18,13 @@ import java.util.Date;
 
 /**
  * This class test all the functionality of the EventDic class which purpose is to add event-types to a HashMap
- * And provide a single JSON list out to be used by FullCalendar.
+ * and provide a single JSON list out to be used by FullCalendar.
  */
 class EventDicTest {
 
+    /**
+     * Dictionary Object
+     */
     private final EventDic dictionary = new EventDic();
     private Date testDate;
 
@@ -31,9 +34,9 @@ class EventDicTest {
     }
 
     /**
-     * This event tests events. They have to have their times change to the start of the day to display correctly on the calendar.
+     * This tests the ability to store and generate a JSON string for an event.
      * This also tests to ensure that the special HTML characters such as "&" are escaped.
-     * Events can occur over multiple days or just one.
+     * This tests to ensure that an event over multiple days has all days added to the final JSON list.
      */
     @Test
     void testEventDicAddMultiDayEvent() {
@@ -58,7 +61,8 @@ class EventDicTest {
     }
 
     /**
-     * This event tests deadlines. They have to have their times change to the start of the day to display correctly on the calendar.
+     * This tests the ability to store and generate a JSON string for a deadline.
+     * They have to have their times change to the start of the day to display correctly on the calendar.
      * This also tests to ensure that the special HTML characters such as "&" are escaped.
      */
     @Test
@@ -73,7 +77,8 @@ class EventDicTest {
     }
 
     /**
-     * This event tests milestones. They have to have their times change to the start of the day to display correctly on the calendar.
+     * This tests the ability to store and generate a JSON string for a milestone.
+     * They have to have their times change to the start of the day to display correctly on the calendar.
      * This also tests to ensure that the special HTML characters such as "&" are escaped.
      */
     @Test
@@ -86,6 +91,9 @@ class EventDicTest {
         Assertions.assertEquals(expectJSON, dictionary.makeJSON());
     }
 
+    /**
+     * This tests to ensure that all objects are hashed correctly so that the final JSON list separate all events based on date and type.
+     */
     @Test
     void testEventDicAddOneOfEachEventType() {
         testDate = Date.from(Instant.now());
@@ -112,6 +120,10 @@ class EventDicTest {
         }
     }
 
+    /**
+     * This is to test that an event-type can have multiple events of that type on a single day.
+     * The JSON list should also reflect that in its title.
+     */
     @Test
     void testEventDicAddTwoDeadlinesWithSameDateButDifferentTimes() {
         testDate = Date.from(Instant.now());
