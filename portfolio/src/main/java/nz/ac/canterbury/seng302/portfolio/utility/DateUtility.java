@@ -7,8 +7,11 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.Period;
 
-public class Utility {
-    public Utility() {}
+/**
+ * Helper functions related to dates.
+ */
+public class DateUtility {
+    public DateUtility() {}
 
     /**
      * Formats the Timestamp given into a date, formatted: "dd MMMM yyyy"

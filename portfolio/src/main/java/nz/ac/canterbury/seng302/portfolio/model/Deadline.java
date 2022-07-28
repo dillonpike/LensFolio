@@ -3,7 +3,7 @@ package nz.ac.canterbury.seng302.portfolio.model;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sun.istack.NotNull;
-import nz.ac.canterbury.seng302.portfolio.utility.Utility;
+import nz.ac.canterbury.seng302.portfolio.utility.DateUtility;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -200,7 +200,7 @@ public class Deadline {
      * @param date new date
      */
     public void setDeadlineDateString(String date) {
-        Date dateTime = Utility.stringToDateTime(date);
+        Date dateTime = DateUtility.stringToDateTime(date);
         if (dateTime != null) {
             this.deadlineDate = dateTime;
         } else {
