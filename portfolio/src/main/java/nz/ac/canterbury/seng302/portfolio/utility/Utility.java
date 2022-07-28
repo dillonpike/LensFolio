@@ -91,7 +91,13 @@ public class Utility {
         }
     }
 
-    private static Date stringToDateTime(String dateTimeString) {
+    /**
+     * Returns the given string converted to a date object. If the string is not correctly formatted, returns null.
+     * Accepted format example: 12/Jul/2022 3:45 pm
+     * @param dateTimeString string to convert
+     * @return string converted to a date if it's formatted correctly, otherwise null
+     */
+    public static Date stringToDateTime(String dateTimeString) {
         Date date = null;
         try {
             date = new SimpleDateFormat("dd/MMM/yyyy h:mm a").parse(dateTimeString);
