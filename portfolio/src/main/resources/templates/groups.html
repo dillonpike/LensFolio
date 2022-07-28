@@ -86,7 +86,13 @@
         </div>
 </div>
 <script th:inline="javascript">
-
+    /**
+     * Add a 'active' class to the selected group, highlight current selected group for better user experience
+     */
+ $('.group-bar button').on('click', function () {
+     $("div.group-bar button").removeClass('active');
+     $(this).addClass("active");
+ })
 </script>
 
 </body>
