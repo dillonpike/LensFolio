@@ -98,20 +98,17 @@ public class CalendarController {
      */
     private String eventsToDisplay(List<Deadline> deadlines, List<Event> events, List<Milestone> milestones) {
         EventDic dic1 = new EventDic();
-        EventDic dic2 = new EventDic();
-        EventDic dic3 = new EventDic();
         for (Event event : events) {
             dic1.add(event);
-
         }
         for (Deadline deadline : deadlines) {
-            dic2.add(deadline);
+            dic1.add(deadline);
         }
         for (Milestone milestone : milestones) {
-            dic3.add(milestone);
+            dic1.add(milestone);
         }
 
-        return dic1.makeJSON() + dic2.makeJSON() + dic3.makeJSON();
+        return dic1.makeJSON();
     }
 
 

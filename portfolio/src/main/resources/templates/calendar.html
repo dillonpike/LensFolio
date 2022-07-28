@@ -59,7 +59,7 @@
                     // image event
                     let imgEventWrap = document.createElement('div')
                     imgEventWrap.setAttribute("id", "events");
-                    imgEventWrap.setAttribute("title", arg.event.extendedProps.description);
+                    imgEventWrap.setAttribute("desc", arg.event.extendedProps.description);
 
                     if (arg.event.extendedProps.type === 'Deadline') {
                         let imgEvent = '<img src= ' + deadlineImage + ' >'
@@ -89,21 +89,19 @@
                 eventDidMount: function(info) {
                     info.event.setProp("classNames", "event-border");
                 },
+                eventMouseEnter: function(info) {
+                    refreshTooltips();
+                },
                 eventClick: function(info) {
                     // change the border color
                     let newEvent = calendar.getEventById(info.event.id);
-                    if (newEvent.extendedProps.type === 'Sprint') {
+                    if ((newEvent.extendedProps.type === 'Sprint') && (currentRole !== 'student')) {
                         let selectedEvent = calendar.getEventById(selectedId);
                         if (selectedId === -1) {
                             //initial click on any event
                             newEvent.setProp("classNames", "event-border");
                             newEvent.setProp("borderColor", alternateColour(newEvent.backgroundColor));
                             newEvent.setProp("editable", true);
-                            if (currentRole === 'student') {
-                                newEvent.setProp("editable", false);
-                            } else {
-                                newEvent.setProp("editable", true);
-                            }
                             selectedId = info.event.id;
                         } else {
                             if (newEvent.id === selectedEvent.id) {
@@ -118,21 +116,14 @@
                                 newEvent.setProp("classNames", "event-border");
                                 newEvent.setProp("borderColor", alternateColour(newEvent.backgroundColor));
                                 newEvent.setProp("editable", true);
-                                if (currentRole === 'student') {
-                                    newEvent.setProp("editable", false);
-                                } else {
-                                    newEvent.setProp("editable", true);
-                                }
                                 selectedId = info.event.id;
                             }
                         }
                     }
                 },
                 eventOverlap: function(stillEvent, movingEvent) {
-                    console.log(stillEvent);
                     if (stillEvent.extendedProps.type === 'Sprint') {
-                        document.getElementById("overlapError").hidden = false;
-                        setTimeout( function () {document.getElementById("overlapError").hidden = true;}, 5000)
+                        errorSprints("Error: sprints cannot overlap");
                         return false;
                     }
                     return true;
@@ -142,7 +133,7 @@
                 },
                 eventResize: function(info) {
                     let sprint = calendar.getEventById(info.event.id);
-                    saveSprint(sprint, "alertBanner")
+                    saveSprint(sprint)
                 },
                 eventDrop: function(info) {
                     let sprint = calendar.getEventById(info.event.id);
@@ -152,9 +143,10 @@
             calendar.render();
             refreshTooltips();
 
+
             function refreshTooltips() {
                 $("[id='events']" ).each(function (ignore) {
-                    $(this).parent().get(0).setAttribute("title", $(this).get(0).getAttribute("title"))
+                    $(this).parent().get(0).setAttribute("data-bs-original-title", $(this).get(0).getAttribute("desc"))
                     $(this).parent().get(0).setAttribute("data-bs-html", "true");
                     $(this).parent().get(0).setAttribute("data-toggle", "tooltip");
                 });
@@ -165,6 +157,12 @@
             }
 
             $('.fc-prev-button').click(function() {
+                const date = calendar.getDate();
+                localStorage.setItem("currentDate", date);
+                refreshTooltips();
+            });
+
+            $('.fc-today-button').click(function() {
                 const date = calendar.getDate();
                 localStorage.setItem("currentDate", date);
                 refreshTooltips();
@@ -193,12 +191,12 @@
     <h2 class="title" th:text="${projectName}"/>
     <span class="badge rounded-pill title-date align-middle" th:text="${projectStartDateString} + ' - ' + ${projectEndDateString}" />
 </div>
-
-<div style="display: flex; justify-content: center; width: 100%;margin: 15px">
-    <div class="alert alert-success alert-dismissible" role="alert" id="alertBanner" style="width: 25%;padding-right: 16px!important" hidden>
-        <div style="display: flex; justify-content: space-between;flex-direction: row; align-items: center;">
-            <strong id="alertBannerText"></strong>
-            <button id="removeUpdateAlert" type="button" class="btn btn-outline-success" onclick="removeAlertBanner()">X</button>
+<!-- TOAST FOR ERRORS AND WHEN SPRINTS ARE UPDATED -->
+<div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 2000">
+    <div class="toast hide text-white" role="alert" aria-live="assertive" aria-atomic="true" id="alertToast" data-bs-animation="true" data-bs-autohide="true" data-bs-delay="7000">
+        <div class="toast-body">
+            <span id="alertToastText">Hidden</span>
+            <button id="toastBtn" type="button" class="btn-close btn-close-white me-2 m-auto float-end" data-bs-dismiss="toast" aria-label="Close"></button>
         </div>
     </div>
 </div>
@@ -206,9 +204,6 @@
 
 
 <div class='calendar' id='calendar'></div>
-<div class="error">
-    <span id="overlapError" style="color:red" th:hidden="true">Error: sprints cannot overlap</span>
-</div>
 </body>
 
 <script src="webjars/fullcalendar/5.10.2/main.min.js"></script>
