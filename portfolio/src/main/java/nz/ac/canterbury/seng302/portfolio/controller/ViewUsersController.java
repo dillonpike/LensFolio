@@ -1,10 +1,7 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
 import nz.ac.canterbury.seng302.portfolio.model.UserSorting;
-import nz.ac.canterbury.seng302.portfolio.service.ElementService;;
-import nz.ac.canterbury.seng302.portfolio.service.RegisterClientService;
-import nz.ac.canterbury.seng302.portfolio.service.UserAccountClientService;
-import nz.ac.canterbury.seng302.portfolio.service.UserSortingService;
+import nz.ac.canterbury.seng302.portfolio.service.*;;
 import nz.ac.canterbury.seng302.shared.identityprovider.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -25,6 +22,9 @@ public class ViewUsersController {
 
     @Autowired
     private RegisterClientService registerClientService;
+
+    @Autowired
+    private PermissionService permissionService;
 
     @Autowired
     private UserAccountClientService userAccountClientService;
@@ -105,7 +105,7 @@ public class ViewUsersController {
                               @AuthenticationPrincipal AuthState principal
                               ) {
         // Check if current user's operation is valid, if invalid, access denied error is displayed to user
-        if (isValid(role, principal, model)) {
+        if (permissionService.isValidToDeleteRole(role, principal, model)) {
             if (role.equals("student")) {
                 UserRoleChangeResponse roleChangeResponse = userAccountClientService.addRoleToUser(userId, UserRole.STUDENT);
             } else if (role.equals("teacher")) {
@@ -134,7 +134,7 @@ public class ViewUsersController {
                              @AuthenticationPrincipal AuthState principal
                              ) {
         // Check if current user's operation is valid, if invalid, access denied error is displayed to user
-        if (isValid(role,principal, model)) {
+        if (permissionService.isValidToDeleteRole(role,principal, model)) {
             UserRoleChangeResponse roleChangeResponse;
             if (Objects.equals(role, "STUDENT")) {
                 roleChangeResponse = userAccountClientService.deleteRoleFromUser(userId, UserRole.STUDENT);
@@ -154,33 +154,5 @@ public class ViewUsersController {
         return "redirect:viewUsers";
     }
 
-    /**
-     * Function to validate user's current operation(Delete/add role).
-     * This function is to help get user's permission update immediately, make sure user cannot overstep.
-     *
-     * @param targetRole The target role object user want to modify
-     * @param model Parameters sent to thymeleaf template to be rendered into HTML
-     * @return True if current user has the permission
-     */
-    private boolean isValid(String targetRole,
-                            @AuthenticationPrincipal AuthState principal,
-                            Model model
-                            ) {
-        UserResponse getUserByIdReply;
-        Integer id = userAccountClientService.getUserIDFromAuthState(principal);
-        elementService.addHeaderAttributes(model, id);
-        getUserByIdReply = registerClientService.getUserData(id);
 
-        //Get the current user's highest role
-        String highestRole = elementService.getUserHighestRole(getUserByIdReply);
-        // Decline users' request if they are current a student
-        if (highestRole.equals("student")) {
-            return false;
-        }
-        // Decline users' request to course admin if they are current a teacher
-        if (highestRole.equals("teacher")) {
-            return !targetRole.equals("admin") && !Objects.equals(targetRole, "COURSE_ADMINISTRATOR");
-        }
-        return true;
-    }
 }

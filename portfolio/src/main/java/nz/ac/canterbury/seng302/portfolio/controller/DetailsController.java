@@ -146,8 +146,13 @@ public class DetailsController {
         List<Deadline> deadlineList = deadlineService.getAllDeadlinesOrderedWithColour(sprintList);
         model.addAttribute("deadlines", deadlineList);
 
+        UserResponse getUserByIdReply;
         Integer id = userAccountClientService.getUserIDFromAuthState(principal);
         elementService.addHeaderAttributes(model, id);
+        getUserByIdReply = registerClientService.getUserData(id);
+        String role = elementService.getUserHighestRole(getUserByIdReply);
+        model.addAttribute("currentUserRole", role);
+
         model.addAttribute("userId", id);
         UserResponse user = registerClientService.getUserData(id);
         model.addAttribute("username", user.getUsername());
@@ -163,16 +168,11 @@ public class DetailsController {
         calendar.add(Calendar.DATE, 3);
         model.addAttribute("newEvent", new Event(0, "", new Date(), calendar.getTime(), LocalTime.now(), LocalTime.now()));
 
-        String role = principal.getClaimsList().stream()
-                .filter(claim -> claim.getType().equals("role"))
-                .findFirst()
-                .map(ClaimDTO::getValue)
-                .orElse("NOT FOUND");
 
-        model.addAttribute("currentUserRole", role);
 
         model.addAttribute("newSprint", sprintService.getSuggestedSprint());
         model.addAttribute("sprintDateError", "");
+
 
         return "projectDetails";
     }
