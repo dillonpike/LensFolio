@@ -75,12 +75,13 @@
                         imgEventWrap.classList.add("fc-milestone-img");
                         imgEventWrap.innerHTML = imgEvent;
                     }
-
                     if (arg.event.extendedProps.type === 'Sprint') {
                         arrayOfDomNodes = [ titleEvent ]
                     } else {
                         arrayOfDomNodes = [ imgEventWrap, titleEvent ]
                     }
+
+                    setEventClasses();
 
                     return { domNodes: arrayOfDomNodes }
                 },
@@ -140,13 +141,12 @@
             });
             calendar.render();
 
-            refreshTooltips()
+            refreshTooltips();
 
-            function refreshTooltips() {
+            setEventClasses();
+
+            function setEventClasses() {
                 $("[id='events']" ).each(function (ignore) {
-                    $(this).parent().get(0).setAttribute("data-bs-original-title", $(this).get(0).getAttribute("desc"))
-                    $(this).parent().get(0).setAttribute("data-bs-html", "true");
-                    $(this).parent().get(0).setAttribute("data-toggle", "tooltip");
                     if ($(this).hasClass("fc-milestone-img")) {
                         $(this).parent().addClass("milestone");
                     } else if ($(this).hasClass("fc-deadline-img")) {
@@ -154,6 +154,14 @@
                     } else if ($(this).hasClass("fc-event-img")) {
                         $(this).parent().addClass("event");
                     }
+                });
+            }
+
+            function refreshTooltips() {
+                $("[id='events']" ).each(function (ignore) {
+                    $(this).parent().get(0).setAttribute("data-bs-original-title", $(this).get(0).getAttribute("desc"))
+                    $(this).parent().get(0).setAttribute("data-bs-html", "true");
+                    $(this).parent().get(0).setAttribute("data-toggle", "tooltip");
                 });
 
                 $(function () {
@@ -165,6 +173,7 @@
                 const date = calendar.getDate();
                 localStorage.setItem("currentDate", date);
                 refreshTooltips();
+                setEventClasses();
             });
 
             $('.fc-today-button').click(function() {
@@ -177,6 +186,7 @@
                 const date = calendar.getDate();
                 localStorage.setItem("currentDate", date);
                 refreshTooltips();
+                setEventClasses();
             });
 
             if (localStorage.getItem("currentDate") !== null) {
@@ -205,7 +215,6 @@
         </div>
     </div>
 </div>
-
 
 
 <div class='calendar' id='calendar'></div>
