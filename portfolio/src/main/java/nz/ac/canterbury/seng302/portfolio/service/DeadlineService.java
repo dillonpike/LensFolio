@@ -18,9 +18,6 @@ public class DeadlineService {
     @Autowired
     private DeadlinesRepository repository;
 
-    @Autowired
-    private DateValidationService dateValidationService;
-
     /**
      * Updates a deadline
      * @param deadline deadline to update it to

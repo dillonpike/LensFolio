@@ -93,14 +93,20 @@ public class EventService {
     }
 
     /**
-     * Get list of all events in order
-     * @return List of events
+     * Returns a list of all events ordered by start date
+     * @return  events ordered by start date
      */
-    public List<Event> getAllEventsOrdered() {
+    public List<Event> getAllEventsOrderedStartDate() {
         return eventRepository.findAllByOrderByEventStartDate();
     }
 
-
+    /**
+     * Returns a list of all events ordered by end date
+     * @return  events ordered by start date
+     */
+    public List<Event> getAllEventsOrderedEndDate() {
+        return eventRepository.findAllByOrderByEventEndDate();
+    }
 
     /***
      * For any events existing, get the sprints colour for its start date if it is within the sprint time slot,
@@ -110,7 +116,7 @@ public class EventService {
      * @return events in chronological order
      */
     public List<Event> getAllEventsOrderedWithColour(List<Sprint> sprints) {
-        List<Event> eventList = getAllEventsOrdered();
+        List<Event> eventList = getAllEventsOrderedStartDate();
         for (Event currentEvent : eventList) {
             // Reset Event's color
             currentEvent.setStartDateColour(null);
@@ -126,7 +132,7 @@ public class EventService {
             }
             eventRepository.save(currentEvent);
         }
-        return getAllEventsOrdered();
+        return getAllEventsOrderedStartDate();
     }
 
     /**
@@ -136,7 +142,7 @@ public class EventService {
      * @return List of events that overlap with the given sprint.
      */
     public List<Event> getAllEventsOverlappingWithSprint(Sprint sprint) {
-        ArrayList<Event> eventsList = (ArrayList<Event>) getAllEventsOrdered();
+        ArrayList<Event> eventsList = (ArrayList<Event>) getAllEventsOrderedStartDate();
         ArrayList<Event> eventsOverlapped = new ArrayList<>();
 
         for (Event currentEvent : eventsList) {

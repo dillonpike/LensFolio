@@ -2,6 +2,7 @@ package nz.ac.canterbury.seng302.portfolio.model;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import java.util.Calendar;
 import java.util.Date;
 import java.text.SimpleDateFormat;
 import java.util.Objects;
@@ -26,6 +27,7 @@ public class Project {
         this.projectDescription = projectDescription;
         this.projectStartDate = projectStartDate;
         this.projectEndDate = projectEndDate;
+        adjustEndDateTime();
     }
 
     public Project(String projectName, String projectDescription, String projectStartDate, String projectEndDate) {
@@ -33,6 +35,19 @@ public class Project {
         this.projectDescription = projectDescription;
         this.projectStartDate = Project.stringToDate(projectStartDate);
         this.projectEndDate = Project.stringToDate(projectEndDate);
+        adjustEndDateTime();
+    }
+
+    /**
+     * Adjusts the end date, so it's at 11:59pm (end of the day) rather than midnight (start of the day).
+     */
+    private void adjustEndDateTime() {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(projectEndDate);
+        calendar.set(Calendar.HOUR_OF_DAY, 23);
+        calendar.set(Calendar.MINUTE, 59);
+        calendar.set(Calendar.SECOND, 59);
+        this.projectEndDate = calendar.getTime();
     }
 
     @Override
