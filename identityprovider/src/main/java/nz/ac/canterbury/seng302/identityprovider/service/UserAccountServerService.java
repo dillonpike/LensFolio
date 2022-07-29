@@ -3,6 +3,7 @@ package nz.ac.canterbury.seng302.identityprovider.service;
 import com.google.common.annotations.VisibleForTesting;
 import io.grpc.stub.StreamObserver;
 import net.devh.boot.grpc.server.service.GrpcService;
+import nz.ac.canterbury.seng302.identityprovider.IdentityProviderApplication;
 import nz.ac.canterbury.seng302.identityprovider.model.Roles;
 import nz.ac.canterbury.seng302.identityprovider.model.UserModel;
 import nz.ac.canterbury.seng302.identityprovider.repository.RolesRepository;
@@ -14,6 +15,7 @@ import nz.ac.canterbury.seng302.shared.util.FileUploadStatusResponse;
 import org.mariadb.jdbc.MariaDbBlob;
 import org.springframework.beans.factory.annotation.Autowired;
 import nz.ac.canterbury.seng302.shared.identityprovider.*;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.Pbkdf2PasswordEncoder;
 
 import java.util.Set;
@@ -99,21 +101,9 @@ public class UserAccountServerService extends UserAccountServiceGrpc.UserAccount
             } else {
                 UserModel user = userModelService.getUserById(request.getId());
 
-                String profileImagePath = "";
-                try {
-                    Blob imageBlob = user.getPhoto();
-                    new File(IMAGE_DIR).mkdirs();
-                    File imageFile = new File(IMAGE_DIR + "/profileImage");
-                    FileOutputStream imageOutput = new FileOutputStream(imageFile);
-                    if  (imageBlob != null) {
-                        imageOutput.write(imageBlob.getBytes(1, (int) imageBlob.length()));
-                        profileImagePath = imageFile.getAbsolutePath();
-                    } else {
-                        profileImagePath = "";
-                    }
-                    imageOutput.close();
-                } catch (SQLException | IOException e) {
-                    e.printStackTrace();
+                String imageDirectory = user.getPhotoDirectory();
+                if (imageDirectory == null) {
+                    imageDirectory = "";
                 }
 
                 reply
@@ -126,7 +116,7 @@ public class UserAccountServerService extends UserAccountServiceGrpc.UserAccount
                         .setBio(user.getBio())
                         .setPersonalPronouns(user.getPersonalPronouns())
                         .setCreated(user.getDateAdded())
-                        .setProfileImagePath(profileImagePath);
+                        .setProfileImagePath(imageDirectory);
                 Set<Roles> roles = user.getRoles();
                 Roles[] rolesArray = roles.toArray(new Roles[roles.size()]);
 
@@ -164,7 +154,7 @@ public class UserAccountServerService extends UserAccountServiceGrpc.UserAccount
             user.setPassword(currentUser.getPassword());
             user.setDateAdded(currentUser.getDateAdded());
             user.setRoles(currentUser.getRoles());
-            user.setPhoto(currentUser.getPhoto());
+            user.setPhotoDirectory(currentUser.getPhotoDirectory());
             wasSaved = userModelService.saveEditedUser(user);
             if (wasSaved) {
                 reply.setIsSuccess(true).setMessage("User Account is successfully updated!");
@@ -201,7 +191,7 @@ public class UserAccountServerService extends UserAccountServiceGrpc.UserAccount
                 user.setPassword(request.getNewPassword());
                 user.setDateAdded(currentUser.getDateAdded());
                 user.setRoles(currentUser.getRoles());
-                user.setPhoto(currentUser.getPhoto());
+                user.setPhotoDirectory(currentUser.getPhotoDirectory());
                 wasSaved = userModelService.saveEditedUser(user);
                 if (wasSaved) {
                     reply.setIsSuccess(true).setMessage("User password successfully updated!");
@@ -270,6 +260,7 @@ public class UserAccountServerService extends UserAccountServiceGrpc.UserAccount
                 FileUploadStatusResponse.Builder reply = FileUploadStatusResponse.newBuilder();
 
                 //  Call the function savePhotoToUser to save the photo
+                //  In the future, this could be kept as an array, rather than converting to a blob.
                 Blob blob = new MariaDbBlob(imageArray.toByteArray());
                 boolean wasSaved = false;
                 if (!byteFailed) {
@@ -290,6 +281,9 @@ public class UserAccountServerService extends UserAccountServiceGrpc.UserAccount
         };
     }
 
+    @Value("${spring.datasource.url}")
+    private String dataSource;
+
     /**
      * Saves a photo to a user in the database. Overwrites anything already saved.
      * @param userId Id of the user you want to add the photo to
@@ -301,7 +295,20 @@ public class UserAccountServerService extends UserAccountServiceGrpc.UserAccount
         try{
             UserModel user = userModelService.getUserById(userId);
             if (user != null) {
-                user.setPhoto(photo);
+                String directory = IdentityProviderApplication.IMAGE_DIR+ "/" + getApplicationLocation(dataSource) + "/" + userId + "/public/";
+                String profileImagePath = "";
+                new File(directory).mkdirs();
+                File imageFile = new File(directory + "/profileImage");
+                FileOutputStream imageOutput = new FileOutputStream(imageFile);
+                if  (photo != null) {
+                    imageOutput.write(photo.getBytes(1, (int) photo.length()));
+                    profileImagePath = imageFile.getAbsolutePath();
+                } else {
+                    profileImagePath = "";
+                }
+                imageOutput.close();
+
+                user.setPhotoDirectory(profileImagePath);
                 status = userModelService.saveEditedUser(user);
             } else {
                 status = false;
@@ -312,6 +319,21 @@ public class UserAccountServerService extends UserAccountServiceGrpc.UserAccount
             e.printStackTrace();
         }
         return status;
+    }
+
+    /**
+     * Gets the location of which branch/vm the program is running on.
+     * @return 'dev', 'test' or 'prod', depending on the branch/vm.
+     */
+    private static String getApplicationLocation(String dataSource) {
+        if (dataSource.contains("seng302-2022-team100")) {
+            if (dataSource.contains("test")) {
+                return "test";
+            } else {
+                return "prod";
+            }
+        }
+        return "dev";
     }
 
     /**
@@ -329,7 +351,7 @@ public class UserAccountServerService extends UserAccountServiceGrpc.UserAccount
         try {
             UserModel user = userModelService.getUserById(request.getUserId());
             if (user != null) {
-                user.setPhoto(null);
+                user.setPhotoDirectory(null);
                 wasDeleted = userModelService.saveEditedUser(user);
                 message = "Photo deleted successfully";
             }

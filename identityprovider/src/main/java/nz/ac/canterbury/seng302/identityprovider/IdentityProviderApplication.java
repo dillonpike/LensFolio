@@ -10,7 +10,7 @@ import java.io.IOException;
 public class IdentityProviderApplication {
     static public String IMAGE_DIR;
     public static void main(String[] args) throws IOException {
-        IMAGE_DIR = new File(".").getCanonicalPath() + "/img/";
+        IMAGE_DIR = new File(".").getCanonicalPath() + "/";
         SpringApplication.run(IdentityProviderApplication.class, args);
     }
 

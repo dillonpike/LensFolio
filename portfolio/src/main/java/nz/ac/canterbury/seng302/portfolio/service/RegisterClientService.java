@@ -123,7 +123,7 @@ public class RegisterClientService {
      * @param userId Id of the user that is having its photo changed
      * @param imageFile File object of new image
      */
-    public void uploadUserProfilePhoto(int userId, File imageFile) {
+    public boolean uploadUserProfilePhoto(int userId, File imageFile) {
 
         byte[] imageArray = new byte[0];
         boolean imageFoundCorrectly = true;
@@ -208,11 +208,13 @@ public class RegisterClientService {
                 requestObserver.onNext(reply.build());
                 // Complete conversation
                 requestObserver.onCompleted();
+                return true;
             } catch (Exception e) {
                 System.err.println("Something went wrong uploading the file");
-                e.printStackTrace();
+                return false;
             }
         }
+        return false;
     }
 
     public DeleteUserProfilePhotoResponse deleteUserProfilePhoto(int userId) {

@@ -12,6 +12,7 @@ import nz.ac.canterbury.seng302.shared.identityprovider.DeleteUserProfilePhotoRe
 import nz.ac.canterbury.seng302.shared.identityprovider.EditUserResponse;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -183,13 +184,12 @@ public class EditAccountController {
             message = String.valueOf(reply.getMessage());
             if (wasDeleted) {
                 new File(PortfolioApplication.IMAGE_DIR).mkdirs();
-                File imageFile = new File(PortfolioApplication.IMAGE_DIR + "/default.jpg");
+                File imageFile = new File(PortfolioApplication.IMAGE_DIR + "/img/default.jpg");
                 File usedImageFile = new File(PortfolioApplication.IMAGE_DIR + "/userImage");
-                FileOutputStream imageOutput = new FileOutputStream(usedImageFile);
-                FileInputStream imageInput = new FileInputStream(imageFile);
-                imageOutput.write(imageInput.readAllBytes());
-                imageInput.close();
-                imageOutput.close();
+                try (FileOutputStream imageOutput = new FileOutputStream(usedImageFile);
+                     FileInputStream imageInput = new FileInputStream(imageFile);) {
+                    imageOutput.write(imageInput.readAllBytes());
+                } catch (Exception ignore) {}
 
                 rm.addFlashAttribute("isUpdateSuccess", true);
             } else {
@@ -206,6 +206,9 @@ public class EditAccountController {
         return "redirect:editAccount";
     }
 
+    @Value("${spring.datasource.url}")
+    private String dataSource;
+
     @PostMapping("/saveAccountPhoto")
     public String savePhoto(
             @ModelAttribute("userId") int userId,
@@ -221,16 +224,14 @@ public class EditAccountController {
         }
         boolean wasSaved = false;
         try {
-
-            new File(PortfolioApplication.IMAGE_DIR).mkdirs();
-            File imageFile = new File(PortfolioApplication.IMAGE_DIR + "/userImage");
+            String directory = PortfolioApplication.IMAGE_DIR+ "/" + Utility.getApplicationLocation(dataSource) + "/" + userId + "/";
+            new File(directory).mkdirs();
+            File imageFile = new File(directory + "/UploadedFile");
             FileOutputStream fos = new FileOutputStream( imageFile );
             fos.write( multipartFile.getBytes() );
             fos.close();
 
-            registerClientService.uploadUserProfilePhoto(userId, new File(PortfolioApplication.IMAGE_DIR + "/userImage"));
-            // You cant tell if it saves correctly with the above method as it returns nothing
-            wasSaved = true;
+            wasSaved = registerClientService.uploadUserProfilePhoto(userId, new File(directory + "/UploadedFile"));
             if (wasSaved) {
                 rm.addFlashAttribute("isUpdateSuccess", true);
             } else {
@@ -240,6 +241,7 @@ public class EditAccountController {
 
         } catch (Exception e) {
             System.err.println("Something went wrong requesting to save the photo");
+            e.printStackTrace();
         }
         rm.addAttribute("userId", userId);
         return "redirect:editAccount";

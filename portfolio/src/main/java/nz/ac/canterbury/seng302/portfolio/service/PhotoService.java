@@ -25,10 +25,10 @@ public class PhotoService {
             if (!photoPath.equals("")) {
                 imageFile = new File(photoPath);
                 if (imageFile.length() == 0) {
-                    imageFile = new File(PortfolioApplication.IMAGE_DIR + "/default.jpg");
+                    imageFile = new File(PortfolioApplication.IMAGE_DIR + "/img/default.jpg");
                 }
             } else {
-                imageFile = new File(PortfolioApplication.IMAGE_DIR + "/default.jpg");
+                imageFile = new File(PortfolioApplication.IMAGE_DIR + "/img/default.jpg");
             }
             File usedImageFile = new File(PortfolioApplication.IMAGE_DIR + "/userImage");
             FileOutputStream imageOutput = new FileOutputStream(usedImageFile);
