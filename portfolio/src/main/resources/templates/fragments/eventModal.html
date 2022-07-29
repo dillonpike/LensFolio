@@ -37,11 +37,11 @@
           <div class="mb-3">
             <label for="eventEndDate" class="col-form-label">Event End Date:</label>
             <div class="input-group" id="eventEndDateInput" data-td-target-input="nearest" data-td-target-toggle="nearest">
-              <input id="eventEndDate" type="text" class="form-control" data-td-target="#eventEndDateInput" data-td-toggle="datetimepicker"
+              <input id="eventEndDate" type="text" class="form-control" data-td-target="#eventEndDateInput"
                      onkeydown="return false" th:name="endDateDetail" onchange="validateModalDateTimeRange(
                              'eventStartDate', 'eventEndDate', 'eventModalButton', 'eventDateTimeAlertBanner',
                              'eventDateTimeAlertMessage')"/>
-              <span class="input-group-text bg-white">
+              <span class="input-group-text bg-white" data-td-target="#eventEndDateInput" data-td-toggle="datetimepicker">
                 <span class="bi bi-calendar"></span>
               </span>
             </div>
@@ -65,6 +65,8 @@
         document.getElementById('eventForm').submit();
       }
     }
+
+
 
     eventStartDatePicker = configureDateTimePicker('eventStartDateInput');
     eventEndDatePicker = configureDateTimePicker('eventEndDateInput');
