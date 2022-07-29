@@ -1,8 +1,11 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
 import nz.ac.canterbury.seng302.portfolio.model.Sprint;
+import nz.ac.canterbury.seng302.portfolio.service.PermissionService;
 import nz.ac.canterbury.seng302.portfolio.service.SprintService;
+import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -17,6 +20,9 @@ public class SprintLifetimeController {
 
     @Autowired
     private SprintService sprintService;
+
+    @Autowired
+    private PermissionService permissionService;
 
     /**
      * Add a given number of days and/or weeks to a date.util using Calendars.
@@ -40,11 +46,16 @@ public class SprintLifetimeController {
      */
     @PostMapping("/add-sprint")
     public String projectSave(
-            @ModelAttribute("sprint") Sprint sprint
+            @ModelAttribute("sprint") Sprint sprint,
+            @AuthenticationPrincipal AuthState principal,
+            Model model
     ) {
-        sprint.setStartDateString(sprint.getStartDateString());
-        sprint.setEndDateString(sprint.getEndDateString());
-        sprintService.addSprint(sprint);
+        if (permissionService.isValid(principal, model)) {
+            sprint.setStartDateString(sprint.getStartDateString());
+            sprint.setEndDateString(sprint.getEndDateString());
+            sprintService.addSprint(sprint);
+        }
+
         return "redirect:/details";
     }
 
@@ -54,10 +65,12 @@ public class SprintLifetimeController {
      * @throws Exception If deleting sprint does not work
      */
     @GetMapping("/delete-sprint/{id}")
-    public String sprintRemove(@PathVariable("id") Integer id, Model model) throws Exception {
-
-        sprintService.removeSprint(id);
-
+    public String sprintRemove(@PathVariable("id") Integer id,
+                               @AuthenticationPrincipal AuthState principal,
+                               Model model) throws Exception {
+        if (permissionService.isValid(principal, model)) {
+            sprintService.removeSprint(id);
+        }
         /* Return the name of the Thymeleaf template */
         return "redirect:/details";
     }

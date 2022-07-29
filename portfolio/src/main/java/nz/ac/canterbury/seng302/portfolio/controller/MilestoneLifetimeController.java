@@ -2,7 +2,10 @@ package nz.ac.canterbury.seng302.portfolio.controller;
 
 import nz.ac.canterbury.seng302.portfolio.model.Milestone;
 import nz.ac.canterbury.seng302.portfolio.service.MilestoneService;
+import nz.ac.canterbury.seng302.portfolio.service.PermissionService;
+import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.ui.Model;
@@ -18,13 +21,20 @@ public class MilestoneLifetimeController {
     @Autowired
     private MilestoneService milestoneService;
 
+    @Autowired
+    private PermissionService permissionService;
+
     /**
      * Saves the given milestone to the database and redirects the user to the details page.
      * @param milestone new milestone to be saved
      */
     @PostMapping("/add-milestone")
-    public String milestoneSave(@ModelAttribute("milestone") Milestone milestone, Model model) {
-        milestoneService.addMilestone(milestone);
+    public String milestoneSave(@ModelAttribute("milestone") Milestone milestone,
+                                @AuthenticationPrincipal AuthState principal,
+                                Model model) {
+        if (permissionService.isValid(principal, model)) {
+            milestoneService.addMilestone(milestone);
+        }
         return "redirect:/details";
     }
 
@@ -33,8 +43,12 @@ public class MilestoneLifetimeController {
      * @param id id of milestone being deleted
      */
     @GetMapping("/delete-milestone/{id}")
-    public String milestoneRemove(@PathVariable("id") Integer id) {
-        milestoneService.removeMilestone(id);
+    public String milestoneRemove(@PathVariable("id") Integer id,
+                                  @AuthenticationPrincipal AuthState principal,
+                                  Model model) {
+        if (permissionService.isValid(principal, model)) {
+            milestoneService.removeMilestone(id);
+        }
         return "redirect:/details";
     }
 }
