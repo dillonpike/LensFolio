@@ -648,10 +648,14 @@
     let projectStartDate = /*[[${project.getStartDateString()}]]*/ "Error";
     /*]]>*/
 
-    // Check if the name of the item that the user inputted is not an empty string
-    // Submit the form and return true if the input is not empty string, otherwise show error banner with the error message and return false
-    // @param elementId the ID of the text input HTML element for item's name
-    // @param formId the ID of the form which contains the input HTML element
+    /**
+     * Check if the name of the item that the user inputted is not an empty string
+     * Submit the form and return true if the input is not empty string, otherwise show error banner with the error message and return false
+     * @param elementId the ID of the text input HTML element for item's name
+     * @param alertBanner the ID of the alert banner HTML element
+     * @param alertMessage the ID of the alert banner message HTML element
+     * @returns {boolean} true if the input is not empty string, otherwise false
+     */
     function validateModalName(elementId, alertBanner, alertMessage) {
         const nameInput = document.getElementById(elementId).value;
         if (nameInput === "") {
@@ -679,10 +683,16 @@
         return checkDate(dateInput, submitElementId, alertBanner, alertMessage)
     }
 
-    // Check if the date of the item that the user inputted is within the project dates range
-    // Show error banner with error message and disable the submit button if the inputted date is outside the project dates range
-    // @param elementId the ID of the date input HTML element
-    // @param submitElementId the ID of the submit button on the modal
+    /**
+     * Check if the date of the item that the user inputted is within the project dates range
+     * Show error banner with error message and disable the submit button if the inputted date is outside the project dates range
+     * @param dateStartId the ID of the start date and time input element
+     * @param dateEndId the ID of the end date and time input element
+     * @param submitElementId the ID of the submit button on the modal
+     * @param alertBanner the ID of the banner element that will display the alert message
+     * @param alertMessage the ID of the alert message element
+     * @returns {boolean} true if the dates are valid, otherwise false
+     */
     function validateModalDateTimeRange(dateStartId, dateEndId, submitElementId, alertBanner, alertMessage) {
         if (!checkEmpty(dateStartId, 'Start date', submitElementId, alertBanner, alertMessage)) {
             return false
