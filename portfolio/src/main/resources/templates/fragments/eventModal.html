@@ -25,11 +25,11 @@
           <div class="mb-3">
             <label for="eventStartDate" class="col-form-label">Event Start Date:</label>
             <div class="input-group" id="eventStartDateInput" data-td-target-input="nearest" data-td-target-toggle="nearest" >
-              <input id="eventStartDate" type="text" class="form-control" data-td-target="#eventStartDateInput" data-td-toggle="datetimepicker"
+              <input id="eventStartDate" type="text" class="form-control" data-td-target="#eventStartDateInput"
                      onkeydown="return false" th:name="startDateDetail" onchange="validateModalDateTimeRange(
                              'eventStartDate', 'eventEndDate', 'eventModalButton', 'eventDateTimeAlertBanner',
                              'eventDateTimeAlertMessage')"/>
-              <span class="input-group-text bg-white">
+              <span class="input-group-text bg-white" data-td-target="#eventStartDateInput" data-td-toggle="datetimepicker">
                 <span class="bi bi-calendar"></span>
               </span>
             </div>
