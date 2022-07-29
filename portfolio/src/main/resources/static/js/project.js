@@ -204,7 +204,7 @@ function deadlineModalSetup() {
  * Customises the milestone modal attributes with depending on what milestone it should display and whether it's being
  * used for adding or editing a milestone.
  */
-function eventModalSetup() {
+function eventModalSetup(projectStartDate, projectEndDate) {
     const eventModal = document.getElementById('eventModal')
     eventModal.addEventListener('show.bs.modal', function (event) {
         // Button that triggered the modal
@@ -238,6 +238,12 @@ function eventModalSetup() {
         eventStartDatePicker.dates.setValue(tempusDominus.DateTime.convert(startDate));
         const endDate = moment(`${events.endDateDetail}`, 'DD/MMM/yyyy h:mm a').toDate();
         eventEndDatePicker.dates.setValue(tempusDominus.DateTime.convert(endDate));
+        // Set min and max dates based on project dates
+        const a = moment('01/03/2022', 'DD/MMM/yyyy h:mm a').toDate();
+        eventStartDatePicker.updateOptions({restrictions: {minDate: new Date(projectStartDate), maxDate: new Date(projectEndDate)}});
+        eventEndDatePicker.updateOptions({restrictions: {minDate: new Date(projectStartDate), maxDate: new Date(projectEndDate)}});
+
+
 
         // Initial run of validation functions in case initial values are invalid
         validateModalDateTimeRange('eventStartDate', 'eventEndDate', 'eventModalButton', 'eventDateTimeAlertBanner', 'eventDateTimeAlertMessage')
