@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.GetMapping;
  * Controller for group page
  */
 @Controller
-public class GroupsController {
+public class GroupController {
 
     @Autowired
     private UserAccountClientService userAccountClientService;
@@ -31,6 +31,6 @@ public class GroupsController {
         UserResponse getUserByIdReply;
         Integer id = userAccountClientService.getUserIDFromAuthState(principal);
         elementService.addHeaderAttributes(model, id);
-        return "groups";
+        return "group";
     }
 }
