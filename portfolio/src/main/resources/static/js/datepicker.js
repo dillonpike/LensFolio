@@ -9,6 +9,7 @@ function configureDateTimePicker(elementId) {
         document.getElementById(elementId),
         {
             useCurrent: false,
+            allowInputToggle: true,
             display: {
                 icons: {
                     time: 'bi bi-clock',
