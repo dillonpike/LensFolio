@@ -61,7 +61,7 @@ public class EditPasswordController {
             model.addAttribute("dateAdded", Utility.getDateAddedString(getUserByIdReply.getCreated()));
             model.addAttribute("monthsSinceAdded", Utility.getDateSinceAddedString(getUserByIdReply.getCreated()));
             model.addAttribute("userId", id);
-            photoService.savePhotoToPortfolio(getUserByIdReply.getProfileImagePath());
+            model.addAttribute("userImage", photoService.getPhotoPath(getUserByIdReply.getProfileImagePath()));
         } catch(Exception e) {
             model.addAttribute("loginMessage", "Error connecting to Identity Provider...");
             e.printStackTrace();
