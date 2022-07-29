@@ -111,6 +111,42 @@ public class CalendarController {
         return dic1.makeJSON();
     }
 
+    /**
+     * Adjusted date to start at the first day of the month.
+     *
+     * @param realDate The date to get full month of.
+     * @return Adjusted date object
+     */
+    public Date getStartMonths(Date realDate) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(realDate);
+        calendar.set(Calendar.DAY_OF_MONTH,
+                calendar.getActualMinimum(Calendar.DAY_OF_MONTH));
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
+        return calendar.getTime();
+    }
+
+    /**
+     * Adjusted date to start at the last day of the month.
+     *
+     * @param realDate The date to get full month of.
+     * @return Adjusted date object
+     */
+    public Date getEndMonths(Date realDate) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(realDate);
+        calendar.set(Calendar.DAY_OF_MONTH,
+                calendar.getActualMaximum(Calendar.DAY_OF_MONTH));
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
+        return calendar.getTime();
+    }
+
 
     /***
      * GET request method, followed by the request URL(../calendar)
@@ -150,6 +186,10 @@ public class CalendarController {
         Date endDate = SprintLifetimeController.getUpdatedDate(project.getEndDate(), 1, 0);
         model.addAttribute("startDate", project.getStartDate());
         model.addAttribute("endDate", endDate);
+        model.addAttribute("trueEndDate", project.getEndDate());
+
+        model.addAttribute("fullStartDate", getStartMonths(project.getStartDate()));
+        model.addAttribute("fullEndDate", getEndMonths(endDate));
 
         model.addAttribute("projectName", project.getName());
         model.addAttribute("projectStartDateString", project.getStartDateString());
