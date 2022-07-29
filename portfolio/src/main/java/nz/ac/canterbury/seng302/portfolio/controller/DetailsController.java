@@ -16,6 +16,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import nz.ac.canterbury.seng302.shared.identityprovider.ClaimDTO;
 import org.springframework.web.util.HtmlUtils;
 
+import javax.servlet.http.HttpServletRequest;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -70,7 +71,10 @@ public class DetailsController {
      * @throws Exception
      */
     @GetMapping("/details")
-    public String details(@AuthenticationPrincipal AuthState principal, Model model) throws Exception {
+    public String details(@AuthenticationPrincipal AuthState principal,
+                          Model model,
+                          HttpServletRequest request
+                          ) throws Exception {
         /* Add project details to the model */
         // Gets the project with id 0 to plonk on the page
         Project project;
@@ -168,7 +172,8 @@ public class DetailsController {
         calendar.add(Calendar.DATE, 3);
         model.addAttribute("newEvent", new Event(0, "", new Date(), calendar.getTime(), LocalTime.now(), LocalTime.now()));
 
-
+        elementService.addDeniedMessage(model, request);
+        System.out.println(1);
 
         model.addAttribute("newSprint", sprintService.getSuggestedSprint());
         model.addAttribute("sprintDateError", "");

@@ -1,8 +1,12 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
+import nz.ac.canterbury.seng302.portfolio.service.PermissionService;
 import nz.ac.canterbury.seng302.portfolio.service.ProjectService;
+import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PostMapping;
 import nz.ac.canterbury.seng302.portfolio.model.Project;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -17,6 +21,9 @@ public class EditProjectController {
     @Autowired
     private ProjectService projectService;
 
+    @Autowired
+    private PermissionService permissionService;
+
     /***
      * Handler methods for mapping HTTP POST request, followed by the URL(../edit-project)
      *
@@ -29,18 +36,22 @@ public class EditProjectController {
      */
     @PostMapping("/edit-project")
     public String projectSave(
+            @AuthenticationPrincipal AuthState principal,
             @RequestParam(value="name") String projectName,
             @RequestParam(value="startDateString") String projectStartDate,
             @RequestParam(value="endDateString") String projectEndDate,
-            @RequestParam(value="description") String projectDescription
+            @RequestParam(value="description") String projectDescription,
+            Model model
     ) throws Exception {
-        // Gets the project with id 0 to plonk on the page
-        Project newProject = projectService.getProjectById(0);
-        newProject.setName(projectName);
-        newProject.setStartDateString(projectStartDate);
-        newProject.setEndDateString(projectEndDate);
-        newProject.setDescription(projectDescription);
-        projectService.updateProject(newProject);
+        if (permissionService.isValid(principal, model)) {
+            // Gets the project with id 0 to plonk on the page
+            Project newProject = projectService.getProjectById(0);
+            newProject.setName(projectName);
+            newProject.setStartDateString(projectStartDate);
+            newProject.setEndDateString(projectEndDate);
+            newProject.setDescription(projectDescription);
+            projectService.updateProject(newProject);
+        }
         return "redirect:/details";
     }
 }

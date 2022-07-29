@@ -127,6 +127,12 @@
         <div class="content">
             <div>
                 <div class="flex-child green">
+                    <div class="alert alert-warning alert-dismissible fade show" role="alert" id="alertBanner" th:if="${isUpdateSuccess != null}">
+                        <div style="display: flex; justify-content: space-between;flex-direction: row; align-items: center">
+                            <strong th:text="${updateMessage}"></strong>
+                            <button id="removeUpdateAlert" type="button" class="btn btn-outline-warning" onclick="removeAlertBanner()">X</button>
+                        </div>
+                    </div>
                     <p class="sprints-top">Project Sprints</p>
                     <div th:each="sprint, meta: ${sprints}">
                         <div class="sprint-block">
