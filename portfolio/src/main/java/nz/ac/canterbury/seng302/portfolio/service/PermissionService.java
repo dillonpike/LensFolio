@@ -52,6 +52,13 @@ public class PermissionService {
         return true;
     }
 
+    /**
+     * Function to validate user's current operation(edit/add/delete)
+     * This function can be used in different requests.
+     *
+     * @param model Parameters sent to thymeleaf template to be rendered into HTML
+     * @return false if user's role has been changed to student
+     */
     public boolean isValid(@AuthenticationPrincipal AuthState principal,
                            Model model) {
         UserResponse getUserByIdReply;
