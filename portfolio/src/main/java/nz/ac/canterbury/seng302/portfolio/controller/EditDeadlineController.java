@@ -31,6 +31,7 @@ public class EditDeadlineController {
             @PathVariable("id") Integer id,
             @ModelAttribute("deadline") Deadline deadline
     ) throws Exception {
+        System.out.println(deadline.getDeadlineDate());
         Deadline newDeadline = deadlineService.getDeadlineById(id);
         newDeadline.setDeadlineName(deadline.getDeadlineName());
         newDeadline.setDeadlineDate(deadline.getDeadlineDate());
