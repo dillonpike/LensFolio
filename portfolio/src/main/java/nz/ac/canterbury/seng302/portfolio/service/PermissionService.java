@@ -9,6 +9,9 @@ import org.springframework.ui.Model;
 
 import java.util.Objects;
 
+/**
+ * Service layer for permission checks(User's operations), contains methods to the user's permission
+ */
 @Service
 public class PermissionService {
 

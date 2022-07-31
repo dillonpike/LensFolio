@@ -26,7 +26,7 @@ public class ElementService {
      * to failureMessage from the request, or a default failure message if failureMessage doesn't exist.
      *
      * @param model model from controller method that attributes will be added to
-     * @param request HTTP request from controller method
+     * @param request HTTP requests from controller method
      */
     public void addUpdateMessage(Model model, HttpServletRequest request) {
         Map<String, ?> inputFlashMap = RequestContextUtils.getInputFlashMap(request);
@@ -46,6 +46,11 @@ public class ElementService {
         }
     }
 
+    /**
+     * Update the given model with a 'access denied' Message attribute
+     * @param model model from controller method that attributes will be added to
+     * @param request HTTP requests from controller method
+     */
     public void addDeniedMessage(Model model, HttpServletRequest request) {
         Map<String, ?> inputFlashMap = RequestContextUtils.getInputFlashMap(request);
         if (inputFlashMap != null) {
@@ -84,7 +89,8 @@ public class ElementService {
     }
 
     /**
-     * Set the current user's permission based on user's role by adding role attribute to the model
+     * Method to return current user's highest role in string format.
+     *
      * @param userResponse UserResponse object of the currently signed on user
      */
     public String getUserHighestRole(UserResponse userResponse) {

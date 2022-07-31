@@ -149,7 +149,6 @@ public class DetailsController {
 
         List<Deadline> deadlineList = deadlineService.getAllDeadlinesOrderedWithColour(sprintList);
         model.addAttribute("deadlines", deadlineList);
-
         UserResponse getUserByIdReply;
         Integer id = userAccountClientService.getUserIDFromAuthState(principal);
         elementService.addHeaderAttributes(model, id);
@@ -173,7 +172,6 @@ public class DetailsController {
         model.addAttribute("newEvent", new Event(0, "", new Date(), calendar.getTime(), LocalTime.now(), LocalTime.now()));
 
         elementService.addDeniedMessage(model, request);
-        System.out.println(1);
 
         model.addAttribute("newSprint", sprintService.getSuggestedSprint());
         model.addAttribute("sprintDateError", "");
