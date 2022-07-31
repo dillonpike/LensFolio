@@ -15,11 +15,17 @@ import java.util.ArrayList;
 public class GroupService {
 
     /**
-     * Repository of Group objects.
+     * Accessing GRPC class to send request and get response about group to identity provider
      */
     @GrpcClient(value = "identity-provider-grpc-server")
     GroupsServiceGrpc.GroupsServiceBlockingStub groupsServiceBlockingStub;
 
+    /***
+     * Method to create group by sending request using GRPC to the idp
+     * @param shortName (String) the short name of the new group that will be created and persisted in database
+     * @param longName (String) the long name of the new group that will be created and persisted in database
+     * @return (CreateGroupResponse) contain the response of group creation
+     */
     public CreateGroupResponse createNewGroup(String shortName, String longName){
         CreateGroupRequest request = CreateGroupRequest.newBuilder()
                 .setShortName(shortName)
@@ -28,6 +34,12 @@ public class GroupService {
         return groupsServiceBlockingStub.createGroup(request);
     }
 
+    /***
+     * Method to add user(s) to an existing group by sending request using GRPC to the idp
+     * @param groupId (Integer) id of the group
+     * @param userIds (ArrayList<Integer>) a list of all the user ids that will be added to a group
+     * @return (AddGroupMembersResponse) contains the response of addition of user(s) to a group
+     */
     public AddGroupMembersResponse addMemberToGroup(Integer groupId, ArrayList<Integer> userIds){
         AddGroupMembersRequest request = AddGroupMembersRequest.newBuilder()
                 .setGroupId(groupId)
@@ -36,6 +48,12 @@ public class GroupService {
         return groupsServiceBlockingStub.addGroupMembers(request);
     }
 
+    /***
+     * Method to remove user(s) from an existing group by sending request using GRPC to the idp
+     * @param groupId (Integer) id of the group
+     * @param userIds (ArrayList<Integer>) a list of all the user ids that will be removed from a group
+     * @return (RemoveGroupMembersResponse) contains the response of removal of user(s) from a group
+     */
     public RemoveGroupMembersResponse removeMembersFromGroup(Integer groupId, ArrayList<Integer> userIds){
         RemoveGroupMembersRequest request = RemoveGroupMembersRequest.newBuilder()
                 .setGroupId(groupId)
@@ -44,6 +62,13 @@ public class GroupService {
         return groupsServiceBlockingStub.removeGroupMembers(request);
     }
 
+    /***
+     * Method to remove user(s) from an existing group by sending request using GRPC to the idp
+     * @param groupId (Integer) id of the group
+     * @param shortName (String) the new short name of the group
+     * @param longName (String) the new long name of the group
+     * @return (ModifyGroupDetailsResponse) contains the response of removal of user(s) to a group
+     */
     public ModifyGroupDetailsResponse editGroupDetails(Integer groupId, String shortName, String longName){
         ModifyGroupDetailsRequest request = ModifyGroupDetailsRequest.newBuilder()
                 .setGroupId(groupId)
@@ -53,6 +78,11 @@ public class GroupService {
         return groupsServiceBlockingStub.modifyGroupDetails(request);
     }
 
+    /***
+     * Method to delete an existing group from database by sending request using GRPC to the idp
+     * @param groupId (Integer) id of the group
+     * @return (DeleteGroupResponse) contains the response after deletion of a group
+     */
     public DeleteGroupResponse deleteGroup(Integer groupId){
         DeleteGroupRequest request = DeleteGroupRequest.newBuilder()
                 .setGroupId(groupId)
@@ -60,6 +90,11 @@ public class GroupService {
         return groupsServiceBlockingStub.deleteGroup(request);
     }
 
+    /***
+     * Method to get the detail information of a group by sending request using GRPC to the idp
+     * @param groupId (Integer) id of the group
+     * @return (GroupDetailsResponse) contains the details of a group requested
+     */
     public GroupDetailsResponse getGroupDetails(Integer groupId){
         GetGroupDetailsRequest request = GetGroupDetailsRequest.newBuilder()
                 .setGroupId(groupId)
@@ -67,6 +102,14 @@ public class GroupService {
         return groupsServiceBlockingStub.getGroupDetails(request);
     }
 
+    /***
+     * Method to delete an existing group from database by sending request using GRPC to the idp
+     * @param offset (Integer) number used to identify the starting point to return rows from a result set
+     * @param limit (Integer) number to determine how many rows are returned from a query(this is ignored due to we don't implement pagination)
+     * @param orderBy (string) type of sorting
+     * @param isAscending (bool) descending/ascending
+     * @return (PaginatedGroupsResponse) contains list of all groups requested
+     */
     public PaginatedGroupsResponse getPaginatedGroups(Integer offset, Integer limit, String orderBy, boolean isAscending){
         GetPaginatedGroupsRequest request = GetPaginatedGroupsRequest.newBuilder()
                 .setOffset(offset)
