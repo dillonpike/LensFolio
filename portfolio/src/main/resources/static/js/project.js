@@ -201,8 +201,11 @@ function deadlineModalSetup() {
 
 
 /**
- * Customises the milestone modal attributes with depending on what milestone it should display and whether it's being
- * used for adding or editing a milestone.
+ * Customises the event modal attributes with depending on what event it should display and whether it's being
+ * used for adding or editing a event. Also greys out the required dates to ensure only the dates in the
+ * project date range are selectable.
+ * @param projectStartDate the start date of the project
+ * @param projectEndDate the end date of the project
  */
 function eventModalSetup(projectStartDate, projectEndDate) {
     const eventModal = document.getElementById('eventModal')
