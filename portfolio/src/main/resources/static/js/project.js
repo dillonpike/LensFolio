@@ -190,6 +190,9 @@ function deadlineModalSetup() {
         modalForm.setAttribute('object', deadline);
         modalBodyInputs[0].value = deadline.deadlineName;
         deadlineDatePicker.dates.setValue(tempusDominus.DateTime.convert(new Date(deadline.deadlineDate)));
+        // Set min and max dates based on project dates
+        deadlineDatePicker.updateOptions({restrictions: {minDate: new Date(projectStartDate), maxDate: new Date(projectEndDate)}});
+
 
         // Initial run of validation functions in case initial values are invalid
         validateModalDateTime('deadlineDate', 'deadlineModalButton', 'deadlineDateAlertBanner', 'deadlineDateAlertMessage')
