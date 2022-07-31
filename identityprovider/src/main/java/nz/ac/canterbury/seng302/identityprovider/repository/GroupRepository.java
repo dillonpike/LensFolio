@@ -1,6 +1,6 @@
-package nz.ac.canterbury.seng302.portfolio.repository;
+package nz.ac.canterbury.seng302.identityprovider.repository;
 
-import nz.ac.canterbury.seng302.portfolio.model.Group;
+import nz.ac.canterbury.seng302.identityprovider.model.Group;
 import org.springframework.data.repository.CrudRepository;
 
 /**

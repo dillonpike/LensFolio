@@ -1,7 +1,8 @@
 package nz.ac.canterbury.seng302.portfolio.service;
 
+import net.devh.boot.grpc.client.inject.GrpcClient;
 import nz.ac.canterbury.seng302.portfolio.model.Group;
-import nz.ac.canterbury.seng302.portfolio.repository.GroupRepository;
+import nz.ac.canterbury.seng302.shared.identityprovider.UserAccountServiceGrpc;
 import org.hibernate.ObjectNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,8 +19,8 @@ public class GroupService {
     /**
      * Repository of Group objects.
      */
-    @Autowired
-    private GroupRepository groupRepository;
+    @GrpcClient(value = "identity-provider-grpc-server")
+    UserAccountServiceGrpc.UserAccountServiceBlockingStub userAccountStub;
 
     /**
      * Returns the group object from the database with the given id.
