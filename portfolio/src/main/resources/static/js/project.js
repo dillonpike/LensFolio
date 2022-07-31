@@ -147,7 +147,7 @@ function milestoneModalSetup() {
 
         modalForm.setAttribute('object', milestone);
         modalBodyInput.value = milestone.milestoneName
-        $('#milestoneDateInput').datepicker('setDate', milestone.milestoneDateString)
+        deadlineDatePicker.dates.setValue(tempusDominus.DateTime.convert(new Date(milestone.milestoneDate)));
 
         // Initial run of validation functions in case initial values are invalid
         validateModalDate('milestoneDate', 'milestoneModalButton', 'milestoneDateAlertBanner', 'milestoneDateAlertMessage')
