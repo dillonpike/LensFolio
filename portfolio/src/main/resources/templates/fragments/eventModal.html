@@ -3,14 +3,14 @@
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="exampleModalLongTitle">Add event</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="closeEventModalButton"></button>
       </div>
       <form method="post" id="eventForm" onsubmit="validateEvent(); return false;" th:action="@{add-event}">
         <div class="modal-body">
           <div class="alert alert-danger alert-dismissible fade show" role="alert" id="eventAlertBanner" hidden>
             <span id="eventAlertMessage" data-test-id="alertMessage"></span>
             <button type="button" class="btn-close" onclick="document.getElementById('eventAlertBanner').hidden = true" aria-label="Close"></button>
-          </div>
+          </div> 
           <div class="mb-3">
             <label for="eventName" class="col-form-label">Event Name:</label>
             <input onkeyup="updateCharsLeft('eventName', 'eventNameLength', 50)" maxlength="50" type="text" class="form-control" id="eventName" name="eventName">
@@ -62,6 +62,7 @@
     async function validateEvent() {
       if (validateModalDateTimeRange('eventStartDate', 'eventEndDate', 'submitEventButton', 'eventDateTimeAlertBanner', 'eventDateTimeAlertMessage') &&
               validateModalName('eventName', 'eventAlertBanner', 'eventAlertMessage')) {
+        document.getElementById('eventForm').onsubmit = () => { return false };
         document.getElementById('eventForm').submit();
       }
     }

@@ -259,15 +259,15 @@ function connect() {
     stompClient = Stomp.over(socket);
     stompClient.connect({}, function (frame) {
         console.log('Connected: ' + frame);
-        stompClient.subscribe('/test/portfolio/artefact/being-edited', function (eventResponseArg) {
+        stompClient.subscribe('/webSocketGet/being-edited', function (eventResponseArg) {
             const eventResponse = JSON.parse(eventResponseArg.body);
             showToast(eventResponse.artefactName, eventResponse.artefactId, eventResponse.username, eventResponse.userFirstName, eventResponse.userLastName, false, eventResponse.artefactType);
         });
-        stompClient.subscribe('/test/portfolio/artefact/stop-being-edited', function (eventResponseArg) {
+        stompClient.subscribe('/webSocketGet/stop-being-edited', function (eventResponseArg) {
             const eventResponse = JSON.parse(eventResponseArg.body);
             showToast(eventResponse.artefactName, eventResponse.artefactId, eventResponse.username, eventResponse.userFirstName, eventResponse.userLastName, true, eventResponse.artefactType);
         })
-        stompClient.subscribe('/test/portfolio/artefact/save-edit', function (eventResponseArg) {
+        stompClient.subscribe('/webSocketGet/save-edit', function (eventResponseArg) {
             const eventResponse = JSON.parse(eventResponseArg.body);
             refreshEvents();
 
