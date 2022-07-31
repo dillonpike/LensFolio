@@ -6,10 +6,14 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="closePhotoModalButton"></button>
             </div>
             <form method="post" id="photoForm" th:action="@{saveAccountPhoto}" enctype="multipart/form-data">
+                <input type="hidden" th:value="${userId}" name="userId">
                 <div class="modal-body">
                     <div class="mb-3">
                         <div id="image-box" class="image-container"></div>
                         <!--button class="btn btn-outline-info" id="confirm-btn" style="width: 100%; margin-top: 10px; display: none;" type="submit">Post</button-->
+                    </div>
+                    <div class="progress">
+                        <div hidden="true" id="progress-bar" class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100" style="width: 75%"></div>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -35,6 +39,7 @@
         const crop_btn = document.getElementById('crop-btn')
         // id_image is the id of the input tag where we will upload the image
         const input = document.getElementById('avatar')
+
 
         input.addEventListener('change', ()=>{
             // Getting image file object from the input variable
@@ -70,9 +75,9 @@
 
             // When crop button is clicked this event will get triggered
             crop_btn.addEventListener('click', ()=>{
+                document.getElementById("progress-bar").hidden = false;
                 // This method coverts the selected cropped image on the cropper canvas into a blob object
                 cropper.getCroppedCanvas().toBlob((blob)=>{
-
                     // Gets the original image data
                     let fileInputElement = document.getElementById('avatar');
                     // Make a new cropped image file using that blob object, image_data.name will make the new file name same as original image
@@ -89,8 +94,8 @@
                     // Hide the crop button
                     document.getElementById('crop-btn').style.display = 'none'
 
-                    document.getElementById("save-btn").hidden = false;
                     previewImage();
+                    document.getElementById("baseForm").submit();
                 }, "image/jpeg", 0.5);
             });
 
