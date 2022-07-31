@@ -24,19 +24,11 @@
           </div>
           <div class="mb-3">
             <label for="deadlineDate" class="col-form-label">Deadline Date:</label>
-<!--            <div class="input-group date" id="deadlineDateInput">-->
-<!--              <input onkeydown="return checkDateKeys(event)" onchange="validateModalDateTime('deadlineDate', 'deadlineTime', 'deadlineModalButton', 'deadlineDateAlertBanner', 'deadlineDateAlertMessage')" type="text" class="form-control" id="deadlineDate" th:name="deadlineDateString">-->
-<!--              <span class="input-group-append">-->
-<!--                  <span class="input-group-text bg-white">-->
-<!--                      <em class="bi bi-calendar"></em>-->
-<!--                  </span>-->
-<!--              </span>-->
-<!--            </div>-->
             <div class="input-group" id="deadlineDateInput" data-td-target-input="nearest" data-td-target-toggle="nearest">
-              <input id="deadlineDate" type="text" class="form-control" data-td-target="#deadlineDateInput" data-td-toggle="datetimepicker"
+              <input id="deadlineDate" type="text" class="form-control" data-td-target="#deadlineDateInput"
                      onkeydown="return false" th:name="deadlineDateString" onchange="validateModalDateTime(
                          'deadlineDate', 'deadlineModalButton', 'deadlineDateAlertBanner', 'deadlineDateAlertMessage')"/>
-              <span class="input-group-text bg-white">
+              <span class="input-group-text bg-white" data-td-target="#deadlineDateInput" data-td-toggle="datetimepicker">
                 <span class="bi bi-calendar"></span>
               </span>
             </div>
