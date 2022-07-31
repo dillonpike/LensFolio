@@ -1,13 +1,11 @@
 package nz.ac.canterbury.seng302.portfolio.service;
 
 import net.devh.boot.grpc.client.inject.GrpcClient;
-import nz.ac.canterbury.seng302.portfolio.model.Group;
-import nz.ac.canterbury.seng302.shared.identityprovider.UserAccountServiceGrpc;
-import org.hibernate.ObjectNotFoundException;
-import org.springframework.beans.factory.annotation.Autowired;
+import nz.ac.canterbury.seng302.shared.identityprovider.*;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
+import java.util.ArrayList;
+
 
 /**
  * Contains methods for performing operations on Group objects, such as adding and removing group members, and storing
@@ -20,40 +18,61 @@ public class GroupService {
      * Repository of Group objects.
      */
     @GrpcClient(value = "identity-provider-grpc-server")
-    UserAccountServiceGrpc.UserAccountServiceBlockingStub userAccountStub;
+    GroupsServiceGrpc.GroupsServiceBlockingStub groupsServiceBlockingStub;
 
-    /**
-     * Returns the group object from the database with the given id.
-     * @param id group id
-     * @return group object from the database with the given id
-     * @throws ObjectNotFoundException when a group with the given id doesn't exist in the database
-     */
-    public Group getGroupById(Integer id) throws ObjectNotFoundException {
-        Optional<Group> group = groupRepository.findById(id);
-        if (group.isPresent()) {
-            return group.get();
-        } else {
-            throw new ObjectNotFoundException(id, "Group");
-        }
+    public CreateGroupResponse createNewGroup(String shortName, String longName){
+        CreateGroupRequest request = CreateGroupRequest.newBuilder()
+                .setShortName(shortName)
+                .setLongName(longName)
+                .build();
+        return groupsServiceBlockingStub.createGroup(request);
     }
 
-    /**
-     * Adds the user identified by the given id to the given group.
-     * @param userId id of user to be added
-     * @param group group user is added to
-     */
-    public void addMember(int userId, Group group) {
-        group.addMember(userId);
-        groupRepository.save(group);
+    public AddGroupMembersResponse addMemberToGroup(Integer groupId, ArrayList<Integer> userIds){
+        AddGroupMembersRequest request = AddGroupMembersRequest.newBuilder()
+                .setGroupId(groupId)
+                .addAllUserIds(userIds)
+                .build();
+        return groupsServiceBlockingStub.addGroupMembers(request);
     }
 
-    /**
-     * Removes the user identified by the given id to the given group.
-     * @param userId id of user to be removed
-     * @param group group user is removed from
-     */
-    public void removeMember(int userId, Group group) {
-        group.removeMember(userId);
-        groupRepository.save(group);
+    public RemoveGroupMembersResponse removeMembersFromGroup(Integer groupId, ArrayList<Integer> userIds){
+        RemoveGroupMembersRequest request = RemoveGroupMembersRequest.newBuilder()
+                .setGroupId(groupId)
+                .addAllUserIds(userIds)
+                .build();
+        return groupsServiceBlockingStub.removeGroupMembers(request);
+    }
+
+    public ModifyGroupDetailsResponse editGroupDetails(Integer groupId, String shortName, String longName){
+        ModifyGroupDetailsRequest request = ModifyGroupDetailsRequest.newBuilder()
+                .setGroupId(groupId)
+                .setShortName(shortName)
+                .setLongName(longName)
+                .build();
+        return groupsServiceBlockingStub.modifyGroupDetails(request);
+    }
+
+    public DeleteGroupResponse deleteGroup(Integer groupId){
+        DeleteGroupRequest request = DeleteGroupRequest.newBuilder()
+                .setGroupId(groupId)
+                .build();
+        return groupsServiceBlockingStub.deleteGroup(request);
+    }
+
+    public GroupDetailsResponse getGroupDetails(Integer groupId){
+        GetGroupDetailsRequest request = GetGroupDetailsRequest.newBuilder()
+                .setGroupId(groupId)
+                .build();
+        return groupsServiceBlockingStub.getGroupDetails(request);
+    }
+
+    public PaginatedGroupsResponse getPaginatedGroups(Integer offset, Integer limit, String orderBy, boolean isAscending){
+        GetPaginatedGroupsRequest request = GetPaginatedGroupsRequest.newBuilder()
+                .setOffset(offset)
+                .setIsAscendingOrder(isAscending)
+                .setOrderBy(orderBy)
+                .build();
+        return groupsServiceBlockingStub.getPaginatedGroups(request);
     }
 }
