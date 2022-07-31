@@ -2,13 +2,16 @@ package nz.ac.canterbury.seng302.portfolio.utility;
 
 import com.google.protobuf.Timestamp;
 
-import java.sql.Date;
+import java.util.Date;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.Period;
 
-public class Utility {
-    public Utility() {}
+/**
+ * Helper functions related to dates.
+ */
+public class DateUtility {
+    public DateUtility() {}
 
     /**
      * Formats the Timestamp given into a date, formatted: "dd MMMM yyyy"
@@ -89,5 +92,21 @@ public class Utility {
         } else {
             return 0;
         }
+    }
+
+    /**
+     * Returns the given string converted to a date object. If the string is not correctly formatted, returns null.
+     * Accepted format example: 12/Jul/2022 3:45 pm
+     * @param dateTimeString string to convert
+     * @return string converted to a date if it's formatted correctly, otherwise null
+     */
+    public static Date stringToDateTime(String dateTimeString) {
+        Date date = null;
+        try {
+            date = new SimpleDateFormat("dd/MMM/yyyy h:mm a").parse(dateTimeString);
+        } catch (Exception e) {
+            System.err.println("Error parsing date: " + e.getMessage());
+        }
+        return date;
     }
 }
