@@ -14,7 +14,7 @@ import java.util.Set;
                 @UniqueConstraint(columnNames = {"short_Name", "course_Id"}),
                 @UniqueConstraint(columnNames = {"long_Name", "course_Id"})
         })
-public class Group {
+public class GroupModel {
 
     /**
      * ID of the group.
@@ -52,7 +52,7 @@ public class Group {
     /**
      * Empty constructor for JPA.
      */
-    public Group() {}
+    public GroupModel() {}
 
     /**
      * Constructs a Group object.
@@ -60,7 +60,7 @@ public class Group {
      * @param longName long name of the group
      * @param courseId ID of the course instance the group is a part of
      */
-    public Group(String shortName, String longName, int courseId) {
+    public GroupModel(String shortName, String longName, int courseId) {
         this.shortName = shortName;
         this.longName = longName;
         this.courseId = courseId;

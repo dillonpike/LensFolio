@@ -22,7 +22,7 @@ class GroupTest {
         String expectedLongName = "Users Without Group";
         int expectedCourseId = 3;
         Set<Integer> expectedMemberIds = new HashSet<>();
-        Group group = new Group(expectedShortName, expectedLongName, expectedCourseId);
+        GroupModel group = new GroupModel(expectedShortName, expectedLongName, expectedCourseId);
 
         assertEquals(expectedGroupId, group.getGroupId());
         assertEquals(expectedShortName, group.getShortName());
