@@ -725,20 +725,16 @@
     /**
      * Returns true if the user has entered a valid date and time, otherwise false
      * @param dateId id of element with date
-     * @param timeId id of element with time
      * @param submitElementId id of element for submitting the modal
      * @param alertBanner id of element that displays an error message
      * @param alertMessage id of element that stores the error message
      * @returns {boolean} true if valid date and time, otherwise false
      */
-    function validateModalDateTime(dateId, timeId, submitElementId, alertBanner, alertMessage) {
+    function validateModalDateTime(dateId, submitElementId, alertBanner, alertMessage) {
         if (!checkEmpty(dateId, 'Date', submitElementId, alertBanner, alertMessage)) {
             return false
         }
-        if (!checkEmpty(timeId, 'Time', submitElementId, alertBanner, alertMessage)) {
-            return false
-        }
-        const dateInput = new Date(`${document.getElementById(dateId).value}  ${document.getElementById(timeId).value} :00`)
+        const dateInput = new Date(`${document.getElementById(dateId).value}`)
         return checkDate(dateInput, submitElementId, alertBanner, alertMessage)
     }
 
@@ -789,7 +785,7 @@
     projectModalSetup()
     milestoneModalSetup()
     eventModalSetup(projectStartDate, projectEndDate)
-    deadlineModalSetup()
+    deadlineModalSetup(projectStartDate, projectEndDate)
     deleteModalSetup()
 </script>
 

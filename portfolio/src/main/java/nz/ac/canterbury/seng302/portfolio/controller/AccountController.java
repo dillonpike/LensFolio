@@ -4,7 +4,7 @@ import io.grpc.StatusRuntimeException;
 import nz.ac.canterbury.seng302.portfolio.service.ElementService;
 import nz.ac.canterbury.seng302.portfolio.service.PhotoService;
 import nz.ac.canterbury.seng302.portfolio.service.RegisterClientService;
-import nz.ac.canterbury.seng302.portfolio.utility.Utility;
+import nz.ac.canterbury.seng302.portfolio.utility.DateUtility;
 import nz.ac.canterbury.seng302.portfolio.service.UserAccountClientService;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
@@ -78,8 +78,8 @@ public class AccountController {
             String fullName = getUserByIdReply.getFirstName() + " " + getUserByIdReply.getMiddleName() + " " + getUserByIdReply.getLastName();
             model.addAttribute("fullName", fullName);
             model.addAttribute("userId", id);
-            model.addAttribute("dateAdded", Utility.getDateAddedString(getUserByIdReply.getCreated()));
-            model.addAttribute("monthsSinceAdded", Utility.getDateSinceAddedString(getUserByIdReply.getCreated()));
+            model.addAttribute("dateAdded", DateUtility.getDateAddedString(getUserByIdReply.getCreated()));
+            model.addAttribute("monthsSinceAdded", DateUtility.getDateSinceAddedString(getUserByIdReply.getCreated()));
             photoService.savePhotoToPortfolio(getUserByIdReply.getProfileImagePath());
         } catch (StatusRuntimeException e) {
             model.addAttribute("loginMessage", "Error connecting to Identity Provider...");
