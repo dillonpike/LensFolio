@@ -30,17 +30,13 @@ public class PermissionService {
      * This function is to help get user's permission update immediately, make sure user cannot overstep.
      *
      * @param targetRole The target role object user want to modify
-     * @param model Parameters sent to thymeleaf template to be rendered into HTML
      * @return True if current user has the permission
      */
-    public boolean isValidToDeleteRole(String targetRole,
-                            @AuthenticationPrincipal AuthState principal,
-                            Model model
+    public boolean isValidToModifyRole(String targetRole,
+                                       Integer userId
     ) {
         UserResponse getUserByIdReply;
-        Integer id = userAccountClientService.getUserIDFromAuthState(principal);
-        elementService.addHeaderAttributes(model, id);
-        getUserByIdReply = registerClientService.getUserData(id);
+        getUserByIdReply = registerClientService.getUserData(userId);
 
         //Get the current user's highest role
         String highestRole = elementService.getUserHighestRole(getUserByIdReply);

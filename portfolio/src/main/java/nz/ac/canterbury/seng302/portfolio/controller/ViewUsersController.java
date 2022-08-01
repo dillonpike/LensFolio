@@ -104,8 +104,12 @@ public class ViewUsersController {
                               @RequestParam(value = "userId") int userId,
                               @AuthenticationPrincipal AuthState principal
                               ) {
+
+        Integer id = userAccountClientService.getUserIDFromAuthState(principal);
+        elementService.addHeaderAttributes(model, id);
+
         // Check if current user's operation is valid, if invalid, access denied error is displayed to user
-        if (permissionService.isValidToDeleteRole(role, principal, model)) {
+        if (permissionService.isValidToModifyRole(role, id)) {
             if (role.equals("student")) {
                 UserRoleChangeResponse roleChangeResponse = userAccountClientService.addRoleToUser(userId, UserRole.STUDENT);
             } else if (role.equals("teacher")) {
@@ -133,8 +137,12 @@ public class ViewUsersController {
                               @RequestParam(value = "userId") int userId,
                              @AuthenticationPrincipal AuthState principal
                              ) {
+
+        Integer id = userAccountClientService.getUserIDFromAuthState(principal);
+        elementService.addHeaderAttributes(model, id);
+
         // Check if current user's operation is valid, if invalid, access denied error is displayed to user
-        if (permissionService.isValidToDeleteRole(role,principal, model)) {
+        if (permissionService.isValidToModifyRole(role, id)) {
             UserRoleChangeResponse roleChangeResponse;
             if (Objects.equals(role, "STUDENT")) {
                 roleChangeResponse = userAccountClientService.deleteRoleFromUser(userId, UserRole.STUDENT);
