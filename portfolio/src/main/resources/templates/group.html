@@ -21,7 +21,7 @@
         <div class="col-12 col-md-4">
             <div class="d-flex flex-column align-items-stretch flex-shrink-0 bg-white card shadow">
                 <a class="d-flex align-items-center flex-shrink-0 p-3 link-dark text-decoration-none border-bottom">
-                    <div class="hstack gap-3 p-2 flex-grow-1">
+                    <div class="hstack gap-3 p-2 flex-grow-1" id="group_list">
                         <strong class="fs-5">Groups</strong>
                     </div>
                     <button type="button" class="btn p-2" data-bs-toggle="modal" data-bs-target="#groupModal">
@@ -92,7 +92,7 @@
                             </button>
                         </div>
 
-                        <table class="table table-striped table-bordered display" id="table" >
+                        <table class="table table-striped table-bordered display" id="group_table" >
                             <thead class="table-dark" id="headTable">
                             <tr>
                                 <th id="firstNameColumn">First Name</th>
@@ -111,7 +111,7 @@
                     </div>
 <!--                Must have in line script here-->
                 <script>
-                    $('table').dataTable({searching: false, paging: false, info: false, select: true});
+                    $('group_table').dataTable({searching: false, paging: false, info: false, select: true});
                 </script>
             </div>
          </div>
