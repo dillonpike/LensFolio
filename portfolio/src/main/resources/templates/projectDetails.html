@@ -402,10 +402,7 @@
                                             </div>
                                         </div>
                                         <ol class="widget-49-meeting-points">
-                                            <span class="widget-49-meeting-item" th:style="color + ':' + ${deadline.getDeadlineColour()}" th:text="Date + ': ' + ${deadline.getDeadlineDateString()}"></span>
-                                        </ol>
-                                        <ol class="widget-49-meeting-points">
-                                            <span class="widget-49-meeting-item" th:text="Time + ': ' + ${deadline.getDeadlineTimeString()}"></span>
+                                            <span class="widget-49-meeting-item" th:style="color + ':' + ${deadline.getDeadlineColour()}" th:text="Date + ': ' + ${deadline.getDeadlineDateString()} + ' ' + ${deadline.getDeadlineTimeString12Hour()}"></span>
                                         </ol>
                                     </div>
                                 </div>
