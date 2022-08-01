@@ -206,7 +206,7 @@ class EventServiceTest {
         eventList.add(event3);
         eventList.add(event4);
 
-        when(eventService.getAllEventsOrdered()).thenReturn(eventList);
+        when(eventService.getAllEventsOrderedStartDate()).thenReturn(eventList);
 
         List<Event> returnedEvents = eventService.getAllEventsOverlappingWithSprint(sprint);
 

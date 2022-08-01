@@ -1,5 +1,5 @@
 /**
- * Saves the given sprint in the database and displays the alert banner to notify the user.
+ * Saves the given sprint in the database and displays the alert toast to notify the user.
  */
 function saveSprint(sprint) {
     const data = {
@@ -9,7 +9,14 @@ function saveSprint(sprint) {
     }
     $.post("update-sprint?" + new URLSearchParams(data)).done(function (response) {
         if (response) {
-            showAlertBanner(`${sprint.title} updated`);
+            showAlertToast(`${sprint.title} updated`);
         }
     });
+}
+
+/**
+ * Calls the error toast display
+ */
+function errorSprints(message) {
+    showAlertErrorToast(message);
 }

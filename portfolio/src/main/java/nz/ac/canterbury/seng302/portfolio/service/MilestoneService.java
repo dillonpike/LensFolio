@@ -17,11 +17,10 @@ import java.util.List;
  */
 @Service
 public class MilestoneService {
+
     @Autowired
     private MilestoneRepository repository;
 
-    @Autowired
-    private DateValidationService dateValidationService;
 
     /**
      * Get list of all milestones
