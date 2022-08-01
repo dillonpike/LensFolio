@@ -19,6 +19,9 @@ class GroupModelServerServiceTest {
     @Mock
     private GroupModelService groupModelService;
 
+    @Mock
+    private StreamObserver<DeleteGroupResponse> observer;
+
     @InjectMocks
     private GroupModelServerService groupModelServerService = Mockito.spy(GroupModelServerService.class);
 
@@ -33,11 +36,10 @@ class GroupModelServerServiceTest {
      */
     @Test
     void testDeleteExistingGroup() {
-        // Stubs the request and observer.
+        // Build the request.
         DeleteGroupRequest request = DeleteGroupRequest.newBuilder().setGroupId(1).build();
-        StreamObserver<DeleteGroupResponse> observer = Mockito.mock(StreamObserver.class);
 
-        // Setups up mock.
+        // Setups up mock outcomes.
         when(groupModelService.removeGroup(anyInt())).thenReturn(true);
 
         // Runs tasks for deleting existing group.
@@ -45,9 +47,9 @@ class GroupModelServerServiceTest {
 
         // Checks it ran .onCompleted().
         verify(observer, times(1)).onCompleted();
-        // Sets up captures to get value of responses.
+        // Sets up captures to get the response.
         ArgumentCaptor<DeleteGroupResponse> captor = ArgumentCaptor.forClass(DeleteGroupResponse.class);
-        // Checks it ran .onNext() and gets the response.
+        // Checks it ran .onNext() and captor the response.
         verify(observer, times(1)).onNext(captor.capture());
         // Gets the value of the response from the captor.
         DeleteGroupResponse response = captor.getValue();
