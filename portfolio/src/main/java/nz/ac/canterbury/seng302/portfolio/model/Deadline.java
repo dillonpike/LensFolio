@@ -3,6 +3,7 @@ package nz.ac.canterbury.seng302.portfolio.model;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sun.istack.NotNull;
+import nz.ac.canterbury.seng302.portfolio.utility.DateUtility;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -206,20 +207,26 @@ public class Deadline {
     }
 
     /**
-     * Sets the deadline date with a string. Makes sure not to change the time, if already previously set.
+     * Sets the deadline date or date and time with a string. Makes sure not to change the time when only setting the
+     * date, if already previously set.
      * @param date new date
      */
     public void setDeadlineDateString(String date) {
-        if (this.deadlineDate != null) {
-            Calendar cal = Calendar.getInstance();
-            cal.setTime(Project.stringToDate(date));
-            SimpleDateFormat hourFormat = new SimpleDateFormat("HH");
-            SimpleDateFormat minuteFormat = new SimpleDateFormat("mm");
-            cal.add(Calendar.HOUR_OF_DAY, Integer.parseInt(hourFormat.format(deadlineDate)));
-            cal.add(Calendar.MINUTE, Integer.parseInt(minuteFormat.format(deadlineDate)));
-            this.deadlineDate = cal.getTime();
+        Date dateTime = DateUtility.stringToDateTime(date);
+        if (dateTime != null) {
+            this.deadlineDate = dateTime;
         } else {
-            this.deadlineDate = Project.stringToDate(date);
+            if (this.deadlineDate != null) {
+                Calendar cal = Calendar.getInstance();
+                cal.setTime(Project.stringToDate(date));
+                SimpleDateFormat hourFormat = new SimpleDateFormat("HH");
+                SimpleDateFormat minuteFormat = new SimpleDateFormat("mm");
+                cal.add(Calendar.HOUR_OF_DAY, Integer.parseInt(hourFormat.format(deadlineDate)));
+                cal.add(Calendar.MINUTE, Integer.parseInt(minuteFormat.format(deadlineDate)));
+                this.deadlineDate = cal.getTime();
+            } else {
+                this.deadlineDate = Project.stringToDate(date);
+            }
         }
     }
 

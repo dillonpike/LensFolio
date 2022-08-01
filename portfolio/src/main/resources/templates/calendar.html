@@ -10,12 +10,13 @@
     <link href="webjars/fullcalendar__bootstrap5/5.10.2/main.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
     <link href='https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css' rel='stylesheet'>
-    <script src="webjars/sockjs-client/1.5.1/sockjs.min.js"></script>
-    <script src="webjars/stomp-websocket/2.3.3/stomp.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js" integrity="sha512-iKDtgDyTHjAitUDdLljGhenhPwrbBfqTKWO1mkhSFH3A7blITC9MhYon6SjnMhp4o0rADGw9yAC6EW4t5a4K3g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
     <script src="js/sprint.js"></script>
     <script src="js/banner.js"></script>
     <script src="webjars/jquery/3.6.0/dist/jquery.min.js"></script>
+
     <script th:inline="javascript">
         /*<![CDATA[*/
         const eventImage = 'images/event.svg';
@@ -25,26 +26,57 @@
         let currentRole = /*[[${currentUserRole}]]*/ "";
         document.addEventListener('DOMContentLoaded', function() {
 
-            const alternateColour = (colour) => {
-                return "red";
-            }
 
             let calendarEl = document.getElementById('calendar');
             let selectedId = -1;
             calendar = new FullCalendar.Calendar(calendarEl, {
                 themeSystem: 'bootstrap5',
+                aspectRatio: 1.5,
                 initialView: 'dayGridMonth',
                 buttonText: {
                     today: 'Today'
                 },
-                aspectRatio: 2.3,
                 fixedWeekCount: false,
                 validRange: {
-                    start: /*[[${startDate}]]*/ null,
-                    end: /*[[${endDate}]]*/ null
+                    start: /*[[${fullStartDate}]]*/ null,
+                    end: /*[[${fullEndDate}]]*/ null
                 },
                 events: [
-                    /*[(${events})]*/ null
+                    {
+                        start: /*[[${fullStartDate}]]*/ null,
+                        end: /*[[${startDate}]]*/ null,
+                        allDay: true,
+                        display: 'background',
+                        color: '#CCCCCC',
+                        type: "Background"
+                    },
+
+                    {
+                        start: /*[[${endDate}]]*/ null,
+                        end: /*[[${fullEndDate}]]*/ null,
+                        allDay: true,
+                        display: 'background',
+                        color: '#CCCCCC',
+                        type: "Background"
+                    },
+                    {
+                        title: 'Project Start',
+                        start: /*[[${startDate}]]*/ null,
+                        allDay: true,
+                        display: 'background',
+                        color: '#ffffff',
+                        type: "Project-Range"
+                    },
+
+                    {
+                        title: 'Project End',
+                        start: /*[[${trueEndDate}]]*/ null,
+                        allDay: true,
+                        display: 'background',
+                        color: '#ffffff',
+                        type: "Project-Range"
+                    },
+                    /*[(${events})]*/
                 ],
                 eventContent: function(arg) {
                     let arrayOfDomNodes = []
@@ -59,51 +91,51 @@
                     // image event
                     let imgEventWrap = document.createElement('div')
                     imgEventWrap.setAttribute("id", "events");
-                    imgEventWrap.setAttribute("title", arg.event.extendedProps.description);
-
-                    if (arg.event.extendedProps.type === 'Deadline') {
+                    imgEventWrap.setAttribute("desc", arg.event.extendedProps.description);
+                    let type = arg.event.extendedProps.type;
+                    if (type === 'Deadline') {
                         let imgEvent = '<img src= ' + deadlineImage + ' >'
                         imgEventWrap.classList.add("fc-deadline-img");
                         imgEventWrap.innerHTML = imgEvent;
                     }
-                    if (arg.event.extendedProps.type === 'Event') {
+                    if (type === 'Event') {
                         let imgEvent = '<img src= ' + eventImage + ' >'
                         imgEventWrap.classList.add("fc-event-img");
                         imgEventWrap.innerHTML = imgEvent;
                     }
-                    if (arg.event.extendedProps.type === 'Milestone') {
+                    if (type === 'Milestone') {
                         let imgEvent = '<img src= ' + milestoneImage + ' >'
                         imgEventWrap.classList.add("fc-milestone-img");
                         imgEventWrap.innerHTML = imgEvent;
                     }
-
-                    if (arg.event.extendedProps.type === 'Sprint') {
+                    if ((type === 'Sprint') || (type === 'Background') || (type === 'Project-Range')) {
                         arrayOfDomNodes = [ titleEvent ]
                     } else {
                         arrayOfDomNodes = [ imgEventWrap, titleEvent ]
                     }
 
-
+                    setEventClasses();
                     return { domNodes: arrayOfDomNodes }
                 },
                 eventDidMount: function(info) {
                     info.event.setProp("classNames", "event-border");
                 },
+                eventMouseEnter: function(info) {
+                    refreshTooltips();
+                },
                 eventClick: function(info) {
+                    if (info === "initial-reload") {
+                        return;
+                    }
                     // change the border color
                     let newEvent = calendar.getEventById(info.event.id);
-                    if (newEvent.extendedProps.type === 'Sprint') {
+                    if ((newEvent.extendedProps.type === 'Sprint') && (currentRole !== 'student')) {
                         let selectedEvent = calendar.getEventById(selectedId);
                         if (selectedId === -1) {
                             //initial click on any event
                             newEvent.setProp("classNames", "event-border");
-                            newEvent.setProp("borderColor", alternateColour(newEvent.backgroundColor));
+                            newEvent.setProp("borderColor", "red");
                             newEvent.setProp("editable", true);
-                            if (currentRole === 'student') {
-                                newEvent.setProp("editable", false);
-                            } else {
-                                newEvent.setProp("editable", true);
-                            }
                             selectedId = info.event.id;
                         } else {
                             if (newEvent.id === selectedEvent.id) {
@@ -116,23 +148,19 @@
                                 selectedEvent.setProp("borderColor", selectedEvent.backgroundColor)
                                 selectedEvent.setProp("editable", false);
                                 newEvent.setProp("classNames", "event-border");
-                                newEvent.setProp("borderColor", alternateColour(newEvent.backgroundColor));
+                                newEvent.setProp("borderColor", "red");
                                 newEvent.setProp("editable", true);
-                                if (currentRole === 'student') {
-                                    newEvent.setProp("editable", false);
-                                } else {
-                                    newEvent.setProp("editable", true);
-                                }
                                 selectedId = info.event.id;
                             }
                         }
                     }
                 },
                 eventOverlap: function(stillEvent, movingEvent) {
-                    console.log(stillEvent);
                     if (stillEvent.extendedProps.type === 'Sprint') {
-                        document.getElementById("overlapError").hidden = false;
-                        setTimeout( function () {document.getElementById("overlapError").hidden = true;}, 5000)
+                        errorSprints("Error: sprints cannot overlap");
+                        return false;
+                    } else if (stillEvent.extendedProps.type === 'Background') {
+                        errorSprints("Error: sprints cannot be outside project dates")
                         return false;
                     }
                     return true;
@@ -142,7 +170,7 @@
                 },
                 eventResize: function(info) {
                     let sprint = calendar.getEventById(info.event.id);
-                    saveSprint(sprint, "alertBanner")
+                    saveSprint(sprint)
                 },
                 eventDrop: function(info) {
                     let sprint = calendar.getEventById(info.event.id);
@@ -151,10 +179,26 @@
             });
             calendar.render();
             refreshTooltips();
+            setTimeout(() => { // Set a time-out as the calendar seems to not position all elements correctly unless first fully rendered.
+                setEventClasses();
+            }, 100);
+
+
+            function setEventClasses() {
+                $("[id='events']" ).each(function (ignore) {
+                    if ($(this).hasClass("fc-milestone-img")) {
+                        $(this).parent().addClass("milestone");
+                    } else if ($(this).hasClass("fc-deadline-img")) {
+                        $(this).parent().addClass("deadline");
+                    } else if ($(this).hasClass("fc-event-img")) {
+                        $(this).parent().addClass("event");
+                    }
+                });
+            }
 
             function refreshTooltips() {
                 $("[id='events']" ).each(function (ignore) {
-                    $(this).parent().get(0).setAttribute("title", $(this).get(0).getAttribute("title"))
+                    $(this).parent().get(0).setAttribute("data-bs-original-title", $(this).get(0).getAttribute("desc"))
                     $(this).parent().get(0).setAttribute("data-bs-html", "true");
                     $(this).parent().get(0).setAttribute("data-toggle", "tooltip");
                 });
@@ -168,12 +212,20 @@
                 const date = calendar.getDate();
                 localStorage.setItem("currentDate", date);
                 refreshTooltips();
+                setEventClasses();
+            });
+
+            $('.fc-today-button').click(function() {
+                const date = calendar.getDate();
+                localStorage.setItem("currentDate", date);
+                refreshTooltips();
             });
 
             $('.fc-next-button').click(function() {
                 const date = calendar.getDate();
                 localStorage.setItem("currentDate", date);
                 refreshTooltips();
+                setEventClasses();
             });
 
             if (localStorage.getItem("currentDate") !== null) {
@@ -193,30 +245,25 @@
     <h2 class="title" th:text="${projectName}"/>
     <span class="badge rounded-pill title-date align-middle" th:text="${projectStartDateString} + ' - ' + ${projectEndDateString}" />
 </div>
-
-<div style="display: flex; justify-content: center; width: 100%;margin: 15px">
-    <div class="alert alert-success alert-dismissible" role="alert" id="alertBanner" style="width: 25%;padding-right: 16px!important" hidden>
-        <div style="display: flex; justify-content: space-between;flex-direction: row; align-items: center;">
-            <strong id="alertBannerText"></strong>
-            <button id="removeUpdateAlert" type="button" class="btn btn-outline-success" onclick="removeAlertBanner()">X</button>
+<!-- TOAST FOR ERRORS AND WHEN SPRINTS ARE UPDATED -->
+<div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 2000">
+    <div class="toast hide text-white" role="alert" aria-live="assertive" aria-atomic="true" id="alertToast" data-bs-animation="true" data-bs-autohide="true" data-bs-delay="7000">
+        <div class="toast-body">
+            <span id="alertToastText">Hidden</span>
+            <button id="toastBtn" type="button" class="btn-close btn-close-white me-2 m-auto float-end" data-bs-dismiss="toast" aria-label="Close"></button>
         </div>
     </div>
 </div>
 
 
-
 <div class='calendar' id='calendar'></div>
-<div class="error">
-    <span id="overlapError" style="color:red" th:hidden="true">Error: sprints cannot overlap</span>
-</div>
 </body>
 
 <script src="webjars/fullcalendar/5.10.2/main.min.js"></script>
-</html>
 
 <script>
     function connect() {
-        let socket = new SockJS('/test/portfolio/mywebsockets');
+        let socket = new SockJS('mywebsockets');
         stompClient = Stomp.over(socket);
         stompClient.connect({}, function (frame) {
             console.log('Connected: ' + frame);
@@ -241,8 +288,7 @@
             document.location.reload();
         }, 100);
     }
-
     connect();
-
-
 </script>
+
+</html>
