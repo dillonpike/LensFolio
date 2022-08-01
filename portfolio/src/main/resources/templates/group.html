@@ -33,7 +33,7 @@
                     </button>
                 </a>
                 <div class="list-group list-group-flush border-bottom group-bar">
-                    <button class="list-group-item list-group-item-action py-3 lh-tight" aria-current="true">
+                    <button class="list-group-item list-group-item-action py-3 lh-tight" aria-current="true" onclick="updateTable()" id="updateButton">
                         <div class="d-flex w-100 align-items-center justify-content-between">
                             <strong class="mb-1">Team 100</strong>
                         </div>
@@ -82,34 +82,72 @@
             </div>
         </div>
         <div class="col-6 col-md-8">
-            <div class="sticky-md-top">
-                <h1>Group Name</h1>
-                    <div class="hstack gap-3">
-                        <span>Copy Members To Group</span>
-                        <select class="form-select input-sm" aria-label="Default select example">
-                            <option selected>Open this select menu</option>
-                            <option value="1">One</option>
-                            <option value="2">Two</option>
-                            <option value="3">Three</option>
-                        </select>
-                        <button type="button" class="btn btn-success">
-                            Confirm
-                        </button>
-                        <button type="button" class="btn btn-danger ms-auto" data-bs-toggle="modal" data-bs-target="#deleteModal">
-                            Delete Group
-                        </button>
+            <div id="table_refresh" th:fragment="table_refresh">
+                    <div class="container">
+                        <h1 th:text="${title}"></h1>
+                        <table class="table table-striped table-bordered display" id="table" >
+                            <thead class="table-dark" id="headTable">
+                            <tr>
+                                <th id="firstNameColumn">First Name</th>
+                                <th id="lastNameColumn">Last Name</th>
+                                <th id="usernameColumn">Username</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="user : ${users}">
+                                <td><span th:text="${user.FirstName}"> First Name </span></td>
+                                <td><span th:text="${user.LastName}"> Last Name </span></td>
+                                <td><span th:text="${user.username}"> Username </span></td>
+                                <td><span th:text="${user.nickname}"> Alias </span></td>
+                                <td>
+                                    <div th:each="role : ${user.rolesList}" style="margin:5px">
+
+                            <span class="badge bg-primary">
+                                <span style="background: #0a64ff; border-radius: 10px;padding:3px 10px 3px 10px;margin: 5px 10px 5px 5px;" th:text="${role}"></span>
+                                <button th:if="${currentUserRole != 'student' && user.username != currentUsername && user.rolesList.size() > 1 && !(currentUserRole == 'teacher' && role.equals(adminRole))}" th:attr="onclick=|deleteUserRole('${user.id}','${role}')|"
+                                        class="position-absolute top-10 start-5 translate-middle badge rounded-pill bg-danger" >
+                                    X
+                                </button>
+                            </span>
+                                    </div>
+                                    <div class="btn-group" style="margin-left: 5px" th:if="${currentUserRole != 'student' && user.rolesList.size() < 3 && !(currentUserRole == 'teacher' && user.rolesList.contains(teacherRole) && user.rolesList.contains(studentRole))}">
+                                        <button style ="padding:0 10px" type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                            +
+                                        </button>
+                                        <div class="dropdown-menu">
+                                            <a class="dropdown-item" th:if="${!user.rolesList.contains(studentRole)}">
+                                                <form th:action="@{add_role}" method="post">
+                                                    <input type="hidden" th:value="student" name="role">
+                                                    <input type ="hidden" th:value="${user.id}" name="userId">
+                                                    <button type="submit" id='student' class="btn btn-link" style="color:black;text-decoration: none;" >Student</button>
+                                                </form>
+                                            </a>
+                                            <a class="dropdown-item" th:if="${!user.rolesList.contains(teacherRole)}">
+                                                <form th:action="@{add_role}" method="post">
+                                                    <input type="hidden" th:value="teacher" name="role">
+                                                    <input type ="hidden" th:value="${user.id}" name="userId">
+                                                    <button type="submit" class="btn btn-link" style="color:black;text-decoration: none;" >Teacher</button>
+                                                </form>
+                                            </a>
+                                            <a class="dropdown-item" th:if="${currentUserRole == 'admin' && !user.rolesList.contains(adminRole)}">
+                                                <form th:action="@{add_role}" method="post">
+                                                    <input type="hidden" th:value="admin" name="role">
+                                                    <input type ="hidden" th:value="${user.id}" name="userId">
+                                                    <button type="submit" class="btn btn-link" style="color:black;text-decoration: none;" >Course Administrator</button>
+                                                </form>
+                                            </a>
+
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
                     </div>
-                <table class="table table-striped table-bordered display" id="sortTable" >
-                    <thead class="table-dark" id="headTable">
-                    <tr>
-                        <th id="firstNameColumn">First Name</th>
-                        <th id="lastNameColumn">Last Name</th>
-                        <th id="usernameColumn">Username</th>
-                    </tr>
-                    </thead>
-                </table>
             </div>
-        </div>
+
+<!--            <div th:replace="fragments/groupTable"></div>-->
+         </div>
     </div>
 
 </div>
@@ -117,6 +155,9 @@
 </body>
 <div id="groupModal" th:replace="fragments/groupModal :: groupModal"></div>
 <div th:replace="fragments/deleteModalProject :: deleteModal"></div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+
 <script th:inline="javascript">
     /**
      * Add a 'active' class to the selected group, highlight current selected group for better user experience
@@ -127,5 +168,17 @@
     })
 
     groupModalSetup();
+</script>
+<script th:inline="javascript">
+
+    $('table').dataTable({searching: false, paging: false, info: false});
+
+
+</script>
+<script>
+    function updateTable() {
+        const url = "/groups";
+        $('#table_refresh').load("groups/local")
+    }
 </script>
 </html>

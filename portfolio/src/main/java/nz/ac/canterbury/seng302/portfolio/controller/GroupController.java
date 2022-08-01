@@ -9,6 +9,8 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 /**
  * Controller for group page
@@ -33,4 +35,12 @@ public class GroupController {
         elementService.addHeaderAttributes(model, id);
         return "group";
     }
+
+    @RequestMapping("/groups/local")
+    public String localRefresh(Model model) {
+        System.out.println("1");
+        model.addAttribute("title", "Group1");
+        return "group::table_refresh";
+    }
+
 }
