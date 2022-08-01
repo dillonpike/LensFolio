@@ -83,6 +83,41 @@ class PermissionServiceTest {
         when(elementService.getUserHighestRole(mockUser)).thenReturn("student");
         boolean output = permissionService.isValidToModifyRole(targetRole, mockUser.getId());
         Assertions.assertFalse(output);
+    }
 
+    @Test
+    void UserWithTeacherRoleTriesToModifyAdmin() {
+        String targetRole = "admin";
+        when(registerClientService.getUserData(mockUser.getId())).thenReturn(mockUser);
+        when(elementService.getUserHighestRole(mockUser)).thenReturn("teacher");
+        boolean output = permissionService.isValidToModifyRole(targetRole, mockUser.getId());
+        Assertions.assertFalse(output);
+    }
+
+    @Test
+    void UserWithTeacherRoleTriesToModifyTeacher() {
+        String targetRole = "teacher";
+        when(registerClientService.getUserData(mockUser.getId())).thenReturn(mockUser);
+        when(elementService.getUserHighestRole(mockUser)).thenReturn("teacher");
+        boolean output = permissionService.isValidToModifyRole(targetRole, mockUser.getId());
+        Assertions.assertTrue(output);
+    }
+
+    @Test
+    void UserWithAdminRoleTriesToModifyAdmin() {
+        String targetRole = "admin";
+        when(registerClientService.getUserData(mockUser.getId())).thenReturn(mockUser);
+        when(elementService.getUserHighestRole(mockUser)).thenReturn("admin");
+        boolean output = permissionService.isValidToModifyRole(targetRole, mockUser.getId());
+        Assertions.assertTrue(output);
+    }
+
+    @Test
+    void UserWithAdminRoleTriesToModifyStudent() {
+        String targetRole = "student";
+        when(registerClientService.getUserData(mockUser.getId())).thenReturn(mockUser);
+        when(elementService.getUserHighestRole(mockUser)).thenReturn("admin");
+        boolean output = permissionService.isValidToModifyRole(targetRole, mockUser.getId());
+        Assertions.assertTrue(output);
     }
 }
