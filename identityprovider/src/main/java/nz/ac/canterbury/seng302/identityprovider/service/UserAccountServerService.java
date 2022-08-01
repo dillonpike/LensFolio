@@ -27,9 +27,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.sql.Blob;
-import java.sql.SQLException;
-
-import static nz.ac.canterbury.seng302.identityprovider.IdentityProviderApplication.IMAGE_DIR;
 import static nz.ac.canterbury.seng302.shared.util.FileUploadStatus.*;
 
 
@@ -101,6 +98,8 @@ public class UserAccountServerService extends UserAccountServiceGrpc.UserAccount
             } else {
                 UserModel user = userModelService.getUserById(request.getId());
 
+                // If there isn't a user image it returns an empty string which is then identified by the portfolio.
+                // It will then display the default user image.
                 String imageDirectory = user.getPhotoDirectory();
                 if (imageDirectory == null) {
                     imageDirectory = "";
@@ -291,7 +290,7 @@ public class UserAccountServerService extends UserAccountServiceGrpc.UserAccount
      * @return Whether the new photo was saved
      */
     private boolean savePhotoToUser(int userId, Blob photo) {
-        boolean status;
+        boolean status = true;
         try{
             UserModel user = userModelService.getUserById(userId);
             if (user != null) {

@@ -1,6 +1,5 @@
 package nz.ac.canterbury.seng302.portfolio.service;
 
-import nz.ac.canterbury.seng302.portfolio.utility.Utility;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -63,6 +62,7 @@ public class ElementService {
         UserResponse userData = registerClientService.getUserData(userId);
         String fullNameHeader = userData.getFirstName() + " " + userData.getMiddleName() + " " + userData.getLastName();
         model.addAttribute("headerFullName", fullNameHeader);
+        // Gets the dynamic image spring is hosting for that user or the default image.
         model.addAttribute("userImage", photoService.getPhotoPath(userData.getProfileImagePath(), userId));
     }
 

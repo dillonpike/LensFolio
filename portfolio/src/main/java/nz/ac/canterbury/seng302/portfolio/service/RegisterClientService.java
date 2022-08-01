@@ -217,6 +217,11 @@ public class RegisterClientService {
         return false;
     }
 
+    /**
+     * Sends a message through GRPC contracts to delete the accounts image path from the database.
+     * @param userId    The users ID.
+     * @return The response from the IDP.
+     */
     public DeleteUserProfilePhotoResponse deleteUserProfilePhoto(int userId) {
         DeleteUserProfilePhotoRequest.Builder request = DeleteUserProfilePhotoRequest.newBuilder();
         return userAccountStub.deleteUserProfilePhoto(request.setUserId(userId).build());

@@ -41,6 +41,9 @@ public class EditAccountController {
     @Autowired
     private PhotoService photoService;
 
+    @Value("${spring.datasource.url}")
+    private String dataSource;
+
     /***
      * GET method to generate the edit account page which let user edit info/attributes
      * @param userIdInput ID for the current user
@@ -170,45 +173,54 @@ public class EditAccountController {
         return "redirect:account";
     }
 
+    /**
+     * Post method used to remove the users profile image. This is simply done through a request to the IDP
+     * The image itself is not deleted but its connection to the user is (deleting its path).
+     * This may need to be changed in the future if private images are implemented.
+     *
+     * @param userId    The user's ID.
+     * @param rm        The attributes being sent back.
+     * @param model     The modal being used by Thymeleaf
+     * @return The redirected edit account page.
+     */
     @PostMapping("/deleteAccountPhoto")
     public String deletePhoto(
             @ModelAttribute("userId") int userId,
             RedirectAttributes rm,
             Model model
     ) {
-        boolean wasDeleted = false;
-        String message = "Error occured, caught on portfolio side. ";
+        boolean wasDeleted;
+        String message = "Photo failed to delete.";
         try {
             DeleteUserProfilePhotoResponse reply = registerClientService.deleteUserProfilePhoto(userId);
             wasDeleted = reply.getIsSuccess();
-            message = String.valueOf(reply.getMessage());
+            message = reply.getMessage();
             if (wasDeleted) {
-                new File(PortfolioApplication.IMAGE_DIR).mkdirs();
-                File imageFile = new File(PortfolioApplication.IMAGE_DIR + "/img/default.jpg");
-                File usedImageFile = new File(PortfolioApplication.IMAGE_DIR + "/userImage");
-                try (FileOutputStream imageOutput = new FileOutputStream(usedImageFile);
-                     FileInputStream imageInput = new FileInputStream(imageFile);) {
-                    imageOutput.write(imageInput.readAllBytes());
-                } catch (Exception ignore) {}
-
                 rm.addFlashAttribute("isUpdateSuccess", true);
             } else {
                 rm.addFlashAttribute("isUpdateSuccess", false);
-                rm.addFlashAttribute("message", "Photo failed to delete");
+                rm.addFlashAttribute("message", message);
             }
-
-        } catch (Exception e) {
-            System.err.println("Something went wrong requesting to delete the photo");
-            System.err.println("Message: " + message);
-            e.printStackTrace();
+        } catch (Exception ignore) {
+            rm.addFlashAttribute("isUpdateSuccess", false);
+            rm.addFlashAttribute("message", message);
         }
         rm.addAttribute("userId", userId);
         return "redirect:editAccount";
     }
 
-    @Value("${spring.datasource.url}")
-    private String dataSource;
 
+
+    /**
+     * Post method used to get the multipart file that is being uploaded.
+     * It will then save the file locally and send it to the IDP through bidirectional streaming (that is not done here)
+     *
+     * @param userId        The user's ID.
+     * @param rm            The attributes being sent back.
+     * @param multipartFile File being uploaded.
+     * @param model         The modal being used by Thymeleaf
+     * @return The redirected edit account page.
+     */
     @PostMapping("/saveAccountPhoto")
     public String savePhoto(
             @ModelAttribute("userId") int userId,
@@ -222,7 +234,7 @@ public class EditAccountController {
             rm.addFlashAttribute("isUpdateSuccess", false);
             return "redirect:editAccount";
         }
-        boolean wasSaved = false;
+        boolean wasSaved;
         try {
             String directory = PortfolioApplication.IMAGE_DIR+ "/" + Utility.getApplicationLocation(dataSource) + "/" + userId + "/";
             new File(directory).mkdirs();
