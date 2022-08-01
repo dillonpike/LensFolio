@@ -27,7 +27,6 @@ public class EditMilestoneController {
             @PathVariable("id") Integer id,
             @ModelAttribute("milestone") Milestone milestone
     ) throws Exception {
-        System.out.println(milestone.getMilestoneDate());
         Milestone newMilestone = milestoneService.getMilestoneById(id);
         newMilestone.setMilestoneName(milestone.getMilestoneName());
         newMilestone.setMilestoneDate(milestone.getMilestoneDate());
