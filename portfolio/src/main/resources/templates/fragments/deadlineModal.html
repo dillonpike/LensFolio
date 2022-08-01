@@ -47,7 +47,7 @@
      * Validates the currently entered information for the deadline and submits the form if it's valid.
      */
     async function validateDeadline() {
-      if (validateModalDateTime('deadlineDate', 'deadlineTime', 'deadlineModalButton', 'deadlineDateAlertBanner', 'deadlineDateAlertMessage') &&
+      if (validateModalDateTime('deadlineDate', 'deadlineModalButton', 'deadlineDateAlertBanner', 'deadlineDateAlertMessage') &&
               validateModalName('deadlineName', 'deadlineAlertBanner', 'deadlineAlertMessage')) {
         document.getElementById('deadlineForm').onsubmit = () => { return false };
         document.getElementById('deadlineForm').submit();
