@@ -3,22 +3,19 @@ package nz.ac.canterbury.seng302.identityprovider.service;
 import nz.ac.canterbury.seng302.identityprovider.model.GroupModel;
 import nz.ac.canterbury.seng302.identityprovider.repository.GroupRepository;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+@ExtendWith(MockitoExtension.class)
 class GroupModelServiceTest {
 
     @Mock
@@ -38,11 +35,10 @@ class GroupModelServiceTest {
         when(groupRepository.findById(any(Integer.class))).thenReturn(Optional.of(testGroup));
         doNothing().when(groupRepository).deleteById(testGroup.getGroupId());
 
-        groupRepository.removeGroup(testGroup.getGroupId());
+        groupModelService.removeGroup(testGroup.getGroupId());
 
         Mockito.verify(groupRepository, Mockito.times(1)).deleteById(testGroup.getGroupId());
     }
-
 
     /**
      * Tests that the repository deleteById method is not called when an invalid group id is used
@@ -52,7 +48,7 @@ class GroupModelServiceTest {
     void testDeleteNonExistingGroup() {
         when(groupRepository.findById(any(Integer.class))).thenReturn(Optional.empty());
 
-        groupRepository.removeGroup(testGroup.getGroupId());
+        groupModelService.removeGroup(testGroup.getGroupId());
 
         Mockito.verify(groupRepository, Mockito.times(0)).deleteById(testGroup.getGroupId());
     }
