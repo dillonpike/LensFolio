@@ -28,6 +28,9 @@ public class EditEventController {
     @Autowired
     private PermissionService permissionService;
 
+    @Autowired
+    private ElementService elementService;
+
     /**
      * Tries to save new data to event with given eventId to the database.
      * @param id Id of event edited
@@ -42,7 +45,10 @@ public class EditEventController {
             RedirectAttributes rm,
             Model model
     ) throws Exception {
-        if (permissionService.isValid(principal, model)) {
+        Integer userID = userAccountClientService.getUserIDFromAuthState(principal);
+        elementService.addHeaderAttributes(model, userID);
+
+        if (permissionService.isValidToModifyProjectPage(userID)) {
             Event newEvent = eventService.getEventById(id);
             newEvent.setEventName(event.getEventName());
             newEvent.setStartDateString(event.getStartDateString());

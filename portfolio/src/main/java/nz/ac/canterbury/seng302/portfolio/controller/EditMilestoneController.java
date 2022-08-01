@@ -1,8 +1,10 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
 import nz.ac.canterbury.seng302.portfolio.model.Milestone;
+import nz.ac.canterbury.seng302.portfolio.service.ElementService;
 import nz.ac.canterbury.seng302.portfolio.service.MilestoneService;
 import nz.ac.canterbury.seng302.portfolio.service.PermissionService;
+import nz.ac.canterbury.seng302.portfolio.service.UserAccountClientService;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -21,6 +23,12 @@ public class EditMilestoneController {
     @Autowired
     private PermissionService permissionService;
 
+    @Autowired
+    private UserAccountClientService userAccountClientService;
+
+    @Autowired
+    private ElementService elementService;
+
     /**
      * Save an edited milestone.
      * @param id ID of milestone being saved
@@ -36,7 +44,9 @@ public class EditMilestoneController {
             @AuthenticationPrincipal AuthState principal,
             Model model
     ) throws Exception {
-        if (permissionService.isValid(principal, model)) {
+        Integer userID = userAccountClientService.getUserIDFromAuthState(principal);
+        elementService.addHeaderAttributes(model, userID);
+        if (permissionService.isValidToModifyProjectPage(userID)) {
             Milestone newMilestone = milestoneService.getMilestoneById(id);
             newMilestone.setMilestoneName(milestone.getMilestoneName());
             newMilestone.setMilestoneDate(milestone.getMilestoneDate());

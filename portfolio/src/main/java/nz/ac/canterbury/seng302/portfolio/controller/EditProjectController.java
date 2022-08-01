@@ -1,7 +1,9 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
+import nz.ac.canterbury.seng302.portfolio.service.ElementService;
 import nz.ac.canterbury.seng302.portfolio.service.PermissionService;
 import nz.ac.canterbury.seng302.portfolio.service.ProjectService;
+import nz.ac.canterbury.seng302.portfolio.service.UserAccountClientService;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -24,6 +26,12 @@ public class EditProjectController {
     @Autowired
     private PermissionService permissionService;
 
+    @Autowired
+    private UserAccountClientService userAccountClientService;
+
+    @Autowired
+    private ElementService elementService;
+
     /***
      * Handler methods for mapping HTTP POST request, followed by the URL(../edit-project)
      *
@@ -43,7 +51,10 @@ public class EditProjectController {
             @RequestParam(value="description") String projectDescription,
             Model model
     ) throws Exception {
-        if (permissionService.isValid(principal, model)) {
+        Integer userID = userAccountClientService.getUserIDFromAuthState(principal);
+        elementService.addHeaderAttributes(model, userID);
+
+        if (permissionService.isValidToModifyProjectPage(userID)) {
             // Gets the project with id 0 to plonk on the page
             Project newProject = projectService.getProjectById(0);
             newProject.setName(projectName);

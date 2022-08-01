@@ -40,19 +40,6 @@ class PermissionServiceTest {
             .addRoles(UserRole.STUDENT)
             .build();
 
-    /**
-     * AuthState object to be used when we mock security context
-     */
-    public AuthState validAuthState = AuthState.newBuilder()
-            .setIsAuthenticated(true)
-            .setNameClaimType("name")
-            .setRoleClaimType("role")
-            .addClaims(ClaimDTO.newBuilder().setType("role").setValue("ADMIN").build()) // Set the mock user's role
-            .addClaims(ClaimDTO.newBuilder().setType("nameid").setValue("123456").build()) // Set the mock user's ID
-            .setAuthenticationType("AuthenticationTypes.Federation")
-            .setName("validtesttoken")
-            .build();
-
     public Model model;
 
     @InjectMocks
@@ -119,5 +106,29 @@ class PermissionServiceTest {
         when(elementService.getUserHighestRole(mockUser)).thenReturn("admin");
         boolean output = permissionService.isValidToModifyRole(targetRole, mockUser.getId());
         Assertions.assertTrue(output);
+    }
+
+    @Test
+    void UserWithStudentRoleTriesToModifyProjectPage() {
+        when(registerClientService.getUserData(mockUser.getId())).thenReturn(mockUser);
+        when(elementService.getUserHighestRole(mockUser)).thenReturn("student");
+        boolean isValid = permissionService.isValidToModifyProjectPage(mockUser.getId());
+        Assertions.assertFalse(isValid);
+    }
+
+    @Test
+    void UserWithTeacherRoleTriesToModifyProjectPage() {
+        when(registerClientService.getUserData(mockUser.getId())).thenReturn(mockUser);
+        when(elementService.getUserHighestRole(mockUser)).thenReturn("teacher");
+        boolean isValid = permissionService.isValidToModifyProjectPage(mockUser.getId());
+        Assertions.assertTrue(isValid);
+    }
+
+    @Test
+    void UserWithAdminRoleTriesToModifyProjectPage() {
+        when(registerClientService.getUserData(mockUser.getId())).thenReturn(mockUser);
+        when(elementService.getUserHighestRole(mockUser)).thenReturn("admin");
+        boolean isValid = permissionService.isValidToModifyProjectPage(mockUser.getId());
+        Assertions.assertTrue(isValid);
     }
 }

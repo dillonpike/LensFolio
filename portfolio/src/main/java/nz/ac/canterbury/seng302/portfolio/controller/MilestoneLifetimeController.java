@@ -1,8 +1,10 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
 import nz.ac.canterbury.seng302.portfolio.model.Milestone;
+import nz.ac.canterbury.seng302.portfolio.service.ElementService;
 import nz.ac.canterbury.seng302.portfolio.service.MilestoneService;
 import nz.ac.canterbury.seng302.portfolio.service.PermissionService;
+import nz.ac.canterbury.seng302.portfolio.service.UserAccountClientService;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -24,6 +26,12 @@ public class MilestoneLifetimeController {
     @Autowired
     private PermissionService permissionService;
 
+    @Autowired
+    private UserAccountClientService userAccountClientService;
+
+    @Autowired
+    private ElementService elementService;
+
     /**
      * Saves the given milestone to the database and redirects the user to the details page.
      * @param milestone new milestone to be saved
@@ -32,7 +40,10 @@ public class MilestoneLifetimeController {
     public String milestoneSave(@ModelAttribute("milestone") Milestone milestone,
                                 @AuthenticationPrincipal AuthState principal,
                                 Model model) {
-        if (permissionService.isValid(principal, model)) {
+        Integer userID = userAccountClientService.getUserIDFromAuthState(principal);
+        elementService.addHeaderAttributes(model, userID);
+
+        if (permissionService.isValidToModifyProjectPage(userID)) {
             milestoneService.addMilestone(milestone);
         }
         return "redirect:/details";
@@ -46,7 +57,9 @@ public class MilestoneLifetimeController {
     public String milestoneRemove(@PathVariable("id") Integer id,
                                   @AuthenticationPrincipal AuthState principal,
                                   Model model) {
-        if (permissionService.isValid(principal, model)) {
+        Integer userID = userAccountClientService.getUserIDFromAuthState(principal);
+        elementService.addHeaderAttributes(model, userID);
+        if (permissionService.isValidToModifyProjectPage(userID)) {
             milestoneService.removeMilestone(id);
         }
         return "redirect:/details";

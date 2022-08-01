@@ -1,8 +1,10 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
 import nz.ac.canterbury.seng302.portfolio.model.Sprint;
+import nz.ac.canterbury.seng302.portfolio.service.ElementService;
 import nz.ac.canterbury.seng302.portfolio.service.PermissionService;
 import nz.ac.canterbury.seng302.portfolio.service.SprintService;
+import nz.ac.canterbury.seng302.portfolio.service.UserAccountClientService;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -23,6 +25,12 @@ public class SprintLifetimeController {
 
     @Autowired
     private PermissionService permissionService;
+
+    @Autowired
+    private UserAccountClientService userAccountClientService;
+
+    @Autowired
+    private ElementService elementService;
 
     /**
      * Add a given number of days and/or weeks to a date.util using Calendars.
@@ -50,7 +58,9 @@ public class SprintLifetimeController {
             @AuthenticationPrincipal AuthState principal,
             Model model
     ) {
-        if (permissionService.isValid(principal, model)) {
+        Integer userID = userAccountClientService.getUserIDFromAuthState(principal);
+        elementService.addHeaderAttributes(model, userID);
+        if (permissionService.isValidToModifyProjectPage(userID)) {
             sprint.setStartDateString(sprint.getStartDateString());
             sprint.setEndDateString(sprint.getEndDateString());
             sprintService.addSprint(sprint);
@@ -68,7 +78,9 @@ public class SprintLifetimeController {
     public String sprintRemove(@PathVariable("id") Integer id,
                                @AuthenticationPrincipal AuthState principal,
                                Model model) throws Exception {
-        if (permissionService.isValid(principal, model)) {
+        Integer userID = userAccountClientService.getUserIDFromAuthState(principal);
+        elementService.addHeaderAttributes(model, userID);
+        if (permissionService.isValidToModifyProjectPage(userID)) {
             sprintService.removeSprint(id);
         }
         /* Return the name of the Thymeleaf template */

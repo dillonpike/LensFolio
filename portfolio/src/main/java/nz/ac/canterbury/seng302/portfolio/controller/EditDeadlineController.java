@@ -2,7 +2,9 @@ package nz.ac.canterbury.seng302.portfolio.controller;
 
 import nz.ac.canterbury.seng302.portfolio.model.Deadline;
 import nz.ac.canterbury.seng302.portfolio.service.DeadlineService;
+import nz.ac.canterbury.seng302.portfolio.service.ElementService;
 import nz.ac.canterbury.seng302.portfolio.service.PermissionService;
+import nz.ac.canterbury.seng302.portfolio.service.UserAccountClientService;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -25,6 +27,12 @@ public class EditDeadlineController {
     @Autowired
     private PermissionService permissionService;
 
+    @Autowired
+    private UserAccountClientService userAccountClientService;
+
+    @Autowired
+    private ElementService elementService;
+
     /**
      * Tries to save new data to deadline with given deadlineId to the database.
      * @param id Id of deadline edited
@@ -39,7 +47,10 @@ public class EditDeadlineController {
             @AuthenticationPrincipal AuthState principal,
             Model model
     ) throws Exception {
-        if (permissionService.isValid(principal, model)) {
+        Integer userID = userAccountClientService.getUserIDFromAuthState(principal);
+        elementService.addHeaderAttributes(model, userID);
+
+        if (permissionService.isValidToModifyProjectPage(userID)) {
             Deadline newDeadline = deadlineService.getDeadlineById(id);
             newDeadline.setDeadlineName(deadline.getDeadlineName());
             newDeadline.setDeadlineDate(deadline.getDeadlineDate());

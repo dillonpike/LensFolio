@@ -2,7 +2,9 @@ package nz.ac.canterbury.seng302.portfolio.controller;
 
 import nz.ac.canterbury.seng302.portfolio.model.Deadline;
 import nz.ac.canterbury.seng302.portfolio.service.DeadlineService;
+import nz.ac.canterbury.seng302.portfolio.service.ElementService;
 import nz.ac.canterbury.seng302.portfolio.service.PermissionService;
+import nz.ac.canterbury.seng302.portfolio.service.UserAccountClientService;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -28,6 +30,12 @@ public class DeadlineLifetimeController {
     @Autowired
     private PermissionService permissionService;
 
+    @Autowired
+    private UserAccountClientService userAccountClientService;
+
+    @Autowired
+    private ElementService elementService;
+
     /**
      * Saves the given deadline to the database and redirects the user to the details page.
      * @param deadline new deadline to be saved
@@ -37,7 +45,10 @@ public class DeadlineLifetimeController {
                                @AuthenticationPrincipal AuthState principal,
                                Model model
     ) {
-        if (permissionService.isValid(principal, model)) {
+        Integer userID = userAccountClientService.getUserIDFromAuthState(principal);
+        elementService.addHeaderAttributes(model, userID);
+
+        if (permissionService.isValidToModifyProjectPage(userID)) {
             deadlineService.addDeadline(deadline);
         }
         return "redirect:/details";
@@ -51,8 +62,10 @@ public class DeadlineLifetimeController {
     public String deadlineRemove(@PathVariable("id") Integer id,
                                  @AuthenticationPrincipal AuthState principal,
                                  Model model) {
+        Integer userID = userAccountClientService.getUserIDFromAuthState(principal);
+        elementService.addHeaderAttributes(model, userID);
 
-        if (permissionService.isValid(principal, model)) {
+        if (permissionService.isValidToModifyProjectPage(userID)) {
             deadlineService.removeDeadline(id);
         }
         return "redirect:/details";

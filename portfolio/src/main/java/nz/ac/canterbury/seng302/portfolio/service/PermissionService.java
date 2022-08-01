@@ -1,11 +1,8 @@
 package nz.ac.canterbury.seng302.portfolio.service;
 
-import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Service;
-import org.springframework.ui.Model;
 
 import java.util.Objects;
 
@@ -55,15 +52,11 @@ public class PermissionService {
      * Function to validate user's current operation(edit/add/delete)
      * This function can be used in different requests.
      *
-     * @param model Parameters sent to thymeleaf template to be rendered into HTML
      * @return false if user's role has been changed to student
      */
-    public boolean isValid(@AuthenticationPrincipal AuthState principal,
-                           Model model) {
-        UserResponse getUserByIdReply;
-        Integer id = userAccountClientService.getUserIDFromAuthState(principal);
-        elementService.addHeaderAttributes(model, id);
-        getUserByIdReply = registerClientService.getUserData(id);
+    public boolean isValidToModifyProjectPage(Integer userID) {
+//        Integer id = userAccountClientService.getUserIDFromAuthState(principal);
+        UserResponse getUserByIdReply = registerClientService.getUserData(userID);
 
         //Get the current user's highest role
         String highestRole = elementService.getUserHighestRole(getUserByIdReply);
