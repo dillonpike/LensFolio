@@ -619,6 +619,13 @@
 
     sendStopEditingLiveNotificationRequest("#closeEventModalButton", 'eventModal', 'edit-event', "Event");
 
+    /**
+     * Reload the calendar page when something(deadline, sprint, milestone, event) is deleted
+     */
+    $("#deleteModalButton").on('click', function (ignore) {
+        pageReload();
+    })
+
 
 
 </script>
