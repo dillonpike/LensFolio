@@ -16,13 +16,13 @@ import java.util.Objects;
 public class PermissionService {
 
     @Autowired
-    RegisterClientService registerClientService;
+    private RegisterClientService registerClientService;
 
     @Autowired
     private UserAccountClientService userAccountClientService;
 
     @Autowired
-    ElementService elementService;
+    private ElementService elementService;
 
 
     /**
