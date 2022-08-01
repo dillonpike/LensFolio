@@ -11,6 +11,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
@@ -35,8 +37,9 @@ class GroupModelServiceTest {
         when(groupRepository.findById(any(Integer.class))).thenReturn(Optional.of(testGroup));
         doNothing().when(groupRepository).deleteById(testGroup.getGroupId());
 
-        groupModelService.removeGroup(testGroup.getGroupId());
+        boolean isSuccess = groupModelService.removeGroup(testGroup.getGroupId());
 
+        assertTrue(isSuccess);
         Mockito.verify(groupRepository, Mockito.times(1)).deleteById(testGroup.getGroupId());
     }
 
@@ -48,8 +51,9 @@ class GroupModelServiceTest {
     void testDeleteNonExistingGroup() {
         when(groupRepository.findById(any(Integer.class))).thenReturn(Optional.empty());
 
-        groupModelService.removeGroup(testGroup.getGroupId());
+        boolean isSuccess =  groupModelService.removeGroup(testGroup.getGroupId());
 
+        assertFalse(isSuccess);
         Mockito.verify(groupRepository, Mockito.times(0)).deleteById(testGroup.getGroupId());
     }
 
