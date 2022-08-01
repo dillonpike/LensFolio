@@ -12,6 +12,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -54,26 +55,24 @@ class PermissionServiceTest {
 
     public Model model;
 
-    @Autowired
-    private PermissionService permissionService = new PermissionService();
+    @InjectMocks
+    private PermissionService permissionService;
 
-    @Autowired
-    private ElementService elementService = new ElementService();
+    @Mock
+    private ElementService elementService;
 
-    @Autowired
-    private RegisterClientService registerClientService = new RegisterClientService();
+    @Mock
+    private RegisterClientService registerClientService;
 
-    @Autowired
-    private UserAccountServiceGrpc.UserAccountServiceBlockingStub userAccountServiceBlockingStub = mock(UserAccountServiceGrpc.UserAccountServiceBlockingStub.class);
+    @Mock
+    private UserAccountServiceGrpc.UserAccountServiceBlockingStub userAccountStub;
 
     /**
      * Setup to replace the autowired instances of these with the mocks
      */
     @BeforeEach
     void setup() {
-        registerClientService.userAccountStub = userAccountServiceBlockingStub;
-        permissionService.registerClientService = registerClientService;
-        permissionService.elementService = elementService;
+        MockitoAnnotations.openMocks(this); // This is required for Mockito annotations to work
     }
 
 
@@ -81,7 +80,7 @@ class PermissionServiceTest {
     void UserWithStudentRoleTriesToModifyAdmin() {
         String targetRole = "admin";
         when(registerClientService.getUserData(mockUser.getId())).thenReturn(mockUser);
-
+        when(elementService.getUserHighestRole(mockUser)).thenReturn("student");
         boolean output = permissionService.isValidToModifyRole(targetRole, mockUser.getId());
         Assertions.assertFalse(output);
 
