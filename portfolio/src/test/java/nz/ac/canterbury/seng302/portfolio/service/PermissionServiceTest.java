@@ -1,33 +1,33 @@
 package nz.ac.canterbury.seng302.portfolio.service;
 
 import com.google.protobuf.Timestamp;
+import net.devh.boot.grpc.client.inject.GrpcClient;
 import nz.ac.canterbury.seng302.portfolio.repository.EventRepository;
 import nz.ac.canterbury.seng302.portfolio.repository.SprintRepository;
-import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
-import nz.ac.canterbury.seng302.shared.identityprovider.ClaimDTO;
-import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
-import nz.ac.canterbury.seng302.shared.identityprovider.UserRole;
+import nz.ac.canterbury.seng302.shared.identityprovider.*;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.ui.Model;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@ExtendWith(MockitoExtension.class)
-@ExtendWith(SpringExtension.class)
-public class PermissionServiceTest {
+class PermissionServiceTest {
 
     /**
      * Mocked user response which contains the data of the user
      */
-    private UserResponse mockUser = UserResponse.newBuilder()
+    private final UserResponse mockUser = UserResponse.newBuilder()
             .setBio("default bio")
             .setCreated(Timestamp.newBuilder().setSeconds(55))
             .setEmail("hello@test.com")
@@ -54,38 +54,36 @@ public class PermissionServiceTest {
 
     public Model model;
 
-    @Mock
-    private SprintRepository sprintRepository;
+    @Autowired
+    private PermissionService permissionService = new PermissionService();
 
-    @Mock
-    private EventRepository eventRepository;
+    @Autowired
+    private ElementService elementService = new ElementService();
 
-    @Mock
-    private DateValidationService dateValidationService;
+    @Autowired
+    private RegisterClientService registerClientService = new RegisterClientService();
 
-    @InjectMocks
-    private EventService eventService;
+    @Autowired
+    private UserAccountServiceGrpc.UserAccountServiceBlockingStub userAccountServiceBlockingStub = mock(UserAccountServiceGrpc.UserAccountServiceBlockingStub.class);
 
-    @InjectMocks
-    private SprintService sprintService;
-
-    @InjectMocks
-    private PermissionService permissionService;
-
-    @InjectMocks
-    private RegisterClientService registerClientService;
-
-    @InjectMocks
-    private ElementService elementService;
+    /**
+     * Setup to replace the autowired instances of these with the mocks
+     */
+    @BeforeEach
+    void setup() {
+        registerClientService.userAccountStub = userAccountServiceBlockingStub;
+        permissionService.registerClientService = registerClientService;
+        permissionService.elementService = elementService;
+    }
 
 
     @Test
-    void test() {
+    void UserWithStudentRoleTriesToModifyAdmin() {
         String targetRole = "admin";
         when(registerClientService.getUserData(mockUser.getId())).thenReturn(mockUser);
 
         boolean output = permissionService.isValidToModifyRole(targetRole, mockUser.getId());
-        Assertions.assertEquals(false, output);
+        Assertions.assertFalse(output);
 
     }
 }

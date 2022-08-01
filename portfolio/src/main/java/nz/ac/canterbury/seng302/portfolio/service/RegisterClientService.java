@@ -23,7 +23,7 @@ import java.util.Iterator;
 public class RegisterClientService {
 
     @GrpcClient(value = "identity-provider-grpc-server")
-    private UserAccountServiceGrpc.UserAccountServiceBlockingStub userAccountStub;
+    UserAccountServiceGrpc.UserAccountServiceBlockingStub userAccountStub;
 
     @GrpcClient(value = "identity-provider-grpc-server")
     private UserAccountServiceGrpc.UserAccountServiceStub userAccountNonBlockingStub;
