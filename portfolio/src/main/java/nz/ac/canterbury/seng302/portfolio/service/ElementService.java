@@ -1,7 +1,9 @@
 package nz.ac.canterbury.seng302.portfolio.service;
 
+import nz.ac.canterbury.seng302.portfolio.utility.Utility;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 import org.springframework.web.servlet.support.RequestContextUtils;
@@ -17,6 +19,9 @@ public class ElementService {
 
     @Autowired
     private RegisterClientService registerClientService;
+
+    @Autowired
+    private PhotoService photoService;
 
     /**
      * Updates the given model with an updateMessage attribute.
@@ -46,6 +51,9 @@ public class ElementService {
         }
     }
 
+    @Value("${spring.datasource.url}")
+    private String dataSource;
+
     /**
      * Updates the given model with the user's full name for display in the header.
      * @param model model from controller method that attributes will be added to
@@ -55,6 +63,7 @@ public class ElementService {
         UserResponse userData = registerClientService.getUserData(userId);
         String fullNameHeader = userData.getFirstName() + " " + userData.getMiddleName() + " " + userData.getLastName();
         model.addAttribute("headerFullName", fullNameHeader);
+        model.addAttribute("userImage", photoService.getPhotoPath(userData.getProfileImagePath(), userId));
     }
 
     /**
