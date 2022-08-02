@@ -16,6 +16,10 @@ import java.util.Set;
         })
 public class GroupModel {
 
+
+
+
+
     /**
      * ID of the group.
      */
@@ -46,7 +50,7 @@ public class GroupModel {
      */
     @ElementCollection
     @CollectionTable(name="user_to_group", joinColumns=@JoinColumn(name="group_id"))
-    @Column(name="user_id")
+    @Column(name="User_Id")
     private Set<Integer> memberIds = new HashSet<>();
 
     /**

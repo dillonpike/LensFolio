@@ -6,15 +6,20 @@ import nz.ac.canterbury.seng302.identityprovider.repository.RolesRepository;
 import nz.ac.canterbury.seng302.identityprovider.model.UserModel;
 import nz.ac.canterbury.seng302.identityprovider.repository.UserModelRepository;
 import nz.ac.canterbury.seng302.identityprovider.service.UserModelService;
+import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -159,6 +164,42 @@ public class UserModelServiceTests {
         assertThat(user.getEmail()).isSameAs(testUser.getEmail());
         assertThat(user.getBio()).isSameAs(testUser.getBio());
         assertThat(user.getPersonalPronouns()).isSameAs(testUser.getPersonalPronouns());
+    }
+
+    @Test
+    void testGetUserInformationByList_givenListOfUserIds_returnListOfUserResponse() {
+        UserModel userModel1 = new UserModel("test1", "password", "test", "test", "test", "test", "test", "test", "test");
+        UserModel userModel2 = new UserModel("test2", "password", "test2", "test2", "test2", "test", "test", "test", "test");
+        UserModel userModel3 = new UserModel("test3", "password", "test3", "test3", "test2", "test", "test", "test", "test");
+        userModel1.setUserId(1);
+        userModel2.setUserId(2);
+        userModel3.setUserId(3);
+
+        UserResponse userResponse1 = UserResponse.newBuilder().setUsername("test1").setId(1).build();
+        UserResponse userResponse2 = UserResponse.newBuilder().setUsername("test2").setId(2).build();
+        UserResponse userResponse3 = UserResponse.newBuilder().setUsername("test3").setId(3).build();
+        List<UserResponse> userResponseExpectedList = new ArrayList<>();
+        userResponseExpectedList.add(userResponse1);
+        userResponseExpectedList.add(userResponse2);
+        userResponseExpectedList.add(userResponse3);
+
+
+        Set<Integer> userIds = new HashSet<>();
+        userIds.add(1);
+        userIds.add(2);
+        userIds.add(3);
+
+        when(userModelRepository.findByUserId(1)).thenReturn(userModel1);
+        when(userModelRepository.findByUserId(2)).thenReturn(userModel2);
+        when(userModelRepository.findByUserId(3)).thenReturn(userModel3);
+        when(userModelService.getUserInfo(userModel1)).thenReturn(userResponse1);
+        when(userModelService.getUserInfo(userModel2)).thenReturn(userResponse2);
+        when(userModelService.getUserInfo(userModel3)).thenReturn(userResponse3);
+
+
+        List<UserResponse> userResponseList = userModelService.getUserInformationByList(userIds);
+//        Assertions.assertEquals(userResponseExpectedList.size(), userResponseList.size());
+        Assertions.fail();
 
     }
 

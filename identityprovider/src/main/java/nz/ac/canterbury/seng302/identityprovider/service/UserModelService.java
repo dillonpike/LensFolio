@@ -4,9 +4,11 @@ import nz.ac.canterbury.seng302.identityprovider.model.Roles;
 import nz.ac.canterbury.seng302.identityprovider.repository.RolesRepository;
 import nz.ac.canterbury.seng302.identityprovider.model.UserModel;
 import nz.ac.canterbury.seng302.identityprovider.repository.UserModelRepository;
+import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -133,6 +135,41 @@ public class UserModelService {
             }
         }
         return "student";
+    }
+
+    /**
+     * Get list of users from list of user IDs as UserResponse's.
+     * @param userIds List of user ids to convert.
+     * @return List of users as UserResponse's.
+     */
+    public List<UserResponse> getUserInformationByList(Set<Integer> userIds) {
+        List<UserResponse> userResponseList = new ArrayList<>();
+        for (Integer userId : userIds) {
+            UserModel user = getUserById(userId);
+            userResponseList.add(getUserInfo(user));
+        }
+        return userResponseList;
+    }
+
+    /***
+     * Help method to get user's information as a User Model
+     * @param user User model
+     * @return User model
+     */
+    public UserResponse getUserInfo(UserModel user) {
+        UserResponse.Builder response = UserResponse.newBuilder();
+        response.setUsername(user.getUsername())
+                .setFirstName(user.getFirstName())
+                .setLastName(user.getLastName())
+                .setNickname(user.getNickname())
+                .setId(user.getUserId());
+        Set<Roles> roles = user.getRoles();
+        Roles[] rolesArray = roles.toArray(new Roles[roles.size()]);
+
+        for (int i = 0; i < rolesArray.length; i++) {
+            response.addRolesValue(rolesArray[i].getId());
+        }
+        return response.build();
     }
 
 }

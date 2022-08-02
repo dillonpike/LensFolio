@@ -353,31 +353,10 @@ public class UserAccountServerService extends UserAccountServiceGrpc.UserAccount
         PaginatedUsersResponse.Builder reply = PaginatedUsersResponse.newBuilder();
         List<UserModel> allUsers = userModelService.findAllUser();
         for (UserModel allUser : allUsers) {
-            reply.addUsers(getUserInfo(allUser));
+            reply.addUsers(userModelService.getUserInfo(allUser));
         }
         responseObserver.onNext(reply.build());
         responseObserver.onCompleted();
-    }
-
-    /***
-     * Help method to get user's information as a User Model
-     * @param user User model
-     * @return User model
-     */
-    private UserResponse getUserInfo(UserModel user) {
-        UserResponse.Builder response = UserResponse.newBuilder();
-        response.setUsername(user.getUsername())
-                .setFirstName(user.getFirstName())
-                .setLastName(user.getLastName())
-                .setNickname(user.getNickname())
-                .setId(user.getUserId());
-        Set<Roles> roles = user.getRoles();
-        Roles[] rolesArray = roles.toArray(new Roles[roles.size()]);
-
-        for (int i = 0; i < rolesArray.length; i++) {
-            response.addRolesValue(rolesArray[i].getId());
-        }
-        return response.build();
     }
 
     /***

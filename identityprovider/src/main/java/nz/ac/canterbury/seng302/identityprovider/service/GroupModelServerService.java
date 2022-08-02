@@ -2,16 +2,29 @@ package nz.ac.canterbury.seng302.identityprovider.service;
 
 import io.grpc.stub.StreamObserver;
 import net.devh.boot.grpc.server.service.GrpcService;
-import nz.ac.canterbury.seng302.shared.identityprovider.DeleteGroupRequest;
-import nz.ac.canterbury.seng302.shared.identityprovider.DeleteGroupResponse;
-import nz.ac.canterbury.seng302.shared.identityprovider.GroupsServiceGrpc;
+import nz.ac.canterbury.seng302.identityprovider.model.GroupModel;
+import nz.ac.canterbury.seng302.identityprovider.model.UserModel;
+import nz.ac.canterbury.seng302.shared.identityprovider.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.User;
+
+import javax.naming.directory.InvalidAttributesException;
+import javax.swing.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 @GrpcService
 public class GroupModelServerService extends GroupsServiceGrpc.GroupsServiceImplBase {
 
     @Autowired
     private GroupModelService groupService;
+
+    @Autowired
+    private UserModelService userModelService;
+
+    private Integer memberWithoutGroupID = 1;
 
     /**
      * Attempts to delete a group with the id in the request. Sends a response with an isSuccess value and message.
@@ -28,4 +41,36 @@ public class GroupModelServerService extends GroupsServiceGrpc.GroupsServiceImpl
         }
         responseObserver.onCompleted();
     }
+
+
+    /**
+     * Gets all members without a group (in the group for users without any other groups).
+     * @param responseStreamObserver Response sent to portfolio.
+     */
+    public void getMembersWithoutAGroup(StreamObserver<GroupDetailsResponse> responseStreamObserver) {
+        GroupDetailsResponse.Builder reply = GroupDetailsResponse.newBuilder();
+        reply.setGroupId(memberWithoutGroupID);
+        Set<Integer> userIDs = new HashSet<>();
+        GroupModel groupModel;
+        try {
+            userIDs = groupService.getMembersOfGroup(memberWithoutGroupID);
+            groupModel = groupService.getGroupById(memberWithoutGroupID);
+            reply.setLongName(groupModel.getLongName());
+            reply.setShortName(groupModel.getShortName());
+        } catch (InvalidAttributesException e) {
+            responseStreamObserver.onError(e);
+        }
+
+        List<UserResponse> listOfUsers = userModelService.getUserInformationByList(userIDs);
+        for (UserResponse user : listOfUsers) {
+            reply.addMembers(user);
+        }
+
+        responseStreamObserver.onNext(reply.build());
+        responseStreamObserver.onCompleted();
+    }
+
+
+
+
 }

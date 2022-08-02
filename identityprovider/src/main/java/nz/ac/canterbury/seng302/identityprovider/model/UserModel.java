@@ -37,6 +37,15 @@ public class UserModel implements Serializable {
     )
     private Set<Roles> roles = new HashSet<>();
 
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
+    @JoinTable(name = "user_to_group",
+            joinColumns =
+            @JoinColumn(name = "User_Id"),
+            inverseJoinColumns =
+            @JoinColumn(name = "group_id")
+    )
+    private Set<GroupModel> groups = new HashSet<>();
+
     public void addRoles(Roles role) {
         this.roles.add(role);
     }
@@ -57,7 +66,6 @@ public class UserModel implements Serializable {
     public void setRoles(Set<Roles> roles) {
         this.roles = roles;
     }
-
     public UserModel() {}
 
     public UserModel(String username, String password, String firstName, String middleName, String lastName, String nickname, String email, String bio, String personalPronouns) {
@@ -183,5 +191,13 @@ public class UserModel implements Serializable {
     @Override
     public String toString() {
         return "User -> id: " + userId + "  username: " + username;
+    }
+
+    public Set<GroupModel> getGroups() {
+        return groups;
+    }
+
+    public void setGroups(Set<GroupModel> groups) {
+        this.groups = groups;
     }
 }
