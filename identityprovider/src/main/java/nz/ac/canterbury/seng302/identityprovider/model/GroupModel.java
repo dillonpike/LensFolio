@@ -16,10 +16,6 @@ import java.util.Set;
         })
 public class GroupModel {
 
-
-
-
-
     /**
      * ID of the group.
      */

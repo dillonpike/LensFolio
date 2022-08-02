@@ -1,12 +1,15 @@
-package nz.ac.canterbury.seng302.identityprovider.service;
+package nz.ac.canterbury.seng302.identityprovider.server;
 
 import io.grpc.stub.StreamObserver;
-import nz.ac.canterbury.seng302.shared.identityprovider.*;
+import nz.ac.canterbury.seng302.identityprovider.server.GroupModelServerService;
+import nz.ac.canterbury.seng302.identityprovider.service.GroupModelService;
+import nz.ac.canterbury.seng302.shared.identityprovider.DeleteGroupRequest;
+import nz.ac.canterbury.seng302.shared.identityprovider.DeleteGroupResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.*;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.*;
 

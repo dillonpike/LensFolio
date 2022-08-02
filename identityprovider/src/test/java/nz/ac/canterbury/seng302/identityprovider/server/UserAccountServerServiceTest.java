@@ -1,9 +1,11 @@
-package nz.ac.canterbury.seng302.identityprovider.service;
+package nz.ac.canterbury.seng302.identityprovider.server;
 
 
 import nz.ac.canterbury.seng302.identityprovider.model.Roles;
 import nz.ac.canterbury.seng302.identityprovider.model.UserModel;
 import nz.ac.canterbury.seng302.identityprovider.repository.RolesRepository;
+import nz.ac.canterbury.seng302.identityprovider.server.UserAccountServerService;
+import nz.ac.canterbury.seng302.identityprovider.service.UserModelService;
 import nz.ac.canterbury.seng302.shared.identityprovider.ModifyRoleOfUserRequest;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserRole;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserRoleChangeResponse;
