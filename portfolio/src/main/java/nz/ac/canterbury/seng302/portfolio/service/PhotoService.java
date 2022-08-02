@@ -2,6 +2,8 @@ package nz.ac.canterbury.seng302.portfolio.service;
 
 
 import nz.ac.canterbury.seng302.portfolio.PortfolioApplication;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -11,6 +13,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.text.MessageFormat;
 
 import static nz.ac.canterbury.seng302.portfolio.utility.Utility.getApplicationLocation;
 
@@ -21,6 +24,8 @@ import static nz.ac.canterbury.seng302.portfolio.utility.Utility.getApplicationL
 public class PhotoService {
     @Value("${spring.datasource.url}")
     private String dataSource;
+
+    private static final Logger logger = LoggerFactory.getLogger(PhotoService.class);
 
     /**
      * Gets the users photo path based off the provided image name through profileImagePath and user through userId.
@@ -33,17 +38,20 @@ public class PhotoService {
     public String getPhotoPath(String profileImagePath, int userId) {
         String[] paths;
         String path;
+
         if (profileImagePath.equals("")) { // Default image.
             return "images/default.jpg";
         } else if (getApplicationLocation(dataSource).equals("dev")) { // Save image locally as dev is running.
             savePhotoToPortfolio(profileImagePath, userId);
-            paths = profileImagePath.split("/identityprovider");
+            String trueImagePath;
+            // On a dev system the slash's may not be consistent, this ensures that they are.
+            trueImagePath = profileImagePath.replaceAll("\\\\", "/");
+            paths = trueImagePath.split("/identityprovider");
             path = paths[1];
         } else { // The VM uses a shared folder currently so no additional saving is necessary.
             paths = profileImagePath.split("/" + getApplicationLocation(dataSource));
             path = "/" + getApplicationLocation(dataSource) + paths[1];
         }
-
         return path;
     }
 
@@ -57,8 +65,12 @@ public class PhotoService {
     public void savePhotoToPortfolio(String photoPath, int userId) {
         try {
             File imageFile;
-            String directory = PortfolioApplication.IMAGE_DIR+ "/" + getApplicationLocation(dataSource) + "/" + userId + "/public/";
-            new File(directory).mkdirs();
+            String directory = MessageFormat.format("{0}/{1}/{2}/public/",
+                    PortfolioApplication.IMAGE_DIR, getApplicationLocation(dataSource), userId);
+
+            if (!new File(directory).mkdirs()) { // Ensures folders are made.
+                logger.warn("Not all folders may have been created.");
+            }
 
             imageFile = new File(photoPath); // The photo in the IDP
             if (imageFile.length() == 0) { // If no photo exists use the default image.
@@ -76,7 +88,7 @@ public class PhotoService {
             imageInput.close();
             imageOutput.close();
         } catch (IOException | URISyntaxException | NullPointerException e) {
-            e.printStackTrace();
+            logger.error(MessageFormat.format("Error with saving image locally: {0}", e.getMessage()));
         }
     }
 
