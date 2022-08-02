@@ -13,11 +13,14 @@ import nz.ac.canterbury.seng302.shared.identityprovider.UserRegisterResponse;
 import nz.ac.canterbury.seng302.shared.util.FileUploadStatus;
 import nz.ac.canterbury.seng302.shared.util.FileUploadStatusResponse;
 import org.mariadb.jdbc.MariaDbBlob;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import nz.ac.canterbury.seng302.shared.identityprovider.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.Pbkdf2PasswordEncoder;
 
+import java.text.MessageFormat;
 import java.util.Set;
 
 import java.util.List;
@@ -40,6 +43,11 @@ public class UserAccountServerService extends UserAccountServiceGrpc.UserAccount
 
     @Autowired
     private RolesRepository rolesRepository;
+
+    @Value("${spring.datasource.url}")
+    private String dataSource;
+
+    private static final Logger logger = LoggerFactory.getLogger(UserAccountServerService.class);
 
     /***
      * Attempts to register a user with a given username, password, first name, middle name, last name, email.
@@ -74,7 +82,8 @@ public class UserAccountServerService extends UserAccountServiceGrpc.UserAccount
             createdUser = userModelService.addUser(newUser);
             wasAdded = true;
         } catch (Exception e) {
-            System.err.println("Failed to create and add new user to database");
+            logger.error(MessageFormat.format(
+                    "Failed to create and add new user to database: {0}", e.getMessage()));
         }
         if (wasAdded) {
             responseObserver.onNext(reply.setNewUserId(createdUser.getUserId()).setMessage("Successful").setIsSuccess(true).build());
@@ -125,7 +134,7 @@ public class UserAccountServerService extends UserAccountServiceGrpc.UserAccount
             }
 
         } catch(Exception e) {
-            e.printStackTrace();
+            logger.error(e.getMessage());
         }
 
         responseObserver.onNext(reply.build());
@@ -161,7 +170,8 @@ public class UserAccountServerService extends UserAccountServiceGrpc.UserAccount
                 reply.setIsSuccess(false).setMessage("Something went wrong");
             }
         } catch (Exception e) {
-            System.err.println("User failed to be changed to new values");
+            logger.error(MessageFormat.format(
+                    "User failed to be changed to new values: {0}", e.getMessage()));
         }
 
         responseObserver.onNext(reply.build());
@@ -201,7 +211,8 @@ public class UserAccountServerService extends UserAccountServiceGrpc.UserAccount
                 reply.setIsSuccess(false).setMessage("Current password was incorrect.");
             }
         } catch (Exception e) {
-            System.err.println("User failed to be changed to new values");
+            logger.error(MessageFormat.format(
+                    "User failed to be changed to new values: {0}", e.getMessage()));
         }
 
         responseObserver.onNext(reply.build());
@@ -244,14 +255,15 @@ public class UserAccountServerService extends UserAccountServiceGrpc.UserAccount
                         message = "Bytes failed to write to OutputStream";
                         byteFailed = true;
                         responseObserver.onNext(reply.setStatus(fileUploadStatus).setMessage(message).build());
-                        e.printStackTrace();
+                        logger.error(e.getMessage());
                     }
                 }
             }
 
             @Override
             public void onError(Throwable t) {
-                System.err.println("Failed to stream image: " + t.getMessage());
+                logger.error("Failed to stream image:");
+                logger.error(t.getMessage());
             }
 
             @Override
@@ -280,48 +292,56 @@ public class UserAccountServerService extends UserAccountServiceGrpc.UserAccount
         };
     }
 
-    @Value("${spring.datasource.url}")
-    private String dataSource;
 
     /**
-     * Saves a photo to a user in the database. Overwrites anything already saved.
-     * @param userId Id of the user you want to add the photo to
-     * @param photo Photo blob for saving
+     * Saves a photo locally to the IDP and then its pathway to a user in the database. Overwrites anything already saved.
+     * @param userId    ID of the user you want to add the photo to
+     * @param photo     Photo blob for saving
      * @return Whether the new photo was saved
      */
     private boolean savePhotoToUser(int userId, Blob photo) {
-        boolean status = true;
+        boolean status;
         try{
             UserModel user = userModelService.getUserById(userId);
-            if (user != null) {
-                String directory = IdentityProviderApplication.IMAGE_DIR+ "/" + getApplicationLocation(dataSource) + "/" + userId + "/public/";
-                String profileImagePath = "";
-                new File(directory).mkdirs();
+            if (user != null) { // Valid user.
+                String directory = MessageFormat.format("{0}/{1}/{2}/public/",
+                        IdentityProviderApplication.IMAGE_DIR, getApplicationLocation(dataSource), userId);
+                String profileImagePath;
+
+                if (!new File(directory).mkdirs()) { // Ensures folders are made.
+                    logger.warn("Not all folders may have been created.");
+                }
+
                 File imageFile = new File(directory + "/profileImage");
                 FileOutputStream imageOutput = new FileOutputStream(imageFile);
-                if  (photo != null) {
+
+                if  (photo != null) { // Checks to ensure the photo given from the Portfolio exists.
                     imageOutput.write(photo.getBytes(1, (int) photo.length()));
                     profileImagePath = imageFile.getAbsolutePath();
                 } else {
-                    profileImagePath = "";
+                    // This means just the default image will be used by the portfolio when retrieved.
+                    profileImagePath = null;
                 }
                 imageOutput.close();
 
+                // Updates user.
                 user.setPhotoDirectory(profileImagePath);
                 status = userModelService.saveEditedUser(user);
-            } else {
+
+            } else { // Invalid user.
                 status = false;
             }
-        } catch(Exception e) {
+        } catch(Exception e) { // Error saving image in IDP or uploading information to the database.
             status = false;
-            System.err.println("Photo not saved");
-            e.printStackTrace();
+            logger.error(MessageFormat.format(
+                    "Something went wrong saving the users photo: {0}", e.getMessage()));
         }
         return status;
     }
 
     /**
      * Gets the location of which branch/vm the program is running on.
+     * @param dataSource    This relates to the applications property file being used.
      * @return 'dev', 'test' or 'prod', depending on the branch/vm.
      */
     private static String getApplicationLocation(String dataSource) {
@@ -336,8 +356,8 @@ public class UserAccountServerService extends UserAccountServiceGrpc.UserAccount
     }
 
     /**
-     * Deletes a users image from the database (Sets it to null).
-     * @param request Holds the user Id
+     * Deletes a users image pathway from the database (Sets it to null).
+     * @param request   Holds the user ID
      * @param responseObserver Tells the portfolio the status of whether the photo was deleted
      */
     @Override
@@ -355,7 +375,8 @@ public class UserAccountServerService extends UserAccountServiceGrpc.UserAccount
                 message = "Photo deleted successfully";
             }
         } catch (Exception e) {
-            System.err.println("Something went wrong deleting the users photo");
+            logger.error(MessageFormat.format(
+                    "Something went wrong deleting the users photo: {0}", e.getMessage()));
         }
 
         reply.setIsSuccess(wasDeleted);
@@ -430,7 +451,8 @@ public class UserAccountServerService extends UserAccountServiceGrpc.UserAccount
             reply.setIsSuccess(true);
             return reply.build();
         } catch (Exception e) {
-            System.err.println("Something went wrong");
+            logger.error(MessageFormat.format(
+                    "Something went wrong: {0}", e.getMessage()));
             reply.setIsSuccess(false);
             return reply.build();
         }
@@ -495,7 +517,8 @@ public class UserAccountServerService extends UserAccountServiceGrpc.UserAccount
             }
             return reply.build();
         } catch (Exception e) {
-            System.err.println("Something went wrong");
+            logger.error(MessageFormat.format(
+                    "Something went wrong: {0}", e.getMessage()));
             reply.setIsSuccess(false);
             return reply.build();
         }

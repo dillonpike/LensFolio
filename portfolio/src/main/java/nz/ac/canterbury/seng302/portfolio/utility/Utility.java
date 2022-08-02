@@ -1,8 +1,6 @@
 package nz.ac.canterbury.seng302.portfolio.utility;
 
 import com.google.protobuf.Timestamp;
-import nz.ac.canterbury.seng302.portfolio.PortfolioApplication;
-import org.springframework.beans.factory.annotation.Value;
 
 import java.sql.Date;
 import java.text.SimpleDateFormat;
@@ -96,6 +94,7 @@ public class Utility {
 
     /**
      * Gets the location of which branch/vm the program is running on.
+     * @param dataSource    This relates to the applications property file being used.
      * @return 'dev', 'test' or 'prod', depending on the branch/vm.
      */
     public static String getApplicationLocation(String dataSource) {

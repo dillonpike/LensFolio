@@ -11,6 +11,8 @@ import nz.ac.canterbury.seng302.portfolio.utility.Utility;
 import nz.ac.canterbury.seng302.shared.identityprovider.DeleteUserProfilePhotoResponse;
 import nz.ac.canterbury.seng302.shared.identityprovider.EditUserResponse;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -22,6 +24,10 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
+import java.text.MessageFormat;
+
+import static nz.ac.canterbury.seng302.portfolio.utility.Utility.getApplicationLocation;
+
 /***
  * Controller receive HTTP GET, POST, PUT, DELETE calls for edit account page
  */
@@ -43,6 +49,8 @@ public class EditAccountController {
 
     @Value("${spring.datasource.url}")
     private String dataSource;
+
+    private static final Logger logger = LoggerFactory.getLogger(EditAccountController.class);
 
     /***
      * GET method to generate the edit account page which let user edit info/attributes
@@ -87,7 +95,8 @@ public class EditAccountController {
             model.addAttribute("userImage", photoService.getPhotoPath(getUserByIdReply.getProfileImagePath(), userId));
         } catch (StatusRuntimeException e) {
             model.addAttribute("loginMessage", "Error connecting to Identity Provider...");
-            e.printStackTrace();
+            logger.error(MessageFormat.format(
+                    "Error connecting to Identity Provider: {0}", e.getMessage()));
         } catch (NumberFormatException numberFormatException) {
             model.addAttribute("userId", id);
             return "404NotFound";
@@ -165,7 +174,8 @@ public class EditAccountController {
                 rm.addFlashAttribute("isUpdateSuccess", false);
             }
         } catch (Exception e) {
-            System.err.println("Something went wrong retrieving the data to save");
+            logger.error(MessageFormat.format(
+                    "Something went wrong retrieving the data to save: {0}", e.getMessage()));
         }
 
         rm.addAttribute("userId", userId);
@@ -189,23 +199,27 @@ public class EditAccountController {
             RedirectAttributes rm,
             Model model
     ) {
-        boolean wasDeleted;
+
         String message = "Photo failed to delete.";
+        String messageID = "message";
+        String updateCheckID = "isUpdateSuccess";
+
         try {
             DeleteUserProfilePhotoResponse reply = registerClientService.deleteUserProfilePhoto(userId);
-            wasDeleted = reply.getIsSuccess();
             message = reply.getMessage();
-            if (wasDeleted) {
-                rm.addFlashAttribute("isUpdateSuccess", true);
-            } else {
-                rm.addFlashAttribute("isUpdateSuccess", false);
-                rm.addFlashAttribute("message", message);
+
+            if (reply.getIsSuccess()) { // Updated successful
+                rm.addFlashAttribute(updateCheckID, true);
+            } else { // Updated not successful
+                rm.addFlashAttribute(updateCheckID, false);
+                rm.addFlashAttribute(messageID, message);
             }
-        } catch (Exception ignore) {
-            rm.addFlashAttribute("isUpdateSuccess", false);
-            rm.addFlashAttribute("message", message);
+        } catch (Exception ignore) { // Updated error
+            rm.addFlashAttribute(updateCheckID, false);
+            rm.addFlashAttribute(messageID, message);
         }
         rm.addAttribute("userId", userId);
+
         return "redirect:editAccount";
     }
 
@@ -228,33 +242,40 @@ public class EditAccountController {
             @RequestParam("avatar") MultipartFile multipartFile,
             Model model
     ) {
+        String messageID = "message";
+        String updateCheckID = "isUpdateSuccess";
 
-        if (multipartFile.isEmpty()) {
-            rm.addFlashAttribute("message", "Please select a file to upload.");
-            rm.addFlashAttribute("isUpdateSuccess", false);
+        if (multipartFile.isEmpty()) { // Checks that the file isn't empty.
+            rm.addFlashAttribute(messageID, "Please select a file to upload.");
+            rm.addFlashAttribute(updateCheckID, false);
             return "redirect:editAccount";
         }
-        boolean wasSaved;
-        try {
-            String directory = PortfolioApplication.IMAGE_DIR+ "/" + Utility.getApplicationLocation(dataSource) + "/" + userId + "/";
-            new File(directory).mkdirs();
-            File imageFile = new File(directory + "/UploadedFile");
-            FileOutputStream fos = new FileOutputStream( imageFile );
-            fos.write( multipartFile.getBytes() );
-            fos.close();
 
-            wasSaved = registerClientService.uploadUserProfilePhoto(userId, new File(directory + "/UploadedFile"));
-            if (wasSaved) {
-                rm.addFlashAttribute("isUpdateSuccess", true);
-            } else {
-                rm.addFlashAttribute("isUpdateSuccess", false);
-                rm.addFlashAttribute("message", "Photo failed to save");
+        try { // Makes image folder structure and then saves multipart image which is then streamed to the IDP.
+            String directory = MessageFormat.format("{0}/{1}/{2}/",
+                    PortfolioApplication.IMAGE_DIR, getApplicationLocation(dataSource), userId);
+            String filePath = directory + "/UploadedFile";
+
+            if (!new File(directory).mkdirs()) { // Ensures folders are made.
+                logger.warn("Not all folders may have been created.");
             }
 
-        } catch (Exception e) {
-            System.err.println("Something went wrong requesting to save the photo");
-            e.printStackTrace();
+            File imageFile = new File(filePath); // Saves image locally so the file can be streamed to the IDP.
+            FileOutputStream fos = new FileOutputStream(imageFile);
+            fos.write(multipartFile.getBytes());
+            fos.close();
+
+            if (registerClientService.uploadUserProfilePhoto(userId, new File(filePath))) { // Saves image on IDP.
+                rm.addFlashAttribute(updateCheckID, true);
+            } else {
+                rm.addFlashAttribute(updateCheckID, false);
+                rm.addFlashAttribute(messageID, "Photo failed to save");
+            }
+        } catch (Exception e) { // Error in saving locally.
+            logger.error(MessageFormat.format(
+                    "Something went wrong requesting to save the photo: {0}", e.getMessage()));
         }
+
         rm.addAttribute("userId", userId);
         return "redirect:editAccount";
     }
