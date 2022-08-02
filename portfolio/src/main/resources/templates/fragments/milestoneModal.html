@@ -25,10 +25,10 @@
                     <div class="mb-3">
                         <label for="milestoneDate" class="col-form-label">Milestone Date:</label>
                         <div class="input-group" id="milestoneDateInput" data-td-target-input="nearest" data-td-target-toggle="nearest">
-                            <input id="milestoneDate" type="text" class="form-control" data-td-target="#milestoneDateInput" data-td-toggle="datetimepicker"
+                            <input id="milestoneDate" type="text" class="form-control" data-td-target="#milestoneDateInput"
                                    onkeydown="return false" th:name="milestoneDateString" onchange="validateModalDateTime(
                                             'milestoneDate', 'milestoneModalButton', 'milestoneDateAlertBanner', 'milestoneDateAlertMessage')"/>
-                            <span class="input-group-text bg-white">
+                            <span class="input-group-text bg-white" data-td-target="#milestoneDateInput" data-td-toggle="datetimepicker">
                                 <span class="bi bi-calendar"></span>
                             </span>
                         </div>
