@@ -45,6 +45,10 @@ public class UserModel implements Serializable {
             @JoinColumn(name = "group_id")
     )
     private Set<GroupModel> groups = new HashSet<>();
+    public void addGroup(GroupModel groupModel) {
+        this.groups.add(groupModel);
+    }
+
 
     public void addRoles(Roles role) {
         this.roles.add(role);

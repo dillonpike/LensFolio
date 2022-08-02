@@ -1,6 +1,8 @@
 package nz.ac.canterbury.seng302.identityprovider.service;
 
+import nz.ac.canterbury.seng302.identityprovider.model.GroupModel;
 import nz.ac.canterbury.seng302.identityprovider.model.Roles;
+import nz.ac.canterbury.seng302.identityprovider.repository.GroupRepository;
 import nz.ac.canterbury.seng302.identityprovider.repository.RolesRepository;
 import nz.ac.canterbury.seng302.identityprovider.model.UserModel;
 import nz.ac.canterbury.seng302.identityprovider.repository.UserModelRepository;
@@ -8,6 +10,7 @@ import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.swing.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -25,6 +28,9 @@ public class UserModelService {
 
     @Autowired
     UserModelRepository userModelRepository;
+
+    @Autowired
+    GroupRepository groupRepository;
 
     private static int userIdCount = 1;
 
@@ -76,7 +82,9 @@ public class UserModelService {
         user.setUserId(userIdCount);
         userIdCount++;
         Roles studentRole = rolesRepository.findByRoleName("STUDENT");
+        GroupModel MemberWithoutAGroupModel = groupRepository.findByLongName("Members without a group");
         user.addRoles(studentRole);
+        user.addGroup(MemberWithoutAGroupModel);
         return repository.save(user);
     }
 

@@ -10,4 +10,5 @@ import org.springframework.data.repository.CrudRepository;
 public interface GroupRepository extends CrudRepository<GroupModel, Integer> {
     GroupModel findById(int id);
     void deleteById(int id);
+    GroupModel findByLongName(String groupName);
 }

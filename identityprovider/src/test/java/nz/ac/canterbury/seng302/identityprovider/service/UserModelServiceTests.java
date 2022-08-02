@@ -5,18 +5,17 @@ import nz.ac.canterbury.seng302.identityprovider.model.Roles;
 import nz.ac.canterbury.seng302.identityprovider.repository.RolesRepository;
 import nz.ac.canterbury.seng302.identityprovider.model.UserModel;
 import nz.ac.canterbury.seng302.identityprovider.repository.UserModelRepository;
-import nz.ac.canterbury.seng302.identityprovider.service.UserModelService;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.security.core.userdetails.User;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import static org.mockito.Mockito.when; //should normally use this one
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -28,7 +27,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.AdditionalAnswers.returnsFirstArg;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @ExtendWith(SpringExtension.class)
@@ -167,7 +165,7 @@ public class UserModelServiceTests {
     }
 
     @Test
-    void testGetUserInformationByList_givenListOfUserIds_returnListOfUserResponse() {
+    public void testGetUserInformationByList_givenListOfUserIds_returnListOfUserResponse() {
         UserModel userModel1 = new UserModel("test1", "password", "test", "test", "test", "test", "test", "test", "test");
         UserModel userModel2 = new UserModel("test2", "password", "test2", "test2", "test2", "test", "test", "test", "test");
         UserModel userModel3 = new UserModel("test3", "password", "test3", "test3", "test2", "test", "test", "test", "test");
@@ -189,17 +187,16 @@ public class UserModelServiceTests {
         userIds.add(2);
         userIds.add(3);
 
-        when(userModelRepository.findByUserId(1)).thenReturn(userModel1);
-        when(userModelRepository.findByUserId(2)).thenReturn(userModel2);
-        when(userModelRepository.findByUserId(3)).thenReturn(userModel3);
+        when(userModelRepository.findByUserId(userModel1.getUserId())).thenReturn(userModel1);
+        when(userModelRepository.findByUserId(userModel2.getUserId())).thenReturn(userModel2);
+        when(userModelRepository.findByUserId(userModel3.getUserId())).thenReturn(userModel3);
         when(userModelService.getUserInfo(userModel1)).thenReturn(userResponse1);
         when(userModelService.getUserInfo(userModel2)).thenReturn(userResponse2);
         when(userModelService.getUserInfo(userModel3)).thenReturn(userResponse3);
 
 
         List<UserResponse> userResponseList = userModelService.getUserInformationByList(userIds);
-//        Assertions.assertEquals(userResponseExpectedList.size(), userResponseList.size());
-        Assertions.fail();
+        assertThat(userResponseList.size()).isSameAs(userResponseExpectedList.size());
 
     }
 
