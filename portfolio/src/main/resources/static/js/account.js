@@ -26,7 +26,7 @@ function deleteModalSetup() {
     $("#deleteModalButton").on('click', function (ignore) {
         let form = document.getElementById("baseForm");
         form.setAttribute("action", `@{deleteAccountPhoto}`);
-        form.setAttribute("method", `post`)
+        form.setAttribute("method", `get`)
         form.submit();
     });
     //

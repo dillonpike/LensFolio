@@ -169,12 +169,14 @@ public class EditAccountController {
         return "redirect:account";
     }
 
-    @PostMapping("/deleteAccountPhoto")
+    @GetMapping("/deleteAccountPhoto")
     public String deletePhoto(
-            @ModelAttribute("userId") int userId,
             RedirectAttributes rm,
-            Model model
+            Model model,
+            @AuthenticationPrincipal AuthState principal
     ) {
+        Integer userId = userAccountClientService.getUserIDFromAuthState(principal);
+
         boolean wasDeleted = false;
         String message = "Error occured, caught on portfolio side. ";
         try {
