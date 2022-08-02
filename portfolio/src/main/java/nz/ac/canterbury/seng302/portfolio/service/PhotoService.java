@@ -1,6 +1,7 @@
 package nz.ac.canterbury.seng302.portfolio.service;
 
 
+import com.google.common.annotations.VisibleForTesting;
 import nz.ac.canterbury.seng302.portfolio.PortfolioApplication;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -92,4 +93,7 @@ public class PhotoService {
         }
     }
 
+    public void setDataSource(String newSource) {
+        dataSource = newSource;
+    }
 }
