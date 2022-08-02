@@ -6,9 +6,42 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="closeGroupModalButton"></button>
       </div>
       <div class="modal-body">
-        <div>
-          Form for adding/editing a group
-        </div>
+
+        <form method="post" id="groupForm" th:action="@{add-group}">
+          <div class="modal-body">
+            <!--
+            <div class="alert alert-danger alert-dismissible fade show" role="alert" id="groupAlertBanner" hidden>
+              <span id="groupAlertMessage" data-test-id="alertMessage"></span>
+              <button type="button" class="btn-close" onclick="document.getElementById('groupAlertBanner').hidden = true" aria-label="Close"></button>
+            </div>
+            -->
+            <div class="mb-3">
+              <label for="shortGroupName" class="col-form-label">Short Group Name:</label>
+              <input onkeyup="updateCharsLeft('shortGroupName', 'shortGroupNameLength', 10)" maxlength="10" type="text" class="form-control" id="shortGroupName" name="shortGroupName">
+              <div class="name-length-message">
+                <span id="shortGroupNameLength"></span>
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label for="longGroupName" class="col-form-label">Long Group Name:</label>
+              <input onkeyup="updateCharsLeft('longGroupName', 'longGroupNameLength', 30)" maxlength="30" type="text" class="form-control" id="longGroupName" name="longGroupName">
+              <div class="name-length-message">
+                <span id="longGroupNameLength"></span>
+              </div>
+            </div>
+            <!--
+            <div class="alert alert-danger alert-dismissible fade show" role="alert" id="groupDateTimeAlertBanner" hidden>
+              <span id="groupDateTimeAlertMessage" data-test-id="alertMessage"></span>
+              <button type="button" class="btn-close" onclick="document.getElementById('groupDateTimeAlertBanner').hidden = true" aria-label="Close"></button>
+            </div>
+            -->
+          </div>
+          <div class="modal-footer">
+            <button class="btn btn-primary" id="groupModalButton" type="submit">Add group</button>
+          </div>
+        </form>
+
       </div>
     </div>
   </div>
