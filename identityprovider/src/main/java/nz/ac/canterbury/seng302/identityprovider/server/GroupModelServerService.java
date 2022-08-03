@@ -28,7 +28,7 @@ public class GroupModelServerService extends GroupsServiceGrpc.GroupsServiceImpl
     @Autowired
     private UserModelService userModelService;
 
-    private Integer memberWithoutGroupID = 1;
+    private final Integer memberWithoutGroupID = 1;
 
     /**
      * Attempts to delete a group with the id in the request. Sends a response with an isSuccess value and message.
@@ -112,7 +112,64 @@ public class GroupModelServerService extends GroupsServiceGrpc.GroupsServiceImpl
         responseObserver.onCompleted();
     }
 
+    /**
+     * Attempts to edit a group with the id in the request. Sends a response with an isSuccess value, message, and
+     * validation errors if applicable.
+     * @param request request that contains a group id
+     * @param responseObserver used to send the response
+     */
+    @Override
+    public void modifyGroupDetails(ModifyGroupDetailsRequest request, StreamObserver<ModifyGroupDetailsResponse> responseObserver) {
+        ModifyGroupDetailsResponse.Builder reply = ModifyGroupDetailsResponse.newBuilder();
 
+        boolean shortNameUnique = groupModelService.checkShortNameIsUniqueEditing(request.getGroupId(), request.getShortName());
+        boolean longNameUnique = groupModelService.checkLongNameIsUniqueEditing(request.getGroupId(), request.getLongName());
 
+        addShortNameValidationError(shortNameUnique, reply);
+        addLongNameValidationError(longNameUnique, reply);
 
+        if (shortNameUnique && longNameUnique) {
+            try {
+                if (groupModelService.editGroup(request.getGroupId(), request.getShortName(), request.getLongName())) {
+                    reply.setIsSuccess(true).setMessage("Group saved");
+                } else {
+                    reply.setIsSuccess(false).setMessage("Group not found");
+                }
+            }  catch (Exception e) {
+                reply.setIsSuccess(false).setMessage("Something went wrong saving the group");
+            }
+        }
+        responseObserver.onNext(reply.build());
+        responseObserver.onCompleted();
+    }
+
+    /**
+     * Adds a validation error to the response if the short name is not unique.
+     * @param shortNameUnique boolean value indicating if the short name is unique
+     * @param reply reply to add the validation error to
+     */
+    private void addShortNameValidationError(boolean shortNameUnique, ModifyGroupDetailsResponse.Builder reply) {
+        if (!shortNameUnique) {
+            ValidationError.Builder error = ValidationError.newBuilder();
+            error.setErrorText("Short Name not unique");
+            error.setFieldName("shortName");
+            reply.addValidationErrors(error.build());
+            reply.setIsSuccess(false).setMessage("Name was not unique");
+        }
+    }
+
+    /**
+     * Adds a validation error to the response if the long name is not unique.
+     * @param longNameUnique boolean value indicating if the long name is unique
+     * @param reply reply to add the validation error to
+     */
+    private void addLongNameValidationError(boolean longNameUnique, ModifyGroupDetailsResponse.Builder reply) {
+        if (!longNameUnique) {
+            ValidationError.Builder error = ValidationError.newBuilder();
+            error.setErrorText("Long Name not unique");
+            error.setFieldName("longName");
+            reply.addValidationErrors(error.build());
+            reply.setIsSuccess(false).setMessage("Name was not unique");
+        }
+    }
 }

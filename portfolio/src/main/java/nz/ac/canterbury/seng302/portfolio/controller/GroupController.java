@@ -22,7 +22,6 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.util.List;
 
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 /**
  * Controller for group page
@@ -39,7 +38,7 @@ public class GroupController {
     @Autowired
     public GroupService groupService;
 
-    private String updateMessageId = "isUpdateSuccess";
+    private final String updateMessageId = "isUpdateSuccess";
 
 
     /**

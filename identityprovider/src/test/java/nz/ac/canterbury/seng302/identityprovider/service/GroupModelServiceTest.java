@@ -1,6 +1,5 @@
 package nz.ac.canterbury.seng302.identityprovider.service;
 
-import com.fasterxml.jackson.databind.util.ArrayIterator;
 import nz.ac.canterbury.seng302.identityprovider.model.GroupModel;
 import nz.ac.canterbury.seng302.identityprovider.repository.GroupRepository;
 import org.junit.jupiter.api.Test;
