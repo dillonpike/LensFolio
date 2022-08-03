@@ -4,14 +4,19 @@ import nz.ac.canterbury.seng302.portfolio.service.ElementService;
 import nz.ac.canterbury.seng302.portfolio.service.GroupService;
 import nz.ac.canterbury.seng302.portfolio.service.UserAccountClientService;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
-import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
+import nz.ac.canterbury.seng302.shared.identityprovider.CreateGroupResponse;
+import nz.ac.canterbury.seng302.shared.util.ValidationError;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import java.util.List;
 
 /**
  * Controller for group page
@@ -27,6 +32,8 @@ public class GroupController {
 
     @Autowired
     public GroupService groupService;
+
+    private String updateMessageId = "isUpdateSuccess";
 
 
     /**
@@ -62,9 +69,29 @@ public class GroupController {
      */
     @PostMapping("/add-group")
     public String addGroup(
-            Model model
+            @ModelAttribute("shortGroupName") String shortName,
+            @ModelAttribute("longGroupName") String longName,
+            Model model,
+            RedirectAttributes rm
     ) {
-        return "redirect:groups";
+
+        CreateGroupResponse response = groupService.createNewGroup(shortName, longName);
+
+        if (response.getIsSuccess()) {
+            return "redirect:groups";
+        }
+        List<ValidationError> errors = response.getValidationErrorsList();
+        for (ValidationError error : errors) {
+            String errorMessage = error.getErrorText();
+            if (errorMessage.contains("Short name")) {
+                model.addAttribute("groupShortNameAlertMessage", error.getErrorText());
+            }
+            if (errorMessage.contains("Long name")) {
+                model.addAttribute("groupLongNameAlertMessage", error.getErrorText());
+            }
+        }
+
+        return "group";
     }
 
 }

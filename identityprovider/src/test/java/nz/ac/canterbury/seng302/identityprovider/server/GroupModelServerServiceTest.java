@@ -68,6 +68,34 @@ class GroupModelServerServiceTest {
     }
 
     /**
+     * Tests the ability given an invalid group ID is sent in the request through GRPC from the portfolio,
+     * that it will unsuccessfully delete the group from the repository.
+     */
+    @Test
+    void testDeleteNonExistingGroup() {
+        // Build the request.
+        DeleteGroupRequest request = DeleteGroupRequest.newBuilder().setGroupId(1).build();
+
+        // Setups up mock outcomes.
+        when(groupModelService.removeGroup(anyInt())).thenReturn(false);
+
+        // Runs tasks for deleting existing group.
+        groupModelServerService.deleteGroup(request, deleteObserver);
+
+        // Checks it ran .onCompleted().
+        verify(deleteObserver, times(1)).onCompleted();
+        // Sets up captures to get the response.
+        ArgumentCaptor<DeleteGroupResponse> captor = ArgumentCaptor.forClass(DeleteGroupResponse.class);
+        // Checks it ran .onNext() and captor the response.
+        verify(deleteObserver, times(1)).onNext(captor.capture());
+        // Gets the value of the response from the captor.
+        DeleteGroupResponse response = captor.getValue();
+
+        // Checks that the group was removed.
+        assertFalse(response.getIsSuccess());
+    }
+
+    /**
      * Tests creating a group with valid attributes is successful.
      */
     @Test

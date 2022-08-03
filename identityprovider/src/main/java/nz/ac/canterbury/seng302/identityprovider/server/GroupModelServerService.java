@@ -15,11 +15,15 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+/**
+ * Handles GRPC requests from the portfolio by performing actions related to groups, such as deleting a group, and
+ * returns responses.
+ */
 @GrpcService
 public class GroupModelServerService extends GroupsServiceGrpc.GroupsServiceImplBase {
 
     @Autowired
-    private GroupModelService groupService;
+    private GroupModelService groupModelService;
 
     @Autowired
     private UserModelService userModelService;
@@ -35,7 +39,7 @@ public class GroupModelServerService extends GroupsServiceGrpc.GroupsServiceImpl
     public void deleteGroup(DeleteGroupRequest request, StreamObserver<DeleteGroupResponse> responseObserver) {
         DeleteGroupResponse.Builder reply = DeleteGroupResponse.newBuilder();
 
-        if (groupService.removeGroup(request.getGroupId())) {
+        if (groupModelService.removeGroup(request.getGroupId())) {
             responseObserver.onNext(reply.setIsSuccess(true).setMessage("Successful").build());
         } else {
             responseObserver.onNext(reply.setIsSuccess(false).setMessage("Unsuccessful").build());
@@ -54,8 +58,8 @@ public class GroupModelServerService extends GroupsServiceGrpc.GroupsServiceImpl
         Set<Integer> userIDs = new HashSet<>();
         GroupModel groupModel;
         try {
-            userIDs = groupService.getMembersOfGroup(memberWithoutGroupID);
-            groupModel = groupService.getGroupById(memberWithoutGroupID);
+            userIDs = groupModelService.getMembersOfGroup(memberWithoutGroupID);
+            groupModel = groupModelService.getGroupById(memberWithoutGroupID);
             reply.setLongName(groupModel.getLongName());
             reply.setShortName(groupModel.getShortName());
         } catch (InvalidAttributesException e) {
@@ -79,8 +83,8 @@ public class GroupModelServerService extends GroupsServiceGrpc.GroupsServiceImpl
     @Override
     public void createGroup(CreateGroupRequest request, StreamObserver<CreateGroupResponse> responseObserver) {
         CreateGroupResponse.Builder reply = CreateGroupResponse.newBuilder();
-        boolean shortNameUnique = groupService.checkShortNameIsUnique(request.getShortName());
-        boolean longNameUnique = groupService.checkLongNameIsUnique(request.getLongName());
+        boolean shortNameUnique = groupModelService.checkShortNameIsUnique(request.getShortName());
+        boolean longNameUnique = groupModelService.checkLongNameIsUnique(request.getLongName());
         if (!shortNameUnique) {
             ValidationError.Builder error = ValidationError.newBuilder();
             error.setErrorText("Short Name not unique");
@@ -97,7 +101,7 @@ public class GroupModelServerService extends GroupsServiceGrpc.GroupsServiceImpl
         }
         if(shortNameUnique && longNameUnique) {
             try {
-                GroupModel group = groupService.addGroup(request.getShortName(), request.getLongName(), 1);
+                GroupModel group = groupModelService.addGroup(request.getShortName(), request.getLongName(), 1);
                 reply.setIsSuccess(true).setMessage("Group created").setNewGroupId(group.getGroupId());
             } catch (Exception e) {
                 reply.setIsSuccess(false).setMessage("Something went wrong creating the group");
