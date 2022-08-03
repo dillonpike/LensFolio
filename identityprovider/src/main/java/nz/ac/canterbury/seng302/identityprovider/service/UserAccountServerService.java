@@ -301,19 +301,19 @@ public class UserAccountServerService extends UserAccountServiceGrpc.UserAccount
      */
     private boolean savePhotoToUser(int userId, Blob photo) {
         boolean status;
-        try{
-            UserModel user = userModelService.getUserById(userId);
-            if (user != null) { // Valid user.
-                String directory = MessageFormat.format("{0}/{1}/{2}/public/",
-                        IdentityProviderApplication.IMAGE_DIR, getApplicationLocation(dataSource), userId);
-                String profileImagePath;
 
-                if (!new File(directory).mkdirs()) { // Ensures folders are made.
-                    logger.warn("Not all folders may have been created.");
-                }
+        UserModel user = userModelService.getUserById(userId);
+        if (user != null) { // Valid user.
+            String directory = MessageFormat.format("{0}/{1}/{2}/public/",
+                    IdentityProviderApplication.IMAGE_DIR, getApplicationLocation(dataSource), userId);
+            String profileImagePath;
 
-                File imageFile = new File(directory + "/profileImage");
-                FileOutputStream imageOutput = new FileOutputStream(imageFile);
+            if (!new File(directory).mkdirs()) { // Ensures folders are made.
+                logger.warn("Not all folders may have been created.");
+            }
+
+            File imageFile = new File(directory + "/profileImage");
+            try (FileOutputStream imageOutput = new FileOutputStream(imageFile);) {
 
                 if  (photo != null) { // Checks to ensure the photo given from the Portfolio exists.
                     imageOutput.write(photo.getBytes(1, (int) photo.length()));
@@ -322,20 +322,20 @@ public class UserAccountServerService extends UserAccountServiceGrpc.UserAccount
                     // This means just the default image will be used by the portfolio when retrieved.
                     profileImagePath = null;
                 }
-                imageOutput.close();
-
-                // Updates user.
-                user.setPhotoDirectory(profileImagePath);
-                status = userModelService.saveEditedUser(user);
-
-            } else { // Invalid user.
-                status = false;
+            } catch(Exception e) { // Error saving image in IDP or uploading information to the database.
+                logger.error(MessageFormat.format(
+                        "Something went wrong saving the users photo: {0}", e.getMessage()));
+                return false;
             }
-        } catch(Exception e) { // Error saving image in IDP or uploading information to the database.
+
+            // Updates user.
+            user.setPhotoDirectory(profileImagePath);
+            status = userModelService.saveEditedUser(user);
+
+        } else { // Invalid user.
             status = false;
-            logger.error(MessageFormat.format(
-                    "Something went wrong saving the users photo: {0}", e.getMessage()));
         }
+
         return status;
     }
 

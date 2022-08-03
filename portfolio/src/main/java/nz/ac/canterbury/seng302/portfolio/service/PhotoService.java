@@ -1,7 +1,6 @@
 package nz.ac.canterbury.seng302.portfolio.service;
 
 
-import com.google.common.annotations.VisibleForTesting;
 import nz.ac.canterbury.seng302.portfolio.PortfolioApplication;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -64,11 +63,10 @@ public class PhotoService {
      * @param userId    The user's ID.
      */
     public void savePhotoToPortfolio(String photoPath, int userId) {
+        File imageFile;
+        String directory = MessageFormat.format("{0}/{1}/{2}/public/",
+                PortfolioApplication.IMAGE_DIR, getApplicationLocation(dataSource), userId);
         try {
-            File imageFile;
-            String directory = MessageFormat.format("{0}/{1}/{2}/public/",
-                    PortfolioApplication.IMAGE_DIR, getApplicationLocation(dataSource), userId);
-
             if (!new File(directory).mkdirs()) { // Ensures folders are made.
                 logger.warn("Not all folders may have been created.");
             }
@@ -81,16 +79,22 @@ public class PhotoService {
                 }
                 imageFile = new File(resource.toURI());
             }
+        } catch (URISyntaxException | NullPointerException e) {
+            logger.error(MessageFormat.format("Error with saving image locally: {0}", e.getMessage()));
+            return;
+        }
 
-            File usedImageFile = new File(directory + "profileImage"); // Saves locally for use in HTML.
-            FileOutputStream imageOutput = new FileOutputStream(usedImageFile);
-            FileInputStream imageInput = new FileInputStream(imageFile);
+        File usedImageFile = new File(directory + "profileImage"); // Saves locally for use in HTML.
+
+        try (
+                FileOutputStream imageOutput = new FileOutputStream(usedImageFile);
+                FileInputStream imageInput = new FileInputStream(imageFile);
+        ) {
             imageOutput.write(imageInput.readAllBytes());
-            imageInput.close();
-            imageOutput.close();
-        } catch (IOException | URISyntaxException | NullPointerException e) {
+        } catch (IOException e) {
             logger.error(MessageFormat.format("Error with saving image locally: {0}", e.getMessage()));
         }
+
     }
 
     public void setDataSource(String newSource) {
