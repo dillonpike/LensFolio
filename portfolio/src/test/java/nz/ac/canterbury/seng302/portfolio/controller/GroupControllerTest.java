@@ -26,6 +26,9 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+/**
+ * Tests the group controllers post and get methods to ensure consistent responses.
+ */
 @ExtendWith(SpringExtension.class)
 @WebMvcTest(controllers = GroupController.class)
 @AutoConfigureMockMvc(addFilters = false)
@@ -61,6 +64,10 @@ class GroupControllerTest {
         mockMvc = MockMvcBuilders.standaloneSetup(GroupController.class).build();
     }
 
+    /**
+     * Test that when a GET call is made to delete a group of a given valid id, that the controller returns a successful value.
+     * @throws Exception    Can be caused during mocking the MVC system.
+     */
     @Test
     void testDeleteExistingGroup() throws Exception {
         SecurityContext mockedSecurityContext = Mockito.mock(SecurityContext.class);
@@ -78,6 +85,10 @@ class GroupControllerTest {
         verify(groupService, times(1)).deleteGroup(expectedGroupId);
     }
 
+    /**
+     * Test that when a GET call is made to delete a group of a given invalid id, that the controller returns an un-successful value.
+     * @throws Exception    Can be caused during mocking the MVC system.
+     */
     @Test
     void testDeleteNonExistingGroup() throws Exception {
         SecurityContext mockedSecurityContext = Mockito.mock(SecurityContext.class);
@@ -95,6 +106,10 @@ class GroupControllerTest {
         verify(groupService, times(1)).deleteGroup(expectedGroupId);
     }
 
+    /**
+     * Test that when a POST call is made to edit a group of a given valid id, that the controller returns a successful value.
+     * @throws Exception    Can be caused during mocking the MVC system.
+     */
     @Test
     void testEditExistingGroup() throws Exception {
         SecurityContext mockedSecurityContext = Mockito.mock(SecurityContext.class);
@@ -119,6 +134,10 @@ class GroupControllerTest {
         verify(groupService, times(1)).editGroupDetails(expectedGroupId, group.getShortName(), group.getLongName());
     }
 
+    /**
+     * Test that when a POST call is made to edit a group of a given invalid id, that the controller returns an un-successful value.
+     * @throws Exception    Can be caused during mocking the MVC system.
+     */
     @Test
     void testEditNonExistingGroup() throws Exception {
         SecurityContext mockedSecurityContext = Mockito.mock(SecurityContext.class);
