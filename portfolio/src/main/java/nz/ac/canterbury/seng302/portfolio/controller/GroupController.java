@@ -124,12 +124,27 @@ public class GroupController {
             @PathVariable("id") Integer id,
             @AuthenticationPrincipal AuthState principal,
             @ModelAttribute("group") Group group,
-            RedirectAttributes rd
+            Model model
     ) throws IllegalArgumentException {
 
         ModifyGroupDetailsResponse response = groupService.editGroupDetails(group.getGroupId(), group.getShortName(), group.getLongName());
-        rd.addAttribute(updateMessageId, response.getIsSuccess());
-        return "redirect:/group";
+        model.addAttribute(updateMessageId, response.getIsSuccess());
+
+        if (response.getIsSuccess()) {
+            return "redirect:/group";
+        }
+
+        for (ValidationError error : response.getValidationErrorsList()) {
+            String errorMessage = error.getErrorText();
+            if (errorMessage.contains("Short name")) {
+                model.addAttribute("groupShortNameAlertMessage", errorMessage);
+            }
+            if (errorMessage.contains("Long name")) {
+                model.addAttribute("groupLongNameAlertMessage", errorMessage);
+            }
+        }
+
+        return "group";
     }
 
 }

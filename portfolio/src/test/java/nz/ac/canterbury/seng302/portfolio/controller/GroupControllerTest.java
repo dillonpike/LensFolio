@@ -6,6 +6,7 @@ import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import nz.ac.canterbury.seng302.shared.identityprovider.ClaimDTO;
 import nz.ac.canterbury.seng302.shared.identityprovider.DeleteGroupResponse;
 import nz.ac.canterbury.seng302.shared.identityprovider.ModifyGroupDetailsResponse;
+import nz.ac.canterbury.seng302.shared.util.ValidationError;
 import org.junit.Before;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -128,8 +129,7 @@ class GroupControllerTest {
 
         mockMvc.perform(post("/edit-group/" + expectedGroupId).flashAttr("group", group))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/group?isUpdateSuccess=true"))
-                .andExpect(model().attribute("isUpdateSuccess", "true"));
+                .andExpect(redirectedUrl("/group"));
 
         verify(groupService, times(1)).editGroupDetails(expectedGroupId, group.getShortName(), group.getLongName());
     }
@@ -155,9 +155,66 @@ class GroupControllerTest {
                 .thenReturn(ModifyGroupDetailsResponse.newBuilder().setIsSuccess(false).build());
 
         mockMvc.perform(post("/edit-group/" + expectedGroupId).flashAttr("group", group))
-                .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/group?isUpdateSuccess=false"))
-                .andExpect(model().attribute("isUpdateSuccess", "false"));
+                .andExpect(status().is2xxSuccessful())
+                .andExpect(model().attribute("isUpdateSuccess", false));
+
+        verify(groupService, times(1)).editGroupDetails(expectedGroupId, group.getShortName(), group.getLongName());
+    }
+
+    /**
+     * Test that when a POST call is made to edit a group of a given invalid id, that the controller returns an un-successful value.
+     * @throws Exception    Can be caused during mocking the MVC system.
+     */
+    @Test
+    void testEditExistingGroupWithInvalidShortName() throws Exception {
+        SecurityContext mockedSecurityContext = Mockito.mock(SecurityContext.class);
+        when(mockedSecurityContext.getAuthentication()).thenReturn(new PreAuthenticatedAuthenticationToken(validAuthState, ""));
+        SecurityContextHolder.setContext(mockedSecurityContext);
+
+        int expectedGroupId = 1;
+        Group group = new Group();
+        group.setShortName("Not a short name!"); // 17 CHARACTERS
+        group.setLongName("A group of seng students working on a project.");
+        group.setGroupId(expectedGroupId);
+
+        ValidationError error = ValidationError.newBuilder().setErrorText("Short name is to long.").build();
+        ModifyGroupDetailsResponse response = ModifyGroupDetailsResponse.newBuilder().addValidationErrors(0, error).setIsSuccess(false).build();
+
+        when(groupService.editGroupDetails(expectedGroupId, group.getShortName(), group.getLongName())).thenReturn(response);
+
+        mockMvc.perform(post("/edit-group/" + expectedGroupId).flashAttr("group", group))
+                .andExpect(status().is2xxSuccessful())
+                .andExpect(model().attribute("groupShortNameAlertMessage", "Short name is to long."))
+                .andExpect(model().attribute("isUpdateSuccess", false));
+
+        verify(groupService, times(1)).editGroupDetails(expectedGroupId, group.getShortName(), group.getLongName());
+    }
+
+    /**
+     * Test that when a POST call is made to edit a group of a given invalid id, that the controller returns an un-successful value.
+     * @throws Exception    Can be caused during mocking the MVC system.
+     */
+    @Test
+    void testEditExistingGroupWithInvalidLongName() throws Exception {
+        SecurityContext mockedSecurityContext = Mockito.mock(SecurityContext.class);
+        when(mockedSecurityContext.getAuthentication()).thenReturn(new PreAuthenticatedAuthenticationToken(validAuthState, ""));
+        SecurityContextHolder.setContext(mockedSecurityContext);
+
+        int expectedGroupId = 1;
+        Group group = new Group();
+        group.setShortName("seng-302");
+        group.setLongName("Not a long name! Not a long name! Not a long name! Not a long name!"); // 67 CHARACTERS
+        group.setGroupId(expectedGroupId);
+
+        ValidationError error = ValidationError.newBuilder().setErrorText("Long name is to long.").build();
+        ModifyGroupDetailsResponse response = ModifyGroupDetailsResponse.newBuilder().addValidationErrors(0, error).setIsSuccess(false).build();
+
+        when(groupService.editGroupDetails(expectedGroupId, group.getShortName(), group.getLongName())).thenReturn(response);
+
+        mockMvc.perform(post("/edit-group/" + expectedGroupId).flashAttr("group", group))
+                .andExpect(status().is2xxSuccessful())
+                .andExpect(model().attribute("groupLongNameAlertMessage", response.getValidationErrorsList().get(0).getErrorText()))
+                .andExpect(model().attribute("isUpdateSuccess", false));
 
         verify(groupService, times(1)).editGroupDetails(expectedGroupId, group.getShortName(), group.getLongName());
     }
