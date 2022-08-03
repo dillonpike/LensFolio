@@ -57,5 +57,33 @@ class GroupModelServiceTest {
         Mockito.verify(groupRepository, Mockito.times(0)).deleteById(testGroup.getGroupId());
     }
 
+    /**
+     * Tests that the repository save() method is not called when an invalid group id is used
+     * (group is not present in the repository).
+     */
+    @Test
+    void testEditExistingGroup() {
+        when(groupRepository.findById(any(Integer.class))).thenReturn(Optional.of(testGroup));
+
+        boolean isSuccess =  groupModelService.editGroup(testGroup.getGroupId(), testGroup.getShortName(), testGroup.getLongName());
+
+        assertTrue(isSuccess);
+        Mockito.verify(groupRepository, Mockito.times(1)).save(testGroup);
+    }
+
+    /**
+     * Tests that the repository save() method is not called when an invalid group id is used
+     * (group is not present in the repository).
+     */
+    @Test
+    void testEditNonExistingGroup() {
+        when(groupRepository.findById(any(Integer.class))).thenReturn(Optional.empty());
+
+        boolean isSuccess =  groupModelService.editGroup(testGroup.getGroupId(), testGroup.getShortName(), testGroup.getLongName());
+
+        assertFalse(isSuccess);
+        Mockito.verify(groupRepository, Mockito.times(0)).save(testGroup);
+    }
+
 
 }
