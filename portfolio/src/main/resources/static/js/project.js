@@ -55,9 +55,6 @@ function sprintModalSetup() {
         updateCharsLeft('sprintName', 'sprintNameLength', 50);
         updateCharsLeft('sprintDescription', 'sprintDescriptionLength', 500);
     })
-    $("#sprintModalButton").on('click', function (ignore) {
-        pageReload();
-    });
 }
 
 /**
@@ -86,15 +83,6 @@ function deleteModalSetup() {
         modalButton.innerHTML = `Delete ${type.charAt(0).toUpperCase() + type.slice(1)}`
         modalLink.href = `delete-${type}/${id}`
     })
-
-    $("#deleteModalButton").on('click', function (ignore) {
-        pageReload();
-    });
-
-    $("#eventModalButton").on('click', function (ignore) {
-        pageReload();
-    });
-
 }
 
 /**
@@ -124,9 +112,6 @@ function projectModalSetup() {
         updateCharsLeft('projectName', 'projectNameLength', 50);
         updateCharsLeft('projectDescription', 'projectDescriptionLength', 500);
     })
-    $("#projectModalButton").on('click', function (ignore) {
-        pageReload();
-    });
 }
 
 /**
@@ -166,13 +151,9 @@ function milestoneModalSetup() {
 
         // Initial run of validation functions in case initial values are invalid
         validateModalDate('milestoneDate', 'milestoneModalButton', 'milestoneDateAlertBanner', 'milestoneDateAlertMessage')
-        updateCharsLeft('milestoneName', 'milestoneNameLength', 30)
+        updateCharsLeft('milestoneName', 'milestoneNameLength', 50)
         $('#' + modalButton.getAttribute("id")).prop('hidden', false);
     })
-
-    $("#milestoneModalButton").on('click', function (ignore) {
-        pageReload();
-    });
 }
 
 /**
@@ -208,26 +189,27 @@ function deadlineModalSetup() {
 
         modalForm.setAttribute('object', deadline);
         modalBodyInputs[0].value = deadline.deadlineName;
-        $('#deadlineDateInput').datepicker('setDate', deadline.deadlineDateString);
-        modalBodyInputs[2].value = deadline.deadlineTimeString !== "24:00" ? deadline.deadlineTimeString : "00:00";
+        deadlineDatePicker.dates.setValue(tempusDominus.DateTime.convert(new Date(deadline.deadlineDate)));
+        // Set min and max dates based on project dates
+        deadlineDatePicker.updateOptions({restrictions: {minDate: new Date(projectStartDate), maxDate: new Date(projectEndDate)}});
+
 
         // Initial run of validation functions in case initial values are invalid
-        validateModalDateTime('deadlineDate', 'deadlineTime', 'deadlineModalButton', 'deadlineDateAlertBanner', 'deadlineDateAlertMessage')
-        updateCharsLeft('deadlineName', 'deadlineNameLength', 30)
+        validateModalDateTime('deadlineDate', 'deadlineModalButton', 'deadlineDateAlertBanner', 'deadlineDateAlertMessage')
+        updateCharsLeft('deadlineName', 'deadlineNameLength', 50)
         $('#' + modalButton.getAttribute("id")).prop('hidden', false);
     })
-
-    $("#deadlineModalButton").on('click', function (ignore) {
-        pageReload();
-    });
 }
 
 
 /**
- * Customises the milestone modal attributes with depending on what milestone it should display and whether it's being
- * used for adding or editing a milestone.
+ * Customises the event modal attributes with depending on what event it should display and whether it's being
+ * used for adding or editing a event. Also greys out the required dates to ensure only the dates in the
+ * project date range are selectable.
+ * @param projectStartDate the start date of the project
+ * @param projectEndDate the end date of the project
  */
-function eventModalSetup() {
+function eventModalSetup(projectStartDate, projectEndDate) {
     const eventModal = document.getElementById('eventModal')
     eventModal.addEventListener('show.bs.modal', function (event) {
         // Button that triggered the modal
@@ -256,22 +238,84 @@ function eventModalSetup() {
 
         modalForm.setAttribute('object', events);
 
-
         modalBodyInputs[0].value = events.eventName
-        $('#eventStartDateInput').datepicker('setDate', events.startDateString)
-        $('#eventEndDateInput').datepicker('setDate', events.endDateString)
+        const startDate = moment(`${events.startDateDetail}`, 'DD/MMM/yyyy h:mm a').toDate();
+        eventStartDatePicker.dates.setValue(tempusDominus.DateTime.convert(startDate));
+        const endDate = moment(`${events.endDateDetail}`, 'DD/MMM/yyyy h:mm a').toDate();
+        eventEndDatePicker.dates.setValue(tempusDominus.DateTime.convert(endDate));
+        // Set min and max dates based on project dates
+        const a = moment('01/03/2022', 'DD/MMM/yyyy h:mm a').toDate();
+        eventStartDatePicker.updateOptions({restrictions: {minDate: new Date(projectStartDate), maxDate: new Date(projectEndDate)}});
+        eventEndDatePicker.updateOptions({restrictions: {minDate: new Date(projectStartDate), maxDate: new Date(projectEndDate)}});
 
-        modalBodyInputs[3].value = events.startTimeString.substring(0, events.startTimeString.length-3);
-        modalBodyInputs[4].value = events.endTimeString.substring(0, events.endTimeString.length-3);
 
 
         // Initial run of validation functions in case initial values are invalid
-        validateModalDateTimeRange('eventStartDate', 'eventEndDate', 'eventStartTime', 'eventEndTime','eventModalButton', 'eventDateTimeAlertBanner', 'eventDateTimeAlertMessage')
-        updateCharsLeft('eventName', 'eventNameLength', 30)
+        validateModalDateTimeRange('eventStartDate', 'eventEndDate', 'eventModalButton', 'eventDateTimeAlertBanner', 'eventDateTimeAlertMessage')
+        updateCharsLeft('eventName', 'eventNameLength', 50)
         $('#' + modalButton.getAttribute("id")).prop('hidden', false);
+    })
+    /**
+     * Customises the sprint modal attributes with depending on what sprint it should display and whether it's being used
+     * for adding or editing a sprint.
+     */
+    function sprintModalSetup() {
+        const sprintModal = document.getElementById('sprintModal')
+        sprintModal.addEventListener('show.bs.modal', function (event) {
+            // Button that triggered the modal
+            const button = event.relatedTarget
 
-        $("#eventModalButton").on('click', function (ignore) {
+            // Extract info from data-bs-* attributes
+            const sprint = JSON.parse(button.getAttribute('data-bs-sprint'))
+            const type = button.getAttribute('data-bs-type')
+
+            // Update the modal's content.
+            const modalTitle = sprintModal.querySelector('.modal-title')
+            const modalBodyInputs = sprintModal.querySelectorAll('.modal-body input')
+            const modalBodyTextArea = sprintModal.querySelector('.modal-body textarea')
+            const modalButton = sprintModal.querySelector('.modal-footer button')
+            const modalForm = sprintModal.querySelector('form')
+
+            if (type === 'add') {
+                modalTitle.innerText = 'Add Sprint'
+                modalButton.innerHTML = 'Add Sprint'
+                modalForm.action = 'add-sprint'
+                modalForm.setAttribute('data-sprint-id', -1)
+            } else {
+                modalTitle.innerText = 'Edit Sprint'
+                modalButton.innerHTML = 'Save Sprint'
+                modalForm.action = `edit-sprint/${sprint.id}`
+                modalForm.setAttribute('data-sprint-id', sprint.id)
+            }
+
+            modalBodyInputs[0].value = sprint.name
+            $('#sprintStart').datepicker('setDate', sprint.startDateString)
+            $('#sprintEnd').datepicker('setDate', sprint.endDateString)
+            modalBodyTextArea.value = sprint.description
+
+            // Initial run of updateSprintDateError function in case initial values are invalid
+            updateSprintDateError();
+            updateCharsLeft('sprintName', 'sprintNameLength', 50);
+            updateCharsLeft('sprintDescription', 'sprintDescriptionLength', 500);
+        })
+        $("#sprintModalButton").on('click', function (ignore) {
             pageReload();
         });
+    }
+}
+/**
+ * Customises the group modal attributes with depending on what sprint it should display and whether it's being used
+ * for adding or editing a sprint.
+ */
+function groupModalSetup() {
+    const groupModal = document.getElementById('groupModal')
+    groupModal.addEventListener('show.bs.modal', function (event) {
+
+        // Update the modal's content.
+        const modalTitle = groupModal.querySelector('.modal-title')
+        const modalButton = groupModal.querySelector('.modal-footer button')
+
+        modalTitle.innerText = 'Add Group'
+        modalButton.innerHTML = 'Add Group'
     })
 }

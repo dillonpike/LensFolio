@@ -14,6 +14,9 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js" integrity="sha512-iKDtgDyTHjAitUDdLljGhenhPwrbBfqTKWO1mkhSFH3A7blITC9MhYon6SjnMhp4o0rADGw9yAC6EW4t5a4K3g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="webjars/jquery/3.6.0/dist/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdn.jsdelivr.net/gh/Eonasdan/tempus-dominus@master/dist/js/tempus-dominus.js"></script>
+    <link href="https://cdn.jsdelivr.net/gh/Eonasdan/tempus-dominus@master/dist/css/tempus-dominus.css" rel="stylesheet"/>
 </head>
 <body>
 <header th:replace="fragments/header"></header>
@@ -149,7 +152,7 @@
                                         </button>
                                     </div>
                                     <div class="collapse" th:id="collapseEvent + ${sprint.getId()}">
-                                        <div th:each="event, meta: ${eventsForSprints.get(meta.index)}">
+                                    <div th:each="event, meta: ${eventsForSprints.get(meta.index)}">
                                             <div class="artefact-info-block">
                                                 <div class="artefact-title" th:text="${event.getEventName()}"/>
                                                 <div class="artefact-date event-start-date" th:text="From + ': ' + ${event.getStartDateDetail()}" th:style="color + ':' + ${event.getStartDateColour()}"/>
@@ -429,7 +432,6 @@
      * Sends the message that an event is being updated, and sends the events names with it.
      */
     function sendName(artefactName, artefactId,userId, userFirstName, userLastName, username, artefactType) {
-        console.log("Send Name")
         stompClient.send("/webSocketPost/editing-artefact", {}, JSON.stringify({
             'artefactName': artefactName,
             'artefactId' : artefactId,
@@ -445,7 +447,6 @@
      * Sends an empty message so that the other end can realise to close any popups it may have activated.
      */
     function sendEmpty(artefactName, artefactId,userId, userFirstName, userLastName, username, artefactType) {
-        console.log("send empty")
         stompClient.send("/webSocketPost/stop-editing-artefact", {}, JSON.stringify({
             'artefactName': artefactName,
             'artefactId' : artefactId,
@@ -461,7 +462,6 @@
      * Sends the message that an event has been updated (saved), and sends the events names with it.
      */
     function sendNameReload(artefactName, artefactId,userId, userFirstName, userLastName, username, artefactType) {
-        console.log("send name reload")
         stompClient.send("/webSocketPost/saved-edited-artefact", {}, JSON.stringify({
             'artefactName': artefactName,
             'artefactId' : artefactId,
@@ -619,6 +619,13 @@
 
     sendStopEditingLiveNotificationRequest("#closeEventModalButton", 'eventModal', 'edit-event', "Event");
 
+    /**
+     * Reload the calendar page when something(deadline, sprint, milestone, event) is deleted
+     */
+    $("#deleteModalButton").on('click', function (ignore) {
+        pageReload();
+    })
+
 
 
 </script>
@@ -645,10 +652,12 @@
     let projectStartDate = /*[[${project.getStartDateString()}]]*/ "Error";
     /*]]>*/
     /**
-     Check if the name of the item that the user inputted is not an empty string
-     Submit the form and return true if the input is not empty string, otherwise show error banner with the error message and return false
-     @param elementId the ID of the text input HTML element for item's name
-     @param formId the ID of the form which contains the input HTML element
+     * Check if the name of the item that the user inputted is not an empty string
+     * Submit the form and return true if the input is not empty string, otherwise show error banner with the error message and return false
+     * @param elementId the ID of the text input HTML element for item's name
+     * @param alertBanner the ID of the alert banner HTML element
+     * @param alertMessage the ID of the alert banner message HTML element
+     * @returns {boolean} true if the input is not empty string, otherwise false
      */
     function validateModalName(elementId, alertBanner, alertMessage) {
         const nameInput = document.getElementById(elementId).value;
@@ -677,26 +686,25 @@
         return checkDate(dateInput, submitElementId, alertBanner, alertMessage)
     }
 
-    // Check if the date of the item that the user inputted is within the project dates range
-    // Show error banner with error message and disable the submit button if the inputted date is outside the project dates range
-    // @param elementId the ID of the date input HTML element
-    // @param submitElementId the ID of the submit button on the modal
-    function validateModalDateTimeRange(dateStartId, dateEndId, timeStartId, timeEndId,  submitElementId, alertBanner, alertMessage) {
+    /**
+     * Check if the date of the item that the user inputted is within the project dates range
+     * Show error banner with error message and disable the submit button if the inputted date is outside the project dates range
+     * @param dateStartId the ID of the start date and time input element
+     * @param dateEndId the ID of the end date and time input element
+     * @param submitElementId the ID of the submit button on the modal
+     * @param alertBanner the ID of the banner element that will display the alert message
+     * @param alertMessage the ID of the alert message element
+     * @returns {boolean} true if the dates are valid, otherwise false
+     */
+    function validateModalDateTimeRange(dateStartId, dateEndId, submitElementId, alertBanner, alertMessage) {
         if (!checkEmpty(dateStartId, 'Start date', submitElementId, alertBanner, alertMessage)) {
             return false
         }
         if (!checkEmpty(dateEndId, 'End date', submitElementId, alertBanner, alertMessage)) {
             return false
         }
-        if (!checkEmpty(timeStartId, 'Start time', submitElementId, alertBanner, alertMessage)) {
-            return false
-        }
-        if (!checkEmpty(timeEndId, 'End time', submitElementId, alertBanner, alertMessage)) {
-            return false
-        }
-
-        const dateStartInput = new Date(`${document.getElementById(dateStartId).value}  ${document.getElementById(timeStartId).value} :00`)
-        const dateEndInput = new Date(`${document.getElementById(dateEndId).value}  ${document.getElementById(timeEndId).value} :00`)
+        const dateStartInput = new Date(`${document.getElementById(dateStartId).value}`)
+        const dateEndInput = new Date(`${document.getElementById(dateEndId).value}`)
 
         if (dateStartInput >= dateEndInput) {
             $('#' + submitElementId).prop('disabled', true);
@@ -721,20 +729,16 @@
     /**
      * Returns true if the user has entered a valid date and time, otherwise false
      * @param dateId id of element with date
-     * @param timeId id of element with time
      * @param submitElementId id of element for submitting the modal
      * @param alertBanner id of element that displays an error message
      * @param alertMessage id of element that stores the error message
      * @returns {boolean} true if valid date and time, otherwise false
      */
-    function validateModalDateTime(dateId, timeId, submitElementId, alertBanner, alertMessage) {
+    function validateModalDateTime(dateId, submitElementId, alertBanner, alertMessage) {
         if (!checkEmpty(dateId, 'Date', submitElementId, alertBanner, alertMessage)) {
             return false
         }
-        if (!checkEmpty(timeId, 'Time', submitElementId, alertBanner, alertMessage)) {
-            return false
-        }
-        const dateInput = new Date(`${document.getElementById(dateId).value}  ${document.getElementById(timeId).value} :00`)
+        const dateInput = new Date(`${document.getElementById(dateId).value}`)
         return checkDate(dateInput, submitElementId, alertBanner, alertMessage)
     }
 
@@ -784,8 +788,8 @@
     sprintModalSetup()
     projectModalSetup()
     milestoneModalSetup()
-    eventModalSetup()
-    deadlineModalSetup()
+    eventModalSetup(projectStartDate, projectEndDate)
+    deadlineModalSetup(projectStartDate, projectEndDate)
     deleteModalSetup()
 </script>
 
