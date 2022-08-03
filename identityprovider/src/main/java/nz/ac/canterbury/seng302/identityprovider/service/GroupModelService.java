@@ -124,6 +124,11 @@ public class GroupModelService {
         return (List<GroupModel>) repository.findAll();
     }
 
+    /**
+     * Method to convert and build a groupModel to GroupDetailsResponse.
+     * @param groupModel the current groupModel
+     * @return GroupDetailsResponse with current groupModel's info
+     */
     public GroupDetailsResponse getGroupInfo(GroupModel groupModel) {
         GroupDetailsResponse.Builder response = GroupDetailsResponse.newBuilder();
         response.setGroupId(groupModel.getGroupId());

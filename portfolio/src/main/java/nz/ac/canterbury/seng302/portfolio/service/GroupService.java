@@ -135,5 +135,10 @@ public class GroupService {
         model.addAttribute("groupList", groupDetailsResponseList);
     }
 
+    public void addGroupDetailToModel(Model model, Integer groupId) {
+        GroupDetailsResponse groupDetailsResponse = getGroupDetails(groupId);
+        model.addAttribute(groupDetailsResponse);
+    }
+
 
 }
