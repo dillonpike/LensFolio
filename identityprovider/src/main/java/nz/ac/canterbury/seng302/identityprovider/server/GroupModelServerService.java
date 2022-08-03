@@ -164,6 +164,11 @@ public class GroupModelServerService extends GroupsServiceGrpc.GroupsServiceImpl
         responseObserver.onCompleted();
     }
 
+    /**
+     * Attempts to get group's detail with a group ID in request. Send a response with group detail.
+     * @param request GetGroupDetailsRequest which contains a group ID
+     * @param responseObserver used to send the response to portfolio
+     */
     @Override
     public void getGroupDetails(GetGroupDetailsRequest request, StreamObserver<GroupDetailsResponse> responseObserver) {
         GroupDetailsResponse.Builder reply = GroupDetailsResponse.newBuilder();

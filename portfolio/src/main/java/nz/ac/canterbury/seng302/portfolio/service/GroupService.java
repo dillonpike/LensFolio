@@ -144,8 +144,8 @@ public class GroupService {
     /**
      * Method to convert Current groupDetailsResponse,
      * send attributes(e.g. short name, long name, group members) to the model
-     * @param model
-     * @param groupId
+     * @param model Parameters sent to thymeleaf template to be rendered into HTML
+     * @param groupId Current selected group ID
      */
     public void addGroupDetailToModel(Model model, Integer groupId) {
         GroupDetailsResponse groupDetailsResponse = getGroupDetails(groupId);
