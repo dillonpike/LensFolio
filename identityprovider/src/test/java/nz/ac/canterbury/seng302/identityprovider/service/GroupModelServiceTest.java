@@ -76,23 +76,14 @@ class GroupModelServiceTest {
 
     @Test
     void testCheckingValidShortNameIsValid() {
-        GroupModel testGroup1 = new GroupModel("unique", "Test Group 1", 1);
-        GroupModel testGroup2 = new GroupModel("teacher", "Test Group 2", 1);
-        GroupModel[] list = {testGroup1, testGroup2};
-        Iterable<GroupModel> listOfGroups = new ArrayIterator<>(list);
-        when(groupRepository.findAll()).thenReturn(listOfGroups);
-
         boolean result = groupModelService.checkShortNameIsUnique("very unique");
         assertTrue(result);
     }
 
     @Test
     void testCheckingInvalidShortNameIsValid() {
-        GroupModel testGroup1 = new GroupModel("unique", "Test Group 1", 1);
         GroupModel testGroup2 = new GroupModel("teacher", "Test Group 2", 1);
-        GroupModel[] list = {testGroup1, testGroup2};
-        Iterable<GroupModel> listOfGroups = new ArrayIterator<>(list);
-        when(groupRepository.findAll()).thenReturn(listOfGroups);
+        when(groupRepository.findByShortName("teacher")).thenReturn(Optional.of(testGroup2));
 
         boolean result = groupModelService.checkShortNameIsUnique("teacher");
         assertFalse(result);
@@ -100,12 +91,6 @@ class GroupModelServiceTest {
 
     @Test
     void testCheckingValidLongNameIsValid() {
-        GroupModel testGroup1 = new GroupModel("unique", "Test Group 1", 1);
-        GroupModel testGroup2 = new GroupModel("teacher", "Test Group 2", 1);
-        GroupModel[] list = {testGroup1, testGroup2};
-        Iterable<GroupModel> listOfGroups = new ArrayIterator<>(list);
-        when(groupRepository.findAll()).thenReturn(listOfGroups);
-
         boolean result = groupModelService.checkLongNameIsUnique("very unique");
         assertTrue(result);
     }
@@ -113,10 +98,7 @@ class GroupModelServiceTest {
     @Test
     void testCheckingInvalidLongNameIsValid() {
         GroupModel testGroup1 = new GroupModel("unique", "Test Group 1", 1);
-        GroupModel testGroup2 = new GroupModel("teacher", "Test Group 2", 1);
-        GroupModel[] list = {testGroup1, testGroup2};
-        Iterable<GroupModel> listOfGroups = new ArrayIterator<>(list);
-        when(groupRepository.findAll()).thenReturn(listOfGroups);
+        when(groupRepository.findByLongName("Test Group 1")).thenReturn(Optional.of(testGroup1));
 
         boolean result = groupModelService.checkLongNameIsUnique("Test Group 1");
         assertFalse(result);

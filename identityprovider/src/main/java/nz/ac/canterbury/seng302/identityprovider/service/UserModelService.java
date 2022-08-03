@@ -10,16 +10,11 @@ import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.swing.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 @Service
 public class UserModelService {
 
-//    private final UserModelRepository repository;
     @Autowired
     UserModelRepository repository;
 
@@ -65,7 +60,7 @@ public class UserModelService {
      */
     public UserModel getUserByUsername(String username) {
         List<UserModel> retrievedUsers = repository.findByUsername(username);
-        if (retrievedUsers.size() == 0) {
+        if (retrievedUsers.isEmpty()) {
             return null;
         } else {
             return retrievedUsers.get(0);
@@ -82,9 +77,12 @@ public class UserModelService {
         user.setUserId(userIdCount);
         userIdCount++;
         Roles studentRole = rolesRepository.findByRoleName("STUDENT");
-        GroupModel MemberWithoutAGroupModel = groupRepository.findByLongName("Members without a group");
+        Optional<GroupModel> groupOptional = groupRepository.findByLongName("Members without a group");
+        if (groupOptional.isPresent()) {
+            GroupModel memberWithoutAGroupModel = groupOptional.get();
+            user.addGroup(memberWithoutAGroupModel);
+        }
         user.addRoles(studentRole);
-        user.addGroup(MemberWithoutAGroupModel);
         return repository.save(user);
     }
 

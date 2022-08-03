@@ -85,14 +85,9 @@ public class GroupModelService {
      * @return True if short name is unique.
      */
     public boolean checkShortNameIsUnique(String shortName) {
-        Iterable<GroupModel> allGroups = repository.findAll();
+        Optional<GroupModel> sOptional = repository.findByShortName(shortName);
 
-        for (GroupModel group : allGroups) {
-            if (group.getShortName().equals(shortName)) {
-                return false;
-            }
-        }
-        return true;
+        return sOptional.isEmpty();
     }
 
     /**
@@ -101,14 +96,9 @@ public class GroupModelService {
      * @return True if long name is unique.
      */
     public boolean checkLongNameIsUnique(String longName) {
-        Iterable<GroupModel> allGroups = repository.findAll();
+        Optional<GroupModel> sOptional = repository.findByLongName(longName);
 
-        for (GroupModel group : allGroups) {
-            if (group.getLongName().equals(longName)) {
-                return false;
-            }
-        }
-        return true;
+        return sOptional.isEmpty();
     }
 
 }
