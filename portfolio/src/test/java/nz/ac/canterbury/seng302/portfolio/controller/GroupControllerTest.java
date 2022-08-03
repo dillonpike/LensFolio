@@ -1,9 +1,11 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
+import nz.ac.canterbury.seng302.portfolio.model.Group;
 import nz.ac.canterbury.seng302.portfolio.service.*;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import nz.ac.canterbury.seng302.shared.identityprovider.ClaimDTO;
 import nz.ac.canterbury.seng302.shared.identityprovider.DeleteGroupResponse;
+import nz.ac.canterbury.seng302.shared.identityprovider.ModifyGroupDetailsResponse;
 import org.junit.Before;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -21,6 +23,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @ExtendWith(SpringExtension.class)
@@ -90,5 +93,53 @@ class GroupControllerTest {
                 .andExpect(model().attribute("isUpdateSuccess", "false"));
 
         verify(groupService, times(1)).deleteGroup(expectedGroupId);
+    }
+
+    @Test
+    void testEditExistingGroup() throws Exception {
+        SecurityContext mockedSecurityContext = Mockito.mock(SecurityContext.class);
+        when(mockedSecurityContext.getAuthentication()).thenReturn(new PreAuthenticatedAuthenticationToken(validAuthState, ""));
+        SecurityContextHolder.setContext(mockedSecurityContext);
+
+        int expectedGroupId = 1;
+        Group group = new Group();
+        group.setShortName("seng-302");
+        group.setLongName("A group of seng students working on a project.");
+        group.setGroupId(expectedGroupId);
+
+
+        when(groupService.editGroupDetails(expectedGroupId, group.getShortName(), group.getLongName()))
+                .thenReturn(ModifyGroupDetailsResponse.newBuilder().setIsSuccess(true).build());
+
+        mockMvc.perform(post("/edit-group/" + expectedGroupId).flashAttr("group", group))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/group?isUpdateSuccess=true"))
+                .andExpect(model().attribute("isUpdateSuccess", "true"));
+
+        verify(groupService, times(1)).editGroupDetails(expectedGroupId, group.getShortName(), group.getLongName());
+    }
+
+    @Test
+    void testEditNonExistingGroup() throws Exception {
+        SecurityContext mockedSecurityContext = Mockito.mock(SecurityContext.class);
+        when(mockedSecurityContext.getAuthentication()).thenReturn(new PreAuthenticatedAuthenticationToken(validAuthState, ""));
+        SecurityContextHolder.setContext(mockedSecurityContext);
+
+        int expectedGroupId = 1;
+        Group group = new Group();
+        group.setShortName("seng-302");
+        group.setLongName("A group of seng students working on a project.");
+        group.setGroupId(expectedGroupId);
+
+
+        when(groupService.editGroupDetails(expectedGroupId, group.getShortName(), group.getLongName()))
+                .thenReturn(ModifyGroupDetailsResponse.newBuilder().setIsSuccess(false).build());
+
+        mockMvc.perform(post("/edit-group/" + expectedGroupId).flashAttr("group", group))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/group?isUpdateSuccess=false"))
+                .andExpect(model().attribute("isUpdateSuccess", "false"));
+
+        verify(groupService, times(1)).editGroupDetails(expectedGroupId, group.getShortName(), group.getLongName());
     }
 }
