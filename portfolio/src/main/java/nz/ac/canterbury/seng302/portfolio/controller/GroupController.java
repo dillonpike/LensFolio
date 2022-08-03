@@ -4,6 +4,8 @@ import nz.ac.canterbury.seng302.portfolio.service.ElementService;
 import nz.ac.canterbury.seng302.portfolio.service.GroupService;
 import nz.ac.canterbury.seng302.portfolio.service.UserAccountClientService;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
+import nz.ac.canterbury.seng302.shared.identityprovider.GroupDetailsResponse;
+import nz.ac.canterbury.seng302.shared.identityprovider.PaginatedGroupsResponse;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -29,6 +31,8 @@ public class GroupController {
     public GroupService groupService;
 
 
+
+
     /**
      * Get method for group page to display group list and group detail
      * @param model  Parameters sent to thymeleaf template to be rendered into HTML
@@ -41,6 +45,9 @@ public class GroupController {
             ) {
         Integer id = userAccountClientService.getUserIDFromAuthState(principal);
         elementService.addHeaderAttributes(model, id);
+
+        groupService.addGroupListToModel(model);
+
         return "group";
     }
 
@@ -51,9 +58,13 @@ public class GroupController {
      */
     @RequestMapping("/groups/local")
     public String localRefresh(Model model) {
-        model.addAttribute("title", "Group1");
+
+        PaginatedGroupsResponse groupList = groupService.getPaginatedGroups(1, 1, "null", false);
         return "group::table_refresh";
+
     }
+
+
 
     /**
      * Method tries to add and sve the new group to the database

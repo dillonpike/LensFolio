@@ -104,7 +104,20 @@ public class GroupModelServerService extends GroupsServiceGrpc.GroupsServiceImpl
         responseObserver.onCompleted();
     }
 
-
-
+    /**
+     * Method to request paginated groups from Idp
+     * @param request
+     * @param responseObserver
+     */
+    @Override
+    public void getPaginatedGroups(GetPaginatedGroupsRequest request, StreamObserver<PaginatedGroupsResponse> responseObserver) {
+        PaginatedGroupsResponse.Builder reply = PaginatedGroupsResponse.newBuilder();
+        List<GroupModel> allGroups = groupService.getAllGroups();
+        for (GroupModel groupModel : allGroups) {
+            reply.addGroups(groupService.getGroupInfo(groupModel));
+        }
+        responseObserver.onNext(reply.build());
+        responseObserver.onCompleted();
+    }
 
 }

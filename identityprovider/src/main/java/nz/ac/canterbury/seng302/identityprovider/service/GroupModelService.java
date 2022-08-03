@@ -2,10 +2,14 @@ package nz.ac.canterbury.seng302.identityprovider.service;
 
 import nz.ac.canterbury.seng302.identityprovider.model.GroupModel;
 import nz.ac.canterbury.seng302.identityprovider.repository.GroupRepository;
+import nz.ac.canterbury.seng302.shared.identityprovider.GroupDetailsResponse;
+import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.naming.directory.InvalidAttributesException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -109,6 +113,24 @@ public class GroupModelService {
             }
         }
         return true;
+    }
+
+
+    /**
+     * Method to retrieve every group from database
+     * @return list of gorups
+     */
+    public List<GroupModel> getAllGroups() {
+        return (List<GroupModel>) repository.findAll();
+    }
+
+    public GroupDetailsResponse getGroupInfo(GroupModel groupModel) {
+        GroupDetailsResponse.Builder response = GroupDetailsResponse.newBuilder();
+        response.setGroupId(groupModel.getGroupId());
+        response.setLongName(groupModel.getLongName());
+        response.setShortName(groupModel.getShortName());
+
+        return response.build();
     }
 
 }

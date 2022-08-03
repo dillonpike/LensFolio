@@ -3,8 +3,10 @@ package nz.ac.canterbury.seng302.portfolio.service;
 import net.devh.boot.grpc.client.inject.GrpcClient;
 import nz.ac.canterbury.seng302.shared.identityprovider.*;
 import org.springframework.stereotype.Service;
+import org.springframework.ui.Model;
 
 import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -19,6 +21,8 @@ public class GroupService {
      */
     @GrpcClient(value = "identity-provider-grpc-server")
     GroupsServiceGrpc.GroupsServiceBlockingStub groupsServiceBlockingStub;
+
+    private List<GroupDetailsResponse> groupDetailsResponseList;
 
     /***
      * Method to create group by sending request using GRPC to the idp
@@ -112,10 +116,24 @@ public class GroupService {
      */
     public PaginatedGroupsResponse getPaginatedGroups(Integer offset, Integer limit, String orderBy, boolean isAscending){
         GetPaginatedGroupsRequest request = GetPaginatedGroupsRequest.newBuilder()
-                .setOffset(offset)
-                .setIsAscendingOrder(isAscending)
-                .setOrderBy(orderBy)
+//                Ignore for now
+//                .setOffset(offset)
+//                .setIsAscendingOrder(isAscending)
+//                .setOrderBy(orderBy)
                 .build();
         return groupsServiceBlockingStub.getPaginatedGroups(request);
     }
+
+    /**
+     * Method to convert paginatedGroupsResponse to a group list.
+     * Send group list attribute to the model
+     * @param model Parameters sent to thymeleaf template to be rendered into HTML
+     */
+    public void addGroupListToModel(Model model) {
+        PaginatedGroupsResponse groupList = getPaginatedGroups(1, 1, "null", false);
+        groupDetailsResponseList = groupList.getGroupsList();
+        model.addAttribute("groupList", groupDetailsResponseList);
+    }
+
+
 }
