@@ -64,7 +64,7 @@ public class GroupController {
     public String addGroup(
             Model model
     ) {
-        return "redirect: group";
+        return "redirect:groups";
     }
 
 }

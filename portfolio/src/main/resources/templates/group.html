@@ -191,5 +191,36 @@
             document.getElementById(messageElementId).innerText = chars_left + " characters left";
         }
     }
+
+    /**
+     * Check if the name of the item that the user inputted is not an empty string
+     * Submit the form and return true if the input is not empty string, otherwise show error banner with the error message and return false
+     * @param elementId the ID of the text input HTML element for item's name
+     * @param alertBanner the ID of the alert banner HTML element
+     * @param alertMessage the ID of the alert banner message HTML element
+     * @returns {boolean} true if the input is not empty string, otherwise false
+     */
+    function validateModalName(elementId, alertBanner, alertMessage) {
+        const nameInput = document.getElementById(elementId).value;
+        if (nameInput === "") {
+            document.getElementById(alertBanner).hidden = false;
+            document.getElementById(alertMessage).innerText = "Name cannot be empty!";
+            return false
+        } else {
+            document.getElementById(alertBanner).hidden = true;
+            return true
+        }
+    }
+
+    async function validateGroup() {
+        if (validateModalName('shortGroupName', 'groupShortNameAlertBanner', 'groupShortNameAlertMessage') &&
+            validateModalName('longGroupName', 'groupLongNameAlertBanner', 'groupLongNameAlertMessage')
+        ) {
+            document.getElementById('groupForm').onsubmit = () => { return false };
+            document.getElementById('groupForm').submit();
+        };
+    }
 </script>
+
+
 </html>

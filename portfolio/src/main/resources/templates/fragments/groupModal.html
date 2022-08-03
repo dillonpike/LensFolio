@@ -11,7 +11,7 @@
           <div class="modal-body">
             <div class="alert alert-danger alert-dismissible fade show" role="alert" id="groupShortNameAlertBanner" hidden>
               <span id="groupShortNameAlertMessage" data-test-id="alertMessage"></span>
-              <button type="button" class="btn-close" onclick="document.getElementById('groupAlertBanner').hidden = true" aria-label="Close"></button>
+              <button type="button" class="btn-close" onclick="document.getElementById('groupShortNameAlertBanner').hidden = true" aria-label="Close"></button>
             </div>
             <div class="mb-3">
               <label for="shortGroupName" class="col-form-label">Short Group Name:</label>
@@ -30,29 +30,15 @@
             </div>
             <div class="alert alert-danger alert-dismissible fade show" role="alert" id="groupLongNameAlertBanner" hidden>
               <span id="groupLongNameAlertMessage" data-test-id="alertMessage"></span>
-              <button type="button" class="btn-close" onclick="document.getElementById('groupDateTimeAlertBanner').hidden = true" aria-label="Close"></button>
+              <button type="button" class="btn-close" onclick="document.getElementById('groupLongNameAlertBanner').hidden = true" aria-label="Close"></button>
             </div>
           </div>
           <div class="modal-footer">
             <button class="btn btn-primary" id="groupModalButton" type="submit">Add group</button>
           </div>
         </form>
-
       </div>
     </div>
   </div>
 </div>
-
-<script>
-  async function validateGroup() {
-    if (validateModalName('shortGroupName', 'groupShortNameAlertBanner', 'groupShortNameAlertMessage')
-    && validateModalName("longGroupName", 'groupLongNameAlertBanner', 'groupLongNameAlertMessage')
-    ) {
-      document.getElementById('groupForm').onsubmit = () => { return false };
-      document.getElementById('groupForm').submit();
-    };
-
-  }
-
-
-</script>
+<script src="js/datepicker.js"></script>
