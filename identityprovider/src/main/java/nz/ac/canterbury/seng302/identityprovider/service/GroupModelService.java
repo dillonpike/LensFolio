@@ -7,6 +7,9 @@ import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
+/**
+ * Connects groups GRPC service and repository.
+ */
 @Service
 public class GroupModelService {
 

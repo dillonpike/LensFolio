@@ -7,11 +7,15 @@ import nz.ac.canterbury.seng302.shared.identityprovider.DeleteGroupResponse;
 import nz.ac.canterbury.seng302.shared.identityprovider.GroupsServiceGrpc;
 import org.springframework.beans.factory.annotation.Autowired;
 
+/**
+ * Handles GRPC requests from the portfolio by performing actions related to groups, such as deleting a group, and
+ * returns responses.
+ */
 @GrpcService
 public class GroupModelServerService extends GroupsServiceGrpc.GroupsServiceImplBase {
 
     @Autowired
-    private GroupModelService groupService;
+    private GroupModelService GroupModelService;
 
     /**
      * Attempts to delete a group with the id in the request. Sends a response with an isSuccess value and message.
@@ -21,7 +25,7 @@ public class GroupModelServerService extends GroupsServiceGrpc.GroupsServiceImpl
     public void deleteGroup(DeleteGroupRequest request, StreamObserver<DeleteGroupResponse> responseObserver) {
         DeleteGroupResponse.Builder reply = DeleteGroupResponse.newBuilder();
 
-        if (groupService.removeGroup(request.getGroupId())) {
+        if (GroupModelService.removeGroup(request.getGroupId())) {
             responseObserver.onNext(reply.setIsSuccess(true).setMessage("Successful").build());
         } else {
             responseObserver.onNext(reply.setIsSuccess(false).setMessage("Unsuccessful").build());
