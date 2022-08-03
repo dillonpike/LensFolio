@@ -14,6 +14,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 /**
  * Controller for group page
@@ -57,25 +58,13 @@ public class GroupController {
      * @return Group page
      */
     @RequestMapping("/groups/local")
-    public String localRefresh(Model model) {
-
-        PaginatedGroupsResponse groupList = groupService.getPaginatedGroups(1, 1, "null", false);
+    public String localRefresh(
+            Model model,
+            @RequestParam("groupId") int groupId)
+    {
+        groupService.addGroupDetailToModel(model, groupId);
         return "group::table_refresh";
 
-    }
-
-
-
-    /**
-     * Method tries to add and sve the new group to the database
-     * @param model Parameters sent to thymeleaf template to be rendered into HTML
-     * @return redirect user to group page
-     */
-    @PostMapping("/add-group")
-    public String addGroup(
-            Model model
-    ) {
-        return "redirect:groups";
     }
 
 }

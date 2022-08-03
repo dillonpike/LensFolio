@@ -35,7 +35,7 @@
                 </a>
                 <div class="list-group list-group-flush border-bottom group-bar">
                     <div th:each="group : ${groupList}">
-                        <button  class="list-group-item list-group-item-action py-3 lh-tight" aria-current="true" onclick="updateTable()" id="updateButton1">
+                        <button  class="list-group-item list-group-item-action py-3 lh-tight" aria-current="true" th:attr="onclick=|updateTable('${group.groupId}')|" id="updateGroupButton">
                             <div class="d-flex flex-row w-100 align-items-center justify-content-between">
                                 <strong class="mb-1" th:text="${group.shortName}"></strong>
                                 <div>
@@ -124,9 +124,9 @@
 </script>
 
 <script>
-    function updateTable() {
-        const url = "/groups";
-        $('#table_refresh').load("groups/local")
+    function updateTable(groupId) {
+        const url = "groups/local?";
+        $('#table_refresh').load(url, "groupId=" + groupId)
     }
 </script>
 
