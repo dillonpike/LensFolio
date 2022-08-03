@@ -79,21 +79,25 @@ public class GroupModelServerService extends GroupsServiceGrpc.GroupsServiceImpl
     @Override
     public void createGroup(CreateGroupRequest request, StreamObserver<CreateGroupResponse> responseObserver) {
         CreateGroupResponse.Builder reply = CreateGroupResponse.newBuilder();
-        if (!groupService.checkShortNameIsUnique(request.getShortName())) {
+        boolean shortNameUnique = groupService.checkShortNameIsUnique(request.getShortName());
+        boolean longNameUnique = groupService.checkLongNameIsUnique(request.getLongName());
+        if (!shortNameUnique) {
             ValidationError.Builder error = ValidationError.newBuilder();
             error.setErrorText("Short Name not unique");
             error.setFieldName("shortName");
-            reply.setValidationErrors(0, error.build());
-            reply.setIsSuccess(false).setMessage("Short Name was not unique");
-        } else if (!groupService.checkLongNameIsUnique(request.getLongName())) {
+            reply.addValidationErrors(error.build());
+            reply.setIsSuccess(false).setMessage("Name was not unique");
+        }
+        if (!longNameUnique) {
             ValidationError.Builder error = ValidationError.newBuilder();
             error.setErrorText("Long Name not unique");
             error.setFieldName("longName");
-            reply.setValidationErrors(1, error.build());
-            reply.setIsSuccess(false).setMessage("Long Name was not unique");
-        } else {
+            reply.addValidationErrors(error.build());
+            reply.setIsSuccess(false).setMessage("Name was not unique");
+        }
+        if(shortNameUnique && longNameUnique) {
             try {
-                GroupModel group = groupService.addGroup(request.getShortName(), request.getLongName(), 0);
+                GroupModel group = groupService.addGroup(request.getShortName(), request.getLongName(), 1);
                 reply.setIsSuccess(true).setMessage("Group created").setNewGroupId(group.getGroupId());
             } catch (Exception e) {
                 reply.setIsSuccess(false).setMessage("Something went wrong creating the group");
