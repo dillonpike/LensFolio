@@ -9,6 +9,9 @@ import javax.naming.directory.InvalidAttributesException;
 import java.util.Optional;
 import java.util.Set;
 
+/**
+ * Connects groups GRPC service and repository.
+ */
 @Service
 public class GroupModelService {
 
