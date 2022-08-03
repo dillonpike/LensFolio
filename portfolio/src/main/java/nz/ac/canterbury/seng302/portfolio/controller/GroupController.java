@@ -1,6 +1,7 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
 import nz.ac.canterbury.seng302.portfolio.service.ElementService;
+import nz.ac.canterbury.seng302.portfolio.service.GroupService;
 import nz.ac.canterbury.seng302.portfolio.service.UserAccountClientService;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
@@ -24,23 +25,46 @@ public class GroupController {
     @Autowired
     private ElementService elementService;
 
+    @Autowired
+    public GroupService groupService;
 
+
+    /**
+     * Get method for group page to display group list and group detail
+     * @param model  Parameters sent to thymeleaf template to be rendered into HTML
+     * @return Group page
+     */
     @GetMapping("/groups")
     public String groups(
             Model model,
             @AuthenticationPrincipal AuthState principal
             ) {
-        UserResponse getUserByIdReply;
         Integer id = userAccountClientService.getUserIDFromAuthState(principal);
         elementService.addHeaderAttributes(model, id);
         return "group";
     }
 
+    /**
+     * Method to refresh the group table only
+     * @param model Parameters sent to thymeleaf template to be rendered into HTML
+     * @return Group page
+     */
     @RequestMapping("/groups/local")
     public String localRefresh(Model model) {
-        System.out.println("1");
         model.addAttribute("title", "Group1");
         return "group::table_refresh";
+    }
+
+    /**
+     * Method tries to add and sve the new group to the database
+     * @param model Parameters sent to thymeleaf template to be rendered into HTML
+     * @return redirect user to group page
+     */
+    @PostMapping("/add-group")
+    public String addGroup(
+            Model model
+    ) {
+        return "redirect: group";
     }
 
 }

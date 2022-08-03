@@ -7,14 +7,12 @@
       </div>
       <div class="modal-body">
 
-        <form method="post" id="groupForm" th:action="@{add-group}">
+        <form method="post" id="groupForm" onsubmit="validateGroup(); return false" th:action="@{add-group}">
           <div class="modal-body">
-            <!--
-            <div class="alert alert-danger alert-dismissible fade show" role="alert" id="groupAlertBanner" hidden>
-              <span id="groupAlertMessage" data-test-id="alertMessage"></span>
+            <div class="alert alert-danger alert-dismissible fade show" role="alert" id="groupShortNameAlertBanner" hidden>
+              <span id="groupShortNameAlertMessage" data-test-id="alertMessage"></span>
               <button type="button" class="btn-close" onclick="document.getElementById('groupAlertBanner').hidden = true" aria-label="Close"></button>
             </div>
-            -->
             <div class="mb-3">
               <label for="shortGroupName" class="col-form-label">Short Group Name:</label>
               <input onkeyup="updateCharsLeft('shortGroupName', 'shortGroupNameLength', 10)" maxlength="10" type="text" class="form-control" id="shortGroupName" name="shortGroupName">
@@ -30,12 +28,10 @@
                 <span id="longGroupNameLength"></span>
               </div>
             </div>
-            <!--
-            <div class="alert alert-danger alert-dismissible fade show" role="alert" id="groupDateTimeAlertBanner" hidden>
-              <span id="groupDateTimeAlertMessage" data-test-id="alertMessage"></span>
+            <div class="alert alert-danger alert-dismissible fade show" role="alert" id="groupLongNameAlertBanner" hidden>
+              <span id="groupLongNameAlertMessage" data-test-id="alertMessage"></span>
               <button type="button" class="btn-close" onclick="document.getElementById('groupDateTimeAlertBanner').hidden = true" aria-label="Close"></button>
             </div>
-            -->
           </div>
           <div class="modal-footer">
             <button class="btn btn-primary" id="groupModalButton" type="submit">Add group</button>
@@ -46,3 +42,17 @@
     </div>
   </div>
 </div>
+
+<script>
+  async function validateGroup() {
+    if (validateModalName('shortGroupName', 'groupShortNameAlertBanner', 'groupShortNameAlertMessage')
+    && validateModalName("longGroupName", 'groupLongNameAlertBanner', 'groupLongNameAlertMessage')
+    ) {
+      document.getElementById('groupForm').onsubmit = () => { return false };
+      document.getElementById('groupForm').submit();
+    };
+
+  }
+
+
+</script>
