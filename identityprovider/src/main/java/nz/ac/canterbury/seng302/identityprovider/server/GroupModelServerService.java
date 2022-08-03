@@ -168,7 +168,8 @@ public class GroupModelServerService extends GroupsServiceGrpc.GroupsServiceImpl
     public void getGroupDetails(GetGroupDetailsRequest request, StreamObserver<GroupDetailsResponse> responseObserver) {
         GroupDetailsResponse.Builder reply = GroupDetailsResponse.newBuilder();
         if (groupModelService.isExistById(request.getGroupId())) {
-            GroupModel groupModel = repository.getGroupModelByGroupId(reply.getGroupId());
+
+            GroupModel groupModel = repository.getGroupModelByGroupId(request.getGroupId());
             reply.setGroupId(groupModel.getGroupId());
             reply.setLongName(groupModel.getLongName());
             reply.setShortName(groupModel.getShortName());

@@ -96,7 +96,8 @@
         <div class="col-6 col-md-8 sticky-md-top card shadow">
             <div id="table_refresh" th:fragment="table_refresh">
                     <div class="container">
-                        <h1 th:text="${title}"></h1>
+                        <h1 th:text="${groupLongName}">No Group Selected</h1>
+                        <h4 th:text="${groupShortName}"></h4>
                         <div class="hstack gap-3">
                             <span>Copy To </span>
                             <select class="form-select input-sm" aria-label="Default select example">
@@ -122,10 +123,10 @@
                             </tr>
                             </thead>
                             <tbody>
-                            <tr th:each="user : ${users}">
-                                <td><span th:text="${user.FirstName}"> First Name </span></td>
-                                <td><span th:text="${user.LastName}"> Last Name </span></td>
-                                <td><span th:text="${user.username}"> Username </span></td>
+                            <tr th:each="member : ${members}">
+                                <td><span th:text="${member.FirstName}"> First Name </span></td>
+                                <td><span th:text="${member.LastName}"> Last Name </span></td>
+                                <td><span th:text="${member.username}"> Username </span></td>
                             </tr>
                             </tbody>
                         </table>

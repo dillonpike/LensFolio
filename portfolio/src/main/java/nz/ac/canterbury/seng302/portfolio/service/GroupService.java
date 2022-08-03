@@ -24,6 +24,8 @@ public class GroupService {
 
     private List<GroupDetailsResponse> groupDetailsResponseList;
 
+    private List<UserResponse> userResponseList;
+
     /***
      * Method to create group by sending request using GRPC to the idp
      * @param shortName (String) the short name of the new group that will be created and persisted in database
@@ -133,11 +135,26 @@ public class GroupService {
         PaginatedGroupsResponse groupList = getPaginatedGroups(1, 1, "null", false);
         groupDetailsResponseList = groupList.getGroupsList();
         model.addAttribute("groupList", groupDetailsResponseList);
+
+        model.addAttribute("groupLongName", "No select group");
+        model.addAttribute("groupShortName", "Please select one group");
+
     }
 
+    /**
+     * Method to convert Current groupDetailsResponse,
+     * send attributes(e.g. short name, long name, group members) to the model
+     * @param model
+     * @param groupId
+     */
     public void addGroupDetailToModel(Model model, Integer groupId) {
         GroupDetailsResponse groupDetailsResponse = getGroupDetails(groupId);
-        model.addAttribute(groupDetailsResponse);
+        userResponseList = groupDetailsResponse.getMembersList();
+        model.addAttribute("groupLongName", groupDetailsResponse.getLongName());
+        model.addAttribute("groupShortName", groupDetailsResponse.getShortName());
+
+        model.addAttribute("groupDetails", groupDetailsResponse);
+        model.addAttribute("members", userResponseList);
     }
 
 

@@ -69,7 +69,6 @@ public class GroupController {
             Model model,
             @RequestParam("groupId") int groupId)
     {
-        System.out.println(groupId);
         groupService.addGroupDetailToModel(model, groupId);
         return "group::table_refresh";
     }
