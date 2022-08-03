@@ -4,6 +4,8 @@ import com.google.protobuf.Empty;
 import io.grpc.stub.StreamObserver;
 import net.devh.boot.grpc.server.service.GrpcService;
 import nz.ac.canterbury.seng302.identityprovider.model.GroupModel;
+import nz.ac.canterbury.seng302.identityprovider.model.UserModel;
+import nz.ac.canterbury.seng302.identityprovider.repository.GroupRepository;
 import nz.ac.canterbury.seng302.identityprovider.service.GroupModelService;
 import nz.ac.canterbury.seng302.identityprovider.service.UserModelService;
 import nz.ac.canterbury.seng302.shared.identityprovider.*;
@@ -13,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import javax.naming.directory.InvalidAttributesException;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -24,6 +27,9 @@ public class GroupModelServerService extends GroupsServiceGrpc.GroupsServiceImpl
 
     @Autowired
     private GroupModelService groupModelService;
+
+    @Autowired
+    private GroupRepository repository;
 
     @Autowired
     private UserModelService userModelService;
@@ -143,16 +149,34 @@ public class GroupModelServerService extends GroupsServiceGrpc.GroupsServiceImpl
         responseObserver.onCompleted();
     }
     /**
-     * Method to request paginated groups from Idp
-     * @param request
-     * @param responseObserver
+     * Method to request paginated groups from database, send PaginatedGroupsResponse response back to portfolio.
+     * @param request GetPaginatedGroupsRequest request from portfolio
+     * @param responseObserver Response given back to Portfolio.
      */
     @Override
     public void getPaginatedGroups(GetPaginatedGroupsRequest request, StreamObserver<PaginatedGroupsResponse> responseObserver) {
         PaginatedGroupsResponse.Builder reply = PaginatedGroupsResponse.newBuilder();
-        List<GroupModel> allGroups = groupService.getAllGroups();
+        List<GroupModel> allGroups = groupModelService.getAllGroups();
         for (GroupModel groupModel : allGroups) {
-            reply.addGroups(groupService.getGroupInfo(groupModel));
+            reply.addGroups(groupModelService.getGroupInfo(groupModel));
+        }
+        responseObserver.onNext(reply.build());
+        responseObserver.onCompleted();
+    }
+
+    @Override
+    public void getGroupDetails(GetGroupDetailsRequest request, StreamObserver<GroupDetailsResponse> responseObserver) {
+        GroupDetailsResponse.Builder reply = GroupDetailsResponse.newBuilder();
+        if (groupModelService.isExistById(request.getGroupId())) {
+            GroupModel groupModel = repository.getGroupModelByGroupId(reply.getGroupId());
+            reply.setGroupId(groupModel.getGroupId());
+            reply.setLongName(groupModel.getLongName());
+            reply.setShortName(groupModel.getShortName());
+
+            List<UserModel> userModelList = groupModel.getUsers();
+            for (UserModel userModel : userModelList) {
+                reply.addMembers(userModelService.getUserInfo(userModel));
+            }
         }
         responseObserver.onNext(reply.build());
         responseObserver.onCompleted();

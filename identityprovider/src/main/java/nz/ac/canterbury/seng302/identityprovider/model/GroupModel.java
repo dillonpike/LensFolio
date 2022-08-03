@@ -1,7 +1,9 @@
 package nz.ac.canterbury.seng302.identityprovider.model;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -48,6 +50,16 @@ public class GroupModel {
     @CollectionTable(name="user_to_group", joinColumns=@JoinColumn(name="group_id"))
     @Column(name="User_Id")
     private Set<Integer> memberIds = new HashSet<>();
+
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
+    @JoinTable(name = "user_to_group",
+            joinColumns =
+            @JoinColumn(name = "group_id"),
+            inverseJoinColumns =
+            @JoinColumn(name = "User_Id")
+    )
+    private final List<UserModel> users = new ArrayList<>();
+
 
     /**
      * Empty constructor for JPA.
@@ -152,5 +164,9 @@ public class GroupModel {
      */
     public void removeMember(int userId) {
         memberIds.remove(userId);
+    }
+
+    public List<UserModel> getUsers() {
+        return users;
     }
 }

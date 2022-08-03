@@ -12,6 +12,9 @@ import java.util.Optional;
 public interface GroupRepository extends CrudRepository<GroupModel, Integer> {
     GroupModel findById(int id);
     void deleteById(int id);
+    GroupModel findByGroupId(int groupId);
     Optional<GroupModel> findByLongName(String groupName);
     Optional<GroupModel> findByShortName(String shortName);
+
+    GroupModel getGroupModelByGroupId(int groupId);
 }

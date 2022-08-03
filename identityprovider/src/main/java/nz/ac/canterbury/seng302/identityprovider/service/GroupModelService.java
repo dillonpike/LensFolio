@@ -180,4 +180,8 @@ public class GroupModelService {
         return response.build();
     }
 
+
+    public boolean isExistById(Integer groupId) {
+        return repository.existsById(groupId);
+    }
 }
