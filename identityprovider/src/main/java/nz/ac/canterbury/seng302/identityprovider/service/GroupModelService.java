@@ -39,10 +39,10 @@ public class GroupModelService {
      * @return true if removed, otherwise false
      */
     public boolean removeGroup(Integer id) {
-        Optional<GroupModel> sOptional = repository.findById(id);
+        Optional<GroupModel> groupOptional = repository.findById(id);
 
-        if (sOptional.isPresent()) {
-            GroupModel groupUpdate = sOptional.get();
+        if (groupOptional.isPresent()) {
+            GroupModel groupUpdate = groupOptional.get();
             repository.deleteById(groupUpdate.getGroupId());
             return true;
         }
@@ -57,9 +57,9 @@ public class GroupModelService {
      * @throws InvalidAttributesException Thrown if group doesn't exist.
      */
     public Set<Integer> getMembersOfGroup(Integer groupId) throws InvalidAttributesException {
-        Optional<GroupModel> sOptional = repository.findById(groupId);
-        if (sOptional.isPresent()) {
-            GroupModel group = sOptional.get();
+        Optional<GroupModel> groupOptional = repository.findById(groupId);
+        if (groupOptional.isPresent()) {
+            GroupModel group = groupOptional.get();
             return group.getMemberIds();
         } else {
             throw new InvalidAttributesException("Group does not exist " + groupId);
@@ -73,10 +73,10 @@ public class GroupModelService {
      * @throws InvalidAttributesException Thrown if the group does not exist.
      */
     public GroupModel getGroupById(Integer groupId) throws InvalidAttributesException {
-        Optional<GroupModel> sOptional = repository.findById(groupId);
+        Optional<GroupModel> groupOptional = repository.findById(groupId);
 
-        if (sOptional.isPresent()) {
-            return sOptional.get();
+        if (groupOptional.isPresent()) {
+            return groupOptional.get();
         } else {
             throw new InvalidAttributesException("Group does not exist " + groupId);
         }
@@ -88,9 +88,9 @@ public class GroupModelService {
      * @return True if short name is unique.
      */
     public boolean checkShortNameIsUnique(String shortName) {
-        Optional<GroupModel> sOptional = repository.findByShortName(shortName);
+        Optional<GroupModel> groupOptional = repository.findByShortName(shortName);
 
-        return sOptional.isEmpty();
+        return groupOptional.isEmpty();
     }
 
     /**
@@ -99,9 +99,58 @@ public class GroupModelService {
      * @return True if long name is unique.
      */
     public boolean checkLongNameIsUnique(String longName) {
-        Optional<GroupModel> sOptional = repository.findByLongName(longName);
+        Optional<GroupModel> groupOptional = repository.findByLongName(longName);
 
-        return sOptional.isEmpty();
+        return groupOptional.isEmpty();
+    }
+
+    /**
+     * Checks to see if the short name given is unique in the database for editing a group (doesn't consider a group
+     * with the same id).
+     * @param id Id of the group being edited
+     * @param shortName Short name for group.
+     * @return True if short name is unique.
+     */
+    public boolean checkShortNameIsUniqueEditing(Integer id, String shortName) {
+        Optional<GroupModel> groupOptional = repository.findByShortName(shortName);
+
+        if (groupOptional.isEmpty()) {
+            return true;
+        } else {
+            GroupModel group = groupOptional.get();
+            return id == group.getGroupId();
+        }
+    }
+
+    /**
+     * Checks to see if the long name given is unique in the database for editing a group (doesn't consider a group
+     * with the same id).
+     * @param id Id of the group being edited
+     * @param longName Long name for group.
+     * @return True if long name is unique.
+     */
+    public boolean checkLongNameIsUniqueEditing(Integer id, String longName) {
+        Optional<GroupModel> groupOptional = repository.findByLongName(longName);
+
+        if (groupOptional.isEmpty()) {
+            return true;
+        } else {
+            GroupModel group = groupOptional.get();
+            return id == group.getGroupId();
+        }
+    }
+
+    public boolean editGroup(Integer id, String shortName, String longName) {
+        Optional<GroupModel> groupOptional = repository.findById(id);
+
+        if (groupOptional.isPresent()) {
+            GroupModel group = groupOptional.get();
+            group.setShortName(shortName);
+            group.setLongName(longName);
+            repository.save(group);
+            return true;
+        }
+        return false;
     }
 
 }

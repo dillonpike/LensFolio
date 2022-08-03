@@ -1,11 +1,14 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
+import nz.ac.canterbury.seng302.portfolio.model.Group;
 import nz.ac.canterbury.seng302.portfolio.service.ElementService;
 import nz.ac.canterbury.seng302.portfolio.service.GroupService;
 import nz.ac.canterbury.seng302.portfolio.service.UserAccountClientService;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import nz.ac.canterbury.seng302.shared.identityprovider.CreateGroupResponse;
 import nz.ac.canterbury.seng302.shared.util.ValidationError;
+import nz.ac.canterbury.seng302.shared.identityprovider.DeleteGroupResponse;
+import nz.ac.canterbury.seng302.shared.identityprovider.ModifyGroupDetailsResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
@@ -17,6 +20,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
+
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 /**
  * Controller for group page
@@ -45,7 +51,7 @@ public class GroupController {
     public String groups(
             Model model,
             @AuthenticationPrincipal AuthState principal
-            ) {
+    ) {
         Integer id = userAccountClientService.getUserIDFromAuthState(principal);
         elementService.addHeaderAttributes(model, id);
         return "group";
@@ -92,6 +98,39 @@ public class GroupController {
         }
 
         return "group";
+    }
+
+    /**
+     * Submits a request to the identity provider to delete the group with the given id from the database. Adds a
+     * variable to the model indicating whether or not this was successful.
+     * @param id id of the group to delete
+     * @param rd injects the variable indicating success to the HTML
+     * @return redirect user to group page
+     */
+    @GetMapping("/delete-group/{id}")
+    public String groupRemove(@PathVariable("id") Integer id, RedirectAttributes rd) {
+        DeleteGroupResponse response = groupService.deleteGroup(id);
+        rd.addAttribute(updateMessageId, response.getIsSuccess());
+        return "redirect:/group";
+    }
+
+    /**
+     * Tries to save new data to group with given groupId to the database.
+     * @param id        id of event edited
+     * @param group     Group data to be updated
+     * @throws IllegalArgumentException if sprint cannot be found from the given ID or if it cannot be saved.
+     */
+    @PostMapping("/edit-group/{id}")
+    public String groupEdit(
+            @PathVariable("id") Integer id,
+            @AuthenticationPrincipal AuthState principal,
+            @ModelAttribute("group") Group group,
+            RedirectAttributes rd
+    ) throws IllegalArgumentException {
+
+        ModifyGroupDetailsResponse response = groupService.editGroupDetails(group.getGroupId(), group.getShortName(), group.getLongName());
+        rd.addAttribute(updateMessageId, response.getIsSuccess());
+        return "redirect:/group";
     }
 
 }
