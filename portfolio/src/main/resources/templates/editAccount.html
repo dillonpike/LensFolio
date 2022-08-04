@@ -162,6 +162,8 @@
 <div id="profileImageModal" th:replace="fragments/profileImageModal :: profileImageModal"></div>
 <div id="deleteModal" th:replace="fragments/deleteModalProject :: deleteModal"></div>
 
+<form method="post" id="reloadPage" th:action="@{reloadPage}"></form>
+
 </body>
 
 
@@ -209,6 +211,8 @@
   /*]]>*/
   if (imageReload) {
     setTimeout(() => {
+      // let form = document.getElementById("reloadPage");
+      // form.submit();
       document.location.reload();
     }, 50)
   }

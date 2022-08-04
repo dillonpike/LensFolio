@@ -266,5 +266,18 @@ public class EditAccountController {
         return "redirect:editAccount";
     }
 
+    /**
+     * Reloads the page and makes the update message appear.
+     * @param rm Redirect attributes
+     * @return Thymeleaf template
+     */
+    @PostMapping("/reloadPage")
+    public String reloadPage(
+            RedirectAttributes rm
+    ) {
+        rm.addFlashAttribute("isUpdateSuccess", true);
+        return "redirect:editAccount";
+    }
+
 
 }
