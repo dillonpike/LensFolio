@@ -169,6 +169,14 @@ public class EditAccountController {
         return "redirect:account";
     }
 
+    /**
+     * Controller method for deleting an account photo. Has to be authorised to do so, and writes the default image to
+     * the file the portfolio reads from.
+     * @param rm Redirect attributes
+     * @param model Parameters sent to thymeleaf template to be rendered into HTML
+     * @param principal Used for getting the user ID
+     * @return redirect back to edit account page
+     */
     @GetMapping("/deleteAccountPhoto")
     public String deletePhoto(
             RedirectAttributes rm,
@@ -208,6 +216,16 @@ public class EditAccountController {
         return "redirect:editAccount";
     }
 
+    /**
+     * Controller method for saving a profile image for an account.
+     * Gets the image as a multipart file from 'avatar' and writes it to a file before sending it to the IDP (through
+     * a service class).
+     * @param userId Id of user photo being uploaded
+     * @param rm Redirect attributes
+     * @param multipartFile A multi-part file that contains the image for uploading.
+     * @param model Parameters sent to thymeleaf template to be rendered into HTML
+     * @return redirect back to edit account page
+     */
     @PostMapping("/saveAccountPhoto")
     public String savePhoto(
             @ModelAttribute("userId") int userId,

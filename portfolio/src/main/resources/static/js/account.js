@@ -5,6 +5,9 @@ function settingsMenuToggle() {
     settingmenu.addEventListener('click',function() {event.stopPropagation()})
 }
 
+/**
+ * Sets up the delete modal to display the correct text and method/action to run for deleting a profile image.
+ */
 function deleteModalSetup() {
     const deleteModal = document.getElementById('deleteModal')
     deleteModal.addEventListener('show.bs.modal', function (event) {

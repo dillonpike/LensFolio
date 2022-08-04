@@ -29,7 +29,7 @@
             <div class="card-body p-xl-2">
               <div style="display: flex; flex-direction: column; justify-content: center" class="d-grid gap-2 col-8 mx-auto">
                 <label class="form-label" for="avatar" style="text-align:center">Update profile picture: </label>
-                <input class="form-control" type="file" id="avatar" name="avatar" value="Upload Profile Picture" data-bs-toggle="modal" data-bs-target="#ProfileImageModal" accept="image/png, image/jpeg, image/jpg">
+                <input class="form-control" type="file" id="avatar" name="avatar" value="Upload Profile Picture" data-bs-toggle="modal" data-bs-target="#profileImageModal" accept="image/png, image/jpeg, image/jpg">
                 <input type="hidden" th:value="${userId}" th:name="userId">
                 <button type="button" id="deletePhotoButton" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal" style="margin-top: 10px">Delete Photo</button>
                 <input type="hidden" th:value="${userId}" th:name="userId">
@@ -159,7 +159,7 @@
     </form>
   </div>
 
-<div id="ProfileImageModal" th:replace="fragments/ProfileImageModal :: ProfileImageModal"></div>
+<div id="profileImageModal" th:replace="fragments/profileImageModal :: profileImageModal"></div>
 <div id="deleteModal" th:replace="fragments/deleteModalProject :: deleteModal"></div>
 
 </body>
