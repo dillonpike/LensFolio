@@ -235,6 +235,7 @@ public class EditAccountController {
             wasSaved = true;
             if (wasSaved) {
                 rm.addFlashAttribute("isUpdateSuccess", true);
+                rm.addFlashAttribute("reloadImage", true);
             } else {
                 rm.addFlashAttribute("isUpdateSuccess", false);
                 rm.addFlashAttribute("message", "Photo failed to save");

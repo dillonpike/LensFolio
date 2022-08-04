@@ -204,6 +204,15 @@
 
   deleteModalSetup();
 
+  /*<![CDATA[*/
+  let imageReload = /*[[${reloadImage}]]*/ false;
+  /*]]>*/
+  if (imageReload) {
+    setTimeout(() => {
+      document.location.reload();
+    }, 50)
+  }
+
 </script>
 
 <!--<script src="js/fineCrop.js"></script>-->
