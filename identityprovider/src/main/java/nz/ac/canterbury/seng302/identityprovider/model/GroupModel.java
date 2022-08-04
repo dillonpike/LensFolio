@@ -49,6 +49,9 @@ public class GroupModel {
     @Column(name="User_Id")
     private Set<Integer> memberIds = new HashSet<>();
 
+    @OneToMany(mappedBy = "groupModel")
+    private Set<GroupSettingsModel> groupSettingsModels;
+
     /**
      * Empty constructor for JPA.
      */
