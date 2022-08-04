@@ -50,7 +50,7 @@ public class GroupModel {
     private Set<Integer> memberIds = new HashSet<>();
 
     @OneToMany(mappedBy = "groupModel")
-    private Set<GroupSettingsModel> groupSettingsModels;
+    private Set<GroupSettingModel> groupSettingsModels;
 
     /**
      * Empty constructor for JPA.

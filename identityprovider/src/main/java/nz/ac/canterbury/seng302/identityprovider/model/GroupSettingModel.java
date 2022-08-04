@@ -1,23 +1,24 @@
 package nz.ac.canterbury.seng302.identityprovider.model;
 import javax.persistence.*;
-import java.util.HashSet;
-import java.util.Set;
 
 
 @Entity
-public class GroupSettingsModel {
+@Table(name = "group_setting_model")
+public class GroupSettingModel {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int groupSettingId;
 
+    @ManyToOne
+    @JoinColumn(name = "group_id", nullable = false)
+    private GroupModel groupModel;
+
+
     private String alias;
 
     private  String gitlabApiKey;
 
-    @ManyToOne
-    @JoinColumn(name = "group_id", nullable = false)
-    private GroupModel groupModel;
 
 
     public int getGroupSettingId() {
