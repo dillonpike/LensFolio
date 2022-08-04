@@ -271,10 +271,12 @@ public class EditAccountController {
      * @param rm Redirect attributes
      * @return Thymeleaf template
      */
-    @PostMapping("/reloadPage")
+    @GetMapping("/reloadAccountSuccessfulPage")
     public String reloadPage(
+            @ModelAttribute("userId") int userId,
             RedirectAttributes rm
     ) {
+        rm.addAttribute("userId", userId);
         rm.addFlashAttribute("isUpdateSuccess", true);
         return "redirect:editAccount";
     }

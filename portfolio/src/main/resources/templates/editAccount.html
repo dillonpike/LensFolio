@@ -162,7 +162,9 @@
 <div id="profileImageModal" th:replace="fragments/profileImageModal :: profileImageModal"></div>
 <div id="deleteModal" th:replace="fragments/deleteModalProject :: deleteModal"></div>
 
-<form method="post" id="reloadPage" th:action="@{reloadPage}"></form>
+<form method="get" id="reloadPage" th:action="@{reloadAccountSuccessfulPage}">
+  <input type="hidden" th:value="${userId}" name="userId">
+</form>
 
 </body>
 
@@ -211,9 +213,9 @@
   /*]]>*/
   if (imageReload) {
     setTimeout(() => {
-      // let form = document.getElementById("reloadPage");
-      // form.submit();
-      document.location.reload();
+      let form = document.getElementById("reloadPage");
+      form.submit();
+      // document.location.reload();
     }, 50)
   }
 
