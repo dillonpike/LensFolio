@@ -24,12 +24,24 @@ function configureDateTimePicker(elementId) {
                     today: true,
                 },
                 components: {
-                    useTwentyfourHour: false
+                    useTwentyfourHour: false,
+                    decades: true,
+                    year: true,
+                    month: true,
+                    date: true,
+                    hours: elementId !== "milestoneDateInput",
+                    minutes: elementId !== "milestoneDateInput",
+                    seconds: false
                 },
                 theme: 'light'
             },
         }
     );
-    datepicker.dates.formatInput = function(date) { { return moment(date).format('DD/MMM/yyyy h:mm a') } }
+    if (elementId === "milestoneDateInput"){
+        datepicker.dates.formatInput = function(date) { { return moment(date).format('DD/MMM/yyyy') } }
+    } else {
+        datepicker.dates.formatInput = function(date) { { return moment(date).format('DD/MMM/yyyy h:mm a') } }
+    }
+
     return datepicker
 }
