@@ -24,19 +24,13 @@
           </div>
           <div class="mb-3">
             <label for="deadlineDate" class="col-form-label">Deadline Date:</label>
-            <div class="input-group date" id="deadlineDateInput">
-              <input onkeydown="return checkDateKeys(event)" onchange="validateModalDateTime('deadlineDate', 'deadlineTime', 'deadlineModalButton', 'deadlineDateAlertBanner', 'deadlineDateAlertMessage')" type="text" class="form-control" id="deadlineDate" th:name="deadlineDateString">
-              <span class="input-group-append">
-                  <span class="input-group-text bg-white">
-                      <em class="bi bi-calendar"></em>
-                  </span>
+            <div class="input-group" id="deadlineDateInput" data-td-target-input="nearest" data-td-target-toggle="nearest">
+              <input id="deadlineDate" type="text" class="form-control" data-td-target="#deadlineDateInput"
+                     onkeydown="return false" th:name="deadlineDateString" onchange="validateModalDateTime(
+                         'deadlineDate', 'deadlineModalButton', 'deadlineDateAlertBanner', 'deadlineDateAlertMessage')"/>
+              <span class="input-group-text bg-white" data-td-target="#deadlineDateInput" data-td-toggle="datetimepicker">
+                <span class="bi bi-calendar"></span>
               </span>
-            </div>
-          </div>
-          <div class="mb-3">
-            <label for="deadlineTime" class="col-form-label">Deadline Time:</label>
-            <div class='input-group date' id='deadlineTimeInput'>
-              <input onkeydown="return checkTimeKeys(event)" onchange="validateModalDateTime('deadlineDate', 'deadlineTime', 'deadlineModalButton', 'deadlineDateAlertBanner', 'deadlineDateAlertMessage')" type="time" class="form-control" id="deadlineTime" th:name="deadlineTimeString">
             </div>
           </div>
         </div>
@@ -46,28 +40,21 @@
       </form>
     </div>
   </div>
+  <script src="js/datepicker.js"></script>
   <script type="text/javascript">
 
     /**
      * Validates the currently entered information for the deadline and submits the form if it's valid.
      */
     async function validateDeadline() {
-      if (validateModalDateTime('deadlineDate', 'deadlineTime', 'deadlineModalButton', 'deadlineDateAlertBanner', 'deadlineDateAlertMessage') &&
+      if (validateModalDateTime('deadlineDate', 'deadlineModalButton', 'deadlineDateAlertBanner', 'deadlineDateAlertMessage') &&
               validateModalName('deadlineName', 'deadlineAlertBanner', 'deadlineAlertMessage')) {
         document.getElementById('deadlineForm').onsubmit = () => { return false };
         document.getElementById('deadlineForm').submit();
       }
     }
 
-    // fills in the date pickers
-    $(function() {
-      $('#deadlineDateInput').datepicker({
-        format: 'dd/M/yyyy',
-        todayHighlight: true,
-        todayBtn: true,
-        clearBtn: true,
-        orientation: 'bottom'
-      });
-    });
+    deadlineDatePicker = configureDateTimePicker('deadlineDateInput');
+
   </script>
 </div>

@@ -1,4 +1,4 @@
-package nz.ac.canterbury.seng302.identityprovider.service;
+package nz.ac.canterbury.seng302.identityprovider.server;
 
 import com.google.common.annotations.VisibleForTesting;
 import io.grpc.stub.StreamObserver;
@@ -6,6 +6,7 @@ import net.devh.boot.grpc.server.service.GrpcService;
 import nz.ac.canterbury.seng302.identityprovider.model.Roles;
 import nz.ac.canterbury.seng302.identityprovider.model.UserModel;
 import nz.ac.canterbury.seng302.identityprovider.repository.RolesRepository;
+import nz.ac.canterbury.seng302.identityprovider.service.UserModelService;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserAccountServiceGrpc;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserRegisterRequest;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserRegisterResponse;
@@ -353,31 +354,10 @@ public class UserAccountServerService extends UserAccountServiceGrpc.UserAccount
         PaginatedUsersResponse.Builder reply = PaginatedUsersResponse.newBuilder();
         List<UserModel> allUsers = userModelService.findAllUser();
         for (UserModel allUser : allUsers) {
-            reply.addUsers(getUserInfo(allUser));
+            reply.addUsers(userModelService.getUserInfo(allUser));
         }
         responseObserver.onNext(reply.build());
         responseObserver.onCompleted();
-    }
-
-    /***
-     * Help method to get user's information as a User Model
-     * @param user User model
-     * @return User model
-     */
-    private UserResponse getUserInfo(UserModel user) {
-        UserResponse.Builder response = UserResponse.newBuilder();
-        response.setUsername(user.getUsername())
-                .setFirstName(user.getFirstName())
-                .setLastName(user.getLastName())
-                .setNickname(user.getNickname())
-                .setId(user.getUserId());
-        Set<Roles> roles = user.getRoles();
-        Roles[] rolesArray = roles.toArray(new Roles[roles.size()]);
-
-        for (int i = 0; i < rolesArray.length; i++) {
-            response.addRolesValue(rolesArray[i].getId());
-        }
-        return response.build();
     }
 
     /***
