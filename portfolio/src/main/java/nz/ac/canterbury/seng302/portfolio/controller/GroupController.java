@@ -23,6 +23,8 @@ import java.util.List;
 
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletResponse;
+
 /**
  * Controller for group page
  */
@@ -82,26 +84,30 @@ public class GroupController {
     public String addGroup(
             @ModelAttribute("group") Group group,
             Model model,
-            RedirectAttributes rm
+            HttpServletResponse httpServletResponse
     ) {
 
         CreateGroupResponse response = groupService.createNewGroup(group.getShortName(), group.getLongName());
 
         if (response.getIsSuccess()) {
-            return "redirect:groups";
+            group.setGroupId(response.getNewGroupId());
+            model.addAttribute("group", group);
+            httpServletResponse.setStatus(HttpServletResponse.SC_OK);
+            return "group::groupCard";
         }
+
         List<ValidationError> errors = response.getValidationErrorsList();
         for (ValidationError error : errors) {
             String errorMessage = error.getErrorText();
-            if (errorMessage.contains("Short name")) {
+            if (errorMessage.contains("Short")) {
                 model.addAttribute("groupShortNameAlertMessage", error.getErrorText());
             }
-            if (errorMessage.contains("Long name")) {
+            if (errorMessage.contains("Long")) {
                 model.addAttribute("groupLongNameAlertMessage", error.getErrorText());
             }
         }
-
-        return "fragments/groupModal::groupShortNameAlertBanner";
+        httpServletResponse.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+        return "fragments/groupModal::groupModalBody";
     }
 
     /**
