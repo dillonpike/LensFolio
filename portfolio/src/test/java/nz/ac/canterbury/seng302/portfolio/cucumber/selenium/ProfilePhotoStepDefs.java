@@ -59,6 +59,7 @@ public class ProfilePhotoStepDefs {
     @When("I click the delete photo button")
     public void iClickTheDeletePhotoButton() {
         webDriver.findElement(By.id("deletePhotoButton")).click();
+        wait.until(ExpectedConditions.elementToBeClickable(By.id("deleteModalButton"))).click();
         wait.until(ExpectedConditions.elementToBeClickable(By.id("removeUpdateAlert")));
     }
 

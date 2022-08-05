@@ -146,8 +146,10 @@ function milestoneModalSetup() {
         }
 
         modalForm.setAttribute('object', milestone);
-        modalBodyInput.value = milestone.milestoneName
-        $('#milestoneDateInput').datepicker('setDate', milestone.milestoneDateString)
+        modalBodyInput.value = milestone.milestoneName;
+        milestoneDatePicker.dates.setValue(tempusDominus.DateTime.convert(new Date(milestone.milestoneDate)));
+        // Set minimum and maximum dates for greying out in the calendar
+        milestoneDatePicker.updateOptions({restrictions: {minDate: new Date(projectStartDate), maxDate: new Date(projectEndDate)}});
 
         // Initial run of validation functions in case initial values are invalid
         validateModalDate('milestoneDate', 'milestoneModalButton', 'milestoneDateAlertBanner', 'milestoneDateAlertMessage')
@@ -254,5 +256,68 @@ function eventModalSetup(projectStartDate, projectEndDate) {
         validateModalDateTimeRange('eventStartDate', 'eventEndDate', 'eventModalButton', 'eventDateTimeAlertBanner', 'eventDateTimeAlertMessage')
         updateCharsLeft('eventName', 'eventNameLength', 50)
         $('#' + modalButton.getAttribute("id")).prop('hidden', false);
+    })
+    /**
+     * Customises the sprint modal attributes with depending on what sprint it should display and whether it's being used
+     * for adding or editing a sprint.
+     */
+    function sprintModalSetup() {
+        const sprintModal = document.getElementById('sprintModal')
+        sprintModal.addEventListener('show.bs.modal', function (event) {
+            // Button that triggered the modal
+            const button = event.relatedTarget
+
+            // Extract info from data-bs-* attributes
+            const sprint = JSON.parse(button.getAttribute('data-bs-sprint'))
+            const type = button.getAttribute('data-bs-type')
+
+            // Update the modal's content.
+            const modalTitle = sprintModal.querySelector('.modal-title')
+            const modalBodyInputs = sprintModal.querySelectorAll('.modal-body input')
+            const modalBodyTextArea = sprintModal.querySelector('.modal-body textarea')
+            const modalButton = sprintModal.querySelector('.modal-footer button')
+            const modalForm = sprintModal.querySelector('form')
+
+            if (type === 'add') {
+                modalTitle.innerText = 'Add Sprint'
+                modalButton.innerHTML = 'Add Sprint'
+                modalForm.action = 'add-sprint'
+                modalForm.setAttribute('data-sprint-id', -1)
+            } else {
+                modalTitle.innerText = 'Edit Sprint'
+                modalButton.innerHTML = 'Save Sprint'
+                modalForm.action = `edit-sprint/${sprint.id}`
+                modalForm.setAttribute('data-sprint-id', sprint.id)
+            }
+
+            modalBodyInputs[0].value = sprint.name
+            $('#sprintStart').datepicker('setDate', sprint.startDateString)
+            $('#sprintEnd').datepicker('setDate', sprint.endDateString)
+            modalBodyTextArea.value = sprint.description
+
+            // Initial run of updateSprintDateError function in case initial values are invalid
+            updateSprintDateError();
+            updateCharsLeft('sprintName', 'sprintNameLength', 50);
+            updateCharsLeft('sprintDescription', 'sprintDescriptionLength', 500);
+        })
+        $("#sprintModalButton").on('click', function (ignore) {
+            pageReload();
+        });
+    }
+}
+/**
+ * Customises the group modal attributes with depending on what sprint it should display and whether it's being used
+ * for adding or editing a sprint.
+ */
+function groupModalSetup() {
+    const groupModal = document.getElementById('groupModal')
+    groupModal.addEventListener('show.bs.modal', function (event) {
+
+        // Update the modal's content.
+        const modalTitle = groupModal.querySelector('.modal-title')
+        const modalButton = groupModal.querySelector('.modal-footer button')
+
+        modalTitle.innerText = 'Add Group'
+        modalButton.innerHTML = 'Add Group'
     })
 }

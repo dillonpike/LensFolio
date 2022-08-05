@@ -1,14 +1,14 @@
-package nz.ac.canterbury.seng302.portfolio.model;
+package nz.ac.canterbury.seng302.identityprovider.model;
 
 import org.junit.jupiter.api.Test;
 
 import java.util.HashSet;
 import java.util.Set;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
- * Unit tests for Group class.
+ * This class contains all test for model of Group
  */
 class GroupTest {
 
@@ -22,7 +22,7 @@ class GroupTest {
         String expectedLongName = "Users Without Group";
         int expectedCourseId = 3;
         Set<Integer> expectedMemberIds = new HashSet<>();
-        Group group = new Group(expectedShortName, expectedLongName, expectedCourseId);
+        GroupModel group = new GroupModel(expectedShortName, expectedLongName, expectedCourseId);
 
         assertEquals(expectedGroupId, group.getGroupId());
         assertEquals(expectedShortName, group.getShortName());

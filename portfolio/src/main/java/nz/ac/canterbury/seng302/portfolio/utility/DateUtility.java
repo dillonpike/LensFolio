@@ -8,7 +8,8 @@ import java.time.LocalDate;
 import java.time.Period;
 
 /**
- * Helper functions related to dates.
+ * Helper functions for conversion between date objects and strings,
+ * and getting the years, months, or days since a specific date.
  */
 public class DateUtility {
     public DateUtility() {}
@@ -109,4 +110,5 @@ public class DateUtility {
         }
         return date;
     }
+
 }

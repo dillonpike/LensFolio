@@ -1,8 +1,7 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
 import nz.ac.canterbury.seng302.portfolio.model.Sprint;
-import nz.ac.canterbury.seng302.portfolio.service.DateValidationService;
-import nz.ac.canterbury.seng302.portfolio.service.SprintService;
+import nz.ac.canterbury.seng302.portfolio.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -23,6 +22,15 @@ public class EditSprintController {
     @Autowired
     private DateValidationService dateValidationService;
 
+    @Autowired
+    private PermissionService permissionService;
+
+    @Autowired
+    private UserAccountClientService userAccountClientService;
+
+    @Autowired
+    private ElementService elementService;
+
     /**
      * Tries to save new data to sprint with given sprintId to the database.
      * @param id Id of sprint edited
@@ -36,14 +44,19 @@ public class EditSprintController {
             @ModelAttribute("sprint") Sprint sprint,
             Model model
     ) throws Exception {
-        // Gets the project with id 0 to plonk on the page
-        Sprint newSprint = sprintService.getSprintById(id);
-        newSprint.setName(sprint.getName());
-        newSprint.setStartDateString(sprint.getStartDateString());
-        newSprint.setEndDateString(sprint.getEndDateString());
-        newSprint.setDescription(sprint.getDescription());
+        Integer userID = userAccountClientService.getUserIDFromAuthState(principal);
+        elementService.addHeaderAttributes(model, userID);
+        if (permissionService.isValidToModifyProjectPage(userID)) {
+            // Gets the project with id 0 to plonk on the page
+            Sprint newSprint = sprintService.getSprintById(id);
+            newSprint.setName(sprint.getName());
+            newSprint.setStartDateString(sprint.getStartDateString());
+            newSprint.setEndDateString(sprint.getEndDateString());
+            newSprint.setDescription(sprint.getDescription());
 
-        sprintService.updateSprint(newSprint);
+            sprintService.updateSprint(newSprint);
+        }
+
 
         return "redirect:/details";
     }

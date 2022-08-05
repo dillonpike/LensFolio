@@ -1,21 +1,27 @@
-package nz.ac.canterbury.seng302.identityprovider.service;
+package nz.ac.canterbury.seng302.identityprovider.server;
 
 import com.google.common.annotations.VisibleForTesting;
 import io.grpc.stub.StreamObserver;
 import net.devh.boot.grpc.server.service.GrpcService;
+import nz.ac.canterbury.seng302.identityprovider.IdentityProviderApplication;
 import nz.ac.canterbury.seng302.identityprovider.model.Roles;
 import nz.ac.canterbury.seng302.identityprovider.model.UserModel;
 import nz.ac.canterbury.seng302.identityprovider.repository.RolesRepository;
+import nz.ac.canterbury.seng302.identityprovider.service.UserModelService;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserAccountServiceGrpc;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserRegisterRequest;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserRegisterResponse;
 import nz.ac.canterbury.seng302.shared.util.FileUploadStatus;
 import nz.ac.canterbury.seng302.shared.util.FileUploadStatusResponse;
 import org.mariadb.jdbc.MariaDbBlob;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import nz.ac.canterbury.seng302.shared.identityprovider.*;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.Pbkdf2PasswordEncoder;
 
+import java.text.MessageFormat;
 import java.util.Set;
 
 import java.util.List;
@@ -25,9 +31,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.sql.Blob;
-import java.sql.SQLException;
-
-import static nz.ac.canterbury.seng302.identityprovider.IdentityProviderApplication.IMAGE_DIR;
 import static nz.ac.canterbury.seng302.shared.util.FileUploadStatus.*;
 
 
@@ -41,6 +44,11 @@ public class UserAccountServerService extends UserAccountServiceGrpc.UserAccount
 
     @Autowired
     private RolesRepository rolesRepository;
+
+    @Value("${spring.datasource.url}")
+    private String dataSource;
+
+    private static final Logger logger = LoggerFactory.getLogger(UserAccountServerService.class);
 
     /***
      * Attempts to register a user with a given username, password, first name, middle name, last name, email.
@@ -75,7 +83,8 @@ public class UserAccountServerService extends UserAccountServiceGrpc.UserAccount
             createdUser = userModelService.addUser(newUser);
             wasAdded = true;
         } catch (Exception e) {
-            System.err.println("Failed to create and add new user to database");
+            logger.error(MessageFormat.format(
+                    "Failed to create and add new user to database: {0}", e.getMessage()));
         }
         if (wasAdded) {
             responseObserver.onNext(reply.setNewUserId(createdUser.getUserId()).setMessage("Successful").setIsSuccess(true).build());
@@ -99,21 +108,11 @@ public class UserAccountServerService extends UserAccountServiceGrpc.UserAccount
             } else {
                 UserModel user = userModelService.getUserById(request.getId());
 
-                String profileImagePath = "";
-                try {
-                    Blob imageBlob = user.getPhoto();
-                    new File(IMAGE_DIR).mkdirs();
-                    File imageFile = new File(IMAGE_DIR + "/profileImage");
-                    FileOutputStream imageOutput = new FileOutputStream(imageFile);
-                    if  (imageBlob != null) {
-                        imageOutput.write(imageBlob.getBytes(1, (int) imageBlob.length()));
-                        profileImagePath = imageFile.getAbsolutePath();
-                    } else {
-                        profileImagePath = "";
-                    }
-                    imageOutput.close();
-                } catch (SQLException | IOException e) {
-                    e.printStackTrace();
+                // If there isn't a user image it returns an empty string which is then identified by the portfolio.
+                // It will then display the default user image.
+                String imageDirectory = user.getPhotoDirectory();
+                if (imageDirectory == null) {
+                    imageDirectory = "";
                 }
 
                 reply
@@ -126,7 +125,7 @@ public class UserAccountServerService extends UserAccountServiceGrpc.UserAccount
                         .setBio(user.getBio())
                         .setPersonalPronouns(user.getPersonalPronouns())
                         .setCreated(user.getDateAdded())
-                        .setProfileImagePath(profileImagePath);
+                        .setProfileImagePath(imageDirectory);
                 Set<Roles> roles = user.getRoles();
                 Roles[] rolesArray = roles.toArray(new Roles[roles.size()]);
 
@@ -136,7 +135,7 @@ public class UserAccountServerService extends UserAccountServiceGrpc.UserAccount
             }
 
         } catch(Exception e) {
-            e.printStackTrace();
+            logger.error(e.getMessage());
         }
 
         responseObserver.onNext(reply.build());
@@ -164,7 +163,7 @@ public class UserAccountServerService extends UserAccountServiceGrpc.UserAccount
             user.setPassword(currentUser.getPassword());
             user.setDateAdded(currentUser.getDateAdded());
             user.setRoles(currentUser.getRoles());
-            user.setPhoto(currentUser.getPhoto());
+            user.setPhotoDirectory(currentUser.getPhotoDirectory());
             wasSaved = userModelService.saveEditedUser(user);
             if (wasSaved) {
                 reply.setIsSuccess(true).setMessage("User Account is successfully updated!");
@@ -172,7 +171,8 @@ public class UserAccountServerService extends UserAccountServiceGrpc.UserAccount
                 reply.setIsSuccess(false).setMessage("Something went wrong");
             }
         } catch (Exception e) {
-            System.err.println("User failed to be changed to new values");
+            logger.error(MessageFormat.format(
+                    "User failed to be changed to new values: {0}", e.getMessage()));
         }
 
         responseObserver.onNext(reply.build());
@@ -201,7 +201,7 @@ public class UserAccountServerService extends UserAccountServiceGrpc.UserAccount
                 user.setPassword(request.getNewPassword());
                 user.setDateAdded(currentUser.getDateAdded());
                 user.setRoles(currentUser.getRoles());
-                user.setPhoto(currentUser.getPhoto());
+                user.setPhotoDirectory(currentUser.getPhotoDirectory());
                 wasSaved = userModelService.saveEditedUser(user);
                 if (wasSaved) {
                     reply.setIsSuccess(true).setMessage("User password successfully updated!");
@@ -212,7 +212,8 @@ public class UserAccountServerService extends UserAccountServiceGrpc.UserAccount
                 reply.setIsSuccess(false).setMessage("Current password was incorrect.");
             }
         } catch (Exception e) {
-            System.err.println("User failed to be changed to new values");
+            logger.error(MessageFormat.format(
+                    "User failed to be changed to new values: {0}", e.getMessage()));
         }
 
         responseObserver.onNext(reply.build());
@@ -255,14 +256,15 @@ public class UserAccountServerService extends UserAccountServiceGrpc.UserAccount
                         message = "Bytes failed to write to OutputStream";
                         byteFailed = true;
                         responseObserver.onNext(reply.setStatus(fileUploadStatus).setMessage(message).build());
-                        e.printStackTrace();
+                        logger.error(e.getMessage());
                     }
                 }
             }
 
             @Override
             public void onError(Throwable t) {
-                System.err.println("Failed to stream image: " + t.getMessage());
+                logger.error("Failed to stream image:");
+                logger.error(t.getMessage());
             }
 
             @Override
@@ -270,6 +272,7 @@ public class UserAccountServerService extends UserAccountServiceGrpc.UserAccount
                 FileUploadStatusResponse.Builder reply = FileUploadStatusResponse.newBuilder();
 
                 //  Call the function savePhotoToUser to save the photo
+                //  In the future, this could be kept as an array, rather than converting to a blob.
                 Blob blob = new MariaDbBlob(imageArray.toByteArray());
                 boolean wasSaved = false;
                 if (!byteFailed) {
@@ -290,33 +293,72 @@ public class UserAccountServerService extends UserAccountServiceGrpc.UserAccount
         };
     }
 
+
     /**
-     * Saves a photo to a user in the database. Overwrites anything already saved.
-     * @param userId Id of the user you want to add the photo to
-     * @param photo Photo blob for saving
+     * Saves a photo locally to the IDP and then its pathway to a user in the database. Overwrites anything already saved.
+     * @param userId    ID of the user you want to add the photo to
+     * @param photo     Photo blob for saving
      * @return Whether the new photo was saved
      */
     private boolean savePhotoToUser(int userId, Blob photo) {
         boolean status;
-        try{
-            UserModel user = userModelService.getUserById(userId);
-            if (user != null) {
-                user.setPhoto(photo);
-                status = userModelService.saveEditedUser(user);
-            } else {
-                status = false;
+
+        UserModel user = userModelService.getUserById(userId);
+        if (user != null) { // Valid user.
+            String directory = MessageFormat.format("{0}/{1}/{2}/public/",
+                    IdentityProviderApplication.IMAGE_DIR, getApplicationLocation(dataSource), userId);
+            String profileImagePath;
+
+            if (!new File(directory).mkdirs()) { // Ensures folders are made.
+                logger.warn("Not all folders may have been created.");
             }
-        } catch(Exception e) {
+
+            File imageFile = new File(directory + "/profileImage");
+            try (FileOutputStream imageOutput = new FileOutputStream(imageFile)) {
+
+                if  (photo != null) { // Checks to ensure the photo given from the Portfolio exists.
+                    imageOutput.write(photo.getBytes(1, (int) photo.length()));
+                    profileImagePath = imageFile.getAbsolutePath();
+                } else {
+                    // This means just the default image will be used by the portfolio when retrieved.
+                    profileImagePath = null;
+                }
+            } catch(Exception e) { // Error saving image in IDP or uploading information to the database.
+                logger.error(MessageFormat.format(
+                        "Something went wrong saving the users photo: {0}", e.getMessage()));
+                return false;
+            }
+
+            // Updates user.
+            user.setPhotoDirectory(profileImagePath);
+            status = userModelService.saveEditedUser(user);
+
+        } else { // Invalid user.
             status = false;
-            System.err.println("Photo not saved");
-            e.printStackTrace();
         }
+
         return status;
     }
 
     /**
-     * Deletes a users image from the database (Sets it to null).
-     * @param request Holds the user Id
+     * Gets the location of which branch/vm the program is running on.
+     * @param dataSource    This relates to the applications property file being used.
+     * @return 'dev', 'test' or 'prod', depending on the branch/vm.
+     */
+    private static String getApplicationLocation(String dataSource) {
+        if (dataSource.contains("seng302-2022-team100")) {
+            if (dataSource.contains("test")) {
+                return "test";
+            } else {
+                return "prod";
+            }
+        }
+        return "dev";
+    }
+
+    /**
+     * Deletes a users image pathway from the database (Sets it to null).
+     * @param request   Holds the user ID
      * @param responseObserver Tells the portfolio the status of whether the photo was deleted
      */
     @Override
@@ -329,12 +371,13 @@ public class UserAccountServerService extends UserAccountServiceGrpc.UserAccount
         try {
             UserModel user = userModelService.getUserById(request.getUserId());
             if (user != null) {
-                user.setPhoto(null);
+                user.setPhotoDirectory(null);
                 wasDeleted = userModelService.saveEditedUser(user);
                 message = "Photo deleted successfully";
             }
         } catch (Exception e) {
-            System.err.println("Something went wrong deleting the users photo");
+            logger.error(MessageFormat.format(
+                    "Something went wrong deleting the users photo: {0}", e.getMessage()));
         }
 
         reply.setIsSuccess(wasDeleted);
@@ -353,31 +396,10 @@ public class UserAccountServerService extends UserAccountServiceGrpc.UserAccount
         PaginatedUsersResponse.Builder reply = PaginatedUsersResponse.newBuilder();
         List<UserModel> allUsers = userModelService.findAllUser();
         for (UserModel allUser : allUsers) {
-            reply.addUsers(getUserInfo(allUser));
+            reply.addUsers(userModelService.getUserInfo(allUser));
         }
         responseObserver.onNext(reply.build());
         responseObserver.onCompleted();
-    }
-
-    /***
-     * Help method to get user's information as a User Model
-     * @param user User model
-     * @return User model
-     */
-    private UserResponse getUserInfo(UserModel user) {
-        UserResponse.Builder response = UserResponse.newBuilder();
-        response.setUsername(user.getUsername())
-                .setFirstName(user.getFirstName())
-                .setLastName(user.getLastName())
-                .setNickname(user.getNickname())
-                .setId(user.getUserId());
-        Set<Roles> roles = user.getRoles();
-        Roles[] rolesArray = roles.toArray(new Roles[roles.size()]);
-
-        for (int i = 0; i < rolesArray.length; i++) {
-            response.addRolesValue(rolesArray[i].getId());
-        }
-        return response.build();
     }
 
     /***
@@ -409,7 +431,8 @@ public class UserAccountServerService extends UserAccountServiceGrpc.UserAccount
             reply.setIsSuccess(true);
             return reply.build();
         } catch (Exception e) {
-            System.err.println("Something went wrong");
+            logger.error(MessageFormat.format(
+                    "Something went wrong: {0}", e.getMessage()));
             reply.setIsSuccess(false);
             return reply.build();
         }
@@ -474,7 +497,8 @@ public class UserAccountServerService extends UserAccountServiceGrpc.UserAccount
             }
             return reply.build();
         } catch (Exception e) {
-            System.err.println("Something went wrong");
+            logger.error(MessageFormat.format(
+                    "Something went wrong: {0}", e.getMessage()));
             reply.setIsSuccess(false);
             return reply.build();
         }

@@ -1,0 +1,218 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Group</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<!--    <link th:href="@{css/groups.css}" rel="stylesheet" />-->
+    <!-- CSS only -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" crossorigin="anonymous">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.22/css/dataTables.bootstrap4.min.css">
+    <script src="https://cdn.datatables.net/1.10.22/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.22/js/dataTables.bootstrap4.min.js"></script>
+
+</head>
+<body>
+<header th:replace="fragments/header"></header>
+<div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 2000">
+    <div class="toast" role="alert" aria-live="assertive" aria-atomic="true" id="liveToast1" data-bs-autohide="false" data-bs-animation="false">
+        <div class="toast-header">
+            <strong class="me-auto" id="toastTitle1"></strong>
+        </div>
+        <div class="toast-body" id="popupText1"></div>
+        <div id="toastInformation1" th:text="${toastEventInformation1}" hidden="true"></div>
+        <div id="toastEventName1" th:text="${toastEventName1}" hidden="true"></div>
+        <div id="toastEventId1" th:text="${toastEventId1}" hidden="true"></div>
+        <div id="toastUsername1" th:text="${toastUsername1}" hidden="true"></div>
+        <div id="toastFirstName1" th:text="${toastFirstName1}" hidden="true"></div>
+        <div id="toastLastName1" th:text="${toastLastName1}" hidden="true"></div>
+    </div>
+    <div class="toast" role="alert" aria-live="assertive" aria-atomic="true" id="liveToast2" data-bs-autohide="false" data-bs-animation="false">
+        <div class="toast-header">
+            <strong class="me-auto" id="toastTitle2"></strong>
+        </div>
+        <div class="toast-body" id="popupText2"></div>
+        <div id="toastInformation2" th:text="${toastEventInformation2}" hidden="true"></div>
+        <div id="toastEventName2" th:text="${toastEventName2}" hidden="true"></div>
+        <div id="toastEventId2" th:text="${toastEventId2}" hidden="true"></div>
+        <div id="toastUsername2" th:text="${toastUsername2}" hidden="true"></div>
+        <div id="toastFirstName2" th:text="${toastFirstName2}" hidden="true"></div>
+        <div id="toastLastName2" th:text="${toastLastName2}" hidden="true"></div>
+    </div>
+    <div class="toast" role="alert" aria-live="assertive" aria-atomic="true" id="liveToast3" data-bs-autohide="false" data-bs-animation="false">
+        <div class="toast-header">
+            <strong class="me-auto" id="toastTitle3"></strong>
+        </div>
+        <div class="toast-body" id="popupText3"></div>
+        <div id="toastInformation3" th:text="${toastEventInformation3}" hidden="true"></div>
+        <div id="toastEventName3" th:text="${toastEventName3}" hidden="true"></div>
+        <div id="toastEventId3" th:text="${toastEventId3}" hidden="true"></div>
+        <div id="toastUsername3" th:text="${toastUsername3}" hidden="true"></div>
+        <div id="toastFirstName3" th:text="${toastFirstName3}" hidden="true"></div>
+        <div id="toastLastName3" th:text="${toastLastName3}" hidden="true"></div>
+    </div>
+</div>
+<div class="container">
+    <div class="row">
+        <div class="col-12 col-md-4">
+            <div class="d-flex flex-column align-items-stretch flex-shrink-0 bg-white card shadow">
+                <a class="d-flex align-items-center flex-shrink-0 p-3 link-dark text-decoration-none border-bottom">
+                    <div class="hstack gap-3 p-2 flex-grow-1" id="group_list">
+                        <strong class="fs-5">Groups</strong>
+                    </div>
+                    <button type="button" data-bs-type="add" class="btn p-2" data-bs-toggle="modal" data-bs-target="#groupModal">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-circle" viewBox="0 0 16 16">
+                            <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"></path>
+                            <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"></path>
+                        </svg>
+                        Add Group
+                    </button>
+                </a>
+                <div class="list-group list-group-flush border-bottom group-bar">
+                    <div th:each="group : ${groupList}">
+                        <button  class="list-group-item list-group-item-action py-3 lh-tight" aria-current="true" th:attr="onclick=|updateTable('${group.groupId}')|" id="updateGroupButton">
+                            <div class="d-flex flex-row w-100 align-items-center justify-content-between">
+                                <strong class="mb-1" th:text="${group.shortName}"></strong>
+                                <div>
+                                    <svg th:if="${group.getLongName() != 'Members without a group' && group.getLongName() != 'Teachers Group'}" id="editGroupButton" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil" viewBox="0 0 16 16" data-bs-toggle="modal" data-bs-target="#groupModal">
+                                        <path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207 11.207 2.5zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293l6.5-6.5zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z"/>
+                                    </svg>
+                                    <svg th:if="${group.getLongName() != 'Members without a group' && group.getLongName() != 'Teachers Group'}" id="deleteGroupButton" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash-fill" viewBox="0 0 16 16" data-bs-toggle="modal" data-bs-target="#deleteModal" th:data-bs-id="${group.getGroupId()}" th:data-bs-name="${group.getShortName()}" data-bs-type="group">
+                                        <path d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1H2.5zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5zM8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5zm3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0z"/>
+                                    </svg>
+                                </div>
+                            </div>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-fill" viewBox="0 0 16 16">
+                                <path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H3zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/>
+                            </svg>
+                            <i th:text="${group.longName}"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-md-8 sticky-md-top card shadow">
+            <div id="table_refresh" th:fragment="table_refresh">
+                    <div class="container">
+                        <h1 th:text="${groupLongName}">No Group Selected</h1>
+                        <h4 th:text="${groupShortName}"></h4>
+                        <div class="hstack gap-3">
+                            <span>Copy To </span>
+                            <select class="form-select input-sm" aria-label="Default select example">
+                                <option selected>Open this select menu</option>
+                                <option value="1">One</option>
+                                <option value="2">Two</option>
+                                <option value="3">Three</option>
+                            </select>
+                            <button type="button" class="btn btn-success">
+                                Confirm
+                            </button>
+                            <button type="button" class="btn btn-danger">
+                                Remove
+                            </button>
+                        </div>
+
+                        <table class="table table-striped table-bordered display" id="table" >
+                            <thead class="table-dark" id="headTable">
+                            <tr>
+                                <th id="firstNameColumn">First Name</th>
+                                <th id="lastNameColumn">Last Name</th>
+                                <th id="usernameColumn">Username</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="member : ${members}">
+                                <td><span th:text="${member.FirstName}"> First Name </span></td>
+                                <td><span th:text="${member.LastName}"> Last Name </span></td>
+                                <td><span th:text="${member.username}"> Username </span></td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                <!--                Must have in line script here-->
+                <script>
+                    $('table').dataTable({searching: false, paging: false, info: false, select: true});
+                </script>
+
+            </div>
+         </div>
+    </div>
+
+</div>
+
+</body>
+<div id="groupModal" th:replace="fragments/groupModal :: groupModal"></div>
+<div th:replace="fragments/deleteModalProject :: deleteModal"></div>
+
+<script src="js/group.js"></script>
+<script src="js/detailsLive.js"></script>
+<script src="js/project.js"></script>
+<script th:inline="javascript">
+    /**
+     * Add a 'active' class to the selected group, highlight current selected group for better user experience
+     */
+    $('.group-bar button').on('click', function () {
+        $("div.group-bar button").removeClass('active');
+        $(this).addClass("active");
+    })
+
+    groupModalSetup();
+    deleteModalSetup()
+</script>
+
+<script>
+    function updateTable(groupId) {
+        const url = "groups/local?";
+        $('#table_refresh').load(url, "groupId=" + groupId)
+    }
+</script>
+
+<script>
+    //updates characters left
+    function updateCharsLeft(elementId, messageElementId, numChars) {
+        let chars_left = numChars - document.getElementById(elementId).value.length;
+        if (chars_left === numChars) {
+            document.getElementById(messageElementId).innerText = "";
+        } else if (chars_left === 1) {
+            document.getElementById(messageElementId).innerText = chars_left + " character left";
+        } else if (chars_left === 0) {
+            document.getElementById(messageElementId).innerText = "No characters left";
+        } else {
+            document.getElementById(messageElementId).innerText = chars_left + " characters left";
+        }
+    }
+
+    /**
+     * Check if the name of the item that the user inputted is not an empty string
+     * Submit the form and return true if the input is not empty string, otherwise show error banner with the error message and return false
+     * @param elementId the ID of the text input HTML element for item's name
+     * @param alertBanner the ID of the alert banner HTML element
+     * @param alertMessage the ID of the alert banner message HTML element
+     * @returns {boolean} true if the input is not empty string, otherwise false
+     */
+    function validateModalName(elementId, alertBanner, alertMessage) {
+        const nameInput = document.getElementById(elementId).value;
+        if (nameInput === "") {
+            document.getElementById(alertBanner).hidden = false;
+            document.getElementById(alertMessage).innerText = "Name cannot be empty!";
+            return false
+        } else {
+            document.getElementById(alertBanner).hidden = true;
+            return true
+        }
+    }
+
+    async function validateGroup() {
+        if (validateModalName('shortGroupName', 'groupShortNameAlertBanner', 'groupShortNameAlertMessage') &&
+            validateModalName('longGroupName', 'groupLongNameAlertBanner', 'groupLongNameAlertMessage')
+        ) {
+            document.getElementById('groupForm').onsubmit = () => { return false };
+            document.getElementById('groupForm').submit();
+        };
+    }
+</script>
+
+
+</html>
