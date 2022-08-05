@@ -7,7 +7,7 @@ import nz.ac.canterbury.seng302.portfolio.service.PhotoService;
 import nz.ac.canterbury.seng302.portfolio.service.RegisterClientService;
 import nz.ac.canterbury.seng302.portfolio.service.UserAccountClientService;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
-import nz.ac.canterbury.seng302.portfolio.utility.Utility;
+import nz.ac.canterbury.seng302.portfolio.utility.DateUtility;
 import nz.ac.canterbury.seng302.shared.identityprovider.DeleteUserProfilePhotoResponse;
 import nz.ac.canterbury.seng302.shared.identityprovider.EditUserResponse;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
@@ -90,8 +90,8 @@ public class EditAccountController {
             String fullName = getUserByIdReply.getFirstName() + " " + getUserByIdReply.getMiddleName() + " " + getUserByIdReply.getLastName();
             model.addAttribute("fullName", fullName);
             model.addAttribute("userId", id);
-            model.addAttribute("dateAdded", Utility.getDateAddedString(getUserByIdReply.getCreated()));
-            model.addAttribute("monthsSinceAdded", Utility.getDateSinceAddedString(getUserByIdReply.getCreated()));
+            model.addAttribute("dateAdded", DateUtility.getDateAddedString(getUserByIdReply.getCreated()));
+            model.addAttribute("monthsSinceAdded", DateUtility.getDateSinceAddedString(getUserByIdReply.getCreated()));
             model.addAttribute("userImage", photoService.getPhotoPath(getUserByIdReply.getProfileImagePath(), userId));
         } catch (StatusRuntimeException e) {
             model.addAttribute("loginMessage", "Error connecting to Identity Provider...");
@@ -267,6 +267,7 @@ public class EditAccountController {
 
             if (registerClientService.uploadUserProfilePhoto(userId, new File(filePath))) { // Saves image on IDP.
                 rm.addFlashAttribute(updateCheckID, true);
+                rm.addFlashAttribute("reloadImage", true);
             } else {
                 rm.addFlashAttribute(updateCheckID, false);
                 rm.addFlashAttribute(messageID, "Photo failed to save");
@@ -277,6 +278,21 @@ public class EditAccountController {
         }
 
         rm.addAttribute("userId", userId);
+        return "redirect:editAccount";
+    }
+
+    /**
+     * Reloads the page and makes the update message appear.
+     * @param rm Redirect attributes
+     * @return Thymeleaf template
+     */
+    @GetMapping("/reloadAccountSuccessfulPage")
+    public String reloadPage(
+            @ModelAttribute("userId") int userId,
+            RedirectAttributes rm
+    ) {
+        rm.addAttribute("userId", userId);
+        rm.addFlashAttribute("isUpdateSuccess", true);
         return "redirect:editAccount";
     }
 

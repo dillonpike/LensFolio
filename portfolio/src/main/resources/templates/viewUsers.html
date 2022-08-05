@@ -19,6 +19,12 @@
 
 <div class="container" style="width:60%";>
     <h1>Participants</h1>
+    <div class="alert alert-warning alert-dismissible fade show" role="alert" id="alertBanner" th:if="${isUpdateSuccess != null}">
+        <div style="display: flex; justify-content: space-between;flex-direction: row; align-items: center">
+            <strong th:text="${updateMessage}"></strong>
+            <button id="removeUpdateAlert" type="button" class="btn btn-outline-warning" onclick="removeAlertBanner()">X</button>
+        </div>
+    </div>
     <table class="table table-striped table-bordered display" id="sortTable" >
         <thead class="table-dark" id="headTable">
         <tr>
@@ -40,13 +46,13 @@
 
                             <span class="badge bg-primary">
                                 <span style="background: #0a64ff; border-radius: 10px;padding:3px 10px 3px 10px;margin: 5px 10px 5px 5px;" th:text="${role}"></span>
-                                <button th:if="${currentUserRole != 'student' && user.username != currentUsername && user.rolesList.size() > 1 }" th:attr="onclick=|deleteUserRole('${user.id}','${role}')|"
+                                <button th:if="${currentUserRole != 'student' && user.username != currentUsername && user.rolesList.size() > 1 && !(currentUserRole == 'teacher' && role.equals(adminRole))}" th:attr="onclick=|deleteUserRole('${user.id}','${role}')|"
                                         class="position-absolute top-10 start-5 translate-middle badge rounded-pill bg-danger" >
                                     X
                                 </button>
                             </span>
                 </div>
-                <div class="btn-group" style="margin-left: 5px" th:if="${currentUserRole != 'student' && user.rolesList.size() < 3}">
+                <div class="btn-group" style="margin-left: 5px" th:if="${currentUserRole != 'student' && user.rolesList.size() < 3 && !(currentUserRole == 'teacher' && user.rolesList.contains(teacherRole) && user.rolesList.contains(studentRole))}">
                     <button style ="padding:0 10px" type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         +
                     </button>
@@ -88,7 +94,7 @@
     function  deleteUserRole(id, role) {
         const url = "delete_role?userId="+id+"&deletedRole="+role;
         $.post(url);
-        window.location.reload();
+        // window.location.reload();
     }
 
     const table = $('#sortTable');

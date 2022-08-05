@@ -14,9 +14,9 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         // Endpoint all websockets are set up at
         registry.addEndpoint("mywebsockets")
-                .setAllowedOrigins("https://*.canterbury.ac.nz")
+                .setAllowedOriginPatterns("https://*.canterbury.ac.nz")
                 .withSockJS()
-                .setClientLibraryUrl("https://cdn.jsdeliver.net/sockjs/1.4.0/sockjs.min.js");
+                .setClientLibraryUrl("https://cdn.jsdelivr.net/sockjs/1.1.2/sockjs.min.js");
     }
 
     @Override
