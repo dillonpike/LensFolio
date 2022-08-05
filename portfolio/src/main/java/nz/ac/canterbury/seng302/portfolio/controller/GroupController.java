@@ -80,13 +80,12 @@ public class GroupController {
      */
     @PostMapping("/add-group")
     public String addGroup(
-            @ModelAttribute("shortGroupName") String shortName,
-            @ModelAttribute("longGroupName") String longName,
+            @ModelAttribute("group") Group group,
             Model model,
             RedirectAttributes rm
     ) {
 
-        CreateGroupResponse response = groupService.createNewGroup(shortName, longName);
+        CreateGroupResponse response = groupService.createNewGroup(group.getShortName(), group.getLongName());
 
         if (response.getIsSuccess()) {
             return "redirect:groups";
