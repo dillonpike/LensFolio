@@ -109,9 +109,9 @@ $(function () {
         let toastUsernameString = "#toastUsername" + (i+1);
         let toastFirstNameString = "#toastFirstName" + (i+1);
         let toastLastNameString = "#toastLastName" + (i+1);
-        let artefactInformation1 = $(toastInformationString);
-        if (artefactInformation1.text() !== "") {
-            showToastSave($(toastArtefactNameString).text(), $(toastArtefactIdString).text(), $(toastUsernameString).text(), $(toastFirstNameString).text(), $(toastLastNameString).text(), artefactInformation1.text());
+        let artefactInformation = $(toastInformationString);
+        if (artefactInformation.text() !== "") {
+            showToastSave($(toastArtefactNameString).text(), $(toastArtefactIdString).text(), $(toastUsernameString).text(), $(toastFirstNameString).text(), $(toastLastNameString).text(), artefactInformation.text());
         }
     }
 });
