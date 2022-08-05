@@ -116,7 +116,7 @@ public class GroupController {
     public String groupRemove(@PathVariable("id") Integer id, RedirectAttributes rd) {
         DeleteGroupResponse response = groupService.deleteGroup(id);
         rd.addAttribute(updateMessageId, response.getIsSuccess());
-        return "redirect:/group";
+        return "redirect:/groups";
     }
 
     /**
@@ -137,7 +137,7 @@ public class GroupController {
         model.addAttribute(updateMessageId, response.getIsSuccess());
 
         if (response.getIsSuccess()) {
-            return "redirect:/group";
+            return "redirect:/groups";
         }
 
         for (ValidationError error : response.getValidationErrorsList()) {
