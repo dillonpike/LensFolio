@@ -2,6 +2,7 @@ package nz.ac.canterbury.seng302.portfolio.service;
 
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 import org.springframework.web.servlet.support.RequestContextUtils;
@@ -17,6 +18,9 @@ public class ElementService {
 
     @Autowired
     private RegisterClientService registerClientService;
+
+    @Autowired
+    private PhotoService photoService;
 
     /**
      * Updates the given model with an updateMessage attribute.
@@ -46,6 +50,9 @@ public class ElementService {
         }
     }
 
+    @Value("${spring.datasource.url}")
+    private String dataSource;
+
     /**
      * Update the given model with a 'access denied' Message attribute
      * @param model model from controller method that attributes will be added to
@@ -71,6 +78,8 @@ public class ElementService {
         UserResponse userData = registerClientService.getUserData(userId);
         String fullNameHeader = userData.getFirstName() + " " + userData.getMiddleName() + " " + userData.getLastName();
         model.addAttribute("headerFullName", fullNameHeader);
+        // Gets the dynamic image spring is hosting for that user or the default image.
+        model.addAttribute("userImage", photoService.getPhotoPath(userData.getProfileImagePath(), userId));
     }
 
     /**

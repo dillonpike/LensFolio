@@ -69,6 +69,14 @@ public class GeneralSeleniumSteps {
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//h2[contains(., 'Profile')]")));
     }
 
+    @When("I browse to the group page")
+    public void iBrowseToTheGroupPage() {
+        webDriver.findElement(By.id("dropdownUser1")).click();
+        wait.until(ExpectedConditions.elementToBeClickable(By.id("groupButton")));
+        webDriver.findElement(By.id("groupButton")).click();
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//strong[contains(., 'Groups')]")));
+    }
+
     @Given("I am logged in as {string}")
     public void iAmLoggedInAsUsername(String username) {
         webDriver.navigate().to("http://localhost:9000/login");

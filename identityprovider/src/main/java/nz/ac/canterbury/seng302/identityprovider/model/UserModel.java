@@ -26,7 +26,7 @@ public class UserModel implements Serializable {
     private String bio;
     private String personalPronouns;
     private Timestamp dateAdded;
-    private Blob photo;
+    private String photoDirectory;
 
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
     @JoinTable(name = "user_to_role",
@@ -36,6 +36,19 @@ public class UserModel implements Serializable {
                     @JoinColumn(name = "Role_Id")
     )
     private Set<Roles> roles = new HashSet<>();
+
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
+    @JoinTable(name = "user_to_group",
+            joinColumns =
+            @JoinColumn(name = "User_Id"),
+            inverseJoinColumns =
+            @JoinColumn(name = "group_id")
+    )
+    private Set<GroupModel> groups = new HashSet<>();
+    public void addGroup(GroupModel groupModel) {
+        this.groups.add(groupModel);
+    }
+
 
     public void addRoles(Roles role) {
         this.roles.add(role);
@@ -57,7 +70,6 @@ public class UserModel implements Serializable {
     public void setRoles(Set<Roles> roles) {
         this.roles = roles;
     }
-
     public UserModel() {}
 
     public UserModel(String username, String password, String firstName, String middleName, String lastName, String nickname, String email, String bio, String personalPronouns) {
@@ -172,16 +184,24 @@ public class UserModel implements Serializable {
         }
     }
 
-    public void setPhoto(Blob photo) {
-        this.photo = photo;
+    public void setPhotoDirectory(String photoDirectory) {
+        this.photoDirectory = photoDirectory;
     }
 
-    public Blob getPhoto() {
-        return photo;
+    public String getPhotoDirectory() {
+        return photoDirectory;
     }
 
     @Override
     public String toString() {
         return "User -> id: " + userId + "  username: " + username;
+    }
+
+    public Set<GroupModel> getGroups() {
+        return groups;
+    }
+
+    public void setGroups(Set<GroupModel> groups) {
+        this.groups = groups;
     }
 }

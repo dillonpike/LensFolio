@@ -5,6 +5,8 @@ import io.grpc.stub.StreamObserver;
 import net.devh.boot.grpc.client.inject.GrpcClient;
 import nz.ac.canterbury.seng302.shared.identityprovider.*;
 import nz.ac.canterbury.seng302.shared.util.FileUploadStatusResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.security.crypto.password.Pbkdf2PasswordEncoder;
 import javax.imageio.ImageIO;
@@ -14,6 +16,7 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.text.MessageFormat;
 import java.util.Iterator;
 
 /***
@@ -29,6 +32,8 @@ public class RegisterClientService {
     private UserAccountServiceGrpc.UserAccountServiceStub userAccountNonBlockingStub;
 
     Pbkdf2PasswordEncoder pbkdf2PasswordEncoder = new Pbkdf2PasswordEncoder();
+
+    private static final Logger logger = LoggerFactory.getLogger(RegisterClientService.class);
 
     /**
      * Creates a UserRegisterRequest and returns the response from the IDP. The IDP will save a new user to the database
@@ -123,7 +128,7 @@ public class RegisterClientService {
      * @param userId Id of the user that is having its photo changed
      * @param imageFile File object of new image
      */
-    public void uploadUserProfilePhoto(int userId, File imageFile) {
+    public boolean uploadUserProfilePhoto(int userId, File imageFile) {
 
         byte[] imageArray = new byte[0];
         boolean imageFoundCorrectly = true;
@@ -140,7 +145,8 @@ public class RegisterClientService {
             ImageIO.write(testImage, reader.getFormatName(), imageArrayOutputStream);
             imageArray = imageArrayOutputStream.toByteArray();
         } catch (IOException e) {
-            System.err.println("You didn't find the image correctly");
+            logger.error("You didn't find the image correctly:");
+            logger.error(e.getMessage());
             imageFoundCorrectly = false;
         }
         byte[] finalImageArray = imageArray;
@@ -150,38 +156,30 @@ public class RegisterClientService {
             public void onNext(FileUploadStatusResponse value) {
 
                 switch (value.getStatusValue()) {
-                    case 0:  // PENDING
-                        System.out.println("Server pending");
-                        System.out.println("    System returned: " + value.getMessage());
-                        break;
-
-                    case 1:  // IN_PROGRESS
-                        System.out.println("Server uploading");
-                        System.out.println("    System returned: " + value.getMessage());
-                        break;
-
-                    case 2:  // SUCCESS
-                        System.out.println("Server finished successfully");
-                        System.out.println("    System returned: " + value.getMessage());
-                        break;
-
-                    case 3:  // FAILED
-                        System.out.println("Server failed to upload image");
-                        System.out.println("    System returned: " + value.getMessage());
-                        break;
-                    default:
-                        break;
+                    case 0 ->  // PENDING
+                            logger.info("Server pending");
+                    case 1 ->  // IN_PROGRESS
+                            logger.info("Server uploading");
+                    case 2 ->  // SUCCESS
+                            logger.info("Server finished successfully");
+                    case 3 ->  // FAILED
+                            logger.error("Server failed to upload image");
+                    default -> // ERROR
+                            logger.error("Invalid statue code!");
                 }
+                logger.info("System returned: ");
+                logger.info(value.getMessage());
             }
 
             @Override
             public void onError(Throwable t) {
-
+                logger.error("Failed to stream image:");
+                logger.error(t.getMessage());
             }
 
             @Override
             public void onCompleted() {
-                System.out.println("<-> Finished <->");
+                logger.info("<-> Finished <->");
             }
         };
 
@@ -208,13 +206,21 @@ public class RegisterClientService {
                 requestObserver.onNext(reply.build());
                 // Complete conversation
                 requestObserver.onCompleted();
+                return true;
             } catch (Exception e) {
-                System.err.println("Something went wrong uploading the file");
-                e.printStackTrace();
+                logger.error(MessageFormat.format(
+                        "Something went wrong uploading the file: {0}", e.getMessage()));
+                return false;
             }
         }
+        return false;
     }
 
+    /**
+     * Sends a message through GRPC contracts to delete the accounts image path from the database.
+     * @param userId    The users ID.
+     * @return The response from the IDP.
+     */
     public DeleteUserProfilePhotoResponse deleteUserProfilePhoto(int userId) {
         DeleteUserProfilePhotoRequest.Builder request = DeleteUserProfilePhotoRequest.newBuilder();
         return userAccountStub.deleteUserProfilePhoto(request.setUserId(userId).build());
