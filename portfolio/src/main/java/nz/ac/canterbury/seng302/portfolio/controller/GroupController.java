@@ -123,7 +123,7 @@ public class GroupController {
         if (response.getIsSuccess()) {
             httpServletResponse.setStatus(HttpServletResponse.SC_OK);
         } else {
-            httpServletResponse.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            httpServletResponse.setStatus(HttpServletResponse.SC_BAD_REQUEST);
         }
     }
 

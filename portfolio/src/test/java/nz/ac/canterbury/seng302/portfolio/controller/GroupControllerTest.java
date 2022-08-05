@@ -22,9 +22,9 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import static org.hamcrest.Matchers.containsString;
 import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 /**
@@ -66,7 +66,7 @@ class GroupControllerTest {
     }
 
     /**
-     * Test that when a GET call is made to delete a group of a given valid id, that the controller returns a successful value.
+     * Test that when a DELETE call is made to delete a group of a given valid id, that the controller returns a successful value.
      * @throws Exception    Can be caused during mocking the MVC system.
      */
     @Test
@@ -78,16 +78,14 @@ class GroupControllerTest {
         int expectedGroupId = 1;
         when(groupService.deleteGroup(expectedGroupId)).thenReturn(DeleteGroupResponse.newBuilder().setIsSuccess(true).build());
 
-        mockMvc.perform(get("/delete-group/" + expectedGroupId))
-                .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/group?isUpdateSuccess=true"))
-                .andExpect(model().attribute("isUpdateSuccess", "true"));
+        mockMvc.perform(delete("/delete-group/" + expectedGroupId))
+                .andExpect(status().is2xxSuccessful());
 
         verify(groupService, times(1)).deleteGroup(expectedGroupId);
     }
 
     /**
-     * Test that when a GET call is made to delete a group of a given invalid id, that the controller returns an un-successful value.
+     * Test that when a DELETE call is made to delete a group of a given invalid id, that the controller returns an un-successful value.
      * @throws Exception    Can be caused during mocking the MVC system.
      */
     @Test
@@ -99,10 +97,8 @@ class GroupControllerTest {
         int expectedGroupId = 1;
         when(groupService.deleteGroup(expectedGroupId)).thenReturn(DeleteGroupResponse.newBuilder().setIsSuccess(false).build());
 
-        mockMvc.perform(get("/delete-group/" + expectedGroupId))
-                .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/group?isUpdateSuccess=false"))
-                .andExpect(model().attribute("isUpdateSuccess", "false"));
+        mockMvc.perform(delete("/delete-group/" + expectedGroupId))
+                .andExpect(status().is4xxClientError());
 
         verify(groupService, times(1)).deleteGroup(expectedGroupId);
     }
@@ -128,8 +124,9 @@ class GroupControllerTest {
                 .thenReturn(ModifyGroupDetailsResponse.newBuilder().setIsSuccess(true).build());
 
         mockMvc.perform(post("/edit-group/" + expectedGroupId).flashAttr("group", group))
-                .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/group"));
+                .andExpect(status().isOk())
+                .andExpect(model().attribute("group", group))
+                .andExpect(view().name("group::groupCard"));
 
         verify(groupService, times(1)).editGroupDetails(expectedGroupId, group.getShortName(), group.getLongName());
     }
@@ -155,8 +152,10 @@ class GroupControllerTest {
                 .thenReturn(ModifyGroupDetailsResponse.newBuilder().setIsSuccess(false).build());
 
         mockMvc.perform(post("/edit-group/" + expectedGroupId).flashAttr("group", group))
-                .andExpect(status().is2xxSuccessful())
-                .andExpect(model().attribute("isUpdateSuccess", false));
+                .andExpect(status().is4xxClientError())
+                .andExpect(model().attributeDoesNotExist("groupShortNameAlertMessage"))
+                .andExpect(model().attributeDoesNotExist("groupShortNameAlertMessage"))
+                .andExpect(view().name("fragments/groupModal::groupModalBody"));
 
         verify(groupService, times(1)).editGroupDetails(expectedGroupId, group.getShortName(), group.getLongName());
     }
@@ -183,9 +182,10 @@ class GroupControllerTest {
         when(groupService.editGroupDetails(expectedGroupId, group.getShortName(), group.getLongName())).thenReturn(response);
 
         mockMvc.perform(post("/edit-group/" + expectedGroupId).flashAttr("group", group))
-                .andExpect(status().is2xxSuccessful())
+                .andExpect(status().is4xxClientError())
                 .andExpect(model().attribute("groupShortNameAlertMessage", "Short name is to long."))
-                .andExpect(model().attribute("isUpdateSuccess", false));
+                .andExpect(model().attributeDoesNotExist("groupLongNameAlertMessage"))
+                .andExpect(view().name("fragments/groupModal::groupModalBody"));
 
         verify(groupService, times(1)).editGroupDetails(expectedGroupId, group.getShortName(), group.getLongName());
     }
@@ -212,9 +212,10 @@ class GroupControllerTest {
         when(groupService.editGroupDetails(expectedGroupId, group.getShortName(), group.getLongName())).thenReturn(response);
 
         mockMvc.perform(post("/edit-group/" + expectedGroupId).flashAttr("group", group))
-                .andExpect(status().is2xxSuccessful())
-                .andExpect(model().attribute("groupLongNameAlertMessage", response.getValidationErrorsList().get(0).getErrorText()))
-                .andExpect(model().attribute("isUpdateSuccess", false));
+                .andExpect(status().is4xxClientError())
+                .andExpect(model().attribute("groupLongNameAlertMessage", "Long name is to long."))
+                .andExpect(model().attributeDoesNotExist("groupShortNameAlertMessage"))
+                .andExpect(view().name("fragments/groupModal::groupModalBody"));
 
         verify(groupService, times(1)).editGroupDetails(expectedGroupId, group.getShortName(), group.getLongName());
     }
