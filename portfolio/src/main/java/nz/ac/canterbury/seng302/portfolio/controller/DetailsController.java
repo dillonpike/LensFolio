@@ -10,11 +10,9 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import nz.ac.canterbury.seng302.shared.identityprovider.ClaimDTO;
 import org.springframework.web.util.HtmlUtils;
 
 import javax.servlet.http.HttpServletRequest;
@@ -72,7 +70,7 @@ public class DetailsController {
     /***
      * GET request method, followed by the request URL(../details)
      *
-     * @param principal
+     * @param principal For getting the user ID
      * @param model Parameters sent to thymeleaf template to be rendered into HTML
      * @return projectDetails page
      * @throws Exception
@@ -142,20 +140,9 @@ public class DetailsController {
                 toastsToGenerate.get(count).setUsername(event.getUsername());
                 toastsToGenerate.get(count).setUserFirstName(event.getUserFirstName());
                 toastsToGenerate.get(count).setUserLastName(event.getUserLastName());
-//                model.addAttribute("toastEventInformation" + count, event.getArtefactType());
-//                model.addAttribute("toastEventName" + count, event.getArtefactName());
-//                model.addAttribute("toastEventId" + count, event.getArtefactId());
-//                model.addAttribute("toastUsername" + count, event.getUsername());
-//                model.addAttribute("toastFirstName" + count, event.getUserFirstName());
-//                model.addAttribute("toastLastName" + count, event.getUserLastName());
             } else {
                 eventsToDelete.add(event);
-//                model.addAttribute("toastEventInformation" + count, "");
-//                model.addAttribute("toastEventName" + count, "");
-//                model.addAttribute("toastEventId" + count, "");
-//                model.addAttribute("toastUsername" + count, "");
-//                model.addAttribute("toastFirstName" + count, "");
-//                model.addAttribute("toastLastName" + count, "");
+                toastsToGenerate.get(count).setArtefactInformation("");
             }
             count++;
         }

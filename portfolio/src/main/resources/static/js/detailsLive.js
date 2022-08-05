@@ -1,74 +1,16 @@
-// Make sure to import Notification.js before this file in your HTML.
+/* Make sure to import Notification.js before this file in your HTML. */
+/** ************ Notification.js REQUIRED TO RUN THIS FILE ************ */
 
+/**
+ * Number of toasts generated and can be created at one time. Must be more or equal to NUM_OF_TOASTS in DetailsController.java.
+ * @type {number}
+ */
 const NUM_OF_TOASTS = 3;
 
+/**
+ * Stores the stomp client to connect to and send to for WebSockets/SockJS.
+ */
 let stompClient = null;
-let toast1 = null;
-let toast2 = null;
-let toast3 = null;
-
-
-/**
- * Holds a list of Notification objects that are, or have been active. Can only be as long as listOfHTMLToasts.
- * @type {[Notification]}
- */
-let listOfNotifications = [];
-/**
- * List of html toast object pairs that hold a Bootstrap toast object, a body text variable and a title text variable.
- * These can be assigned to Notification objects to display them.
- * @type {[{'toast', 'text', 'title'}]}
- */
-let listOfHTMLToasts = [];
-
-/**
- * Adds Notification objects to the listOfNotifications list if it is new, otherwise updates the existing notification.
- * Then reassigns the toast html objects to the new list.
- * @param newNotification New toast object to add/update to the list.
- * @returns {Notification} updated toast if it already existed, otherwise, returns the parameter 'newToast'.
- */
-function addNotification(newNotification) {
-    let returnedNotification = newNotification;
-
-    let notificationExists = false;
-    let notificationIndex = -1;
-    let count = 0;
-    for (let item in listOfNotifications) {
-        if (listOfNotifications[count].id === newNotification.id) {
-            notificationExists = true;
-            notificationIndex = count;
-            break;
-        }
-        count += 1;
-    }
-    if (notificationExists) {
-        returnedNotification = listOfNotifications[notificationIndex].updateNotification(newNotification);
-    } else {
-        listOfNotifications.push(newNotification)
-        while (listOfNotifications.length > listOfHTMLToasts.length) {
-            listOfNotifications.shift();
-        }
-    }
-    reorderNotifications();
-    return returnedNotification;
-}
-
-/**
- * Reassigns toast html objects to the toast objects that are active at the moment (in the list 'listOfToasts')
- */
-function reorderNotifications() {
-    let count = 0;
-    for (let item in listOfHTMLToasts) {
-        listOfHTMLToasts[count].toast.hide();
-        count += 1;
-    }
-    count = 0;
-    for (let item in listOfNotifications) {
-        let toastItems = listOfHTMLToasts[count];
-        let notification = listOfNotifications[count];
-        notification.setToast(toastItems.toast, toastItems.text, toastItems.title);
-        count += 1;
-    }
-}
 
 /**
  * Connects the stomp client to the setup websocket endpoint.
@@ -90,9 +32,7 @@ function connect() {
         stompClient.subscribe('/webSocketGet/save-edit', function (eventResponseArg) {
             const eventResponse = JSON.parse(eventResponseArg.body);
             refreshEvents();
-
             showToastSave(eventResponse.artefactName, eventResponse.artefactId, eventResponse.username, eventResponse.userFirstName, eventResponse.userLastName, eventResponse.artefactType);
-
         });
 
     });
@@ -151,22 +91,27 @@ function refreshEvents() {
  */
 $(function () {
 
-    toast1 = new bootstrap.Toast($("#liveToast1"));
-    toast2 = new bootstrap.Toast($("#liveToast2"));
-    toast3 = new bootstrap.Toast($("#liveToast3"));
-    listOfHTMLToasts = [{'toast':toast1, 'text':$("#popupText1"), 'title':$("#toastTitle1")}, {'toast':toast2, 'text':$("#popupText2"), 'title':$("#toastTitle2")}, {'toast':toast3, 'text':$("#popupText3"), 'title':$("#toastTitle3")}];
+    // Generate list of HTML toasts.
+    for (let i = 0; i < NUM_OF_TOASTS; i++) {
+        let toastString = "#liveToast" + (i+1);
+        let popupTextString = "#popupText" + (i+1);
+        let toastTitleString = "#toastTitle" + (i+1);
+        listOfHTMLToasts.push({'toast':new bootstrap.Toast($(toastString)), 'text':$(popupTextString), 'title':$(toastTitleString)})
+    }
+
     connect();
+
     // Checks if there should be a live update, and shows a toast if needed.
-    let eventInformation1 = $("#toastInformation1");
-    if (eventInformation1.text() !== "") {
-        showToastSave($("#toastArtefactName1").text(), $("#toastArtefactId1").text(), $("#toastUsername1").text(), $("#toastFirstName1").text(), $("#toastLastName1").text(), eventInformation1.text());
-    }
-    let eventInformation2 = $("#toastInformation2");
-    if (eventInformation2.text() !== "") {
-        showToastSave($("#toastArtefactName2").text(), $("#toastArtefactId2").text(), $("#toastUsername2").text(), $("#toastFirstName2").text(), $("#toastLastName2").text(), eventInformation1.text());
-    }
-    let eventInformation3 = $("#toastInformation3");
-    if (eventInformation3.text() !== "") {
-        showToastSave($("#toastArtefactName3").text(), $("#toastArtefactId3").text(), $("#toastUsername3").text(), $("#toastFirstName3").text(), $("#toastLastName3").text(), eventInformation1.text());
+    for (let i = 0; i < NUM_OF_TOASTS; i++) {
+        let toastInformationString = "#toastInformation" + (i+1);
+        let toastArtefactNameString = "#toastArtefactName" + (i+1);
+        let toastArtefactIdString = "#toastArtefactId" + (i+1);
+        let toastUsernameString = "#toastUsername" + (i+1);
+        let toastFirstNameString = "#toastFirstName" + (i+1);
+        let toastLastNameString = "#toastLastName" + (i+1);
+        let artefactInformation1 = $(toastInformationString);
+        if (artefactInformation1.text() !== "") {
+            showToastSave($(toastArtefactNameString).text(), $(toastArtefactIdString).text(), $(toastUsernameString).text(), $(toastFirstNameString).text(), $(toastLastNameString).text(), artefactInformation1.text());
+        }
     }
 });

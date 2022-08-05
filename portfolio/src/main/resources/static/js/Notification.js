@@ -184,3 +184,67 @@ Notification.prototype.toString = function () {
     return this.id + ": " + this.name;
 }
 
+
+/**
+ * Holds a list of Notification objects that are, or have been active. Can only be as long as listOfHTMLToasts.
+ * @type {[Notification]}
+ */
+let listOfNotifications = [];
+
+/**
+ * List of html toast object pairs that hold a Bootstrap toast object, a body text variable and a title text variable.
+ * These can be assigned to Notification objects to display them.
+ * @type {[{'toast', 'text', 'title'}]}
+ */
+let listOfHTMLToasts = [];
+
+/**
+ * Adds Notification objects to the listOfNotifications list if it is new, otherwise updates the existing notification.
+ * Then reassigns the toast html objects to the new list.
+ * @param newNotification New toast object to add/update to the list.
+ * @returns {Notification} updated toast if it already existed, otherwise, returns the parameter 'newToast'.
+ */
+function addNotification(newNotification) {
+    let returnedNotification = newNotification;
+
+    let notificationExists = false;
+    let notificationIndex = -1;
+    let count = 0;
+    for (let item in listOfNotifications) {
+        if (listOfNotifications[count].id === newNotification.id) {
+            notificationExists = true;
+            notificationIndex = count;
+            break;
+        }
+        count += 1;
+    }
+    if (notificationExists) {
+        returnedNotification = listOfNotifications[notificationIndex].updateNotification(newNotification);
+    } else {
+        listOfNotifications.push(newNotification)
+        while (listOfNotifications.length > listOfHTMLToasts.length) {
+            listOfNotifications.shift();
+        }
+    }
+    reorderNotifications();
+    return returnedNotification;
+}
+
+/**
+ * Reassigns toast html objects to the toast objects that are active at the moment (in the list 'listOfToasts')
+ */
+function reorderNotifications() {
+    let count = 0;
+    for (let item in listOfHTMLToasts) {
+        listOfHTMLToasts[count].toast.hide();
+        count += 1;
+    }
+    count = 0;
+    for (let item in listOfNotifications) {
+        let toastItems = listOfHTMLToasts[count];
+        let notification = listOfNotifications[count];
+        notification.setToast(toastItems.toast, toastItems.text, toastItems.title);
+        count += 1;
+    }
+}
+
