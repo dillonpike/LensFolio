@@ -7,6 +7,8 @@
     <!-- CSS only -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" crossorigin="anonymous">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js" integrity="sha512-iKDtgDyTHjAitUDdLljGhenhPwrbBfqTKWO1mkhSFH3A7blITC9MhYon6SjnMhp4o0rADGw9yAC6EW4t5a4K3g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <link rel="stylesheet" href="https://cdn.datatables.net/1.10.22/css/dataTables.bootstrap4.min.css">
@@ -17,41 +19,19 @@
 <body>
 <header th:replace="fragments/header"></header>
 <div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 2000">
-    <div class="toast" role="alert" aria-live="assertive" aria-atomic="true" id="liveToast1" data-bs-autohide="false" data-bs-animation="false">
-        <div class="toast-header">
-            <strong class="me-auto" id="toastTitle1"></strong>
+    <div th:each="toast, meta: ${toastsToGenerate}">
+        <div class="toast" role="alert" aria-live="assertive" aria-atomic="true" th:id="${#ids.seq('liveToast')}" data-bs-autohide="false" data-bs-animation="false">
+            <div class="toast-header">
+                <strong class="me-auto" th:id="${#ids.seq('toastTitle')}"></strong>
+            </div>
+            <div class="toast-body" th:id="${#ids.seq('popupText')}"></div>
+            <div th:id="${#ids.seq('toastInformation')}" th:text="${toast.getArtefactInformation()}" hidden="true"></div>
+            <div th:id="${#ids.seq('toastArtefactName')}" th:text="${toast.getArtefactName()}" hidden="true"></div>
+            <div th:id="${#ids.seq('toastArtefactId')}" th:text="${toast.getArtefactId()}" hidden="true"></div>
+            <div th:id="${#ids.seq('toastUsername')}" th:text="${toast.getUsername()}" hidden="true"></div>
+            <div th:id="${#ids.seq('toastFirstName')}" th:text="${toast.getUserFirstName()}" hidden="true"></div>
+            <div th:id="${#ids.seq('toastLastName')}" th:text="${toast.getUserLastName()}" hidden="true"></div>
         </div>
-        <div class="toast-body" id="popupText1"></div>
-        <div id="toastInformation1" th:text="${toastEventInformation1}" hidden="true"></div>
-        <div id="toastEventName1" th:text="${toastEventName1}" hidden="true"></div>
-        <div id="toastEventId1" th:text="${toastEventId1}" hidden="true"></div>
-        <div id="toastUsername1" th:text="${toastUsername1}" hidden="true"></div>
-        <div id="toastFirstName1" th:text="${toastFirstName1}" hidden="true"></div>
-        <div id="toastLastName1" th:text="${toastLastName1}" hidden="true"></div>
-    </div>
-    <div class="toast" role="alert" aria-live="assertive" aria-atomic="true" id="liveToast2" data-bs-autohide="false" data-bs-animation="false">
-        <div class="toast-header">
-            <strong class="me-auto" id="toastTitle2"></strong>
-        </div>
-        <div class="toast-body" id="popupText2"></div>
-        <div id="toastInformation2" th:text="${toastEventInformation2}" hidden="true"></div>
-        <div id="toastEventName2" th:text="${toastEventName2}" hidden="true"></div>
-        <div id="toastEventId2" th:text="${toastEventId2}" hidden="true"></div>
-        <div id="toastUsername2" th:text="${toastUsername2}" hidden="true"></div>
-        <div id="toastFirstName2" th:text="${toastFirstName2}" hidden="true"></div>
-        <div id="toastLastName2" th:text="${toastLastName2}" hidden="true"></div>
-    </div>
-    <div class="toast" role="alert" aria-live="assertive" aria-atomic="true" id="liveToast3" data-bs-autohide="false" data-bs-animation="false">
-        <div class="toast-header">
-            <strong class="me-auto" id="toastTitle3"></strong>
-        </div>
-        <div class="toast-body" id="popupText3"></div>
-        <div id="toastInformation3" th:text="${toastEventInformation3}" hidden="true"></div>
-        <div id="toastEventName3" th:text="${toastEventName3}" hidden="true"></div>
-        <div id="toastEventId3" th:text="${toastEventId3}" hidden="true"></div>
-        <div id="toastUsername3" th:text="${toastUsername3}" hidden="true"></div>
-        <div id="toastFirstName3" th:text="${toastFirstName3}" hidden="true"></div>
-        <div id="toastLastName3" th:text="${toastLastName3}" hidden="true"></div>
     </div>
 </div>
 <div class="container">
@@ -76,7 +56,7 @@
                             <div class="d-flex flex-row w-100 align-items-center justify-content-between">
                                 <strong class="mb-1" th:text="${group.shortName}"></strong>
                                 <div>
-                                    <svg th:if="${group.getLongName() != 'Members without a group' && group.getLongName() != 'Teachers Group'}" id="editGroupButton" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil" viewBox="0 0 16 16" data-bs-toggle="modal" data-bs-target="#groupModal" th:data-bs-id="${group.getGroupId()}" th:data-bs-shortname="${group.getShortName()}" th:data-bs-longname="${group.getLongName()}" data-bs-type="edit">
+                                    <svg th:if="${group.getLongName() != 'Members without a group' && group.getLongName() != 'Teachers Group'}" id="editGroupButton" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil" viewBox="0 0 16 16" data-bs-toggle="modal" data-bs-target="#groupModal" th:data-bs-id="${group.getGroupId()}" th:data-bs-shortname="${group.getShortName()}" th:data-bs-longname="${group.getLongName()}" data-bs-type="edit" th:attr="onclick='editArtefact(\'' + ${group.getShortName()} + '\',\'' + ${group.getGroupId()}+  '\');'">
                                         <path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207 11.207 2.5zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293l6.5-6.5zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z"/>
                                     </svg>
                                     <svg th:if="${group.getLongName() != 'Members without a group' && group.getLongName() != 'Teachers Group'}" id="deleteGroupButton" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash-fill" viewBox="0 0 16 16" data-bs-toggle="modal" data-bs-target="#deleteModal" th:data-bs-id="${group.getGroupId()}" th:data-bs-name="${group.getShortName()}" data-bs-type="group">
@@ -147,8 +127,150 @@
 <div th:replace="fragments/deleteModalProject :: deleteModal"></div>
 
 <script src="js/group.js"></script>
-<script src="js/detailsLive.js"></script>
+<script src="js/Notification.js"></script>
+<script src="js/groupLive.js"></script>
 <script src="js/project.js"></script>
+
+<script th:inline="javascript">
+    /**
+     * Sends the message that a group is being updated, and sends the events names with it.
+     */
+    function sendName(artefactName, artefactId,userId, userFirstName, userLastName, username, artefactType) {
+        stompClient.send("/webSocketPost/editing-group", {}, JSON.stringify({
+            'artefactName': artefactName,
+            'artefactId' : artefactId,
+            'artefactType' : artefactType,
+            'userId': userId,
+            'userFirstName': userFirstName,
+            'userLastName': userLastName,
+            'username': username
+        }));
+    }
+
+    /**
+     * Sends an empty message so that the other end can realise to close any popups it may have activated.
+     */
+    function sendEmpty(artefactName, artefactId,userId, userFirstName, userLastName, username, artefactType) {
+        stompClient.send("/webSocketPost/stop-editing-group", {}, JSON.stringify({
+            'artefactName': artefactName,
+            'artefactId' : artefactId,
+            'userId': userId,
+            'artefactType' : artefactType,
+            'userFirstName': userFirstName,
+            'userLastName': userLastName,
+            'username': username
+        }));
+    }
+
+    /**
+     * Sends the message that a group has been updated (saved), and sends the events names with it.
+     */
+    function sendNameReload(artefactName, artefactId,userId, userFirstName, userLastName, username, artefactType) {
+        stompClient.send("/webSocketPost/saved-edited-group", {}, JSON.stringify({
+            'artefactName': artefactName,
+            'artefactId' : artefactId,
+            'userId': userId,
+            'artefactType' : artefactType,
+            'userFirstName': userFirstName,
+            'userLastName': userLastName,
+            'username': username
+        }));
+    }
+
+    /**
+     * Initialises functions/injections. When these are no longer being updated (edited) they will disappear after a certain period.
+     */
+    $(function () {
+        connect();
+        document.addEventListener("visibilitychange", (ignore) => {
+            if (document.visibilityState !== "visible") {
+                sendEmpty(milestoneName, milestoneId,userId, userFirstName, userLastName, username, "Milestone");
+            }
+        });
+    });
+
+    let userId = [[${userId}]];
+    let userFirstName = [[${userFirstName}]];
+    let userLastName = [[${userLastName}]];
+    let username = [[${username}]];
+    let selectedArtefactName = '';
+    let selectedArtefactId = -1;
+
+    /**
+     * get the selected group to edit then set it in global variable
+     */
+    function editArtefact(milestone, id) {
+        selectedArtefactName = milestone;
+        selectedArtefactId = id;
+    }
+
+    /**
+     * get the action type of the modal that is currently open
+     * @param modal the modal that is currently open
+     * @returns {string} the action type
+     */
+    function getModalActionType(modal){
+        const requestURLList = document.getElementById(modal).querySelector('form').action.split('/')
+        const actionTypeIndex = requestURLList.length - 2;
+        return requestURLList[actionTypeIndex]
+
+    }
+
+    /**
+     * this function is triggered when inputs on modal when being focused on (edited) will update and send a notification
+     * to the details page. When these are no longer being updated (edited) they will disappear after a certain period.
+     * @param inputElementName the id of the input element
+     * @param modal the modal that currently open
+     * @param action what action that the currently open modal does (must be editing-...)
+     */
+    function sendEditingLiveNotificationRequest(inputElementName, modal, action){
+        $(inputElementName).on('focusin', function (ignore) {
+            if (getModalActionType(modal) === action) {
+                sendName(selectedArtefactName,selectedArtefactId, userId, userFirstName, userLastName, username, "Group");
+            }
+        }).on('focusout', function (ignore) {
+            if (getModalActionType(modal) === action) {
+                sendEmpty(selectedArtefactName, selectedArtefactId, userId, userFirstName, userLastName, username, "Group");
+            }
+        });
+    }
+
+    /**
+     * send request to show the live notification's toast when an update on a milestone is saved by a user
+     * this function is triggered when save button on Modal is clicked
+     * @param inputElementName the id of the input element
+     * @param modal the modal that currently open
+     * @param action what action that the currently open modal does (must be editing-...)
+     */
+    function sendSavedLiveNotificationRequest(inputElementName, modal, action){
+        $(inputElementName).click(function() {
+            if (getModalActionType(modal) === action) {
+                sendNameReload(selectedArtefactName, selectedArtefactId, userId, userFirstName, userLastName, username, "Group");
+            }
+        })
+    }
+
+    /**
+     * send request to hide the live notification's toast when an update is saved by a user
+     * this function is triggered when close button on Modal is clicked
+     * @param inputElementName the id of the input element
+     * @param modal the modal that currently open
+     * @param action what action that the currently open modal does (must be editing-...)
+     */
+    function sendStopEditingLiveNotificationRequest(inputElementName, modal, action){
+        $(inputElementName).click(function() {
+            if (getModalActionType(modal) === action) {
+                sendEmpty(milestoneName, milestoneId, userId, userFirstName, userLastName, username, "Group");
+            }
+        })
+    }
+
+    sendEditingLiveNotificationRequest('#shortGroupName', 'groupModal', 'edit-group');
+    sendEditingLiveNotificationRequest("#longGroupName", 'groupModal', 'edit-group');
+    sendSavedLiveNotificationRequest("#groupModalButton", 'groupModal', 'edit-group');
+    sendStopEditingLiveNotificationRequest("#closeGroupModalButton", 'groupModal', 'edit-group');
+</script>
+
 <script th:inline="javascript">
     /**
      * Add a 'active' class to the selected group, highlight current selected group for better user experience

@@ -1,15 +1,17 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
 import nz.ac.canterbury.seng302.portfolio.model.Group;
+import nz.ac.canterbury.seng302.portfolio.model.NotificationMessage;
+import nz.ac.canterbury.seng302.portfolio.model.NotificationResponse;
 import nz.ac.canterbury.seng302.portfolio.service.ElementService;
 import nz.ac.canterbury.seng302.portfolio.service.GroupService;
+import nz.ac.canterbury.seng302.portfolio.service.RegisterClientService;
 import nz.ac.canterbury.seng302.portfolio.service.UserAccountClientService;
-import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
-import nz.ac.canterbury.seng302.shared.identityprovider.CreateGroupResponse;
+import nz.ac.canterbury.seng302.shared.identityprovider.*;
 import nz.ac.canterbury.seng302.shared.util.ValidationError;
-import nz.ac.canterbury.seng302.shared.identityprovider.DeleteGroupResponse;
-import nz.ac.canterbury.seng302.shared.identityprovider.ModifyGroupDetailsResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -19,9 +21,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.time.Instant;
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.util.HtmlUtils;
 
 /**
  * Controller for group page
@@ -38,6 +43,9 @@ public class GroupController {
     @Autowired
     public GroupService groupService;
 
+    @Autowired
+    RegisterClientService registerClientService;
+
     private final String updateMessageId = "isUpdateSuccess";
 
 
@@ -53,8 +61,15 @@ public class GroupController {
     ) {
         Integer id = userAccountClientService.getUserIDFromAuthState(principal);
         elementService.addHeaderAttributes(model, id);
+        model.addAttribute("userId", id);
+        UserResponse user = registerClientService.getUserData(id);
+        model.addAttribute("username", user.getUsername());
+        model.addAttribute("userFirstName", user.getFirstName());
+        model.addAttribute("userLastName", user.getLastName());
 
         groupService.addGroupListToModel(model);
+
+        groupService.addToastsToModel(model, 3);
 
         return "group";
     }
@@ -149,6 +164,63 @@ public class GroupController {
         }
 
         return "group";
+    }
+
+    /**
+     * This method maps @MessageMapping endpoint to the @SendTo endpoint. Called when something is sent to
+     * the MessageMapping endpoint.
+     * @param message NotificationMessage that holds information about the event being updated
+     * @return returns an NotificationResponse that holds information about the event being updated.
+     */
+    @MessageMapping("/editing-group")
+    @SendTo("/webSocketGroupsGet/being-edited")
+    public NotificationResponse updatingArtefact(NotificationMessage message) {
+        int groupId = message.getArtefactId();
+        String username = message.getUsername();
+        String firstName = message.getUserFirstName();
+        String lastName = message.getUserLastName();
+        String artefactType = message.getArtefactType();
+        long dateOfNotification = Date.from(Instant.now()).toInstant().getEpochSecond();
+        return new NotificationResponse(HtmlUtils.htmlEscape(message.getArtefactName()), groupId, username, firstName, lastName, dateOfNotification, artefactType);
+    }
+
+    /**
+     * This method maps @MessageMapping endpoint to the @SendTo endpoint. Called when something is sent to
+     * the MessageMapping endpoint. This is triggered when the user is no longer editing.
+     * @param message Information about the editing state.
+     * @return Returns the message given.
+     */
+    @MessageMapping("/stop-editing-group")
+    @SendTo("/webSocketGroupsGet/stop-being-edited")
+    public NotificationResponse stopUpdatingArtefact(NotificationMessage message) {
+        int groupId = message.getArtefactId();
+        String username = message.getUsername();
+        String firstName = message.getUserFirstName();
+        String lastName = message.getUserLastName();
+        String artefactType = message.getArtefactType();
+        long dateOfNotification = Date.from(Instant.now()).toInstant().getEpochSecond();
+        return new NotificationResponse(HtmlUtils.htmlEscape(message.getArtefactName()), groupId, username, firstName, lastName, dateOfNotification, artefactType);
+    }
+
+    /**
+     * This method maps @MessageMapping endpoint to the @SendTo endpoint. Called when something is sent to
+     * the MessageMapping endpoint. This method also triggers some sort of re-render of the events.
+     * @param message NotificationMessage that holds information about the event being updated
+     * @return returns an NotificationResponse that holds information about the event being updated.
+     */
+    @MessageMapping("/saved-edited-group")
+    @SendTo("/webSocketGroupsGet/save-edit")
+    public NotificationResponse savingUpdatedArtefact(NotificationMessage message) {
+        int groupId = message.getArtefactId();
+        String username = message.getUsername();
+        String firstName = message.getUserFirstName();
+        String lastName = message.getUserLastName();
+        long dateOfNotification = Date.from(Instant.now()).toInstant().getEpochSecond();
+        String artefactType = message.getArtefactType();
+        NotificationResponse response = new NotificationResponse(HtmlUtils.htmlEscape(message.getArtefactName()), groupId, username, firstName, lastName, dateOfNotification, artefactType);
+        // Trigger reload and save the last event's information
+        groupService.addNotification(response, 3);
+        return response;
     }
 
 }

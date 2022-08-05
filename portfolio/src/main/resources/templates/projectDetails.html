@@ -534,11 +534,11 @@
     function sendEditingLiveNotificationRequest(inputElementName, modal, action, artefactType){
         $(inputElementName).on('focusin', function (ignore) {
             if (getModalActionType(modal) === action) {
-                sendName(selectedArtefactName,selectedArtefactId,userId, userFirstName, userLastName, username, artefactType);
+                sendName(selectedArtefactName, selectedArtefactId, userId, userFirstName, userLastName, username, artefactType);
             }
         }).on('focusout', function (ignore) {
             if (getModalActionType(modal) === action) {
-                sendEmpty(selectedArtefactName, selectedArtefactId,userId, userFirstName, userLastName, username, artefactType);
+                sendEmpty(selectedArtefactName, selectedArtefactId, userId, userFirstName, userLastName, username, artefactType);
             }
         });
     }
@@ -554,7 +554,7 @@
     function sendSavedLiveNotificationRequest(inputElementName, modal, action, artefactType){
         $(inputElementName).click(function() {
             if (getModalActionType(modal) === action) {
-                sendNameReload(selectedArtefactName, selectedArtefactId,userId, userFirstName, userLastName, username, artefactType);
+                sendNameReload(selectedArtefactName, selectedArtefactId, userId, userFirstName, userLastName, username, artefactType);
             }
         })
     }
@@ -570,7 +570,7 @@
     function sendStopEditingLiveNotificationRequest(inputElementName, modal, action, artefactType){
         $(inputElementName).click(function() {
             if (getModalActionType(modal) === action) {
-                sendEmpty(milestoneName, milestoneId,userId, userFirstName, userLastName, username, artefactType);
+                sendEmpty(selectedArtefactName, selectedArtefactId, userId, userFirstName, userLastName, username, artefactType);
             }
         })
     }

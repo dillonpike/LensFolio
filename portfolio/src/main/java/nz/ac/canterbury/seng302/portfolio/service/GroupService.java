@@ -1,11 +1,15 @@
 package nz.ac.canterbury.seng302.portfolio.service;
 
 import net.devh.boot.grpc.client.inject.GrpcClient;
+import nz.ac.canterbury.seng302.portfolio.model.NotificationResponse;
+import nz.ac.canterbury.seng302.portfolio.utility.Toast;
 import nz.ac.canterbury.seng302.shared.identityprovider.*;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 
+import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 
@@ -25,6 +29,8 @@ public class GroupService {
     private List<GroupDetailsResponse> groupDetailsResponseList;
 
     private List<UserResponse> userResponseList;
+
+    private List<NotificationResponse> groupsToDisplay = new ArrayList<>();
 
     /***
      * Method to create group by sending request using GRPC to the idp
@@ -46,7 +52,7 @@ public class GroupService {
      * @param userIds (ArrayList<Integer>) a list of all the user ids that will be added to a group
      * @return (AddGroupMembersResponse) contains the response of addition of user(s) to a group
      */
-    public AddGroupMembersResponse addMemberToGroup(Integer groupId, ArrayList<Integer> userIds){
+    public AddGroupMembersResponse addMemberToGroup(Integer groupId, List<Integer> userIds){
         AddGroupMembersRequest request = AddGroupMembersRequest.newBuilder()
                 .setGroupId(groupId)
                 .addAllUserIds(userIds)
@@ -60,7 +66,7 @@ public class GroupService {
      * @param userIds (ArrayList<Integer>) a list of all the user ids that will be removed from a group
      * @return (RemoveGroupMembersResponse) contains the response of removal of user(s) from a group
      */
-    public RemoveGroupMembersResponse removeMembersFromGroup(Integer groupId, ArrayList<Integer> userIds){
+    public RemoveGroupMembersResponse removeMembersFromGroup(Integer groupId, List<Integer> userIds){
         RemoveGroupMembersRequest request = RemoveGroupMembersRequest.newBuilder()
                 .setGroupId(groupId)
                 .addAllUserIds(userIds)
@@ -156,6 +162,46 @@ public class GroupService {
         model.addAttribute("groupDetails", groupDetailsResponse);
         model.addAttribute("members", userResponseList);
     }
+
+    public void addToastsToModel(Model model, Integer numOfToasts) {
+        List<Toast> toastsToGenerate = new ArrayList<>();
+        for (int i = 0; i < numOfToasts; i++) {
+            Toast toast = new Toast();
+            toastsToGenerate.add(toast);
+        }
+
+        // Runs if the reload was triggered by saving an event. Checks the notifications' creation time to see if 2 seconds has passed yet.
+        int count = 0;
+        ArrayList<NotificationResponse> groupsToDelete = new ArrayList<>();
+        for (NotificationResponse event : groupsToDisplay) {
+            long timeDifference = Date.from(Instant.now()).toInstant().getEpochSecond() - event.getDateOfCreation();
+            if (timeDifference <= 2) {
+                toastsToGenerate.get(count).setArtefactInformation(event.getArtefactType());
+                toastsToGenerate.get(count).setArtefactName(event.getArtefactName());
+                toastsToGenerate.get(count).setArtefactId(event.getArtefactId());
+                toastsToGenerate.get(count).setUsername(event.getUsername());
+                toastsToGenerate.get(count).setUserFirstName(event.getUserFirstName());
+                toastsToGenerate.get(count).setUserLastName(event.getUserLastName());
+            } else {
+                groupsToDelete.add(event);
+                toastsToGenerate.get(count).setArtefactInformation("");
+            }
+            count++;
+        }
+        for (NotificationResponse event : groupsToDelete) {
+            groupsToDisplay.remove(event);
+        }
+
+        model.addAttribute("toastsToGenerate", toastsToGenerate);
+    }
+
+    public void addNotification(NotificationResponse response, Integer numOfToasts) {
+        groupsToDisplay.add(response);
+        while (groupsToDisplay.size() > numOfToasts) {
+            groupsToDisplay.remove(0);
+        }
+    }
+
 
 
 }

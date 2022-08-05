@@ -4,6 +4,7 @@
 const EVENTTYPE = "Event";
 const DEADLINETYPE = "Deadline";
 const MILESTONETYPE = "Milestone";
+const GROUPTYPE = "Group";
 
 /**
  * The amount of time in seconds the toast will take before hiding on a timed hide function.
@@ -57,6 +58,8 @@ class Notification {
             this.titleName = "Deadline Activity";
         } else if (type === MILESTONETYPE) {
             this.titleName = "Milestone Activity";
+        } else if (type === GROUPTYPE) {
+            this.titleName = "Group Activity";
         } else {
             this.titleName = "Activity";
         }
