@@ -9,7 +9,9 @@ function groupModalSetup() {
         const button = event.relatedTarget
 
         // Extract info from data-bs-* attributes
-        const group = JSON.parse(button.getAttribute('data-bs-group'))
+        const id = button.getAttribute('data-bs-id')
+        const shortName = button.getAttribute('data-bs-shortname')
+        const longName = button.getAttribute('data-bs-longname')
 
         const type = button.getAttribute('data-bs-type')
         // Update the modal's content.
@@ -17,7 +19,7 @@ function groupModalSetup() {
         const modalBodyInputs = groupModal.querySelectorAll('.modal-body input')
         const modalButton = groupModal.querySelector('.modal-footer button')
         const modalForm = groupModal.querySelector('form')
-
+        console.log(modalBodyInputs)
         if (type === 'add') {
             modalTitle.innerText = 'Add Group'
             modalButton.innerHTML = 'Add Group'
@@ -25,8 +27,11 @@ function groupModalSetup() {
         } else {
             modalTitle.innerText = 'Edit Group'
             modalButton.innerHTML = 'Save Group'
-            modalForm.action = `edit-group/${group.id}`
-            modalForm.setAttribute('group', group)
+            modalForm.action = `edit-group/${id}`
+            //modalForm.setAttribute('group', group)
         }
+
+        modalBodyInputs[0].value = shortName
+        modalBodyInputs[1].value = longName
     })
  }

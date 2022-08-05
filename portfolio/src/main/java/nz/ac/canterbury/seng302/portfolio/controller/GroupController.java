@@ -80,13 +80,12 @@ public class GroupController {
      */
     @PostMapping("/add-group")
     public String addGroup(
-            @ModelAttribute("shortGroupName") String shortName,
-            @ModelAttribute("longGroupName") String longName,
+            @ModelAttribute("group") Group group,
             Model model,
             RedirectAttributes rm
     ) {
 
-        CreateGroupResponse response = groupService.createNewGroup(shortName, longName);
+        CreateGroupResponse response = groupService.createNewGroup(group.getShortName(), group.getLongName());
 
         if (response.getIsSuccess()) {
             return "redirect:groups";
@@ -132,8 +131,7 @@ public class GroupController {
             @ModelAttribute("group") Group group,
             Model model
     ) throws IllegalArgumentException {
-
-        ModifyGroupDetailsResponse response = groupService.editGroupDetails(group.getGroupId(), group.getShortName(), group.getLongName());
+        ModifyGroupDetailsResponse response = groupService.editGroupDetails(id, group.getShortName(), group.getLongName());
         model.addAttribute(updateMessageId, response.getIsSuccess());
 
         if (response.getIsSuccess()) {

@@ -305,19 +305,3 @@ function eventModalSetup(projectStartDate, projectEndDate) {
         });
     }
 }
-/**
- * Customises the group modal attributes with depending on what sprint it should display and whether it's being used
- * for adding or editing a sprint.
- */
-function groupModalSetup() {
-    const groupModal = document.getElementById('groupModal')
-    groupModal.addEventListener('show.bs.modal', function (event) {
-
-        // Update the modal's content.
-        const modalTitle = groupModal.querySelector('.modal-title')
-        const modalButton = groupModal.querySelector('.modal-footer button')
-
-        modalTitle.innerText = 'Add Group'
-        modalButton.innerHTML = 'Add Group'
-    })
-}
