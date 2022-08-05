@@ -88,11 +88,9 @@ public class MilestoneService {
             Milestone milestoneUpdate = mOptional.get();
             milestoneUpdate.setMilestoneName(milestone.getMilestoneName());
             milestoneUpdate.setMilestoneDate(milestone.getMilestoneDate());
-
             milestoneUpdate = repository.save(milestoneUpdate);
             return milestoneUpdate;
         } else {
-            milestone = repository.save(milestone);
             return milestone;
         }
     }
