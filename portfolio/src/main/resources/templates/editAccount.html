@@ -24,26 +24,21 @@
       <div class="col-md-7 col-lg-4 mb-5 mb-lg-0">
         <div class="card border-4 shadow">
           <img th:src="@{img/userImage}" id="uploadPreview" alt="Image Error" width="300" height="300" class="rounded-circle" style ="margin-left: 60px; margin-top:20px">
-          <label for="avatar" style="text-align:center">Update profile picture: </label>
 
-          <form th:action="@{saveAccountPhoto}" method="post" enctype="multipart/form-data">
-            <input type="file" id="avatar" style="margin-left:25%" name="avatar" value="Upload Profile Picture" accept="image/png, image/jpeg, image/jpg" onchange="PreviewImage();">
+          <form th:action="@{saveAccountPhoto}" method="post" enctype="multipart/form-data" id="baseForm">
             <div class="card-body p-xl-2">
-              <div style="display: flex; flex-direction: row; justify-content: center">
-                  <input type="hidden" th:value="${userId}" name="userId">
-                  <button th:id="save-btn" th:hidden="true" type="submit" class="btn btn-primary" style="margin-top: 10px">Save Photo</button>
-                  <input type="hidden" th:value="${userId}" name="userId">
-                  <button type="submit" id="deletePhotoButton" class="btn btn-danger" style="margin-left: 10px; margin-top: 10px" th:formaction="@{deleteAccountPhoto}">Delete Photo</button>
+              <div style="display: flex; flex-direction: column; justify-content: center" class="d-grid gap-2 col-8 mx-auto">
+                <label class="form-label" for="avatar" style="text-align:center">Update profile picture: </label>
+                <input class="form-control" type="file" id="avatar" name="avatar" value="Upload Profile Picture" data-bs-toggle="modal" data-bs-target="#profileImageModal" accept="image/png, image/jpeg, image/jpg">
+                <input type="hidden" th:value="${userId}" th:name="userId">
+                <button type="button" id="deletePhotoButton" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal" style="margin-top: 10px">Delete Photo</button>
+                <input type="hidden" th:value="${userId}" th:name="userId">
               </div>
             </div>
           </form>
 
           <div class="card-body p-1-9 p-xl-5">
-            <div class="form-group">
-              <div id="image-box" class="image-container"></div>
-              <button class="btn btn-outline-info" id="crop-btn" style="width: 100%; margin-top: 10px; display: none;" type="button">Crop</button>
-              <!--button class="btn btn-outline-info" id="confirm-btn" style="width: 100%; margin-top: 10px; display: none;" type="submit">Post</button-->
-            </div>
+
             <div class="mb-4">
               <h3 class="h4 mb-0" th:text="${fullName}"></h3>
               <span class="text-primary" th:text="${username}"></span>
@@ -164,77 +159,17 @@
     </form>
   </div>
 
+<div id="profileImageModal" th:replace="fragments/profileImageModal :: profileImageModal"></div>
+<div id="deleteModal" th:replace="fragments/deleteModalProject :: deleteModal"></div>
+
+<form method="get" id="reloadPage" th:action="@{reloadAccountSuccessfulPage}">
+  <input type="hidden" th:value="${userId}" name="userId">
+</form>
+
 </body>
 
-<script>
-	// image-box is the id of the div element that will store our cropping image preview
-	const imagebox = document.getElementById('image-box')
-    // crop-btn is the id of button that will trigger the event of change original file with cropped file.
-	const crop_btn = document.getElementById('crop-btn')
-	// id_image is the id of the input tag where we will upload the image
-	const input = document.getElementById('avatar')
 
-	// When user uploads the image this event will get triggered
-	input.addEventListener('change', ()=>{
-	  // Getting image file object from the input variable
-	  const img_data = input.files[0]
-	  // createObjectURL() static method creates a DOMString containing a URL representing the object given in the parameter.
-	  // The new object URL represents the specified File object or Blob object.
-	  const url = URL.createObjectURL(img_data)
 
-	  // Creating a image tag inside imagebox which will hold the cropping view image(uploaded file) to it using the url created before.
-	  imagebox.innerHTML = `<img src="${url}" id="image" style="width:100%;">`
-
-	  // Storing that cropping view image in a variable
-	  const image = document.getElementById('image')
-
-	  // Displaying the image box
-	  document.getElementById('image-box').style.display = 'block'
-	  // Displaying the Crop buttton
-	  document.getElementById('crop-btn').style.display = 'block'
-
-	  // Creating a croper object with the cropping view image
-	  // The new Cropper() method will do all the magic and diplay the cropping view and adding cropping functionality on the website
-	  // For more settings, check out their official documentation at https://github.com/fengyuanchen/cropperjs
-	  const cropper = new Cropper(image, {
-	  autoCropArea: 1,
-	  viewMode: 1,
-	  scalable: false,
-	  zoomable: false,
-	  movable: false,
-	  minCropBoxWidth: 200,
-	  minCropBoxHeight: 200,
-      aspectRatio: 1,
-	  })
-
-	  // When crop button is clicked this event will get triggered
-	  crop_btn.addEventListener('click', ()=>{
-	    // This method coverts the selected cropped image on the cropper canvas into a blob object
-	    cropper.getCroppedCanvas().toBlob((blob)=>{
-
-	      // Gets the original image data
-	      let fileInputElement = document.getElementById('avatar');
-	      // Make a new cropped image file using that blob object, image_data.name will make the new file name same as original image
-	      let file = new File([blob], img_data.name,{type:"image/*", lastModified:new Date().getTime()});
-	      // Create a new container
-	      let container = new DataTransfer();
-	      // Add the cropped image file to the container
-	      container.items.add(file);
-	      // Replace the original image file with the new cropped image file
-	      fileInputElement.files = container.files;
-
-	      // Hide the cropper box
-	      document.getElementById('image-box').style.display = 'none'
-	      // Hide the crop button
-	      document.getElementById('crop-btn').style.display = 'none'
-
-          document.getElementById("save-btn").hidden = false;
-        PreviewImage();
-	      }, "image/jpeg", 0.5);
-	    });
-
-	});
-</script>
 <script>
   function settingsMenuToggle() {
     var settingmenu = document.querySelector(".setting-menu");
@@ -258,7 +193,9 @@
 
 
 </script>
-
+<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha384-xBuQ/xzmlsLoJpyjoggmTEz8OWUFM0/RC5BsqQBDX2v5cMvDHcMakNTNrHIW2I5f" crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="js/account.js" type="text/javascript"></script>
 <script th:inline="javascript">
 
   function refreshPage() {
@@ -268,23 +205,25 @@
     const $select = document.querySelector('#personalPronouns')
     $select.value = pronoun;
   }
-    // Sets the preview image being uploaded.
-    function PreviewImage() {
-    var oFReader = new FileReader();
 
-    oFReader.onload = function (oFREvent) {
-        document.getElementById("uploadPreview").src = oFREvent.target.result;
-    };
+  deleteModalSetup();
 
-    oFReader.readAsDataURL(document.getElementById("avatar").files[0]);
+  /*<![CDATA[*/
+  let imageReload = /*[[${reloadImage}]]*/ false;
+  /*]]>*/
+  if (imageReload) {
+    setTimeout(() => {
+      let form = document.getElementById("reloadPage");
+      form.submit();
+      // document.location.reload();
+    }, 50)
+  }
 
-
-  };
 </script>
-<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha384-xBuQ/xzmlsLoJpyjoggmTEz8OWUFM0/RC5BsqQBDX2v5cMvDHcMakNTNrHIW2I5f" crossorigin="anonymous"></script>
-<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
-<script src="js/fineCrop.js"></script>
+
+<!--<script src="js/fineCrop.js"></script>-->
 <!--<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>-->
-<script src="node_modules/cropperjs/dist/cropper.js" type="text/javascript"></script>
+<!--<script src="node_modules/cropperjs/dist/cropper.min.js" type="text/javascript"></script>-->
+<script href="https://fengyuanchen.github.io/cropperjs/" type="text/javascript"></script>
 
 </html>

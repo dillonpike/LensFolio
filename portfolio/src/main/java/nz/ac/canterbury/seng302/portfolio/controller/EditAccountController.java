@@ -169,12 +169,22 @@ public class EditAccountController {
         return "redirect:account";
     }
 
-    @PostMapping("/deleteAccountPhoto")
+    /**
+     * Controller method for deleting an account photo. Has to be authorised to do so, and writes the default image to
+     * the file the portfolio reads from.
+     * @param rm Redirect attributes
+     * @param model Parameters sent to thymeleaf template to be rendered into HTML
+     * @param principal Used for getting the user ID
+     * @return redirect back to edit account page
+     */
+    @GetMapping("/deleteAccountPhoto")
     public String deletePhoto(
-            @ModelAttribute("userId") int userId,
             RedirectAttributes rm,
-            Model model
+            Model model,
+            @AuthenticationPrincipal AuthState principal
     ) {
+        Integer userId = userAccountClientService.getUserIDFromAuthState(principal);
+
         boolean wasDeleted = false;
         String message = "Error occured, caught on portfolio side. ";
         try {
@@ -206,6 +216,16 @@ public class EditAccountController {
         return "redirect:editAccount";
     }
 
+    /**
+     * Controller method for saving a profile image for an account.
+     * Gets the image as a multipart file from 'avatar' and writes it to a file before sending it to the IDP (through
+     * a service class).
+     * @param userId Id of user photo being uploaded
+     * @param rm Redirect attributes
+     * @param multipartFile A multi-part file that contains the image for uploading.
+     * @param model Parameters sent to thymeleaf template to be rendered into HTML
+     * @return redirect back to edit account page
+     */
     @PostMapping("/saveAccountPhoto")
     public String savePhoto(
             @ModelAttribute("userId") int userId,
@@ -233,6 +253,7 @@ public class EditAccountController {
             wasSaved = true;
             if (wasSaved) {
                 rm.addFlashAttribute("isUpdateSuccess", true);
+                rm.addFlashAttribute("reloadImage", true);
             } else {
                 rm.addFlashAttribute("isUpdateSuccess", false);
                 rm.addFlashAttribute("message", "Photo failed to save");
@@ -242,6 +263,21 @@ public class EditAccountController {
             System.err.println("Something went wrong requesting to save the photo");
         }
         rm.addAttribute("userId", userId);
+        return "redirect:editAccount";
+    }
+
+    /**
+     * Reloads the page and makes the update message appear.
+     * @param rm Redirect attributes
+     * @return Thymeleaf template
+     */
+    @GetMapping("/reloadAccountSuccessfulPage")
+    public String reloadPage(
+            @ModelAttribute("userId") int userId,
+            RedirectAttributes rm
+    ) {
+        rm.addAttribute("userId", userId);
+        rm.addFlashAttribute("isUpdateSuccess", true);
         return "redirect:editAccount";
     }
 
