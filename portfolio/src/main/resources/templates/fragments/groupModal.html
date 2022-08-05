@@ -15,7 +15,7 @@
             </div>
             <div class="mb-3">
               <label for="shortGroupName" class="col-form-label">Short Group Name:</label>
-              <input onkeyup="updateCharsLeft('shortGroupName', 'shortGroupNameLength', 10)" maxlength="10" type="text" class="form-control" id="shortGroupName" name="shortGroupName">
+              <input onkeyup="updateCharsLeft('shortGroupName', 'shortGroupNameLength', 10)" maxlength="10" type="text" class="form-control" id="shortGroupName" name="shortName">
               <div class="name-length-message">
                 <span id="shortGroupNameLength"></span>
               </div>
@@ -23,11 +23,12 @@
 
             <div class="mb-3">
               <label for="longGroupName" class="col-form-label">Long Group Name:</label>
-              <input onkeyup="updateCharsLeft('longGroupName', 'longGroupNameLength', 30)" maxlength="30" type="text" class="form-control" id="longGroupName" name="longGroupName">
+              <input onkeyup="updateCharsLeft('longGroupName', 'longGroupNameLength', 30)" maxlength="30" type="text" class="form-control" id="longGroupName" name="longName">
               <div class="name-length-message">
                 <span id="longGroupNameLength"></span>
               </div>
             </div>
+
             <div class="alert alert-danger alert-dismissible fade show" role="alert" id="groupLongNameAlertBanner" hidden>
               <span id="groupLongNameAlertMessage" data-test-id="alertMessage"></span>
               <button type="button" class="btn-close" onclick="document.getElementById('groupLongNameAlertBanner').hidden = true" aria-label="Close"></button>

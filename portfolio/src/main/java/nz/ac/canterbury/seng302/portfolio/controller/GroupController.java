@@ -132,8 +132,7 @@ public class GroupController {
             @ModelAttribute("group") Group group,
             Model model
     ) throws IllegalArgumentException {
-
-        ModifyGroupDetailsResponse response = groupService.editGroupDetails(group.getGroupId(), group.getShortName(), group.getLongName());
+        ModifyGroupDetailsResponse response = groupService.editGroupDetails(id, group.getShortName(), group.getLongName());
         model.addAttribute(updateMessageId, response.getIsSuccess());
 
         if (response.getIsSuccess()) {
