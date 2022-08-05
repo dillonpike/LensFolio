@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
 
@@ -39,8 +38,6 @@ public class GroupController {
 
     @Autowired
     public GroupService groupService;
-
-    private final String updateMessageId = "isUpdateSuccess";
 
 
     /**
@@ -64,6 +61,7 @@ public class GroupController {
     /**
      * Method to refresh the group table only
      * @param model Parameters sent to thymeleaf template to be rendered into HTML
+     * @param groupId id of group to reload
      * @return Group page
      */
     @RequestMapping("/groups/local")
@@ -77,7 +75,9 @@ public class GroupController {
 
     /**
      * Method tries to add and sve the new group to the database
+     * @param group group being added
      * @param model Parameters sent to thymeleaf template to be rendered into HTML
+     * @param httpServletResponse for adding status codes to
      * @return redirect user to group page
      */
     @PostMapping("/add-group")
@@ -113,20 +113,26 @@ public class GroupController {
      * Submits a request to the identity provider to delete the group with the given id from the database. Adds a
      * variable to the model indicating whether or not this was successful.
      * @param id id of the group to delete
-     * @param rd injects the variable indicating success to the HTML
-     * @return redirect user to group page
+     * @param httpServletResponse for adding status codes to
      */
-    @GetMapping("/delete-group/{id}")
-    public String groupRemove(@PathVariable("id") Integer id, RedirectAttributes rd) {
+    @DeleteMapping("/delete-group/{id}")
+    @ResponseBody
+    public void groupRemove(@PathVariable("id") Integer id,
+                              HttpServletResponse httpServletResponse) {
         DeleteGroupResponse response = groupService.deleteGroup(id);
-        rd.addAttribute(updateMessageId, response.getIsSuccess());
-        return "redirect:/groups";
+        if (response.getIsSuccess()) {
+            httpServletResponse.setStatus(HttpServletResponse.SC_OK);
+        } else {
+            httpServletResponse.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+        }
     }
 
     /**
      * Tries to save new data to group with given groupId to the database.
-     * @param id        id of event edited
-     * @param group     Group data to be updated
+     * @param id id of event edited
+     * @param group Group data to be updated
+     * @param model model to add attributes to for Thyemeleaf to inject into the HTML
+     * @param httpServletResponse for adding status codes to
      * @throws IllegalArgumentException if sprint cannot be found from the given ID or if it cannot be saved.
      */
     @PostMapping("/edit-group/{id}")
