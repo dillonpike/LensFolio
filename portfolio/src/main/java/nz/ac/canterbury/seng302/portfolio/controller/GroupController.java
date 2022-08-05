@@ -101,7 +101,7 @@ public class GroupController {
             }
         }
 
-        return "group";
+        return "fragments/groupModal::groupShortNameAlertBanner";
     }
 
     /**

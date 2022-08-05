@@ -9,8 +9,8 @@
 
         <form method="post" id="groupForm" onsubmit="validateGroup(); return false" th:action="@{add-group}">
           <div class="modal-body">
-            <div class="alert alert-danger alert-dismissible fade show" role="alert" id="groupShortNameAlertBanner" hidden>
-              <span id="groupShortNameAlertMessage" data-test-id="alertMessage"></span>
+            <div th:fragment="groupShortNameAlertBanner" class="alert alert-danger alert-dismissible fade show" role="alert" id="groupShortNameAlertBanner" th:hidden="${groupShortNameAlertMessage == null}">
+              <span id="groupShortNameAlertMessage" data-test-id="alertMessage" th:text="${groupShortNameAlertMessage}"></span>
               <button type="button" class="btn-close" onclick="document.getElementById('groupShortNameAlertBanner').hidden = true" aria-label="Close"></button>
             </div>
             <div class="mb-3">
