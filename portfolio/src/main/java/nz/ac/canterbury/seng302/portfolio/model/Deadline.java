@@ -3,6 +3,7 @@ package nz.ac.canterbury.seng302.portfolio.model;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sun.istack.NotNull;
+import nz.ac.canterbury.seng302.portfolio.utility.DateUtility;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -166,6 +167,18 @@ public class Deadline {
     }
 
     /**
+     * Returns a string representation of the time of the deadline in 12-hour format
+     * @return string representation of the time of the deadline in 12-hour format. Null if deadlineDate is null.
+     */
+    public String getDeadlineTimeString12Hour()  {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("h:mm a");
+        if (deadlineDate != null) {
+            return (dateFormat.format(deadlineDate));
+        }
+        return null;
+    }
+
+    /**
      * Sets the time of the date stored in deadlineDate.
      * @param time Time in string 24-hour format, formatted as: "kk:mm" (e.g. 15:37).
      * @throws ParseException Thrown if time parameter is given in the wrong format.
@@ -194,20 +207,26 @@ public class Deadline {
     }
 
     /**
-     * Sets the deadline date with a string. Makes sure not to change the time, if already previously set.
+     * Sets the deadline date or date and time with a string. Makes sure not to change the time when only setting the
+     * date, if already previously set.
      * @param date new date
      */
     public void setDeadlineDateString(String date) {
-        if (this.deadlineDate != null) {
-            Calendar cal = Calendar.getInstance();
-            cal.setTime(Project.stringToDate(date));
-            SimpleDateFormat hourFormat = new SimpleDateFormat("HH");
-            SimpleDateFormat minuteFormat = new SimpleDateFormat("mm");
-            cal.add(Calendar.HOUR_OF_DAY, Integer.parseInt(hourFormat.format(deadlineDate)));
-            cal.add(Calendar.MINUTE, Integer.parseInt(minuteFormat.format(deadlineDate)));
-            this.deadlineDate = cal.getTime();
+        Date dateTime = DateUtility.stringToDateTime(date);
+        if (dateTime != null) {
+            this.deadlineDate = dateTime;
         } else {
-            this.deadlineDate = Project.stringToDate(date);
+            if (this.deadlineDate != null) {
+                Calendar cal = Calendar.getInstance();
+                cal.setTime(Project.stringToDate(date));
+                SimpleDateFormat hourFormat = new SimpleDateFormat("HH");
+                SimpleDateFormat minuteFormat = new SimpleDateFormat("mm");
+                cal.add(Calendar.HOUR_OF_DAY, Integer.parseInt(hourFormat.format(deadlineDate)));
+                cal.add(Calendar.MINUTE, Integer.parseInt(minuteFormat.format(deadlineDate)));
+                this.deadlineDate = cal.getTime();
+            } else {
+                this.deadlineDate = Project.stringToDate(date);
+            }
         }
     }
 

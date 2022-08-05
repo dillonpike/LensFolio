@@ -1,8 +1,7 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
 import nz.ac.canterbury.seng302.portfolio.model.Sprint;
-import nz.ac.canterbury.seng302.portfolio.service.DateValidationService;
-import nz.ac.canterbury.seng302.portfolio.service.SprintService;
+import nz.ac.canterbury.seng302.portfolio.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -23,23 +22,14 @@ public class EditSprintController {
     @Autowired
     private DateValidationService dateValidationService;
 
-    /**
-     * Gets data for editing a given sprint.
-     * @param id Id of sprint
-     * @param model Used to display the sprint data to the UI
-     * @throws Exception If getting the sprint from the given id fails
-     */
-    @GetMapping("/edit-sprint/{id}")
-    public String sprintForm(@PathVariable("id") Integer id, Model model ) throws Exception {
-        Sprint sprint = sprintService.getSprintById(id);
-        /* Add sprint details to the model */
-        model.addAttribute("sprint", sprint);
-        model.addAttribute("sprintId", id);
-        model.addAttribute("sprintDateError", "");
+    @Autowired
+    private PermissionService permissionService;
 
-        /* Return the name of the Thymeleaf template */
-        return "editSprint";
-    }
+    @Autowired
+    private UserAccountClientService userAccountClientService;
+
+    @Autowired
+    private ElementService elementService;
 
     /**
      * Tries to save new data to sprint with given sprintId to the database.
@@ -54,28 +44,20 @@ public class EditSprintController {
             @ModelAttribute("sprint") Sprint sprint,
             Model model
     ) throws Exception {
-        // Gets the project with id 0 to plonk on the page
-        Sprint newSprint = sprintService.getSprintById(id);
-        newSprint.setName(sprint.getName());
-        newSprint.setStartDateString(sprint.getStartDateString());
-        newSprint.setEndDateString(sprint.getEndDateString());
-        newSprint.setDescription(sprint.getDescription());
+        Integer userID = userAccountClientService.getUserIDFromAuthState(principal);
+        elementService.addHeaderAttributes(model, userID);
+        if (permissionService.isValidToModifyProjectPage(userID)) {
+            // Gets the project with id 0 to plonk on the page
+            Sprint newSprint = sprintService.getSprintById(id);
+            newSprint.setName(sprint.getName());
+            newSprint.setStartDateString(sprint.getStartDateString());
+            newSprint.setEndDateString(sprint.getEndDateString());
+            newSprint.setDescription(sprint.getDescription());
 
-        sprintService.updateSprint(newSprint);
+            sprintService.updateSprint(newSprint);
+        }
+
 
         return "redirect:/details";
-    }
-
-    @RequestMapping(value="/edit-sprint/error", method=RequestMethod.POST)
-    public String updateSprintRangeErrors(@RequestParam(value="id") Integer id,
-                                          @RequestParam(value="sprintStartDate") String sprintStartDate,
-                                          @RequestParam(value="sprintEndDate") String sprintEndDate,
-                                          Model model) {
-        model.addAttribute("sprintDateError",
-                dateValidationService.validateDateRangeNotEmpty(sprintStartDate, sprintEndDate) + " " +
-                dateValidationService.validateStartDateNotAfterEndDate(sprintStartDate, sprintEndDate) + " " +
-                dateValidationService.validateSprintDateRange(sprintStartDate, sprintEndDate, id) + " " +
-                dateValidationService.validateDatesInProjectDateRange(sprintStartDate, sprintEndDate));
-        return "editSprint :: #sprintDateError";
     }
 }

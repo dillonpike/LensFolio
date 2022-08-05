@@ -26,7 +26,7 @@ public class ElementService {
      * to failureMessage from the request, or a default failure message if failureMessage doesn't exist.
      *
      * @param model model from controller method that attributes will be added to
-     * @param request HTTP request from controller method
+     * @param request HTTP requests from controller method
      */
     public void addUpdateMessage(Model model, HttpServletRequest request) {
         Map<String, ?> inputFlashMap = RequestContextUtils.getInputFlashMap(request);
@@ -42,6 +42,22 @@ public class ElementService {
                 String message = inputFlashMap.containsKey("failureMessage") ?
                         (String) inputFlashMap.get("failureMessage") : "Update Canceled! Something went wrong!";
                 model.addAttribute("updateMessage", message);
+            }
+        }
+    }
+
+    /**
+     * Update the given model with a 'access denied' Message attribute
+     * @param model model from controller method that attributes will be added to
+     * @param request HTTP requests from controller method
+     */
+    public void addDeniedMessage(Model model, HttpServletRequest request) {
+        Map<String, ?> inputFlashMap = RequestContextUtils.getInputFlashMap(request);
+        if (inputFlashMap != null) {
+            boolean isUpdateSuccess = (boolean) inputFlashMap.get("isAccessDenied");
+            if (isUpdateSuccess) {
+                model.addAttribute("isUpdateSuccess", true);
+                model.addAttribute("updateMessage", "Access Denied, Please log out and try again");
             }
         }
     }
@@ -70,5 +86,27 @@ public class ElementService {
         }
         Collections.sort(rolesList);
         model.addAttribute("rolesList", rolesList);
+    }
+
+    /**
+     * Method to return current user's highest role in string format.
+     *
+     * @param userResponse UserResponse object of the currently signed on user
+     */
+    public String getUserHighestRole(UserResponse userResponse) {
+        List<Integer> roleList = userResponse.getRolesValueList();
+        //Check if user is a course administrator. Otherwise, check current user is a teacher
+        if (!roleList.contains(2)) {
+            if (!roleList.contains(1)) {
+                //User must have one role, therefore set user permission to student
+                return "student";
+            } else {
+                //If roleList contains 1(teacher role), set user permission to teacher
+                return "teacher";
+            }
+        } else {
+            //If roleList contains 2(admin role), set user permission to admin
+            return "admin";
+        }
     }
 }
