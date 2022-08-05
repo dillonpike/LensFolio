@@ -656,6 +656,8 @@
     /*<![CDATA[*/
     let projectEndDate = /*[[${project.getEndDate()}]]*/ "Error";
     let projectStartDate = /*[[${project.getStartDate()}]]*/ "Error";
+    let projectEndDateString = /*[[${project.getEndDateString()}]]*/ "Error";
+    let projectStartDateString = /*[[${project.getStartDateString()}]]*/ "Error";
     /*]]>*/
     /**
      * Check if the name of the item that the user inputted is not an empty string
@@ -719,11 +721,11 @@
             return false;
         }
 
-        if (dateStartInput < new Date(projectStartDate) || dateEndInput > new Date(projectEndDate)) {
+        if (dateStartInput < new Date(projectStartDateString) || dateEndInput > new Date(projectEndDateString)) {
             $('#' + submitElementId).prop('disabled', true);
             document.getElementById(alertBanner).hidden = false;
             document.getElementById(alertMessage).innerText = "Dates must be within the project's date range (" +
-                projectStartDate + " - " + projectEndDate + ").";
+                projectStartDateString + " - " + projectEndDateString + ").";
             return false;
         } else {
             $('#' + submitElementId).prop('disabled', false);
@@ -758,11 +760,11 @@
      * @returns {boolean} true if valid date and time, otherwise false
      */
     function checkDate(date, submitElementId, alertBanner, alertMessage) {
-        if (date < new Date(projectStartDate) || date > new Date(projectEndDate)) {
+        if (date < new Date(projectStartDateString) || date > new Date(projectEndDateString)) {
             $('#' + submitElementId).prop('disabled', true);
             document.getElementById(alertBanner).hidden = false;
             document.getElementById(alertMessage).innerText = "Date must be within the project's date range (" +
-                projectStartDate + " - " + projectEndDate + ").";
+                projectStartDateString + " - " + projectEndDateString + ").";
             return false;
         } else {
             $('#' + submitElementId).prop('disabled', false);
