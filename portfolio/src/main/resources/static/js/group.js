@@ -1,3 +1,23 @@
+
+/**
+ * Add a 'active' class to the selected group, highlight current selected group for better user experience
+ */
+function groupButtonSetup() {
+    $('.group-bar button').on('click', function () {
+        $("div.group-bar button").removeClass('active');
+        $(this).addClass("active");
+    })
+}
+
+/**
+ * Reloads the selected group and its table.
+ * @param groupId group to fetch information of
+ */
+function updateTable(groupId) {
+    const url = "groups/local?";
+    $('#table_refresh').load(url, "groupId=" + groupId)
+}
+
 /**
  * Customises the group modal attributes with whether it's being
  * used for adding or editing a group.
@@ -41,8 +61,9 @@ function groupModalSetup() {
  }
 
 /**
- * Submits the group adding form and adds the new group to the page if the action was successful, otherwise updates the
- * modal with error messages.
+ * Checks that the group modal inputs have text enetered in them, then submits the group adding/editing form and adds
+ * the new group to the page or updates the edited group if the action was successful, otherwise updates the modal
+ * with error messages.
  * @returns {Promise<void>} null
  */
 async function validateGroup() {
@@ -51,19 +72,54 @@ async function validateGroup() {
     ) {
         document.getElementById('groupForm').onsubmit = () => { return false };
 
-        const data = {
-            shortName: document.getElementById('shortGroupName').value,
-            longName: document.getElementById('longGroupName').value
+        if (document.getElementById('groupForm').action.includes('add')) {
+            addGroup()
+        } else {
+            editGroup()
         }
-        $.post(document.getElementById('groupForm').action + "?" + new URLSearchParams(data)).done((result) => {
-            $('#groupModal').modal('toggle')
-            document.getElementById("groupList").innerHTML += result
-        }).fail((result) => {
-            $("#groupModalBody").replaceWith(result.responseText)
-            updateCharsLeft('shortGroupName', 'shortGroupNameLength', 10)
-            updateCharsLeft('longGroupName', 'longGroupNameLength', 30)
-        })
 
         document.getElementById('groupForm').onsubmit = () => {validateGroup(); return false}
     }
+}
+
+/**
+ * Submits the group adding form and adds the new group to the page if the action was successful, otherwise updates
+ * the modal with error messages.
+ */
+function addGroup() {
+    const data = {
+        shortName: document.getElementById('shortGroupName').value,
+        longName: document.getElementById('longGroupName').value
+    }
+    $.post(document.getElementById('groupForm').action + "?" + new URLSearchParams(data)).done((result) => {
+        $('#groupModal').modal('toggle')
+        document.getElementById("groupList").innerHTML += result
+    }).fail((result) => {
+        $("#groupModalBody").replaceWith(result.responseText)
+        updateCharsLeft('shortGroupName', 'shortGroupNameLength', 10)
+        updateCharsLeft('longGroupName', 'longGroupNameLength', 30)
+    })
+}
+
+/**
+ * Submits the group editing form and updates the edited group if the action was successful, otherwise updates the
+ * modal with error messages.
+ */
+function editGroup() {
+    const data = {
+        shortName: document.getElementById('shortGroupName').value,
+        longName: document.getElementById('longGroupName').value
+    }
+    const action = document.getElementById('groupForm').action
+    $.post(action + "?" + new URLSearchParams(data)).done((result) => {
+        $('#groupModal').modal('toggle')
+        const id = action.substring(action.lastIndexOf('/') + 1)
+        $(`#groupCard${id}`).replaceWith(result)
+        groupButtonSetup() // Allow replaced group card to be highlighted when selected
+        $(`#groupCard${id} button`).click() // Select edited group
+    }).fail((result) => {
+        $("#groupModalBody").replaceWith(result.responseText)
+        updateCharsLeft('shortGroupName', 'shortGroupNameLength', 10)
+        updateCharsLeft('longGroupName', 'longGroupNameLength', 30)
+    })
 }

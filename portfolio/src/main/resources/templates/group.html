@@ -72,7 +72,7 @@
                 </a>
                 <div id="groupList" class="list-group list-group-flush border-bottom group-bar">
                     <div th:each="group : ${groupList}">
-                        <div th:fragment="groupCard">
+                        <div th:fragment="groupCard" th:id="|groupCard${group.getGroupId()}|">
                             <button  class="list-group-item list-group-item-action py-3 lh-tight" aria-current="true" th:attr="onclick=|updateTable('${group.groupId}')|" id="updateGroupButton">
                                 <div class="d-flex flex-row w-100 align-items-center justify-content-between">
                                     <strong class="mb-1" th:text="${group.shortName}"></strong>
@@ -152,25 +152,10 @@
 <script src="js/detailsLive.js"></script>
 <script src="js/project.js"></script>
 <script th:inline="javascript">
-    /**
-     * Add a 'active' class to the selected group, highlight current selected group for better user experience
-     */
-    $('.group-bar button').on('click', function () {
-        $("div.group-bar button").removeClass('active');
-        $(this).addClass("active");
-    })
-
+    groupButtonSetup()
     groupModalSetup()
     deleteModalSetup()
 </script>
-
-<script>
-    function updateTable(groupId) {
-        const url = "groups/local?";
-        $('#table_refresh').load(url, "groupId=" + groupId)
-    }
-</script>
-
 <script>
     //updates characters left
     function updateCharsLeft(elementId, messageElementId, numChars) {

@@ -86,7 +86,6 @@ public class GroupController {
             Model model,
             HttpServletResponse httpServletResponse
     ) {
-
         CreateGroupResponse response = groupService.createNewGroup(group.getShortName(), group.getLongName());
 
         if (response.getIsSuccess()) {
@@ -133,28 +132,31 @@ public class GroupController {
     @PostMapping("/edit-group/{id}")
     public String groupEdit(
             @PathVariable("id") Integer id,
-            @AuthenticationPrincipal AuthState principal,
             @ModelAttribute("group") Group group,
-            Model model
+            Model model,
+            HttpServletResponse httpServletResponse
     ) throws IllegalArgumentException {
         ModifyGroupDetailsResponse response = groupService.editGroupDetails(id, group.getShortName(), group.getLongName());
-        model.addAttribute(updateMessageId, response.getIsSuccess());
 
         if (response.getIsSuccess()) {
-            return "redirect:/groups";
+            group.setGroupId(id);
+            model.addAttribute("group", group);
+            httpServletResponse.setStatus(HttpServletResponse.SC_OK);
+            return "group::groupCard";
         }
 
-        for (ValidationError error : response.getValidationErrorsList()) {
+        List<ValidationError> errors = response.getValidationErrorsList();
+        for (ValidationError error : errors) {
             String errorMessage = error.getErrorText();
-            if (errorMessage.contains("Short name")) {
-                model.addAttribute("groupShortNameAlertMessage", errorMessage);
+            if (errorMessage.contains("Short")) {
+                model.addAttribute("groupShortNameAlertMessage", error.getErrorText());
             }
-            if (errorMessage.contains("Long name")) {
-                model.addAttribute("groupLongNameAlertMessage", errorMessage);
+            if (errorMessage.contains("Long")) {
+                model.addAttribute("groupLongNameAlertMessage", error.getErrorText());
             }
         }
-
-        return "group";
+        httpServletResponse.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+        return "fragments/groupModal::groupModalBody";
     }
 
 }
