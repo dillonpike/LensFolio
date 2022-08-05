@@ -96,8 +96,11 @@
         <div class="col-6 col-md-8 sticky-md-top card shadow">
             <div id="table_refresh" th:fragment="table_refresh">
                     <div class="container">
-                        <h1 th:text="${groupLongName}">No Group Selected</h1>
-                        <h4 th:text="${groupShortName}"></h4>
+                        <div class="hstack gap-3">
+                            <h1 th:text="${groupShortName}"></h1>
+                            <a class="ms-auto" th:href="@{groupSetting}">View Group Setting Page</a>
+                        </div>
+                        <h4 th:text="${groupLongName}">No Group Selected</h4>
                         <div class="hstack gap-3">
                             <span>Copy To </span>
                             <select class="form-select input-sm" aria-label="Default select example">
