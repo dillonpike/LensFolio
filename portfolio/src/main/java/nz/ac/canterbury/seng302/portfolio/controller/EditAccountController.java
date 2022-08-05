@@ -26,7 +26,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.text.MessageFormat;
 
-import static nz.ac.canterbury.seng302.portfolio.utility.Utility.getApplicationLocation;
+import static nz.ac.canterbury.seng302.portfolio.utility.GeneralUtility.getApplicationLocation;
 
 /***
  * Controller receive HTTP GET, POST, PUT, DELETE calls for edit account page
@@ -183,22 +183,23 @@ public class EditAccountController {
         return "redirect:account";
     }
 
+
     /**
-     * Post method used to remove the users profile image. This is simply done through a request to the IDP
-     * The image itself is not deleted but its connection to the user is (deleting its path).
-     * This may need to be changed in the future if private images are implemented.
-     *
-     * @param userId    The user's ID.
-     * @param rm        The attributes being sent back.
-     * @param model     The modal being used by Thymeleaf
-     * @return The redirected edit account page.
+     * Controller method for deleting an account photo. Has to be authorised to do so, and writes the default image to
+     * the file the portfolio reads from.
+     * @param rm        Redirect attributes
+     * @param model     Parameters sent to thymeleaf template to be rendered into HTML
+     * @param principal Used for getting the user ID
+     * @return redirect back to edit account page
      */
-    @PostMapping("/deleteAccountPhoto")
+
+    @GetMapping("/deleteAccountPhoto")
     public String deletePhoto(
-            @ModelAttribute("userId") int userId,
             RedirectAttributes rm,
-            Model model
+            Model model,
+            @AuthenticationPrincipal AuthState principal
     ) {
+        Integer userId = userAccountClientService.getUserIDFromAuthState(principal);
 
         String message = "Photo failed to delete.";
         String messageID = "message";

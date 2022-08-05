@@ -313,7 +313,7 @@ public class UserAccountServerService extends UserAccountServiceGrpc.UserAccount
             }
 
             File imageFile = new File(directory + "/profileImage");
-            try (FileOutputStream imageOutput = new FileOutputStream(imageFile);) {
+            try (FileOutputStream imageOutput = new FileOutputStream(imageFile)) {
 
                 if  (photo != null) { // Checks to ensure the photo given from the Portfolio exists.
                     imageOutput.write(photo.getBytes(1, (int) photo.length()));

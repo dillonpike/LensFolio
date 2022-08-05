@@ -13,7 +13,7 @@ class UtilityTest {
     @Test
     void GivenProdURL_ExpectProdReturn(){
         String sourceProd = "jdbc:mariadb://db2.csse.canterbury.ac.nz/seng302-2022-team100-portfolio-prod";
-        String actual = Utility.getApplicationLocation(sourceProd);
+        String actual = GeneralUtility.getApplicationLocation(sourceProd);
         String expectedProd = "prod";
         assertEquals(expectedProd, actual);
     }
@@ -24,7 +24,7 @@ class UtilityTest {
     @Test
     void GivenTestURL_ExpectTestReturn(){
         String sourceTest = "jdbc:mariadb://db2.csse.canterbury.ac.nz/seng302-2022-team100-portfolio-test";
-        String actual = Utility.getApplicationLocation(sourceTest);
+        String actual = GeneralUtility.getApplicationLocation(sourceTest);
         String expectedTest = "test";
         assertEquals(expectedTest, actual);
     }
@@ -35,7 +35,7 @@ class UtilityTest {
     @Test
     void GivenDevURL_ExpectDevReturn(){
         String sourceDev = "jdbc:mariadb://localhost:3306/jth141_portfolio-test";
-        String actual = Utility.getApplicationLocation(sourceDev);
+        String actual = GeneralUtility.getApplicationLocation(sourceDev);
         String expectedDev = "dev";
         assertEquals(expectedDev, actual);
     }

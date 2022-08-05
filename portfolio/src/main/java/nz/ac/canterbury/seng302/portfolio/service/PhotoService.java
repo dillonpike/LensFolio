@@ -15,7 +15,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.text.MessageFormat;
 
-import static nz.ac.canterbury.seng302.portfolio.utility.Utility.getApplicationLocation;
+import static nz.ac.canterbury.seng302.portfolio.utility.GeneralUtility.getApplicationLocation;
 
 /**
  * Contains methods related to the user's profile photo.
@@ -88,7 +88,7 @@ public class PhotoService {
 
         try (
                 FileOutputStream imageOutput = new FileOutputStream(usedImageFile);
-                FileInputStream imageInput = new FileInputStream(imageFile);
+                FileInputStream imageInput = new FileInputStream(imageFile)
         ) {
             imageOutput.write(imageInput.readAllBytes());
         } catch (IOException e) {

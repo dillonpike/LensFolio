@@ -1,6 +1,6 @@
 package nz.ac.canterbury.seng302.portfolio;
 
-import nz.ac.canterbury.seng302.portfolio.utility.Utility;
+import nz.ac.canterbury.seng302.portfolio.utility.GeneralUtility;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
@@ -21,7 +21,7 @@ public class StaticResourceConfig implements WebMvcConfigurer {
      */
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        String pathStart = "/" + Utility.getApplicationLocation(dataSource);
+        String pathStart = "/" + GeneralUtility.getApplicationLocation(dataSource);
         String directory =  PortfolioApplication.IMAGE_DIR + pathStart + "/";
         registry.addResourceHandler(pathStart + "/**").addResourceLocations("file:" + directory);
     }
