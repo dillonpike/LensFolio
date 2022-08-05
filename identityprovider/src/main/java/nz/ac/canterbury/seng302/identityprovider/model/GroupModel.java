@@ -49,8 +49,12 @@ public class GroupModel {
     @Column(name="User_Id")
     private Set<Integer> memberIds = new HashSet<>();
 
+
+    /**
+     * Set of repositories that this group has.
+     */
     @OneToMany(mappedBy = "groupModel")
-    private Set<GroupSettingModel> groupSettingsModels;
+    private Set<GroupRepositoryModel> groupRepositoryModels;
 
     /**
      * Empty constructor for JPA.
@@ -155,5 +159,20 @@ public class GroupModel {
      */
     public void removeMember(int userId) {
         memberIds.remove(userId);
+    }
+
+    /**
+     * Get all the repositories that a group has
+     * @return set of GroupRepositoryModel object
+     */
+    public Set<GroupRepositoryModel> getGroupRepositoryModels() {
+        return groupRepositoryModels;
+    }
+
+    /**
+     * Set all the repositories that a group has
+     */
+    public void setGroupRepositoryModels(Set<GroupRepositoryModel> groupRepositoryModels) {
+        this.groupRepositoryModels = groupRepositoryModels;
     }
 }
