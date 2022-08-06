@@ -95,6 +95,7 @@ function addGroup() {
     $.post(document.getElementById('groupForm').action + "?" + new URLSearchParams(data)).done((result) => {
         $('#groupModal').modal('toggle')
         document.getElementById("groupList").innerHTML += result
+        groupButtonSetup() // Allow group cards to be highlighted when selected
     }).fail((result) => {
         $("#groupModalBody").replaceWith(result.responseText)
         updateCharsLeft('shortGroupName', 'shortGroupNameLength', 10)
@@ -116,7 +117,7 @@ function editGroup() {
         $('#groupModal').modal('toggle')
         const id = action.substring(action.lastIndexOf('/') + 1)
         $(`#groupCard${id}`).replaceWith(result)
-        groupButtonSetup() // Allow replaced group card to be highlighted when selected
+        groupButtonSetup() // Allow group cards to be highlighted when selected
         $(`#groupCard${id} button`).click() // Select edited group
     }).fail((result) => {
         $("#groupModalBody").replaceWith(result.responseText)
@@ -161,6 +162,7 @@ function deleteGroupModalButtonFunction(type, id) {
         success: function() {
             $('#deleteModal').modal('toggle')
             $(`#groupCard${id}`).remove()
+            $(`#groupCard1 button`).click() // Select members without a group
         },
         error: function() {
             document.getElementById('deleteModalButton').onclick = buttonFunction;
