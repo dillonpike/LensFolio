@@ -2,13 +2,16 @@ package nz.ac.canterbury.seng302.identityprovider.service;
 
 import nz.ac.canterbury.seng302.identityprovider.model.GroupModel;
 import nz.ac.canterbury.seng302.identityprovider.repository.GroupRepository;
+import org.junit.Rule;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.rules.ExpectedException;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import javax.naming.directory.InvalidAttributesException;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -26,6 +29,24 @@ class GroupModelServiceTest {
     private GroupModelService groupModelService;
 
     private final GroupModel testGroup = new GroupModel("Test", "Test Group", 1);
+
+    @Rule
+    public ExpectedException exceptionRule = ExpectedException.none();
+
+    /**
+     * Test that getGroupById method return the correct groupModel by given an existing group Model
+     */
+    @Test
+    void testGetExistingGroupById() {
+        when(groupRepository.findById(any(Integer.class))).thenReturn(Optional.of(testGroup));
+
+        try {
+            GroupModel expectedGroupModel = groupModelService.getGroupById(testGroup.getGroupId());
+            assertEquals(expectedGroupModel, testGroup);
+        } catch (InvalidAttributesException e) {
+            e.printStackTrace();
+        }
+    }
 
     /**
      * Tests that the repository deleteById method is called once with the correct group id when calling the
