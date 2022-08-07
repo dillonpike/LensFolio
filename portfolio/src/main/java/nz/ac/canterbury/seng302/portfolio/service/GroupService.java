@@ -135,7 +135,6 @@ public class GroupService {
         PaginatedGroupsResponse groupList = getPaginatedGroups(1, 1, "null", false);
         groupDetailsResponseList = groupList.getGroupsList();
         model.addAttribute("groupList", groupDetailsResponseList);
-
         model.addAttribute("groupLongName", "No select group");
         model.addAttribute("groupShortName", "Please select one group");
 
