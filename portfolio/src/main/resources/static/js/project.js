@@ -208,10 +208,8 @@ function deadlineModalSetup() {
  * Customises the event modal attributes with depending on what event it should display and whether it's being
  * used for adding or editing a event. Also greys out the required dates to ensure only the dates in the
  * project date range are selectable.
- * @param projectStartDate the start date of the project
- * @param projectEndDate the end date of the project
  */
-function eventModalSetup(projectStartDate, projectEndDate) {
+function eventModalSetup() {
     const eventModal = document.getElementById('eventModal')
     eventModal.addEventListener('show.bs.modal', function (event) {
         // Button that triggered the modal
