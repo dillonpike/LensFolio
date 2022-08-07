@@ -47,7 +47,7 @@ public class GroupService {
      * @param userIds (ArrayList<Integer>) a list of all the user ids that will be added to a group
      * @return (AddGroupMembersResponse) contains the response of addition of user(s) to a group
      */
-    public AddGroupMembersResponse addMemberToGroup(Integer groupId, ArrayList<Integer> userIds){
+    public AddGroupMembersResponse addMemberToGroup(Integer groupId, List<Integer> userIds){
         AddGroupMembersRequest request = AddGroupMembersRequest.newBuilder()
                 .setGroupId(groupId)
                 .addAllUserIds(userIds)
@@ -61,7 +61,7 @@ public class GroupService {
      * @param userIds (ArrayList<Integer>) a list of all the user ids that will be removed from a group
      * @return (RemoveGroupMembersResponse) contains the response of removal of user(s) from a group
      */
-    public RemoveGroupMembersResponse removeMembersFromGroup(Integer groupId, ArrayList<Integer> userIds){
+    public RemoveGroupMembersResponse removeMembersFromGroup(Integer groupId, List<Integer> userIds){
         RemoveGroupMembersRequest request = RemoveGroupMembersRequest.newBuilder()
                 .setGroupId(groupId)
                 .addAllUserIds(userIds)
@@ -152,7 +152,7 @@ public class GroupService {
         model.addAttribute("groupLongName", groupDetailsResponse.getLongName());
         model.addAttribute("groupShortName", groupDetailsResponse.getShortName());
 
-        model.addAttribute("groupDetails", groupDetailsResponse);
+        model.addAttribute("group", groupDetailsResponse);
         model.addAttribute("members", userResponseList);
     }
 
@@ -172,6 +172,4 @@ public class GroupService {
             }
         }
     }
-
-
 }

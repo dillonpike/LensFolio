@@ -79,7 +79,8 @@ function deleteModalSetup() {
         const modalButton = deleteModal.querySelector('.modal-footer button')
         const modalLink = deleteModal.querySelector('.modal-footer a')
         if (members) {
-            modalBodyLabel.textContent = `WARNING: This group contains ${members} member(s), delete this group will remove all users from this group. Are you sure you want to delete ${name}?`
+            modalBodyLabel.textContent = `WARNING: This group contains ${members} member(s), deleting this group will` +
+                ` remove all users from this group and cannot be undone. Are you sure you want to delete ${name}?`
         } else {
             modalBodyLabel.textContent = `Are you sure you want to delete ${name}?`
         }

@@ -89,8 +89,7 @@ public class GroupController {
         CreateGroupResponse response = groupService.createNewGroup(group.getShortName(), group.getLongName());
 
         if (response.getIsSuccess()) {
-            group.setGroupId(response.getNewGroupId());
-            model.addAttribute("group", group);
+            groupService.addGroupDetailToModel(model, response.getNewGroupId());
             httpServletResponse.setStatus(HttpServletResponse.SC_OK);
             return "group::groupCard";
         }
@@ -137,8 +136,7 @@ public class GroupController {
         ModifyGroupDetailsResponse response = groupService.editGroupDetails(id, group.getShortName(), group.getLongName());
 
         if (response.getIsSuccess()) {
-            group.setGroupId(id);
-            model.addAttribute("group", group);
+            groupService.addGroupDetailToModel(model, id);
             httpServletResponse.setStatus(HttpServletResponse.SC_OK);
             return "group::groupCard";
         }
@@ -148,6 +146,4 @@ public class GroupController {
         httpServletResponse.setStatus(HttpServletResponse.SC_BAD_REQUEST);
         return "fragments/groupModal::groupModalBody";
     }
-
-
 }
