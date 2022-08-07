@@ -149,8 +149,6 @@ function milestoneModalSetup() {
         modalBodyInput.value = milestone.milestoneName;
         milestoneDatePicker.dates.setValue(tempusDominus.DateTime.convert(new Date(milestone.milestoneDate)));
         // Set minimum and maximum dates for greying out in the calendar
-        console.log(projectStartDate)
-        console.log(projectEndDate)
         milestoneDatePicker.updateOptions({restrictions: {minDate: new Date(projectStartDate), maxDate: new Date(projectEndDate)}});
 
         // Initial run of validation functions in case initial values are invalid
@@ -195,8 +193,6 @@ function deadlineModalSetup() {
         modalBodyInputs[0].value = deadline.deadlineName;
         deadlineDatePicker.dates.setValue(tempusDominus.DateTime.convert(new Date(deadline.deadlineDate)));
         // Set min and max dates based on project dates
-        console.log(projectStartDate)
-        console.log(projectEndDate)
         deadlineDatePicker.updateOptions({restrictions: {minDate: new Date(projectStartDate), maxDate: new Date(projectEndDate)}});
 
 
@@ -212,8 +208,6 @@ function deadlineModalSetup() {
  * Customises the event modal attributes with depending on what event it should display and whether it's being
  * used for adding or editing a event. Also greys out the required dates to ensure only the dates in the
  * project date range are selectable.
- * @param projectStartDate the start date of the project
- * @param projectEndDate the end date of the project
  */
 function eventModalSetup() {
     const eventModal = document.getElementById('eventModal')
