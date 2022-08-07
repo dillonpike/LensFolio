@@ -25,8 +25,11 @@
                     <form th:action="@{saveGroupSetting}" method="post">
 
                         <div class="form-floating mb-3 mx-3">
-                            <input type="text" class="form-control" id="firstName" th:name="firstName" placeholder="First name" th:value="${firstName}" minlength="1" required>
-                            <label for="firstName">First name</label>
+                            <label for="eventName" class="col-form-label">Event Name:</label>
+                            <input onkeyup="updateCharsLeft('eventName', 'eventNameLength', 50)" maxlength="50" type="text" class="form-control" id="eventName" name="eventName">
+                            <div class="name-length-message">
+                                <span id="eventNameLength"></span>
+                            </div>
                         </div>
                         <br>
                         <h4 class="mx-3">Repository Settings</h4>
@@ -81,6 +84,20 @@
     </div>
 
 </div>
-
+<script>
+    //updates characters left
+    function updateCharsLeft(elementId, messageElementId, numChars) {
+        let chars_left = numChars - document.getElementById(elementId).value.length;
+        if (chars_left === numChars) {
+            document.getElementById(messageElementId).innerText = "";
+        } else if (chars_left === 1) {
+            document.getElementById(messageElementId).innerText = chars_left + " character left";
+        } else if (chars_left === 0) {
+            document.getElementById(messageElementId).innerText = "No characters left";
+        } else {
+            document.getElementById(messageElementId).innerText = chars_left + " characters left";
+        }
+    }
+</script>
 </body>
 </html>
