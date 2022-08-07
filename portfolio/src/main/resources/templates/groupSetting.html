@@ -23,24 +23,27 @@
                     <h2 class="h1 mt-2 fs-1 mx-3">Group Setting</h2>
                     <br>
                     <form th:action="@{saveGroupSetting}" method="post">
-
-                        <div class="form-floating mb-3 mx-3">
-                            <label for="eventName" class="col-form-label">Event Name:</label>
-                            <input onkeyup="updateCharsLeft('eventName', 'eventNameLength', 50)" maxlength="50" type="text" class="form-control" id="eventName" name="eventName">
+                        <div class="mb-3 mx-3">
+                            <label for="longGroupName" class="col-form-label">Long Group Name:</label>
+                            <input onkeyup="updateCharsLeft('longGroupName', 'longGroupNameLength', 30)" maxlength="30" type="text"
+                                   class="form-control" id="longGroupName" name="longName" th:value="${groupLongName}">
                             <div class="name-length-message">
-                                <span id="eventNameLength"></span>
+                                <span id="longGroupNameLength"></span>
                             </div>
                         </div>
                         <br>
                         <h4 class="mx-3">Repository Settings</h4>
-                        <br>
-                        <div class="form-floating mb-3 mx-3">
-                            <input type="text" class="form-control" id="firstName1" th:name="firstName" placeholder="First name" th:value="${firstName}" minlength="1" required>
-                            <label for="firstName1">First name</label>
+                        <div class="mb-3 mx-3">
+                            <label for="RepoName" class="col-form-label">Repository Name:</label>
+                            <input type="text" class="form-control" id="RepoName" name="repoName">
                         </div>
-                        <div class="form-floating mb-3 mx-3">
-                            <input type="text" class="form-control" id="firstName2" th:name="firstName" placeholder="First name" th:value="${firstName}" minlength="1" required>
-                            <label for="firstName2">First name</label>
+                        <div class="mb-3 mx-3">
+                            <label for="RepoKey" class="col-form-label">Repository API key:</label>
+                            <input type="text" class="form-control" id="RepoKey" name="repoKey">
+                        </div>
+                        <br>
+                        <div class="hstack gap-3">
+                            <button type="submit" class="btn btn-success ms-auto mx-3 my-3">Save</button>
                         </div>
                     </form>
                 </div>
@@ -76,7 +79,15 @@
 
                 </div>
                 <div class="card shadow">
-                    <h4 class="mt-3 mx-3">Recent Activity</h4>
+                    <div class="hstack gap-3">
+                        <h4 class="mt-3 mx-3">Recent Activity</h4>
+                        <select id="branch" class="form-select my-3 mx-3 ms-auto" style="width: 50%" aria-label="Default select example">
+                            <option selected>Select Branch</option>
+                            <option value="1">master</option>
+                            <option value="2">dev</option>
+                        </select>
+                    </div>
+
                 </div>
             </div>
          </div>
