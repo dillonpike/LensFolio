@@ -61,6 +61,13 @@ public class GroupModel {
     private final List<UserModel> users = new ArrayList<>();
 
 
+
+    /**
+     * Set of repositories that this group has.
+     */
+    @OneToMany(mappedBy = "groupModel")
+    private Set<GroupRepositoryModel> groupRepositoryModels;
+
     /**
      * Empty constructor for JPA.
      */
@@ -168,5 +175,20 @@ public class GroupModel {
 
     public List<UserModel> getUsers() {
         return users;
+    }
+
+    /**
+     * Get all the repositories that a group has
+     * @return set of GroupRepositoryModel object
+     */
+    public Set<GroupRepositoryModel> getGroupRepositoryModels() {
+        return groupRepositoryModels;
+    }
+
+    /**
+     * Set all the repositories that a group has
+     */
+    public void setGroupRepositoryModels(Set<GroupRepositoryModel> groupRepositoryModels) {
+        this.groupRepositoryModels = groupRepositoryModels;
     }
 }
