@@ -1,30 +1,36 @@
 package nz.ac.canterbury.seng302.identityprovider.service;
 
 
+import nz.ac.canterbury.seng302.identityprovider.model.GroupModel;
 import nz.ac.canterbury.seng302.identityprovider.model.Roles;
+import nz.ac.canterbury.seng302.identityprovider.repository.GroupRepository;
 import nz.ac.canterbury.seng302.identityprovider.repository.RolesRepository;
 import nz.ac.canterbury.seng302.identityprovider.model.UserModel;
 import nz.ac.canterbury.seng302.identityprovider.repository.UserModelRepository;
+import nz.ac.canterbury.seng302.identityprovider.server.GroupModelServerService;
+import nz.ac.canterbury.seng302.identityprovider.server.UserAccountServerService;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+
+import javax.naming.directory.InvalidAttributesException;
+
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when; //should normally use this one
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.io.*;
+import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.AdditionalAnswers.returnsFirstArg;
 import static org.mockito.ArgumentMatchers.any;
 
@@ -49,6 +55,16 @@ public class UserModelServiceTests {
      */
     @Mock
     private RolesRepository rolesRepository;
+
+    @Mock
+    private GroupModelService groupModelService;
+
+    @Mock
+    private GroupRepository groupRepository;
+
+    private static final Logger logger = LoggerFactory.getLogger(UserAccountServerService.class);
+
+    private final GroupModel testGroup = new GroupModel("Test", "Test Group", 1);
 
     @Before
     public void setUp() {
@@ -197,6 +213,62 @@ public class UserModelServiceTests {
 
         List<UserResponse> userResponseList = userModelService.getUserInformationByList(userIds);
         assertThat(userResponseList.size()).isSameAs(userResponseExpectedList.size());
+
+    }
+
+    @Test
+    void testCheckUserIsInTeachersGroup() throws InvalidAttributesException {
+        UserModel testUser = new UserModel();
+        testUser.setUserId(1);
+        testGroup.addMember(testUser.getUserId());
+
+        try {
+            when(groupModelService.isUserPartOfGroup(testUser.getUserId(), GroupModelServerService.TEACHERS_GROUP_ID)).thenReturn(true);
+            when(groupModelService.getGroupById(any(Integer.class))).thenReturn(testGroup);
+        } catch (InvalidAttributesException e) {
+            fail("Group does not exist");
+        }
+
+        userModelService.checkUserIsInTeachersGroup(testUser);
+
+        try {
+            assertTrue(groupModelService.getGroupById(GroupModelServerService.TEACHERS_GROUP_ID).getMemberIds().contains(testUser.getUserId()));
+        } catch (InvalidAttributesException e) {
+            fail();
+        }
+    }
+
+    @Test
+    void testCheckUserIsInTeachersGroupWhenNotInGroup() {
+        UserModel testUser = new UserModel();
+        testUser.setUserId(1);
+
+        try {
+            when(groupModelService.isUserPartOfGroup(testUser.getUserId(), GroupModelServerService.TEACHERS_GROUP_ID)).thenReturn(false);
+            when(groupModelService.addUserToGroup(any(Integer.class), any(Integer.class))).thenReturn(true);
+            testGroup.addMember(testUser.getUserId());
+        } catch (InvalidAttributesException e) {
+            fail("Group does not exist");
+        }
+
+        userModelService.checkUserIsInTeachersGroup(testUser);
+
+        assertTrue(testGroup.getMemberIds().contains(testUser.getUserId()));
+    }
+
+    @Test
+    void testCheckUserIsInTeachersGroupWhenGroupDoesNotExist() {
+        UserModel testUser = new UserModel();
+        testUser.setUserId(1);
+
+        try {
+            // Group won't be returned by the repository, therefor the group doesn't exist
+            boolean isPartOfGroup = groupModelService.isUserPartOfGroup(testUser.getUserId(), GroupModelServerService.TEACHERS_GROUP_ID);
+            assertFalse(isPartOfGroup);
+            userModelService.checkUserIsInTeachersGroup(testUser);
+        } catch (InvalidAttributesException e) {
+            assertTrue(true);
+        }
 
     }
 

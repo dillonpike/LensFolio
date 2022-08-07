@@ -4,12 +4,10 @@ import nz.ac.canterbury.seng302.identityprovider.model.GroupModel;
 import nz.ac.canterbury.seng302.identityprovider.model.UserModel;
 import nz.ac.canterbury.seng302.identityprovider.repository.GroupRepository;
 import nz.ac.canterbury.seng302.shared.identityprovider.GroupDetailsResponse;
-import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.naming.directory.InvalidAttributesException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -190,5 +188,51 @@ public class GroupModelService {
 
     public boolean isExistById(Integer groupId) {
         return repository.existsById(groupId);
+    }
+
+    /**
+     * Adds a member to a group by their user id. If a user was already part of the group, no distinction is made when
+     * trying to re-add them to the group (returns true if the user was already a part of the group).
+     * @param userId ID of the user
+     * @param groupId ID of the group
+     * @return Whether the user was added or not.
+     */
+    public boolean addUserToGroup(Integer userId, Integer groupId) {
+        try {
+            GroupModel group = repository.getGroupModelByGroupId(groupId);
+            group.addMember(userId);
+            repository.save(group);
+        } catch (Exception e) {
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * Remove users from a group. If a user was already not in the group, the method still returns true.
+     * @param userId ID of user being removed from the group.
+     * @param groupId Id of the group the user is being removed from.
+     * @return
+     */
+    public boolean removeUserFromGroup(Integer userId, Integer groupId) {
+        try {
+            GroupModel group = repository.getGroupModelByGroupId(groupId);
+            group.removeMember(userId);
+            repository.save(group);
+        } catch (Exception e) {
+            return false;
+        }
+        return true;
+    }
+
+    public boolean isUserPartOfGroup(Integer userId, Integer groupId) throws InvalidAttributesException {
+        Optional<GroupModel> groupOptional = repository.findById(groupId);
+
+        if (groupOptional.isPresent()) {
+            Set<Integer> userIds = groupOptional.get().getMemberIds();
+            return userIds.contains(userId);
+        } else {
+            throw new InvalidAttributesException("Group does not exist!");
+        }
     }
 }
