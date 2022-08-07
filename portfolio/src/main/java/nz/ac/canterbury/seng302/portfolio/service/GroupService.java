@@ -2,6 +2,7 @@ package nz.ac.canterbury.seng302.portfolio.service;
 
 import net.devh.boot.grpc.client.inject.GrpcClient;
 import nz.ac.canterbury.seng302.shared.identityprovider.*;
+import nz.ac.canterbury.seng302.shared.util.ValidationError;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 
@@ -118,10 +119,9 @@ public class GroupService {
      */
     public PaginatedGroupsResponse getPaginatedGroups(Integer offset, Integer limit, String orderBy, boolean isAscending){
         GetPaginatedGroupsRequest request = GetPaginatedGroupsRequest.newBuilder()
-//                Ignore for now
-//                .setOffset(offset)
-//                .setIsAscendingOrder(isAscending)
-//                .setOrderBy(orderBy)
+                .setOffset(offset)
+                .setIsAscendingOrder(isAscending)
+                .setOrderBy(orderBy)
                 .build();
         return groupsServiceBlockingStub.getPaginatedGroups(request);
     }
@@ -155,6 +155,23 @@ public class GroupService {
 
         model.addAttribute("groupDetails", groupDetailsResponse);
         model.addAttribute("members", userResponseList);
+    }
+
+    /**
+     * Adds the group validation error messages to corresponding model attributes.
+     * @param model model to add error messages to
+     * @param errors list of error messages to add to the model
+     */
+    public void addGroupNameErrorsToModel(Model model, List<ValidationError> errors) {
+        for (ValidationError error : errors) {
+            String errorMessage = error.getErrorText();
+            if (errorMessage.contains("Short")) {
+                model.addAttribute("groupShortNameAlertMessage", error.getErrorText());
+            }
+            if (errorMessage.contains("Long")) {
+                model.addAttribute("groupLongNameAlertMessage", error.getErrorText());
+            }
+        }
     }
 
 

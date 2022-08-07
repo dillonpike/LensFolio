@@ -96,7 +96,7 @@ public class GroupController {
         }
 
         List<ValidationError> errors = response.getValidationErrorsList();
-        addGroupNameErrorsToModel(model, errors);
+        groupService.addGroupNameErrorsToModel(model, errors);
         httpServletResponse.setStatus(HttpServletResponse.SC_BAD_REQUEST);
         return "fragments/groupModal::groupModalBody";
     }
@@ -144,26 +144,10 @@ public class GroupController {
         }
 
         List<ValidationError> errors = response.getValidationErrorsList();
-        addGroupNameErrorsToModel(model, errors);
+        groupService.addGroupNameErrorsToModel(model, errors);
         httpServletResponse.setStatus(HttpServletResponse.SC_BAD_REQUEST);
         return "fragments/groupModal::groupModalBody";
     }
 
-    /**
-     * Adds the group validation error messages to corresponding model attributes.
-     * @param model model to add error messages to
-     * @param errors list of error messages to add to the model
-     */
-    private void addGroupNameErrorsToModel(Model model, List<ValidationError> errors) {
-        for (ValidationError error : errors) {
-            String errorMessage = error.getErrorText();
-            if (errorMessage.contains("Short")) {
-                model.addAttribute("groupShortNameAlertMessage", error.getErrorText());
-            }
-            if (errorMessage.contains("Long")) {
-                model.addAttribute("groupLongNameAlertMessage", error.getErrorText());
-            }
-        }
-    }
 
 }
