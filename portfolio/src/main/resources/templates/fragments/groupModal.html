@@ -5,32 +5,33 @@
         <h5 class="modal-title" id="exampleModalLongTitle">Add Group</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="closeGroupModalButton"></button>
       </div>
-      <div class="modal-body">
-
+      <div>
         <form method="post" id="groupForm" onsubmit="validateGroup(); return false" th:action="@{add-group}">
-          <div class="modal-body">
-            <div class="alert alert-danger alert-dismissible fade show" role="alert" id="groupShortNameAlertBanner" hidden>
-              <span id="groupShortNameAlertMessage" data-test-id="alertMessage"></span>
+          <div class="modal-body" id="groupModalBody" th:fragment="groupModalBody">
+            <div class="alert alert-danger alert-dismissible fade show" role="alert" id="groupShortNameAlertBanner" th:hidden="${groupShortNameAlertMessage==null}">
+              <span id="groupShortNameAlertMessage" data-test-id="alertMessage" th:text="${groupShortNameAlertMessage}"></span>
               <button type="button" class="btn-close" onclick="document.getElementById('groupShortNameAlertBanner').hidden = true" aria-label="Close"></button>
             </div>
             <div class="mb-3">
               <label for="shortGroupName" class="col-form-label">Short Group Name:</label>
-              <input onkeyup="updateCharsLeft('shortGroupName', 'shortGroupNameLength', 10)" maxlength="10" type="text" class="form-control" id="shortGroupName" name="shortGroupName">
+              <input onkeyup="updateCharsLeft('shortGroupName', 'shortGroupNameLength', 10)" maxlength="10" type="text"
+                     class="form-control" id="shortGroupName" name="shortName" th:value="${group?.shortName}">
               <div class="name-length-message">
                 <span id="shortGroupNameLength"></span>
               </div>
             </div>
 
+            <div class="alert alert-danger alert-dismissible fade show" role="alert" id="groupLongNameAlertBanner" th:hidden="${groupLongNameAlertMessage==null}">
+              <span id="groupLongNameAlertMessage" data-test-id="alertMessage" th:text="${groupLongNameAlertMessage}"></span>
+              <button type="button" class="btn-close" onclick="document.getElementById('groupLongNameAlertBanner').hidden = true" aria-label="Close"></button>
+            </div>
             <div class="mb-3">
               <label for="longGroupName" class="col-form-label">Long Group Name:</label>
-              <input onkeyup="updateCharsLeft('longGroupName', 'longGroupNameLength', 30)" maxlength="30" type="text" class="form-control" id="longGroupName" name="longGroupName">
+              <input onkeyup="updateCharsLeft('longGroupName', 'longGroupNameLength', 30)" maxlength="30" type="text"
+                     class="form-control" id="longGroupName" name="longName" th:value="${group?.longName}">
               <div class="name-length-message">
                 <span id="longGroupNameLength"></span>
               </div>
-            </div>
-            <div class="alert alert-danger alert-dismissible fade show" role="alert" id="groupLongNameAlertBanner" hidden>
-              <span id="groupLongNameAlertMessage" data-test-id="alertMessage"></span>
-              <button type="button" class="btn-close" onclick="document.getElementById('groupLongNameAlertBanner').hidden = true" aria-label="Close"></button>
             </div>
           </div>
           <div class="modal-footer">
@@ -41,4 +42,3 @@
     </div>
   </div>
 </div>
-<script src="js/datepicker.js"></script>
