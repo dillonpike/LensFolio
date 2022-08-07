@@ -1,6 +1,7 @@
 package nz.ac.canterbury.seng302.identityprovider.service;
 
 import nz.ac.canterbury.seng302.identityprovider.model.GroupModel;
+import nz.ac.canterbury.seng302.identityprovider.model.UserModel;
 import nz.ac.canterbury.seng302.identityprovider.repository.GroupRepository;
 import nz.ac.canterbury.seng302.shared.identityprovider.GroupDetailsResponse;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
@@ -21,6 +22,9 @@ public class GroupModelService {
 
     @Autowired
     private GroupRepository repository;
+
+    @Autowired
+    private UserModelService userModelService;
 
     /**
      * Adds a group to the database
@@ -82,7 +86,7 @@ public class GroupModelService {
         if (groupOptional.isPresent()) {
             return groupOptional.get();
         } else {
-            throw new InvalidAttributesException("Group does not exist " + groupId);
+            throw new InvalidAttributesException("Group does not exist!");
         }
     }
 
@@ -176,7 +180,10 @@ public class GroupModelService {
         response.setGroupId(groupModel.getGroupId());
         response.setLongName(groupModel.getLongName());
         response.setShortName(groupModel.getShortName());
-
+        List<UserModel> userModelList = groupModel.getUsers();
+        for (UserModel userModel : userModelList) {
+            response.addMembers(userModelService.getUserInfo(userModel));
+        }
         return response.build();
     }
 

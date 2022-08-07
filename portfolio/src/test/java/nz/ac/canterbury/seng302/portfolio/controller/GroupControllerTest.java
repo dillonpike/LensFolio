@@ -2,10 +2,7 @@ package nz.ac.canterbury.seng302.portfolio.controller;
 
 import nz.ac.canterbury.seng302.portfolio.model.Group;
 import nz.ac.canterbury.seng302.portfolio.service.*;
-import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
-import nz.ac.canterbury.seng302.shared.identityprovider.ClaimDTO;
-import nz.ac.canterbury.seng302.shared.identityprovider.DeleteGroupResponse;
-import nz.ac.canterbury.seng302.shared.identityprovider.ModifyGroupDetailsResponse;
+import nz.ac.canterbury.seng302.shared.identityprovider.*;
 import nz.ac.canterbury.seng302.shared.util.ValidationError;
 import org.junit.Before;
 import org.junit.jupiter.api.Test;
@@ -15,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
@@ -22,8 +20,8 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import static org.hamcrest.Matchers.containsString;
 import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.doReturn;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -51,7 +49,7 @@ class GroupControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
-    @MockBean
+    @SpyBean
     private GroupService groupService;
 
     @MockBean
@@ -65,6 +63,8 @@ class GroupControllerTest {
         mockMvc = MockMvcBuilders.standaloneSetup(GroupController.class).build();
     }
 
+    private final Group testGroup = new Group("Test", "Test Group", 1);
+
     /**
      * Test that if given any valid GroupId, table refresh successfully.
      * @throws Exception Can be caused during mocking the MVC system.
@@ -74,10 +74,15 @@ class GroupControllerTest {
         SecurityContext mockedSecurityContext = Mockito.mock(SecurityContext.class);
         when(mockedSecurityContext.getAuthentication()).thenReturn(new PreAuthenticatedAuthenticationToken(validAuthState, ""));
         SecurityContextHolder.setContext(mockedSecurityContext);
-        int GroupId = 1;
 
-        mockMvc.perform(get("/groups/local?groupId=" + GroupId))
-                .andExpect(status().isOk());
+        GroupDetailsResponse response = GroupDetailsResponse.newBuilder().setGroupId(testGroup.getGroupId())
+                .setShortName(testGroup.getShortName()).setLongName(testGroup.getLongName()).build();
+
+        doReturn(response).when(groupService).getGroupDetails(testGroup.getGroupId());
+
+        mockMvc.perform(get("/groups/local?groupId=" + testGroup.getGroupId()))
+                .andExpect(status().isOk())
+                .andExpect(model().attribute("group", response));
     }
 
     /**
@@ -91,7 +96,8 @@ class GroupControllerTest {
         SecurityContextHolder.setContext(mockedSecurityContext);
 
         int expectedGroupId = 1;
-        when(groupService.deleteGroup(expectedGroupId)).thenReturn(DeleteGroupResponse.newBuilder().setIsSuccess(true).build());
+        doReturn(DeleteGroupResponse.newBuilder().setIsSuccess(true).build())
+                .when(groupService).deleteGroup(expectedGroupId);
 
         mockMvc.perform(delete("/delete-group/" + expectedGroupId))
                 .andExpect(status().is2xxSuccessful());
@@ -110,7 +116,8 @@ class GroupControllerTest {
         SecurityContextHolder.setContext(mockedSecurityContext);
 
         int expectedGroupId = 1;
-        when(groupService.deleteGroup(expectedGroupId)).thenReturn(DeleteGroupResponse.newBuilder().setIsSuccess(false).build());
+        doReturn(DeleteGroupResponse.newBuilder().setIsSuccess(false).build())
+                .when(groupService).deleteGroup(expectedGroupId);
 
         mockMvc.perform(delete("/delete-group/" + expectedGroupId))
                 .andExpect(status().is4xxClientError());
@@ -134,13 +141,17 @@ class GroupControllerTest {
         group.setLongName("A group of seng students working on a project.");
         group.setGroupId(expectedGroupId);
 
+        doReturn(ModifyGroupDetailsResponse.newBuilder().setIsSuccess(true).build())
+                .when(groupService).editGroupDetails(expectedGroupId, group.getShortName(), group.getLongName());
 
-        when(groupService.editGroupDetails(expectedGroupId, group.getShortName(), group.getLongName()))
-                .thenReturn(ModifyGroupDetailsResponse.newBuilder().setIsSuccess(true).build());
+        GroupDetailsResponse response = GroupDetailsResponse.newBuilder().setGroupId(group.getGroupId())
+                .setShortName(group.getShortName()).setLongName(group.getLongName()).build();
+
+        doReturn(response).when(groupService).getGroupDetails(group.getGroupId());
 
         mockMvc.perform(post("/edit-group/" + expectedGroupId).flashAttr("group", group))
                 .andExpect(status().isOk())
-                .andExpect(model().attribute("group", group))
+                .andExpect(model().attribute("group", response))
                 .andExpect(view().name("group::groupCard"));
 
         verify(groupService, times(1)).editGroupDetails(expectedGroupId, group.getShortName(), group.getLongName());
@@ -162,9 +173,8 @@ class GroupControllerTest {
         group.setLongName("A group of seng students working on a project.");
         group.setGroupId(expectedGroupId);
 
-
-        when(groupService.editGroupDetails(expectedGroupId, group.getShortName(), group.getLongName()))
-                .thenReturn(ModifyGroupDetailsResponse.newBuilder().setIsSuccess(false).build());
+        doReturn(ModifyGroupDetailsResponse.newBuilder().setIsSuccess(false).build())
+                .when(groupService).editGroupDetails(expectedGroupId, group.getShortName(), group.getLongName());
 
         mockMvc.perform(post("/edit-group/" + expectedGroupId).flashAttr("group", group))
                 .andExpect(status().is4xxClientError())
@@ -194,7 +204,7 @@ class GroupControllerTest {
         ValidationError error = ValidationError.newBuilder().setErrorText("Short name is to long.").build();
         ModifyGroupDetailsResponse response = ModifyGroupDetailsResponse.newBuilder().addValidationErrors(0, error).setIsSuccess(false).build();
 
-        when(groupService.editGroupDetails(expectedGroupId, group.getShortName(), group.getLongName())).thenReturn(response);
+        doReturn(response).when(groupService).editGroupDetails(expectedGroupId, group.getShortName(), group.getLongName());
 
         mockMvc.perform(post("/edit-group/" + expectedGroupId).flashAttr("group", group))
                 .andExpect(status().is4xxClientError())
@@ -224,7 +234,7 @@ class GroupControllerTest {
         ValidationError error = ValidationError.newBuilder().setErrorText("Long name is to long.").build();
         ModifyGroupDetailsResponse response = ModifyGroupDetailsResponse.newBuilder().addValidationErrors(0, error).setIsSuccess(false).build();
 
-        when(groupService.editGroupDetails(expectedGroupId, group.getShortName(), group.getLongName())).thenReturn(response);
+        doReturn(response).when(groupService).editGroupDetails(expectedGroupId, group.getShortName(), group.getLongName());
 
         mockMvc.perform(post("/edit-group/" + expectedGroupId).flashAttr("group", group))
                 .andExpect(status().is4xxClientError())
