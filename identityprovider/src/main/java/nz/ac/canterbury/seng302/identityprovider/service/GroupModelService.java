@@ -1,11 +1,16 @@
 package nz.ac.canterbury.seng302.identityprovider.service;
 
 import nz.ac.canterbury.seng302.identityprovider.model.GroupModel;
+import nz.ac.canterbury.seng302.identityprovider.model.UserModel;
 import nz.ac.canterbury.seng302.identityprovider.repository.GroupRepository;
+import nz.ac.canterbury.seng302.shared.identityprovider.GroupDetailsResponse;
+import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.naming.directory.InvalidAttributesException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -17,6 +22,9 @@ public class GroupModelService {
 
     @Autowired
     private GroupRepository repository;
+
+    @Autowired
+    private UserModelService userModelService;
 
     /**
      * Adds a group to the database
@@ -78,7 +86,7 @@ public class GroupModelService {
         if (groupOptional.isPresent()) {
             return groupOptional.get();
         } else {
-            throw new InvalidAttributesException("Group does not exist " + groupId);
+            throw new InvalidAttributesException("Group does not exist!");
         }
     }
 
@@ -153,4 +161,34 @@ public class GroupModelService {
         return false;
     }
 
+
+    /**
+     * Method to retrieve every group from database
+     * @return list of gorups
+     */
+    public List<GroupModel> getAllGroups() {
+        return (List<GroupModel>) repository.findAll();
+    }
+
+    /**
+     * Method to convert and build a groupModel to GroupDetailsResponse.
+     * @param groupModel the current groupModel
+     * @return GroupDetailsResponse with current groupModel's info
+     */
+    public GroupDetailsResponse getGroupInfo(GroupModel groupModel) {
+        GroupDetailsResponse.Builder response = GroupDetailsResponse.newBuilder();
+        response.setGroupId(groupModel.getGroupId());
+        response.setLongName(groupModel.getLongName());
+        response.setShortName(groupModel.getShortName());
+        List<UserModel> userModelList = groupModel.getUsers();
+        for (UserModel userModel : userModelList) {
+            response.addMembers(userModelService.getUserInfo(userModel));
+        }
+        return response.build();
+    }
+
+
+    public boolean isExistById(Integer groupId) {
+        return repository.existsById(groupId);
+    }
 }

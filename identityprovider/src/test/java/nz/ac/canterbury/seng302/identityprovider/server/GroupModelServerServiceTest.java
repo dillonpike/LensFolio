@@ -2,6 +2,7 @@ package nz.ac.canterbury.seng302.identityprovider.server;
 
 import io.grpc.stub.StreamObserver;
 import nz.ac.canterbury.seng302.identityprovider.model.GroupModel;
+import nz.ac.canterbury.seng302.identityprovider.repository.GroupRepository;
 import nz.ac.canterbury.seng302.identityprovider.service.GroupModelService;
 import nz.ac.canterbury.seng302.shared.identityprovider.*;
 import nz.ac.canterbury.seng302.shared.util.ValidationError;
@@ -31,7 +32,13 @@ class GroupModelServerServiceTest {
     private  StreamObserver<CreateGroupResponse> createObserver;
 
     @Mock
+    private GroupRepository groupRepository;
+
+    @Mock
     private StreamObserver<ModifyGroupDetailsResponse> modifyObserver;
+
+    @Mock
+    private StreamObserver<GroupDetailsResponse> groupDetailsResponseObserver;
 
     @InjectMocks
     private GroupModelServerService groupModelServerService = Mockito.spy(GroupModelServerService.class);
@@ -353,5 +360,31 @@ class GroupModelServerServiceTest {
         assertEquals("Group not found", response.getMessage());
         assertEquals(0, response.getValidationErrorsCount());
     }
+
+    @Test
+    void testGetGroupDetailGroupExists() {
+        GetGroupDetailsRequest request = GetGroupDetailsRequest.newBuilder()
+                .setGroupId(1)
+                .build();
+        when(groupModelService.isExistById(request.getGroupId())).thenReturn(true);
+        when(groupRepository.getGroupModelByGroupId(request.getGroupId())).thenReturn(testGroup);
+        // Runs tasks for modifying existing group.
+        groupModelServerService.getGroupDetails(request, groupDetailsResponseObserver);
+
+        // Checks it ran .onCompleted().
+        verify(groupDetailsResponseObserver, times(1)).onCompleted();
+        // Sets up captures to get the response.
+        ArgumentCaptor<GroupDetailsResponse> captor = ArgumentCaptor.forClass(GroupDetailsResponse.class);
+        // Checks it ran .onNext() and captor the response.
+        verify(groupDetailsResponseObserver, times(1)).onNext(captor.capture());
+        // Gets the value of the response from the captor.
+        GroupDetailsResponse response = captor.getValue();
+
+        assertEquals("Long Name", response.getLongName());
+        assertEquals("Short Name", response.getShortName());
+        assertEquals(0, response.getGroupId());
+
+    }
+
 
 }

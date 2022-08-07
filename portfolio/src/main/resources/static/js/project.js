@@ -71,15 +71,20 @@ function deleteModalSetup() {
         const id = button.getAttribute('data-bs-id')
         const name = button.getAttribute('data-bs-name')
         const type = button.getAttribute('data-bs-type')
+        const members = button.getAttribute('data-bs-member')
 
         // Update the modal's content.
         const modalTitle = deleteModal.querySelector('.modal-title')
         const modalBodyLabel = deleteModal.querySelector('.modal-body label')
         const modalButton = deleteModal.querySelector('.modal-footer button')
         const modalLink = deleteModal.querySelector('.modal-footer a')
-
+        if (members) {
+            modalBodyLabel.textContent = `WARNING: This group contains ${members} member(s), deleting this group will` +
+                ` remove all users from this group and cannot be undone. Are you sure you want to delete ${name}?`
+        } else {
+            modalBodyLabel.textContent = `Are you sure you want to delete ${name}?`
+        }
         modalTitle.innerText = `Delete ${type.charAt(0).toUpperCase() + type.slice(1)}`
-        modalBodyLabel.textContent = `Are you sure you want to delete ${name}?`
         modalButton.innerHTML = `Delete ${type.charAt(0).toUpperCase() + type.slice(1)}`
         modalLink.href = `delete-${type}/${id}`
     })
@@ -146,8 +151,10 @@ function milestoneModalSetup() {
         }
 
         modalForm.setAttribute('object', milestone);
-        modalBodyInput.value = milestone.milestoneName
-        $('#milestoneDateInput').datepicker('setDate', milestone.milestoneDateString)
+        modalBodyInput.value = milestone.milestoneName;
+        milestoneDatePicker.dates.setValue(tempusDominus.DateTime.convert(new Date(milestone.milestoneDate)));
+        // Set minimum and maximum dates for greying out in the calendar
+        milestoneDatePicker.updateOptions({restrictions: {minDate: new Date(projectStartDate), maxDate: new Date(projectEndDate)}});
 
         // Initial run of validation functions in case initial values are invalid
         validateModalDate('milestoneDate', 'milestoneModalButton', 'milestoneDateAlertBanner', 'milestoneDateAlertMessage')
@@ -302,20 +309,4 @@ function eventModalSetup(projectStartDate, projectEndDate) {
             pageReload();
         });
     }
-}
-/**
- * Customises the group modal attributes with depending on what sprint it should display and whether it's being used
- * for adding or editing a sprint.
- */
-function groupModalSetup() {
-    const groupModal = document.getElementById('groupModal')
-    groupModal.addEventListener('show.bs.modal', function (event) {
-
-        // Update the modal's content.
-        const modalTitle = groupModal.querySelector('.modal-title')
-        const modalButton = groupModal.querySelector('.modal-footer button')
-
-        modalTitle.innerText = 'Add Group'
-        modalButton.innerHTML = 'Add Group'
-    })
 }

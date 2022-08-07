@@ -1,16 +1,14 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
 import nz.ac.canterbury.seng302.portfolio.model.Event;
-import nz.ac.canterbury.seng302.portfolio.service.DateValidationService;
-import nz.ac.canterbury.seng302.portfolio.service.EventService;
-import nz.ac.canterbury.seng302.portfolio.service.RegisterClientService;
-import nz.ac.canterbury.seng302.portfolio.service.UserAccountClientService;
+import nz.ac.canterbury.seng302.portfolio.service.*;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 public class EditEventController {
@@ -27,6 +25,11 @@ public class EditEventController {
     @Autowired
     private RegisterClientService registerClientService;
 
+    @Autowired
+    private PermissionService permissionService;
+
+    @Autowired
+    private ElementService elementService;
 
     /**
      * Tries to save new data to event with given eventId to the database.
@@ -39,17 +42,24 @@ public class EditEventController {
             @PathVariable("id") Integer id,
             @AuthenticationPrincipal AuthState principal,
             @ModelAttribute("event") Event event,
+            RedirectAttributes rm,
             Model model
     ) throws Exception {
-        Event newEvent = eventService.getEventById(id);
-        newEvent.setEventName(event.getEventName());
-        newEvent.setStartDateString(event.getStartDateString());
-        newEvent.setEndDateString(event.getEndDateString());
-        newEvent.setStartTimeString(event.getStartTimeString());
-        newEvent.setEndTimeString(event.getEndTimeString());
+        Integer userID = userAccountClientService.getUserIDFromAuthState(principal);
+        elementService.addHeaderAttributes(model, userID);
 
-        eventService.updateEvent(newEvent);
+        if (permissionService.isValidToModifyProjectPage(userID)) {
+            Event newEvent = eventService.getEventById(id);
+            newEvent.setEventName(event.getEventName());
+            newEvent.setStartDateString(event.getStartDateString());
+            newEvent.setEndDateString(event.getEndDateString());
+            newEvent.setStartTimeString(event.getStartTimeString());
+            newEvent.setEndTimeString(event.getEndTimeString());
 
+            eventService.updateEvent(newEvent);
+        } else {
+            rm.addFlashAttribute("isAccessDenied", true);
+        }
         return "redirect:/details";
     }
 

@@ -12,17 +12,7 @@
     <link rel="stylesheet" href="https://cdn.datatables.net/1.10.22/css/dataTables.bootstrap4.min.css">
     <script src="https://cdn.datatables.net/1.10.22/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/1.10.22/js/dataTables.bootstrap4.min.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.5/dist/umd/popper.min.js" integrity="sha384-Xe+8cL9oJa6tN/veChSP7q+mnSPaj5Bcu9mPX5F5xIGE0DVittaqT5lorf0EI7Vk" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js" integrity="sha512-iKDtgDyTHjAitUDdLljGhenhPwrbBfqTKWO1mkhSFH3A7blITC9MhYon6SjnMhp4o0rADGw9yAC6EW4t5a4K3g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <script src="webjars/jquery/3.6.0/dist/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <script src="https://cdn.jsdelivr.net/gh/Eonasdan/tempus-dominus@master/dist/js/tempus-dominus.js"></script>
-    <link href="https://cdn.jsdelivr.net/gh/Eonasdan/tempus-dominus@master/dist/css/tempus-dominus.css" rel="stylesheet"/>
+
 </head>
 <body>
 <header th:replace="fragments/header"></header>
@@ -80,71 +70,37 @@
                         Add Group
                     </button>
                 </a>
-                <div class="list-group list-group-flush border-bottom group-bar">
-                    <button class="list-group-item list-group-item-action py-3 lh-tight" aria-current="true" onclick="updateTable()" id="updateButton1">
-                        <div class="d-flex flex-row w-100 align-items-center justify-content-between">
-                            <strong class="mb-1">Team 100</strong>
-                            <div>
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil" viewBox="0 0 16 16" data-bs-toggle="modal" data-bs-target="#groupModal">
-                                    <path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207 11.207 2.5zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293l6.5-6.5zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z"/>
+                <div id="groupList" class="list-group list-group-flush border-bottom group-bar">
+                    <div th:each="group : ${groupList}">
+                        <div th:fragment="groupCard" th:id="|groupCard${group.getGroupId()}|">
+                            <button  class="list-group-item list-group-item-action py-3 lh-tight" aria-current="true" th:attr="onclick=|updateTable('${group.groupId}')|" id="updateGroupButton">
+                                <div class="d-flex flex-row w-100 align-items-center justify-content-between">
+                                    <strong class="mb-1" th:text="${group.shortName}"></strong>
+                                    <div>
+                                        <svg th:if="${group.getLongName() != 'Members without a group' && group.getLongName() != 'Teachers Group'}" id="editGroupButton" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil" viewBox="0 0 16 16" data-bs-toggle="modal" data-bs-target="#groupModal" th:data-bs-id="${group.getGroupId()}" th:data-bs-shortname="${group.getShortName()}" th:data-bs-longname="${group.getLongName()}" data-bs-type="edit">
+                                            <path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207 11.207 2.5zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293l6.5-6.5zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z"/>
+                                        </svg>
+                                        <svg th:if="${group.getLongName() != 'Members without a group' && group.getLongName() != 'Teachers Group'}" id="deleteGroupButton" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash-fill" viewBox="0 0 16 16" data-bs-toggle="modal" data-bs-target="#deleteModal" th:data-bs-id="${group.getGroupId()}" th:data-bs-name="${group.getShortName()}" th:data-bs-member="${group.getMembersCount()}" data-bs-type="group" >
+                                            <path d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1H2.5zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5zM8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5zm3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0z"/>
+                                        </svg>
+                                    </div>
+                                </div>
+                                <i th:text="${group.longName}"></i>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-fill" viewBox="0 0 16 16">
+                                    <path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H3zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/>
                                 </svg>
-
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash-fill" viewBox="0 0 16 16" data-bs-toggle="modal" data-bs-target="#deleteModal">
-                                    <path d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1H2.5zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5zM8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5zm3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0z"/>
-                                </svg>
-                            </div>
-
+                                <i th:text="${group.getMembersCount()}"></i>
+                            </button>
                         </div>
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-fill" viewBox="0 0 16 16">
-                            <path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H3zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/>
-                        </svg>
-                        <i>6</i>
-                    </button>
-
-
-                    <button class="list-group-item list-group-item-action py-3 lh-tight" aria-current="true" onclick="updateTable()" id="updateButton2">
-                        <div class="d-flex flex-row w-100 align-items-center justify-content-between">
-                            <strong class="mb-1">Team 200</strong>
-                            <div>
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil" viewBox="0 0 16 16" data-bs-toggle="modal" data-bs-target="#groupModal">
-                                    <path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207 11.207 2.5zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293l6.5-6.5zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z"/>
-                                </svg>
-
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash-fill" viewBox="0 0 16 16" data-bs-toggle="modal" data-bs-target="#deleteModal">
-                                    <path d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1H2.5zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5zM8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5zm3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0z"/>
-                                </svg>
-                            </div>
-                        </div>
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-fill" viewBox="0 0 16 16">
-                            <path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H3zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/>
-                        </svg>
-                        <i>6</i>
-                    </button>
-                    <button class="list-group-item list-group-item-action py-3 lh-tight" aria-current="true" onclick="updateTable()" id="updateButton">
-                        <div class="d-flex flex-row w-100 align-items-center justify-content-between">
-                            <strong class="mb-1">Team 200</strong>
-                            <div>
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil" viewBox="0 0 16 16" data-bs-toggle="modal" data-bs-target="#groupModal">
-                                    <path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207 11.207 2.5zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293l6.5-6.5zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z"/>
-                                </svg>
-
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash-fill" viewBox="0 0 16 16" data-bs-toggle="modal" data-bs-target="#deleteModal">
-                                    <path d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1H2.5zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5zM8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5zm3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0z"/>
-                                </svg>
-                            </div>
-                        </div>
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-fill" viewBox="0 0 16 16">
-                            <path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H3zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/>
-                        </svg>
-                        <i>6</i>
-                    </button>
+                    </div>
                 </div>
             </div>
         </div>
         <div class="col-6 col-md-8 sticky-md-top card shadow">
             <div id="table_refresh" th:fragment="table_refresh">
                     <div class="container">
-                        <h1 th:text="${title}"></h1>
+                        <h1 th:text="${groupLongName}">No Group Selected</h1>
+                        <h4 th:text="${groupShortName}"></h4>
                         <div class="hstack gap-3">
                             <span>Copy To </span>
                             <select class="form-select input-sm" aria-label="Default select example">
@@ -161,7 +117,7 @@
                             </button>
                         </div>
 
-                        <table class="table table-striped table-bordered display" id="group_table" >
+                        <table class="table table-striped table-bordered display" id="table" >
                             <thead class="table-dark" id="headTable">
                             <tr>
                                 <th id="firstNameColumn">First Name</th>
@@ -170,18 +126,19 @@
                             </tr>
                             </thead>
                             <tbody>
-                            <tr th:each="user : ${users}">
-                                <td><span th:text="${user.FirstName}"> First Name </span></td>
-                                <td><span th:text="${user.LastName}"> Last Name </span></td>
-                                <td><span th:text="${user.username}"> Username </span></td>
+                            <tr th:each="member : ${members}">
+                                <td><span th:text="${member.FirstName}"> First Name </span></td>
+                                <td><span th:text="${member.LastName}"> Last Name </span></td>
+                                <td><span th:text="${member.username}"> Username </span></td>
                             </tr>
                             </tbody>
                         </table>
                     </div>
-<!--                Must have in line script here-->
+                <!--                Must have in line script here-->
                 <script>
-                    $('group_table').dataTable({searching: false, paging: false, info: false, select: true});
+                    $('table').dataTable({searching: false, paging: false, info: false, select: true});
                 </script>
+
             </div>
          </div>
     </div>
@@ -194,26 +151,13 @@
 
 <script src="js/group.js"></script>
 <script src="js/detailsLive.js"></script>
-
+<script src="js/project.js"></script>
 <script th:inline="javascript">
-    /**
-     * Add a 'active' class to the selected group, highlight current selected group for better user experience
-     */
-    $('.group-bar button').on('click', function () {
-        $("div.group-bar button").removeClass('active');
-        $(this).addClass("active");
-    })
-
-    groupModalSetup();
+    groupButtonSetup()
+    groupModalSetup()
+    deleteModalSetup()
+    groupDeleteModalSetup()
 </script>
-
-<script>
-    function updateTable() {
-        const url = "/groups";
-        $('#table_refresh').load("groups/local")
-    }
-</script>
-
 <script>
     //updates characters left
     function updateCharsLeft(elementId, messageElementId, numChars) {
@@ -247,15 +191,6 @@
             document.getElementById(alertBanner).hidden = true;
             return true
         }
-    }
-
-    async function validateGroup() {
-        if (validateModalName('shortGroupName', 'groupShortNameAlertBanner', 'groupShortNameAlertMessage') &&
-            validateModalName('longGroupName', 'groupLongNameAlertBanner', 'groupLongNameAlertMessage')
-        ) {
-            document.getElementById('groupForm').onsubmit = () => { return false };
-            document.getElementById('groupForm').submit();
-        };
     }
 </script>
 

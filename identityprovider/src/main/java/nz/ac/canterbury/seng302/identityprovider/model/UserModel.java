@@ -26,7 +26,7 @@ public class UserModel implements Serializable {
     private String bio;
     private String personalPronouns;
     private Timestamp dateAdded;
-    private Blob photo;
+    private String photoDirectory;
 
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
     @JoinTable(name = "user_to_role",
@@ -184,12 +184,12 @@ public class UserModel implements Serializable {
         }
     }
 
-    public void setPhoto(Blob photo) {
-        this.photo = photo;
+    public void setPhotoDirectory(String photoDirectory) {
+        this.photoDirectory = photoDirectory;
     }
 
-    public Blob getPhoto() {
-        return photo;
+    public String getPhotoDirectory() {
+        return photoDirectory;
     }
 
     @Override

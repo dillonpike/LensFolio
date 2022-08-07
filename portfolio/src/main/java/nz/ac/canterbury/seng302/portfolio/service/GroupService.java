@@ -2,9 +2,12 @@ package nz.ac.canterbury.seng302.portfolio.service;
 
 import net.devh.boot.grpc.client.inject.GrpcClient;
 import nz.ac.canterbury.seng302.shared.identityprovider.*;
+import nz.ac.canterbury.seng302.shared.util.ValidationError;
 import org.springframework.stereotype.Service;
+import org.springframework.ui.Model;
 
 import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -19,6 +22,10 @@ public class GroupService {
      */
     @GrpcClient(value = "identity-provider-grpc-server")
     GroupsServiceGrpc.GroupsServiceBlockingStub groupsServiceBlockingStub;
+
+    private List<GroupDetailsResponse> groupDetailsResponseList;
+
+    private List<UserResponse> userResponseList;
 
     /***
      * Method to create group by sending request using GRPC to the idp
@@ -40,7 +47,7 @@ public class GroupService {
      * @param userIds (ArrayList<Integer>) a list of all the user ids that will be added to a group
      * @return (AddGroupMembersResponse) contains the response of addition of user(s) to a group
      */
-    public AddGroupMembersResponse addMemberToGroup(Integer groupId, ArrayList<Integer> userIds){
+    public AddGroupMembersResponse addMemberToGroup(Integer groupId, List<Integer> userIds){
         AddGroupMembersRequest request = AddGroupMembersRequest.newBuilder()
                 .setGroupId(groupId)
                 .addAllUserIds(userIds)
@@ -54,7 +61,7 @@ public class GroupService {
      * @param userIds (ArrayList<Integer>) a list of all the user ids that will be removed from a group
      * @return (RemoveGroupMembersResponse) contains the response of removal of user(s) from a group
      */
-    public RemoveGroupMembersResponse removeMembersFromGroup(Integer groupId, ArrayList<Integer> userIds){
+    public RemoveGroupMembersResponse removeMembersFromGroup(Integer groupId, List<Integer> userIds){
         RemoveGroupMembersRequest request = RemoveGroupMembersRequest.newBuilder()
                 .setGroupId(groupId)
                 .addAllUserIds(userIds)
@@ -117,5 +124,52 @@ public class GroupService {
                 .setOrderBy(orderBy)
                 .build();
         return groupsServiceBlockingStub.getPaginatedGroups(request);
+    }
+
+    /**
+     * Method to convert paginatedGroupsResponse to a group list.
+     * Send group list attribute to the model
+     * @param model Parameters sent to thymeleaf template to be rendered into HTML
+     */
+    public void addGroupListToModel(Model model) {
+        PaginatedGroupsResponse groupList = getPaginatedGroups(1, 1, "null", false);
+        groupDetailsResponseList = groupList.getGroupsList();
+        model.addAttribute("groupList", groupDetailsResponseList);
+        model.addAttribute("groupLongName", "No select group");
+        model.addAttribute("groupShortName", "Please select one group");
+
+    }
+
+    /**
+     * Method to convert Current groupDetailsResponse,
+     * send attributes(e.g. short name, long name, group members) to the model
+     * @param model Parameters sent to thymeleaf template to be rendered into HTML
+     * @param groupId Current selected group ID
+     */
+    public void addGroupDetailToModel(Model model, Integer groupId) {
+        GroupDetailsResponse groupDetailsResponse = getGroupDetails(groupId);
+        userResponseList = groupDetailsResponse.getMembersList();
+        model.addAttribute("groupLongName", groupDetailsResponse.getLongName());
+        model.addAttribute("groupShortName", groupDetailsResponse.getShortName());
+
+        model.addAttribute("group", groupDetailsResponse);
+        model.addAttribute("members", userResponseList);
+    }
+
+    /**
+     * Adds the group validation error messages to corresponding model attributes.
+     * @param model model to add error messages to
+     * @param errors list of error messages to add to the model
+     */
+    public void addGroupNameErrorsToModel(Model model, List<ValidationError> errors) {
+        for (ValidationError error : errors) {
+            String errorMessage = error.getErrorText();
+            if (errorMessage.contains("Short")) {
+                model.addAttribute("groupShortNameAlertMessage", error.getErrorText());
+            }
+            if (errorMessage.contains("Long")) {
+                model.addAttribute("groupLongNameAlertMessage", error.getErrorText());
+            }
+        }
     }
 }

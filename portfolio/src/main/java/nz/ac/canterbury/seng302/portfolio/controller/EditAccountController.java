@@ -11,7 +11,10 @@ import nz.ac.canterbury.seng302.portfolio.utility.DateUtility;
 import nz.ac.canterbury.seng302.shared.identityprovider.DeleteUserProfilePhotoResponse;
 import nz.ac.canterbury.seng302.shared.identityprovider.EditUserResponse;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -21,6 +24,10 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
+import java.text.MessageFormat;
+
+import static nz.ac.canterbury.seng302.portfolio.utility.GeneralUtility.getApplicationLocation;
+
 /***
  * Controller receive HTTP GET, POST, PUT, DELETE calls for edit account page
  */
@@ -39,6 +46,11 @@ public class EditAccountController {
 
     @Autowired
     private PhotoService photoService;
+
+    @Value("${spring.datasource.url}")
+    private String dataSource;
+
+    private static final Logger logger = LoggerFactory.getLogger(EditAccountController.class);
 
     /***
      * GET method to generate the edit account page which let user edit info/attributes
@@ -80,10 +92,11 @@ public class EditAccountController {
             model.addAttribute("userId", id);
             model.addAttribute("dateAdded", DateUtility.getDateAddedString(getUserByIdReply.getCreated()));
             model.addAttribute("monthsSinceAdded", DateUtility.getDateSinceAddedString(getUserByIdReply.getCreated()));
-            photoService.savePhotoToPortfolio(getUserByIdReply.getProfileImagePath());
+            model.addAttribute("userImage", photoService.getPhotoPath(getUserByIdReply.getProfileImagePath(), userId));
         } catch (StatusRuntimeException e) {
             model.addAttribute("loginMessage", "Error connecting to Identity Provider...");
-            e.printStackTrace();
+            logger.error(MessageFormat.format(
+                    "Error connecting to Identity Provider: {0}", e.getMessage()));
         } catch (NumberFormatException numberFormatException) {
             model.addAttribute("userId", id);
             return "404NotFound";
@@ -161,7 +174,8 @@ public class EditAccountController {
                 rm.addFlashAttribute("isUpdateSuccess", false);
             }
         } catch (Exception e) {
-            System.err.println("Something went wrong retrieving the data to save");
+            logger.error(MessageFormat.format(
+                    "Something went wrong retrieving the data to save: {0}", e.getMessage()));
         }
 
         rm.addAttribute("userId", userId);
@@ -169,43 +183,59 @@ public class EditAccountController {
         return "redirect:account";
     }
 
-    @PostMapping("/deleteAccountPhoto")
+
+    /**
+     * Controller method for deleting an account photo. Has to be authorised to do so, and writes the default image to
+     * the file the portfolio reads from.
+     * @param rm        Redirect attributes
+     * @param model     Parameters sent to thymeleaf template to be rendered into HTML
+     * @param principal Used for getting the user ID
+     * @return redirect back to edit account page
+     */
+
+    @GetMapping("/deleteAccountPhoto")
     public String deletePhoto(
-            @ModelAttribute("userId") int userId,
             RedirectAttributes rm,
-            Model model
+            Model model,
+            @AuthenticationPrincipal AuthState principal
     ) {
-        boolean wasDeleted = false;
-        String message = "Error occured, caught on portfolio side. ";
+        Integer userId = userAccountClientService.getUserIDFromAuthState(principal);
+
+        String message = "Photo failed to delete.";
+        String messageID = "message";
+        String updateCheckID = "isUpdateSuccess";
+
         try {
             DeleteUserProfilePhotoResponse reply = registerClientService.deleteUserProfilePhoto(userId);
-            wasDeleted = reply.getIsSuccess();
-            message = String.valueOf(reply.getMessage());
-            if (wasDeleted) {
-                new File(PortfolioApplication.IMAGE_DIR).mkdirs();
-                File imageFile = new File(PortfolioApplication.IMAGE_DIR + "/default.jpg");
-                File usedImageFile = new File(PortfolioApplication.IMAGE_DIR + "/userImage");
-                FileOutputStream imageOutput = new FileOutputStream(usedImageFile);
-                FileInputStream imageInput = new FileInputStream(imageFile);
-                imageOutput.write(imageInput.readAllBytes());
-                imageInput.close();
-                imageOutput.close();
+            message = reply.getMessage();
 
-                rm.addFlashAttribute("isUpdateSuccess", true);
-            } else {
-                rm.addFlashAttribute("isUpdateSuccess", false);
-                rm.addFlashAttribute("message", "Photo failed to delete");
+            if (reply.getIsSuccess()) { // Updated successful
+                rm.addFlashAttribute(updateCheckID, true);
+            } else { // Updated not successful
+                rm.addFlashAttribute(updateCheckID, false);
+                rm.addFlashAttribute(messageID, message);
             }
-
-        } catch (Exception e) {
-            System.err.println("Something went wrong requesting to delete the photo");
-            System.err.println("Message: " + message);
-            e.printStackTrace();
+        } catch (Exception ignore) { // Updated error
+            rm.addFlashAttribute(updateCheckID, false);
+            rm.addFlashAttribute(messageID, message);
         }
         rm.addAttribute("userId", userId);
+
         return "redirect:editAccount";
     }
 
+
+
+    /**
+     * Post method used to get the multipart file that is being uploaded.
+     * It will then save the file locally and send it to the IDP through bidirectional streaming (that is not done here)
+     *
+     * @param userId        The user's ID.
+     * @param rm            The attributes being sent back.
+     * @param multipartFile File being uploaded.
+     * @param model         The modal being used by Thymeleaf
+     * @return The redirected edit account page.
+     */
     @PostMapping("/saveAccountPhoto")
     public String savePhoto(
             @ModelAttribute("userId") int userId,
@@ -213,35 +243,57 @@ public class EditAccountController {
             @RequestParam("avatar") MultipartFile multipartFile,
             Model model
     ) {
+        String messageID = "message";
+        String updateCheckID = "isUpdateSuccess";
 
-        if (multipartFile.isEmpty()) {
-            rm.addFlashAttribute("message", "Please select a file to upload.");
-            rm.addFlashAttribute("isUpdateSuccess", false);
+        if (multipartFile.isEmpty()) { // Checks that the file isn't empty.
+            rm.addFlashAttribute(messageID, "Please select a file to upload.");
+            rm.addFlashAttribute(updateCheckID, false);
             return "redirect:editAccount";
         }
-        boolean wasSaved = false;
-        try {
 
-            new File(PortfolioApplication.IMAGE_DIR).mkdirs();
-            File imageFile = new File(PortfolioApplication.IMAGE_DIR + "/userImage");
-            FileOutputStream fos = new FileOutputStream( imageFile );
-            fos.write( multipartFile.getBytes() );
-            fos.close();
+        try { // Makes image folder structure and then saves multipart image which is then streamed to the IDP.
+            String directory = MessageFormat.format("{0}/{1}/{2}/",
+                    PortfolioApplication.IMAGE_DIR, getApplicationLocation(dataSource), userId);
+            String filePath = directory + "/UploadedFile";
 
-            registerClientService.uploadUserProfilePhoto(userId, new File(PortfolioApplication.IMAGE_DIR + "/userImage"));
-            // You cant tell if it saves correctly with the above method as it returns nothing
-            wasSaved = true;
-            if (wasSaved) {
-                rm.addFlashAttribute("isUpdateSuccess", true);
-            } else {
-                rm.addFlashAttribute("isUpdateSuccess", false);
-                rm.addFlashAttribute("message", "Photo failed to save");
+            if (!new File(directory).mkdirs()) { // Ensures folders are made.
+                logger.warn("Not all folders may have been created.");
             }
 
-        } catch (Exception e) {
-            System.err.println("Something went wrong requesting to save the photo");
+            File imageFile = new File(filePath); // Saves image locally so the file can be streamed to the IDP.
+            FileOutputStream fos = new FileOutputStream(imageFile);
+            fos.write(multipartFile.getBytes());
+            fos.close();
+
+            if (registerClientService.uploadUserProfilePhoto(userId, new File(filePath))) { // Saves image on IDP.
+                rm.addFlashAttribute(updateCheckID, true);
+                rm.addFlashAttribute("reloadImage", true);
+            } else {
+                rm.addFlashAttribute(updateCheckID, false);
+                rm.addFlashAttribute(messageID, "Photo failed to save");
+            }
+        } catch (Exception e) { // Error in saving locally.
+            logger.error(MessageFormat.format(
+                    "Something went wrong requesting to save the photo: {0}", e.getMessage()));
         }
+
         rm.addAttribute("userId", userId);
+        return "redirect:editAccount";
+    }
+
+    /**
+     * Reloads the page and makes the update message appear.
+     * @param rm Redirect attributes
+     * @return Thymeleaf template
+     */
+    @GetMapping("/reloadAccountSuccessfulPage")
+    public String reloadPage(
+            @ModelAttribute("userId") int userId,
+            RedirectAttributes rm
+    ) {
+        rm.addAttribute("userId", userId);
+        rm.addFlashAttribute("isUpdateSuccess", true);
         return "redirect:editAccount";
     }
 

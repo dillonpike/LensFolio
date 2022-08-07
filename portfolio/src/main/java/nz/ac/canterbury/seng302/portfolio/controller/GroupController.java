@@ -17,11 +17,12 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
 
 import org.springframework.web.bind.annotation.*;
+
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * Controller for group page
@@ -38,8 +39,6 @@ public class GroupController {
     @Autowired
     public GroupService groupService;
 
-    private final String updateMessageId = "isUpdateSuccess";
-
 
     /**
      * Get method for group page to display group list and group detail
@@ -53,98 +52,98 @@ public class GroupController {
     ) {
         Integer id = userAccountClientService.getUserIDFromAuthState(principal);
         elementService.addHeaderAttributes(model, id);
+
+        groupService.addGroupListToModel(model);
+
         return "group";
     }
 
     /**
      * Method to refresh the group table only
      * @param model Parameters sent to thymeleaf template to be rendered into HTML
+     * @param groupId id of group to reload
      * @return Group page
      */
     @RequestMapping("/groups/local")
-    public String localRefresh(Model model) {
-        model.addAttribute("title", "Group1");
+    public String localRefresh(
+            Model model,
+            @RequestParam("groupId") int groupId)
+    {
+        groupService.addGroupDetailToModel(model, groupId);
         return "group::table_refresh";
     }
 
     /**
      * Method tries to add and sve the new group to the database
+     * @param group group being added
      * @param model Parameters sent to thymeleaf template to be rendered into HTML
+     * @param httpServletResponse for adding status codes to
      * @return redirect user to group page
      */
     @PostMapping("/add-group")
     public String addGroup(
-            @ModelAttribute("shortGroupName") String shortName,
-            @ModelAttribute("longGroupName") String longName,
+            @ModelAttribute("group") Group group,
             Model model,
-            RedirectAttributes rm
+            HttpServletResponse httpServletResponse
     ) {
-
-        CreateGroupResponse response = groupService.createNewGroup(shortName, longName);
+        CreateGroupResponse response = groupService.createNewGroup(group.getShortName(), group.getLongName());
 
         if (response.getIsSuccess()) {
-            return "redirect:groups";
-        }
-        List<ValidationError> errors = response.getValidationErrorsList();
-        for (ValidationError error : errors) {
-            String errorMessage = error.getErrorText();
-            if (errorMessage.contains("Short name")) {
-                model.addAttribute("groupShortNameAlertMessage", error.getErrorText());
-            }
-            if (errorMessage.contains("Long name")) {
-                model.addAttribute("groupLongNameAlertMessage", error.getErrorText());
-            }
+            groupService.addGroupDetailToModel(model, response.getNewGroupId());
+            httpServletResponse.setStatus(HttpServletResponse.SC_OK);
+            return "group::groupCard";
         }
 
-        return "group";
+        List<ValidationError> errors = response.getValidationErrorsList();
+        groupService.addGroupNameErrorsToModel(model, errors);
+        httpServletResponse.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+        return "fragments/groupModal::groupModalBody";
     }
 
     /**
      * Submits a request to the identity provider to delete the group with the given id from the database. Adds a
      * variable to the model indicating whether or not this was successful.
      * @param id id of the group to delete
-     * @param rd injects the variable indicating success to the HTML
-     * @return redirect user to group page
+     * @param httpServletResponse for adding status codes to
      */
-    @GetMapping("/delete-group/{id}")
-    public String groupRemove(@PathVariable("id") Integer id, RedirectAttributes rd) {
+    @DeleteMapping("/delete-group/{id}")
+    @ResponseBody
+    public void groupRemove(@PathVariable("id") Integer id,
+                              HttpServletResponse httpServletResponse) {
         DeleteGroupResponse response = groupService.deleteGroup(id);
-        rd.addAttribute(updateMessageId, response.getIsSuccess());
-        return "redirect:/group";
+        if (response.getIsSuccess()) {
+            httpServletResponse.setStatus(HttpServletResponse.SC_OK);
+        } else {
+            httpServletResponse.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+        }
     }
 
     /**
      * Tries to save new data to group with given groupId to the database.
-     * @param id        id of event edited
-     * @param group     Group data to be updated
+     * @param id id of event edited
+     * @param group Group data to be updated
+     * @param model model to add attributes to for Thyemeleaf to inject into the HTML
+     * @param httpServletResponse for adding status codes to
      * @throws IllegalArgumentException if sprint cannot be found from the given ID or if it cannot be saved.
      */
     @PostMapping("/edit-group/{id}")
     public String groupEdit(
             @PathVariable("id") Integer id,
-            @AuthenticationPrincipal AuthState principal,
             @ModelAttribute("group") Group group,
-            Model model
+            Model model,
+            HttpServletResponse httpServletResponse
     ) throws IllegalArgumentException {
-
-        ModifyGroupDetailsResponse response = groupService.editGroupDetails(group.getGroupId(), group.getShortName(), group.getLongName());
-        model.addAttribute(updateMessageId, response.getIsSuccess());
+        ModifyGroupDetailsResponse response = groupService.editGroupDetails(id, group.getShortName(), group.getLongName());
 
         if (response.getIsSuccess()) {
-            return "redirect:/group";
+            groupService.addGroupDetailToModel(model, id);
+            httpServletResponse.setStatus(HttpServletResponse.SC_OK);
+            return "group::groupCard";
         }
 
-        for (ValidationError error : response.getValidationErrorsList()) {
-            String errorMessage = error.getErrorText();
-            if (errorMessage.contains("Short name")) {
-                model.addAttribute("groupShortNameAlertMessage", errorMessage);
-            }
-            if (errorMessage.contains("Long name")) {
-                model.addAttribute("groupLongNameAlertMessage", errorMessage);
-            }
-        }
-
-        return "group";
+        List<ValidationError> errors = response.getValidationErrorsList();
+        groupService.addGroupNameErrorsToModel(model, errors);
+        httpServletResponse.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+        return "fragments/groupModal::groupModalBody";
     }
-
 }
