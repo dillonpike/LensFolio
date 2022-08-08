@@ -1,10 +1,7 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
 import com.google.protobuf.Timestamp;
-import nz.ac.canterbury.seng302.portfolio.service.ElementService;
-import nz.ac.canterbury.seng302.portfolio.service.RegisterClientService;
-import nz.ac.canterbury.seng302.portfolio.service.UserAccountClientService;
-import nz.ac.canterbury.seng302.portfolio.service.UserSortingService;
+import nz.ac.canterbury.seng302.portfolio.service.*;
 import nz.ac.canterbury.seng302.shared.identityprovider.*;
 import org.apache.catalina.User;
 import org.junit.Before;
@@ -53,6 +50,10 @@ class ViewUsersControllerTest {
 
     @MockBean
     private UserSortingService userSortingService;
+
+    @MockBean
+    private PermissionService permissionService;
+
 
     private UserResponse userResponse;
 

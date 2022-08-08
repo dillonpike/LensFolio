@@ -50,7 +50,7 @@ class PhotoServiceTest {
         String prodSource = "jdbc:mariadb://db2.csse.canterbury.ac.nz/seng302-2022-team100-portfolio-prod";
         photoService.setDataSource(prodSource);
         String imagePath = "useless/paths/prod/1/public/userImage.png";
-        String expectedPath = "/prod/1/public/userImage.png";
+        String expectedPath = "prod/1/public/userImage.png";
         String actualPath = photoService.getPhotoPath(imagePath, userID);
         assertEquals(expectedPath, actualPath);
     }

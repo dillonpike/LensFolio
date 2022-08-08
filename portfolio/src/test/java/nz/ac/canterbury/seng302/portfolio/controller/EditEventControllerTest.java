@@ -1,10 +1,7 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
 import nz.ac.canterbury.seng302.portfolio.model.Event;
-import nz.ac.canterbury.seng302.portfolio.service.DateValidationService;
-import nz.ac.canterbury.seng302.portfolio.service.EventService;
-import nz.ac.canterbury.seng302.portfolio.service.RegisterClientService;
-import nz.ac.canterbury.seng302.portfolio.service.UserAccountClientService;
+import nz.ac.canterbury.seng302.portfolio.service.*;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import nz.ac.canterbury.seng302.shared.identityprovider.ClaimDTO;
 import org.junit.Before;
@@ -82,6 +79,12 @@ class EditEventControllerTest {
     @MockBean
     private DateValidationService dateValidationService;
 
+    @MockBean
+    private PermissionService permissionService;
+
+    @MockBean
+    private ElementService elementService;
+
     @Before
     public void setup() {
         mockMvc = MockMvcBuilders.standaloneSetup(AccountController.class).build();
@@ -102,7 +105,7 @@ class EditEventControllerTest {
         when(eventService.getEventById(any(Integer.class))).thenReturn(mockEvent);
         ArgumentCaptor<Event> eventArgumentCaptor = ArgumentCaptor.forClass(Event.class);
         when(eventService.updateEvent(any(Event.class))).thenReturn(mockEvent);
-
+        when(permissionService.isValidToModifyProjectPage(any(Integer.class))).thenReturn(true);
 
         mockMvc.perform(post("/edit-event/1").flashAttr("event",mockEvent))
                 .andExpect(status().is3xxRedirection())
