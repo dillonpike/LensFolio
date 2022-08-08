@@ -3,7 +3,6 @@ package nz.ac.canterbury.seng302.portfolio.utility;
 import nz.ac.canterbury.seng302.portfolio.model.Deadline;
 import nz.ac.canterbury.seng302.portfolio.model.Event;
 import nz.ac.canterbury.seng302.portfolio.model.Milestone;
-import nz.ac.canterbury.seng302.portfolio.utility.EventDic;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -43,6 +42,11 @@ class EventDicTest {
         testDate = Date.from(Instant.now());
         Calendar calStart = Calendar.getInstance();
         calStart.setTime(testDate);
+        calStart.setTime(testDate);
+        calStart.set(Calendar.HOUR_OF_DAY, 0);
+        calStart.set(Calendar.MINUTE,0);
+        calStart.set(Calendar.SECOND,0);
+        calStart.set(Calendar.MILLISECOND, 0);
         Calendar calEnd = Calendar.getInstance();
         calEnd.setTime(testDate);
         calEnd.add(Calendar.DAY_OF_MONTH, 5);
@@ -54,10 +58,10 @@ class EventDicTest {
         dictionary.add(event);
 
         String JSON = dictionary.makeJSON();
-//        while (calStart.compareTo(calEnd) <= 0) {
-//            Assertions.assertTrue(JSON.contains("{title: '1', start: '"+calStart.getTime().toInstant()+"', type: 'Event', description: '<strong>Events:</strong><br>- Test-Event &amp; &lt;br&gt;'},"));
-//            calStart.add(Calendar.DATE, 1);
-//        } TODO:fix the eventDate
+        while (calStart.compareTo(calEnd) <= 0) {
+            Assertions.assertTrue(JSON.contains("{title: '1', start: '"+calStart.getTime().toInstant()+"', type: 'Event', description: '<strong>Events:</strong><br>- Test-Event &amp; &lt;br&gt;'},"));
+            calStart.add(Calendar.DATE, 1);
+        }
     }
 
     /**
@@ -111,8 +115,15 @@ class EventDicTest {
         events.add("{title: '1', start: '"+deadlineDateString+"', type: 'Deadline', description: '<strong>Deadlines:</strong><br>- Test-Deadline &amp; &lt;br&gt;'},");
         String milestoneDateString = updateDateString(milestone.getMilestoneDate());
         events.add("{title: '1', start: '"+milestoneDateString+"', type: 'Milestone', description: '<strong>Milestones:</strong><br>- Test-Milestone &amp; &lt;br&gt;'},");
-        Instant eventDate = event.getEventStartDate().toInstant();
-//        events.add("{title: '1', start: '"+eventDate+"', type: 'Event', description: '<strong>Events:</strong><br>- Test-Event &amp; &lt;br&gt;'},"); TODO: fix the eventDate
+
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(event.getEventStartDate());
+        cal.set(Calendar.HOUR_OF_DAY, 0);
+        cal.set(Calendar.MINUTE,0);
+        cal.set(Calendar.SECOND,0);
+        cal.set(Calendar.MILLISECOND, 0);
+        Instant eventDate = cal.toInstant();
+        events.add("{title: '1', start: '"+eventDate+"', type: 'Event', description: '<strong>Events:</strong><br>- Test-Event &amp; &lt;br&gt;'},");
 
         String JSON = dictionary.makeJSON();
 
