@@ -66,6 +66,7 @@ public class RegisterController {
         model.addAttribute("defaultLastName", lastName);
         model.addAttribute("defaultEmail", email);
         model.addAttribute("defaultUsername", username);
+        System.out.println(pronouns);
         model.addAttribute("defaultPronouns", pronouns);
         model.addAttribute("defaultNickName", nickName);
         model.addAttribute("defaultBio", bio);
