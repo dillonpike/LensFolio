@@ -125,17 +125,17 @@
                             </tr>
                             </thead>
                             <tbody>
-                            <tr th:each="member : ${members}">
-                                <td><span th:text="${member.FirstName}"> First Name </span></td>
-                                <td><span th:text="${member.LastName}"> Last Name </span></td>
-                                <td><span th:text="${member.username}"> Username </span></td>
+                            <tr th:each="member : ${members}" th:id="${member.Id}">
+                                <td th:text="${member.FirstName}"></td>
+                                <td th:text="${member.LastName}"></td>
+                                <td th:text="${member.username}"></td>
                             </tr>
                             </tbody>
                         </table>
                     </div>
                 <!--                Must have in line script here-->
                 <script>
-                    $('table').dataTable({searching: false, paging: false, info: false, select: true});
+                    userTable = $('table').DataTable({searching: false, paging: false, info: false, select: true});
                 </script>
 
             </div>
