@@ -29,10 +29,11 @@ public class UserModelService {
 
     private static int userIdCount = 1;
 
-    public UserModelService(UserModelRepository userModelRepository, RolesRepository rolesRepository) {
+    public UserModelService(UserModelRepository userModelRepository, RolesRepository rolesRepository, GroupRepository groupRepository) {
         this.repository = userModelRepository;
         this.rolesRepository = rolesRepository;
         this.userModelRepository = userModelRepository;
+        this.groupRepository = groupRepository;
     }
 
     /**

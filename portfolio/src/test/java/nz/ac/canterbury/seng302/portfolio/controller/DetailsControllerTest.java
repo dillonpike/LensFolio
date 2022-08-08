@@ -2,16 +2,17 @@ package nz.ac.canterbury.seng302.portfolio.controller;
 
 import com.google.protobuf.Timestamp;
 import nz.ac.canterbury.seng302.portfolio.model.Project;
-import nz.ac.canterbury.seng302.portfolio.service.ElementService;
-import nz.ac.canterbury.seng302.portfolio.service.ProjectService;
-import nz.ac.canterbury.seng302.portfolio.service.SprintService;
-import nz.ac.canterbury.seng302.portfolio.service.UserAccountClientService;
+import nz.ac.canterbury.seng302.portfolio.model.Sprint;
+import nz.ac.canterbury.seng302.portfolio.service.*;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import nz.ac.canterbury.seng302.shared.identityprovider.ClaimDTO;
+import nz.ac.canterbury.seng302.shared.identityprovider.UserAccountServiceGrpc;
+import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 import org.junit.Before;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -42,7 +43,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ExtendWith(SpringExtension.class)
 @WebMvcTest(controllers = DetailsController.class)
 @AutoConfigureMockMvc(addFilters = false)
-public class DetailsControllerTest {
+class DetailsControllerTest {
 
     /**
      * AuthState object to be used when we mock security context
@@ -67,12 +68,29 @@ public class DetailsControllerTest {
     private SprintService sprintService;
 
     @MockBean
+    private EventService eventService;
+
+    @MockBean
+    private DeadlineService deadlineService;
+
+    @MockBean
+    private MilestoneService milestoneService;
+
+    @MockBean
+    private RegisterClientService registerClientService;
+
+    @MockBean
     private UserAccountClientService userAccountClientService;
 
     @MockBean
     private ElementService elementService;
 
     public Project mockedProject;
+
+    private UserResponse userResponse;
+
+    private int USER_ID = 1;
+    private String USERNAME = "Username";
 
     @Before
     public void setup() {
@@ -86,6 +104,7 @@ public class DetailsControllerTest {
     void showProjectPage_whenLoggedIn_return200StatusCode() throws Exception {
         SecurityContext mockedSecurityContext = Mockito.mock(SecurityContext.class);
         when(mockedSecurityContext.getAuthentication()).thenReturn(new PreAuthenticatedAuthenticationToken(validAuthState, ""));
+        userResponse = UserResponse.newBuilder().setUsername(USERNAME).setId(USER_ID).build();
 
         int currentYear = Calendar.getInstance().get(Calendar.YEAR);
         Instant time = Instant.now();
@@ -101,8 +120,10 @@ public class DetailsControllerTest {
         mockedProject.setId(0);
 
         SecurityContextHolder.setContext(mockedSecurityContext);
-        when(userAccountClientService.getUserIDFromAuthState(any(AuthState.class))).thenReturn(1);
-        when(projectService.getProjectById(0)).thenReturn(mockedProject);
+        when(userAccountClientService.getUserIDFromAuthState(any(AuthState.class))).thenReturn(USER_ID);
+        when(registerClientService.getUserData(any(Integer.class))).thenReturn(userResponse);
+        when(sprintService.getSuggestedSprint()).thenReturn(new Sprint());
+        when(projectService.getProjectById(any(Integer.class))).thenReturn(mockedProject);
         mockMvc.perform(get("/details")).andExpect(status().isOk()); // Whether to return the status "200 OK"
     }
 
@@ -113,6 +134,7 @@ public class DetailsControllerTest {
     void showProjectPage_whenLoggedIn_returnProjectAndSprintExist() throws Exception {
         SecurityContext mockedSecurityContext = Mockito.mock(SecurityContext.class);
         when(mockedSecurityContext.getAuthentication()).thenReturn(new PreAuthenticatedAuthenticationToken(validAuthState, ""));
+        userResponse = UserResponse.newBuilder().setUsername(USERNAME).setId(USER_ID).build();
 
         int currentYear = Calendar.getInstance().get(Calendar.YEAR);
         Instant time = Instant.now();
@@ -128,7 +150,9 @@ public class DetailsControllerTest {
         mockedProject.setId(0);
 
         SecurityContextHolder.setContext(mockedSecurityContext);
-        when(userAccountClientService.getUserIDFromAuthState(any(AuthState.class))).thenReturn(1);
+        when(userAccountClientService.getUserIDFromAuthState(any(AuthState.class))).thenReturn(USER_ID);
+        when(registerClientService.getUserData(any(Integer.class))).thenReturn(userResponse);
+        when(sprintService.getSuggestedSprint()).thenReturn(new Sprint());
         when(projectService.getProjectById(0)).thenReturn(mockedProject);
         mockMvc.perform(get("/details"))
                 .andExpect(model().attributeExists("project"))
