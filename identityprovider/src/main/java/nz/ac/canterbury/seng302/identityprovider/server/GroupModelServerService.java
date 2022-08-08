@@ -180,7 +180,7 @@ public class GroupModelServerService extends GroupsServiceGrpc.GroupsServiceImpl
             reply.setLongName(groupModel.getLongName());
             reply.setShortName(groupModel.getShortName());
 
-            List<UserModel> userModelList = groupModel.getUsers();
+            Set<UserModel> userModelList = groupModel.getUsers();
             for (UserModel userModel : userModelList) {
                 reply.addMembers(userModelService.getUserInfo(userModel));
             }
@@ -197,7 +197,8 @@ public class GroupModelServerService extends GroupsServiceGrpc.GroupsServiceImpl
     @Override
     public void addGroupMembers(AddGroupMembersRequest request, StreamObserver<AddGroupMembersResponse> responseObserver) {
         AddGroupMembersResponse.Builder reply = AddGroupMembersResponse.newBuilder();
-        reply.setIsSuccess(groupModelService.addUsersToGroup(request.getUserIdsList(), request.getGroupId()));
+        Iterable<UserModel> users = userModelService.getUsersByIds(request.getUserIdsList());
+        reply.setIsSuccess(groupModelService.addUsersToGroup(users, request.getGroupId()));
         responseObserver.onNext(reply.build());
         responseObserver.onCompleted();
     }

@@ -43,15 +43,6 @@ public class GroupModel {
     @Column(name="course_id")
     private int courseId;
 
-    /**
-     * Set of user ids of the members of the group.
-     */
-    @ElementCollection
-    @CollectionTable(name="user_to_group", joinColumns=@JoinColumn(name="group_id"))
-    @Column(name="User_Id")
-
-    private Set<Integer> memberIds = new HashSet<>();
-
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
     @JoinTable(name = "user_to_group",
             joinColumns =
@@ -59,8 +50,7 @@ public class GroupModel {
             inverseJoinColumns =
             @JoinColumn(name = "User_Id")
     )
-    private final List<UserModel> users = new ArrayList<>();
-
+    private final Set<UserModel> users = new HashSet<>();
 
     /**
      * Empty constructor for JPA.
@@ -148,26 +138,26 @@ public class GroupModel {
      * @return ids of the users a part of the group
      */
     public Set<Integer> getMemberIds() {
-        return memberIds;
+        return users.stream().map(UserModel::getUserId).collect(HashSet::new, HashSet::add, HashSet::addAll);
     }
 
     /**
-     * Adds the user represented by the given user id to the group.
-     * @param userId id of user to add to the group
+     * Adds the given user to the group.
+     * @param user user to add to the group
      */
-    public void addMember(int userId) {
-        memberIds.add(userId);
+    public void addMember(UserModel user) {
+        users.add(user);
     }
 
     /**
-     * Removes the user represented by the given user id from the group.
-     * @param userId id of user to remove from the group
+     * Removes the user from the group.
+     * @param user user to remove from the group
      */
-    public void removeMember(int userId) {
-        memberIds.remove(userId);
+    public void removeMember(UserModel user) {
+        users.remove(user);
     }
 
-    public List<UserModel> getUsers() {
+    public Set<UserModel> getUsers() {
         return users;
     }
 }

@@ -427,10 +427,10 @@ public class UserAccountServerService extends UserAccountServiceGrpc.UserAccount
                     Roles studentRole = rolesRepository.findByRoleName("TEACHER");
                     user.addRoles(studentRole);
                     userModelService.saveEditedUser(user);
-                    boolean wasAddedToGroup = groupModelService.addUserToGroup(user.getUserId(), GroupModelServerService.TEACHERS_GROUP_ID);
-                    if (!wasAddedToGroup) {
-                        throw new InvalidAttributesException("User or Teacher Group did not exist. Or user already part of the Teachers group. ");
-                    }
+//                    boolean wasAddedToGroup = groupModelService.addUserToGroup(user.getUserId(), GroupModelServerService.TEACHERS_GROUP_ID);
+//                    if (!wasAddedToGroup) {
+//                        throw new InvalidAttributesException("User or Teacher Group did not exist. Or user already part of the Teachers group. ");
+//                    }
                 } else if (role.getNumber() == 2) {
                     Roles studentRole = rolesRepository.findByRoleName("COURSE ADMINISTRATOR");
                     user.addRoles(studentRole);
@@ -496,10 +496,10 @@ public class UserAccountServerService extends UserAccountServiceGrpc.UserAccount
                     Roles teacherRole = rolesRepository.findByRoleName("TEACHER");
                     user.deleteRole(teacherRole);
                     userModelService.saveEditedUser(user);
-                    boolean wasRemovedFromGroup = groupModelService.removeUserFromGroup(user.getUserId(), GroupModelServerService.TEACHERS_GROUP_ID);
-                    if (!wasRemovedFromGroup) {
-                        throw new InvalidAttributesException("User or Teacher Group did not exist. Or user already not part of the Teachers group. ");
-                    }
+//                    boolean wasRemovedFromGroup = groupModelService.removeUserFromGroup(user.getUserId(), GroupModelServerService.TEACHERS_GROUP_ID);
+//                    if (!wasRemovedFromGroup) {
+//                        throw new InvalidAttributesException("User or Teacher Group did not exist. Or user already not part of the Teachers group. ");
+//                    }
                     reply.setIsSuccess(true);
                 } else {
                     Roles adminRole = rolesRepository.findByRoleName("COURSE ADMINISTRATOR");

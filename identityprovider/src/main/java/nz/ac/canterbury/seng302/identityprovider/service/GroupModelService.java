@@ -5,6 +5,8 @@ import nz.ac.canterbury.seng302.identityprovider.model.UserModel;
 import nz.ac.canterbury.seng302.identityprovider.repository.GroupRepository;
 import nz.ac.canterbury.seng302.identityprovider.server.GroupModelServerService;
 import nz.ac.canterbury.seng302.shared.identityprovider.GroupDetailsResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -24,6 +26,8 @@ public class GroupModelService {
 
     @Autowired
     private UserModelService userModelService;
+
+    private static final Logger logger = LoggerFactory.getLogger(GroupModelService.class);
 
     /**
      * Adds a group to the database
@@ -186,7 +190,7 @@ public class GroupModelService {
         response.setGroupId(groupModel.getGroupId());
         response.setLongName(groupModel.getLongName());
         response.setShortName(groupModel.getShortName());
-        List<UserModel> userModelList = groupModel.getUsers();
+        Set<UserModel> userModelList = groupModel.getUsers();
         for (UserModel userModel : userModelList) {
             response.addMembers(userModelService.getUserInfo(userModel));
         }
@@ -203,53 +207,47 @@ public class GroupModelService {
         return repository.existsById(groupId);
     }
 
-    /**
-     * Adds a member to a group by their user id. If a user was already part of the group, no distinction is made when
-     * trying to re-add them to the group (returns true if the user was already a part of the group).
-     * @param userId ID of the user
-     * @param groupId ID of the group
-     * @return Whether the user was added or not.
-     */
-    public boolean addUserToGroup(Integer userId, Integer groupId) {
-        try {
-            GroupModel group = repository.getGroupModelByGroupId(groupId);
-            group.addMember(userId);
-            repository.save(group);
-        } catch (Exception e) {
-            return false;
-        }
-        if (groupId.equals(GroupModelServerService.TEACHERS_GROUP_ID)) {
-            userModelService.checkUserIsInTeachersGroup(userId);
-        }
-        return true;
-    }
+//    /**
+//     * Adds a member to a group by their user id. If a user was already part of the group, no distinction is made when
+//     * trying to re-add them to the group (returns true if the user was already a part of the group).
+//     * @param user user to be added
+//     * @param groupId ID of the group
+//     * @return Whether the user was added or not.
+//     */
+//    public boolean addUserToGroup(UserModel user, Integer groupId) {
+//        try {
+//            GroupModel group = repository.getGroupModelByGroupId(groupId);
+//            group.addMember(user);
+//            repository.save(group);
+//        } catch (Exception e) {
+//            return false;
+//        }
+////        if (groupId.equals(GroupModelServerService.TEACHERS_GROUP_ID)) {
+////            userModelService.checkUserIsInTeachersGroup(userId);
+////        }
+//        return true;
+//    }
 
     /**
-     * Adds a list of members to a group by their user id. If a user was already part of the group, no distinction is
+     * Adds an iterable of users to a group. If a user was already part of the group, no distinction is
      * made when trying to re-add them to the group (returns true if the user was already a part of the group).
-     * @param userIds IDs of the users
+     * @param users users to be added
      * @param groupId ID of the group
      * @return Whether the user was added or not.
      */
-    public boolean addUsersToGroup(List<Integer> userIds, Integer groupId) {
+    public boolean addUsersToGroup(Iterable<UserModel> users, Integer groupId) {
         Optional<GroupModel> groupOptional = repository.findById(groupId);
-        group.
-
         if (groupOptional.isPresent()) {
             try {
                 GroupModel group = groupOptional.get();
-                System.out.println("1");
-                for (Integer userId : userIds) {
-                    System.out.println("2");
-                    System.out.println(group.getMemberIds());
-                    group.addMember(userId);
-                    System.out.println("added " + userId);
+                for (UserModel user : users) {
+                    group.addMember(user);
                 }
-                System.out.println("presave");
                 repository.save(group);
-                System.out.println("saved");
+                logger.info("Added the following users to group " + groupId + ": " + users);
             } catch (Exception e) {
-                System.out.println(e.getMessage());
+                logger.info("Error adding user to group " + groupId);
+                logger.info(e.getMessage());
                 return false;
             }
             return true;
@@ -257,22 +255,22 @@ public class GroupModelService {
         return false;
     }
 
-    /**
-     * Remove users from a group. If a user was already not in the group, the method still returns true.
-     * @param userId ID of user being removed from the group.
-     * @param groupId Id of the group the user is being removed from.
-     * @return Whether the user was removed from the group.
-     */
-    public boolean removeUserFromGroup(Integer userId, Integer groupId) {
-        try {
-            GroupModel group = repository.getGroupModelByGroupId(groupId);
-            group.removeMember(userId);
-            repository.save(group);
-        } catch (Exception e) {
-            return false;
-        }
-        return true;
-    }
+//    /**
+//     * Remove users from a group. If a user was already not in the group, the method still returns true.
+//     * @param userId ID of user being removed from the group.
+//     * @param groupId Id of the group the user is being removed from.
+//     * @return Whether the user was removed from the group.
+//     */
+//    public boolean removeUserFromGroup(Integer userId, Integer groupId) {
+//        try {
+//            GroupModel group = repository.getGroupModelByGroupId(groupId);
+//            group.removeMember(userId);
+//            repository.save(group);
+//        } catch (Exception e) {
+//            return false;
+//        }
+//        return true;
+//    }
 
     /**
      * Checks if a user is in a given group.

@@ -49,6 +49,10 @@ public class UserModelService {
         return repository.findByUserId(userId);
     }
 
+    public Iterable<UserModel> getUsersByIds(List<Integer> userIds) {
+        return repository.findAllById(userIds);
+    }
+
     /**
      * Check if there is a user entity with the given id
      * @param userId user's id which used to search user entity in database
