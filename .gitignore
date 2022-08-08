@@ -6,4 +6,4 @@
 */src/generated/
 */bin/
 .env
-**/img
+*/dev/

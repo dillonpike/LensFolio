@@ -654,8 +654,8 @@
 
 <script th:inline="javascript">
     /*<![CDATA[*/
-    let projectEndDate = /*[[${project.getEndDateString()}]]*/ "Error";
-    let projectStartDate = /*[[${project.getStartDateString()}]]*/ "Error";
+    let projectEndDate = /*[[${project.getEndDate()}]]*/ "Error";
+    let projectStartDate = /*[[${project.getStartDate()}]]*/ "Error";
     /*]]>*/
     /**
      * Check if the name of the item that the user inputted is not an empty string
@@ -793,9 +793,9 @@
 
     sprintModalSetup()
     projectModalSetup()
-    milestoneModalSetup(projectStartDate, projectEndDate)
-    eventModalSetup(projectStartDate, projectEndDate)
-    deadlineModalSetup(projectStartDate, projectEndDate)
+    milestoneModalSetup()
+    eventModalSetup()
+    deadlineModalSetup()
     deleteModalSetup()
 </script>
 
