@@ -124,6 +124,7 @@ deploy-production-portfolio:
 sonarqube-report:
   stage: sonarqube
   script:
+    - git fetch --unshallow
     - cd identityprovider
     - ./gradlew sonarqube
     - cd ../portfolio
