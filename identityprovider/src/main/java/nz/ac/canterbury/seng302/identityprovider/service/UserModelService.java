@@ -1,5 +1,6 @@
 package nz.ac.canterbury.seng302.identityprovider.service;
 
+import com.fasterxml.jackson.databind.util.ArrayIterator;
 import nz.ac.canterbury.seng302.identityprovider.model.Roles;
 import nz.ac.canterbury.seng302.identityprovider.repository.RolesRepository;
 import nz.ac.canterbury.seng302.identityprovider.model.UserModel;
@@ -11,8 +12,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.naming.directory.InvalidAttributesException;
-import java.text.MessageFormat;
 import java.util.*;
 
 @Service
@@ -29,8 +28,8 @@ public class UserModelService {
     @Autowired
     UserModelRepository userModelRepository;
 
-//    @Autowired
-//    GroupModelService groupModelService;
+    @Autowired
+    GroupModelService groupModelService;
 
     private static int userIdCount = 1;
 
@@ -146,7 +145,7 @@ public class UserModelService {
         }
         for (Roles role : roles) {
             if (Objects.equals(role.getRoleName(), "TEACHER")) {
-                checkUserIsInTeachersGroup(user.getUserId());
+                checkUserIsInTeachersGroup(user);
                 return "teacher";
             }
         }
@@ -189,34 +188,30 @@ public class UserModelService {
     }
 
     /**
-     * Checks to see if the user is part of the teachers group. If not, it adds the user to it. Also makes sure the
-     * user has the teacher role.
-     * @param userId user id to check if they are in the teachers group.
+     * Checks to see if the user is part of the teachers group. If not, it adds the user to it.
+     * @param user user to check if they are in the teachers group.
      */
-    public void checkUserIsInTeachersGroup(Integer userId) {
+    public void checkUserIsInTeachersGroup(UserModel user) {
 
-//        try {
-//            if (!groupModelService.isUserPartOfGroup(userId, GroupModelServerService.TEACHERS_GROUP_ID)) {
-//                boolean addedToGroup = groupModelService.addUserToGroup(userId, GroupModelServerService.TEACHERS_GROUP_ID);
-//                if (!addedToGroup) {
-//                    throw new InvalidAttributesException("Teachers group does not exist. ");
-//                }
-//            }
-//            UserModel user = repository.findByUserId(userId);
-//            Roles teacherRole = rolesRepository.findByRoleName("TEACHER");
-//
-//            if (!user.getRoles().contains(teacherRole)) {
-//                user.addRoles(teacherRole);
-//                boolean addedRole = saveEditedUser(user);
-//                if (!addedRole) {
-//                    throw new InvalidAttributesException("Teacher role was not added to user. ");
-//                }
-//            }
-//        } catch (Exception e) {
-//            logger.error(MessageFormat.format(
-//                    "Something went wrong with the teachers group: {0}", e.getMessage()));
-//        }
+        boolean addedToGroup = groupModelService.addUsersToGroup(new ArrayIterator<>(new UserModel[]{user}), GroupModelServerService.TEACHERS_GROUP_ID);
+        if (!addedToGroup) {
+            logger.error("Something went wrong with the teachers group");
+        }
+    }
 
+    /**
+     * Checks to see if the user has the teacher role. If not, it adds the role to the user.
+     * @param user user to check if they are in the teachers group.
+     */
+    public boolean checkUserHasTeacherRole(UserModel user) {
+        Roles teacherRole = rolesRepository.findByRoleName("TEACHER");
+
+        boolean addedRole = false;
+        if (!user.getRoles().contains(teacherRole)) {
+            user.addRoles(teacherRole);
+            addedRole = saveEditedUser(user);
+        }
+        return addedRole;
     }
 
 }

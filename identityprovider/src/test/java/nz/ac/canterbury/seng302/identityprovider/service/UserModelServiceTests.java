@@ -1,6 +1,7 @@
 package nz.ac.canterbury.seng302.identityprovider.service;
 
 
+import com.fasterxml.jackson.databind.util.ArrayIterator;
 import nz.ac.canterbury.seng302.identityprovider.model.GroupModel;
 import nz.ac.canterbury.seng302.identityprovider.model.Roles;
 import nz.ac.canterbury.seng302.identityprovider.repository.GroupRepository;
@@ -19,14 +20,11 @@ import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import javax.naming.directory.InvalidAttributesException;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.when; //should normally use this one
 
 import java.io.*;
 import java.util.*;
@@ -34,6 +32,7 @@ import java.util.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.AdditionalAnswers.returnsFirstArg;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 @ExtendWith(SpringExtension.class)
@@ -218,26 +217,21 @@ public class UserModelServiceTests {
     }
 
     @Test
-    void testCheckUserIsInTeachersGroup() throws InvalidAttributesException {
+    void testCheckUserIsInTeachersGroup() {
         UserModel testUser = new UserModel();
         testUser.setUserId(1);
-        testGroup.addMember(testUser.getUserId());
 
-        try {
-            when(groupModelService.isUserPartOfGroup(testUser.getUserId(), GroupModelServerService.TEACHERS_GROUP_ID)).thenReturn(true);
-            when(groupModelService.getGroupById(any(Integer.class))).thenReturn(testGroup);
-            when(userModelRepository.findByUserId(any(Integer.class))).thenReturn(testUser);
-        } catch (InvalidAttributesException e) {
-            fail("Group does not exist");
-        }
+        GroupModel teacherTestGroup = new GroupModel("Teachers", "Teachers Group", 1);
+        teacherTestGroup.setGroupId(GroupModelServerService.TEACHERS_GROUP_ID);
 
-        userModelService.checkUserIsInTeachersGroup(testUser.getUserId());
+        when(groupRepository.findById(any(Integer.class))).thenReturn(Optional.of(teacherTestGroup));
+        when(groupModelService.addUsersToGroup(any(Iterable.class), any(Integer.class))).thenReturn(true);
 
-        try {
-            assertTrue(groupModelService.getGroupById(GroupModelServerService.TEACHERS_GROUP_ID).getMemberIds().contains(testUser.getUserId()));
-        } catch (InvalidAttributesException e) {
-            fail();
-        }
+        userModelService.checkUserIsInTeachersGroup(testUser);
+
+        // Assumes method runs
+        verify(groupModelService, times(1)).addUsersToGroup(any(Iterable.class), any(Integer.class));
+
     }
 
     @Test
@@ -247,13 +241,13 @@ public class UserModelServiceTests {
 
         try {
             when(groupModelService.isUserPartOfGroup(testUser.getUserId(), GroupModelServerService.TEACHERS_GROUP_ID)).thenReturn(false);
-            when(groupModelService.addUserToGroup(any(Integer.class), any(Integer.class))).thenReturn(true);
-            testGroup.addMember(testUser.getUserId());
+            when(groupModelService.addUsersToGroup(any(ArrayIterator.class), any(Integer.class))).thenReturn(true);
+            testGroup.addMember(testUser);
         } catch (InvalidAttributesException e) {
             fail("Group does not exist");
         }
 
-        userModelService.checkUserIsInTeachersGroup(testUser.getUserId());
+        userModelService.checkUserIsInTeachersGroup(testUser);
 
         assertTrue(testGroup.getMemberIds().contains(testUser.getUserId()));
     }
@@ -267,7 +261,7 @@ public class UserModelServiceTests {
             // Group won't be returned by the repository, therefor the group doesn't exist
             boolean isPartOfGroup = groupModelService.isUserPartOfGroup(testUser.getUserId(), GroupModelServerService.TEACHERS_GROUP_ID);
             assertFalse(isPartOfGroup);
-            userModelService.checkUserIsInTeachersGroup(testUser.getUserId());
+            userModelService.checkUserIsInTeachersGroup(testUser);
         } catch (InvalidAttributesException e) {
             assertTrue(true);
         }
@@ -278,7 +272,6 @@ public class UserModelServiceTests {
     void testGivenAUserWhenUserAddedToTeacherGroupThenTheyAreGivenTeacherRole() {
         UserModel testUser = new UserModel();
         testUser.setUserId(1);
-//        testGroup.addMember(testUser.getUserId());
 
         Roles teacherRole = new Roles(1, "TEACHER");
         GroupModel teacherTestGroup = new GroupModel("Teachers", "Teachers Group", 1);
@@ -293,29 +286,14 @@ public class UserModelServiceTests {
             fail("Group does not exist");
         }
 
-//        try {
-//
-////            when(groupModelService.getGroupById(any(Integer.class))).thenReturn(teacherTestGroup);
-////            when(groupModelService.isUserPartOfGroup(testUser.getUserId(), GroupModelServerService.TEACHERS_GROUP_ID)).thenReturn(false);
-//
-//        } catch (InvalidAttributesException e) {
-//            fail("Group does not exist");
-//        }
-
         when(rolesRepository.findByRoleName("TEACHER")).thenReturn(teacherRole);
         when(userModelRepository.findByUserId(any(Integer.class))).thenReturn(testUser);
         when(userModelRepository.save(any(UserModel.class))).thenReturn(testUser);
-//        when(userModelService.saveEditedUser(any(UserModel.class))).thenReturn(true);
 
-        userModelService.checkUserIsInTeachersGroup(testUser.getUserId());
+        userModelService.checkUserIsInTeachersGroup(testUser);
 
         assertTrue(teacherTestGroup.getMemberIds().contains(testUser.getUserId()));
 
-//        try {
-//            assertTrue(teacherTestGroup.getMemberIds().contains(testUser.getUserId()));
-//        } catch (InvalidAttributesException e) {
-//            fail("User not added to group as group did not exist");
-//        }
         assertEquals(1, testUser.getRoles().size());
         assertTrue(testUser.getRoles().contains(teacherRole));
     }

@@ -1,5 +1,6 @@
 package nz.ac.canterbury.seng302.identityprovider.service;
 
+import com.fasterxml.jackson.databind.util.ArrayIterator;
 import nz.ac.canterbury.seng302.identityprovider.model.GroupModel;
 import nz.ac.canterbury.seng302.identityprovider.model.Roles;
 import nz.ac.canterbury.seng302.identityprovider.model.UserModel;
@@ -15,7 +16,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.naming.directory.InvalidAttributesException;
 import java.util.Optional;
@@ -226,9 +226,9 @@ class GroupModelServiceTest {
         UserModel testUser = new UserModel();
         testUser.setUserId(1);
 
-        when(groupRepository.getGroupModelByGroupId(any(Integer.class))).thenReturn(testGroup);
+        when(groupRepository.findById(any(Integer.class))).thenReturn(Optional.of(testGroup));
 
-        boolean wasAdded = groupModelService.addUserToGroup(testUser.getUserId(), testGroup.getGroupId());
+        boolean wasAdded = groupModelService.addUsersToGroup(new ArrayIterator<>(new UserModel[]{testUser}), testGroup.getGroupId());
 
         assertTrue(wasAdded);
         assertTrue(testGroup.getMemberIds().contains(testUser.getUserId()));
@@ -239,14 +239,14 @@ class GroupModelServiceTest {
         UserModel testUser = new UserModel();
         testUser.setUserId(1);
 
-        when(groupRepository.getGroupModelByGroupId(any(Integer.class))).thenReturn(testGroup);
+        when(groupRepository.findById(any(Integer.class))).thenReturn(Optional.of(testGroup));
 
-        boolean wasAdded = groupModelService.addUserToGroup(testUser.getUserId(), testGroup.getGroupId());
+        boolean wasAdded = groupModelService.addUsersToGroup(new ArrayIterator<>(new UserModel[]{testUser}), testGroup.getGroupId());
 
         assertTrue(wasAdded);
         assertTrue(testGroup.getMemberIds().contains(testUser.getUserId()));
 
-        wasAdded = groupModelService.addUserToGroup(testUser.getUserId(), testGroup.getGroupId());
+        wasAdded = groupModelService.addUsersToGroup(new ArrayIterator<>(new UserModel[]{testUser}), testGroup.getGroupId());
 
         assertTrue(wasAdded);
         assertTrue(testGroup.getMemberIds().contains(testUser.getUserId()));
@@ -258,7 +258,7 @@ class GroupModelServiceTest {
         testUser.setUserId(1);
 
         // Group won't be returned by the repository, therefor the group doesn't exist
-        boolean wasAdded = groupModelService.addUserToGroup(testUser.getUserId(), testGroup.getGroupId());
+        boolean wasAdded = groupModelService.addUsersToGroup(new ArrayIterator<>(new UserModel[]{testUser}), testGroup.getGroupId());
 
         assertFalse(wasAdded);
         assertFalse(testGroup.getMemberIds().contains(testUser.getUserId()));
@@ -269,21 +269,21 @@ class GroupModelServiceTest {
         UserModel testUser = new UserModel();
         testUser.setUserId(1);
 
+        Roles teacherRole = new Roles(1, "TEACHER");
         GroupModel teacherTestGroup = new GroupModel("Teachers", "Teachers Group", 1);
         teacherTestGroup.setGroupId(GroupModelServerService.TEACHERS_GROUP_ID);
 
-        when(groupRepository.getGroupModelByGroupId(any(Integer.class))).thenReturn(teacherTestGroup);
-//        when(rolesRepository.findByRoleName("TEACHER")).thenReturn(teacherRole);
-//        when(userRepository.findByUserId(any(Integer.class))).thenReturn(testUser);
-//        when(userRepository.save(any(UserModel.class))).thenReturn(testUser);
+        when(groupRepository.findById(any(Integer.class))).thenReturn(Optional.of(teacherTestGroup));
+        when(userModelService.checkUserHasTeacherRole(any(UserModel.class))).thenReturn(true);
 
-        boolean wasAdded = groupModelService.addUserToGroup(testUser.getUserId(), GroupModelServerService.TEACHERS_GROUP_ID);
+        boolean wasAdded = groupModelService.addUsersToGroup(new ArrayIterator<>(new UserModel[]{testUser}), GroupModelServerService.TEACHERS_GROUP_ID);
 
         assertTrue(wasAdded);
         assertTrue(teacherTestGroup.getMemberIds().contains(testUser.getUserId()));
-        verify(userModelService, times(1)).checkUserIsInTeachersGroup(any(Integer.class));
-//        assertEquals(1, testUser.getRoles().size());
-//        assertTrue(testUser.getRoles().contains(teacherRole));
+        verify(userModelService, times(1)).checkUserHasTeacherRole(any(UserModel.class));
+        testUser.addRoles(teacherRole); // Only runs once checkUserHasTeacherRole has been run
+        assertEquals(1, testUser.getRoles().size());
+        assertTrue(testUser.getRoles().contains(teacherRole));
     }
 
     /**
@@ -294,14 +294,14 @@ class GroupModelServiceTest {
         UserModel testUser = new UserModel();
         testUser.setUserId(1);
 
-        when(groupRepository.getGroupModelByGroupId(any(Integer.class))).thenReturn(testGroup);
+        when(groupRepository.findById(any(Integer.class))).thenReturn(Optional.of(testGroup));
 
-        boolean wasAdded = groupModelService.addUserToGroup(testUser.getUserId(), testGroup.getGroupId());
+        boolean wasAdded = groupModelService.addUsersToGroup(new ArrayIterator<>(new UserModel[]{testUser}), testGroup.getGroupId());
 
         assertTrue(wasAdded);
         assertTrue(testGroup.getMemberIds().contains(testUser.getUserId()));
 
-        boolean wasRemoved = groupModelService.removeUserFromGroup(testUser.getUserId(), testGroup.getGroupId());
+        boolean wasRemoved = groupModelService.removeUsersFromGroup(new ArrayIterator<>(new UserModel[]{testUser}), testGroup.getGroupId());
 
         assertTrue(wasRemoved);
         assertFalse(testGroup.getMemberIds().contains(testUser.getUserId()));
@@ -312,11 +312,11 @@ class GroupModelServiceTest {
         UserModel testUser = new UserModel();
         testUser.setUserId(1);
 
-        when(groupRepository.getGroupModelByGroupId(any(Integer.class))).thenReturn(testGroup);
+        when(groupRepository.findById(any(Integer.class))).thenReturn(Optional.of(testGroup));
 
         assertFalse(testGroup.getMemberIds().contains(testUser.getUserId()));
 
-        boolean wasRemoved = groupModelService.removeUserFromGroup(testUser.getUserId(), testGroup.getGroupId());
+        boolean wasRemoved = groupModelService.removeUsersFromGroup(new ArrayIterator<>(new UserModel[]{testUser}), testGroup.getGroupId());
 
         assertTrue(wasRemoved);
         assertFalse(testGroup.getMemberIds().contains(testUser.getUserId()));
@@ -328,7 +328,7 @@ class GroupModelServiceTest {
         testUser.setUserId(1);
 
         // Group won't be returned by the repository, therefor the group doesn't exist
-        boolean wasRemoved = groupModelService.removeUserFromGroup(testUser.getUserId(), testGroup.getGroupId());
+        boolean wasRemoved = groupModelService.removeUsersFromGroup(new ArrayIterator<>(new UserModel[]{testUser}), testGroup.getGroupId());
 
         assertFalse(wasRemoved);
     }
@@ -342,7 +342,7 @@ class GroupModelServiceTest {
         testUser.setUserId(1);
 
         GroupModel testGroupCopy = new GroupModel(testGroup.getShortName(), testGroup.getLongName(), testGroup.getCourseId());
-        testGroupCopy.addMember(testUser.getUserId());
+        testGroupCopy.addMember(testUser);
 
         when(groupRepository.findById(any(Integer.class))).thenReturn(Optional.of(testGroupCopy));
 

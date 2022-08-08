@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.naming.directory.InvalidAttributesException;
+import java.text.MessageFormat;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -207,27 +208,6 @@ public class GroupModelService {
         return repository.existsById(groupId);
     }
 
-//    /**
-//     * Adds a member to a group by their user id. If a user was already part of the group, no distinction is made when
-//     * trying to re-add them to the group (returns true if the user was already a part of the group).
-//     * @param user user to be added
-//     * @param groupId ID of the group
-//     * @return Whether the user was added or not.
-//     */
-//    public boolean addUserToGroup(UserModel user, Integer groupId) {
-//        try {
-//            GroupModel group = repository.getGroupModelByGroupId(groupId);
-//            group.addMember(user);
-//            repository.save(group);
-//        } catch (Exception e) {
-//            return false;
-//        }
-////        if (groupId.equals(GroupModelServerService.TEACHERS_GROUP_ID)) {
-////            userModelService.checkUserIsInTeachersGroup(userId);
-////        }
-//        return true;
-//    }
-
     /**
      * Adds an iterable of users to a group. If a user was already part of the group, no distinction is
      * made when trying to re-add them to the group (returns true if the user was already a part of the group).
@@ -242,12 +222,15 @@ public class GroupModelService {
                 GroupModel group = groupOptional.get();
                 for (UserModel user : users) {
                     group.addMember(user);
+                    if (groupId.equals(GroupModelServerService.TEACHERS_GROUP_ID)) {
+                       userModelService.checkUserHasTeacherRole(user);
+                    }
                 }
                 repository.save(group);
-                logger.info("Added the following users to group " + groupId + ": " + users);
+                logger.info(MessageFormat.format("Added the following users to group {0}: {1}", groupId, users));
             } catch (Exception e) {
-                logger.info("Error adding user to group " + groupId);
-                logger.info(e.getMessage());
+                logger.error(MessageFormat.format("Error adding user to group {0}", groupId));
+                logger.error(e.getMessage());
                 return false;
             }
             return true;
@@ -255,22 +238,24 @@ public class GroupModelService {
         return false;
     }
 
-//    /**
-//     * Remove users from a group. If a user was already not in the group, the method still returns true.
-//     * @param userId ID of user being removed from the group.
-//     * @param groupId Id of the group the user is being removed from.
-//     * @return Whether the user was removed from the group.
-//     */
-//    public boolean removeUserFromGroup(Integer userId, Integer groupId) {
-//        try {
-//            GroupModel group = repository.getGroupModelByGroupId(groupId);
-//            group.removeMember(userId);
-//            repository.save(group);
-//        } catch (Exception e) {
-//            return false;
-//        }
-//        return true;
-//    }
+    /**
+     * Remove users from a group. If a user was already not in the group, the method still returns true.
+     * @param users iterable list of users to be removed from the group.
+     * @param groupId Id of the group the users are being removed from.
+     * @return Whether the user was removed from the group.
+     */
+    public boolean removeUsersFromGroup(Iterable<UserModel> users, Integer groupId) {
+        Optional<GroupModel> groupOptional = repository.findById(groupId);
+        if (groupOptional.isPresent()) {
+            GroupModel group = groupOptional.get();
+            for (UserModel user : users) {
+                group.removeMember(user);
+            }
+            repository.save(group);
+            return true;
+        }
+        return false;
+    }
 
     /**
      * Checks if a user is in a given group.
