@@ -191,7 +191,7 @@ public class GroupModelService {
         response.setGroupId(groupModel.getGroupId());
         response.setLongName(groupModel.getLongName());
         response.setShortName(groupModel.getShortName());
-        Set<UserModel> userModelList = groupModel.getUsers();
+        Set<UserModel> userModelList = groupModel.getMembers();
         for (UserModel userModel : userModelList) {
             response.addMembers(userModelService.getUserInfo(userModel));
         }
@@ -228,6 +228,7 @@ public class GroupModelService {
                 }
                 repository.save(group);
                 logger.info(MessageFormat.format("Added the following users to group {0}: {1}", groupId, users));
+                removeFromMembersWithoutAGroup(users);
             } catch (Exception e) {
                 logger.error(MessageFormat.format("Error adding user to group {0}", groupId));
                 logger.error(e.getMessage());
@@ -238,6 +239,42 @@ public class GroupModelService {
         return false;
     }
 
+    /**
+     * Removes the given users from the special "Members without a group" group.
+     * @param users users to remove
+     */
+    private void removeFromMembersWithoutAGroup(Iterable<UserModel> users) {
+        Optional<GroupModel> groupOptional = repository.findById(GroupModelServerService.MEMBERS_WITHOUT_GROUP_ID);
+        if (groupOptional.isPresent()) {
+            GroupModel group = groupOptional.get();
+            for (UserModel user: users) {
+                group.removeMember(user);
+            }
+            repository.save(group);
+        }
+    }
+
+    public GroupModel getMembersWithoutAGroup() {
+        Optional<GroupModel> groupOptional = repository.findById(GroupModelServerService.MEMBERS_WITHOUT_GROUP_ID);
+        return groupOptional.orElse(null);
+    }
+
+//    /**
+//     * Remove users from a group. If a user was already not in the group, the method still returns true.
+//     * @param userId ID of user being removed from the group.
+//     * @param groupId Id of the group the user is being removed from.
+//     * @return Whether the user was removed from the group.
+//     */
+//    public boolean removeUserFromGroup(Integer userId, Integer groupId) {
+//        try {
+//            GroupModel group = repository.getGroupModelByGroupId(groupId);
+//            group.removeMember(userId);
+//            repository.save(group);
+//        } catch (Exception e) {
+//            return false;
+//        }
+//        return true;
+//    }
     /**
      * Remove users from a group. If a user was already not in the group, the method still returns true.
      * @param users iterable list of users to be removed from the group.

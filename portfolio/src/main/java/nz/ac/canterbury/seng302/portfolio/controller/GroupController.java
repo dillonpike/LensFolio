@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.List;
+import java.util.Objects;
 
 import org.springframework.web.bind.annotation.*;
 
@@ -36,6 +37,7 @@ public class GroupController {
     @Autowired
     public GroupService groupService;
 
+    private static final Integer MEMBERS_WITHOUT_GROUP_ID = 1;
 
     /**
      * Get method for group page to display group list and group detail
@@ -155,11 +157,24 @@ public class GroupController {
         AddGroupMembersResponse response = groupService.addMemberToGroup(groupId, userIds);
         if (response.getIsSuccess()) {
             httpServletResponse.setStatus(HttpServletResponse.SC_OK);
-            groupService.addGroupDetailToModel(model, groupId);
-            return "group::groupCard";
+            if (Objects.equals(groupId, MEMBERS_WITHOUT_GROUP_ID)) {
+                groupService.addGroupListToModel(model);
+                return "group::groupList";
+            } else {
+                groupService.addGroupDetailToModel(model, groupId);
+                return "group::groupCard";
+            }
         } else {
             httpServletResponse.setStatus(HttpServletResponse.SC_BAD_REQUEST);
         }
         return null;
+    }
+
+    @GetMapping("/members-without-a-group")
+    public String membersWithoutAGroupCard(
+            Model model
+    ) {
+        groupService.addGroupDetailToModel(model, MEMBERS_WITHOUT_GROUP_ID);
+        return "group::groupCard";
     }
 }

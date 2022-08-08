@@ -1,11 +1,11 @@
 package nz.ac.canterbury.seng302.identityprovider.service;
 
+import nz.ac.canterbury.seng302.identityprovider.model.GroupModel;
 import com.fasterxml.jackson.databind.util.ArrayIterator;
 import nz.ac.canterbury.seng302.identityprovider.model.Roles;
 import nz.ac.canterbury.seng302.identityprovider.repository.RolesRepository;
 import nz.ac.canterbury.seng302.identityprovider.model.UserModel;
 import nz.ac.canterbury.seng302.identityprovider.repository.UserModelRepository;
-import nz.ac.canterbury.seng302.identityprovider.server.GroupModelServerService;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,13 +20,13 @@ public class UserModelService {
     private static final Logger logger = LoggerFactory.getLogger(UserModelService.class);
 
     @Autowired
-    UserModelRepository repository;
+    private UserModelRepository repository;
 
     @Autowired
-    RolesRepository rolesRepository;
+    private RolesRepository rolesRepository;
 
     @Autowired
-    UserModelRepository userModelRepository;
+    private UserModelRepository userModelRepository;
 
     @Autowired
     GroupModelService groupModelService;
@@ -214,4 +214,10 @@ public class UserModelService {
         return addedRole;
     }
 
+    public void setOnlyGroup(Iterable<UserModel> users, GroupModel group) {
+        for (UserModel user: users) {
+            user.setGroups(Set.of(group));
+        }
+        repository.saveAll(users);
+    }
 }
