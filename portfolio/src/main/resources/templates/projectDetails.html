@@ -21,41 +21,19 @@
 <body>
 <header th:replace="fragments/header"></header>
 <div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 2000">
-    <div class="toast" role="alert" aria-live="assertive" aria-atomic="true" id="liveToast1" data-bs-autohide="false" data-bs-animation="false">
-        <div class="toast-header">
-            <strong class="me-auto" id="toastTitle1"></strong>
+    <div th:each="toast, meta: ${toastsToGenerate}">
+        <div class="toast" role="alert" aria-live="assertive" aria-atomic="true" th:id="${#ids.seq('liveToast')}" data-bs-autohide="false" data-bs-animation="false">
+            <div class="toast-header">
+                <strong class="me-auto" th:id="${#ids.seq('toastTitle')}"></strong>
+            </div>
+            <div class="toast-body" th:id="${#ids.seq('popupText')}"></div>
+            <div th:id="${#ids.seq('toastInformation')}" th:text="${toast.getArtefactInformation()}" hidden="true"></div>
+            <div th:id="${#ids.seq('toastArtefactName')}" th:text="${toast.getArtefactName()}" hidden="true"></div>
+            <div th:id="${#ids.seq('toastArtefactId')}" th:text="${toast.getArtefactId()}" hidden="true"></div>
+            <div th:id="${#ids.seq('toastUsername')}" th:text="${toast.getUsername()}" hidden="true"></div>
+            <div th:id="${#ids.seq('toastFirstName')}" th:text="${toast.getUserFirstName()}" hidden="true"></div>
+            <div th:id="${#ids.seq('toastLastName')}" th:text="${toast.getUserLastName()}" hidden="true"></div>
         </div>
-        <div class="toast-body" id="popupText1"></div>
-        <div id="toastInformation1" th:text="${toastEventInformation1}" hidden="true"></div>
-        <div id="toastEventName1" th:text="${toastEventName1}" hidden="true"></div>
-        <div id="toastEventId1" th:text="${toastEventId1}" hidden="true"></div>
-        <div id="toastUsername1" th:text="${toastUsername1}" hidden="true"></div>
-        <div id="toastFirstName1" th:text="${toastFirstName1}" hidden="true"></div>
-        <div id="toastLastName1" th:text="${toastLastName1}" hidden="true"></div>
-    </div>
-    <div class="toast" role="alert" aria-live="assertive" aria-atomic="true" id="liveToast2" data-bs-autohide="false" data-bs-animation="false">
-        <div class="toast-header">
-            <strong class="me-auto" id="toastTitle2"></strong>
-        </div>
-        <div class="toast-body" id="popupText2"></div>
-        <div id="toastInformation2" th:text="${toastEventInformation2}" hidden="true"></div>
-        <div id="toastEventName2" th:text="${toastEventName2}" hidden="true"></div>
-        <div id="toastEventId2" th:text="${toastEventId2}" hidden="true"></div>
-        <div id="toastUsername2" th:text="${toastUsername2}" hidden="true"></div>
-        <div id="toastFirstName2" th:text="${toastFirstName2}" hidden="true"></div>
-        <div id="toastLastName2" th:text="${toastLastName2}" hidden="true"></div>
-    </div>
-    <div class="toast" role="alert" aria-live="assertive" aria-atomic="true" id="liveToast3" data-bs-autohide="false" data-bs-animation="false">
-        <div class="toast-header">
-            <strong class="me-auto" id="toastTitle3"></strong>
-        </div>
-        <div class="toast-body" id="popupText3"></div>
-        <div id="toastInformation3" th:text="${toastEventInformation3}" hidden="true"></div>
-        <div id="toastEventName3" th:text="${toastEventName3}" hidden="true"></div>
-        <div id="toastEventId3" th:text="${toastEventId3}" hidden="true"></div>
-        <div id="toastUsername3" th:text="${toastUsername3}" hidden="true"></div>
-        <div id="toastFirstName3" th:text="${toastFirstName3}" hidden="true"></div>
-        <div id="toastLastName3" th:text="${toastLastName3}" hidden="true"></div>
     </div>
 </div>
 <div class="row">
@@ -431,6 +409,7 @@
 
 
 <script src="js/project.js"></script>
+<script src="js/Notification.js"></script>
 <script src="js/detailsLive.js"></script>
 
 <script th:inline="javascript">
@@ -555,11 +534,11 @@
     function sendEditingLiveNotificationRequest(inputElementName, modal, action, artefactType){
         $(inputElementName).on('focusin', function (ignore) {
             if (getModalActionType(modal) === action) {
-                sendName(selectedArtefactName,selectedArtefactId,userId, userFirstName, userLastName, username, artefactType);
+                sendName(selectedArtefactName, selectedArtefactId, userId, userFirstName, userLastName, username, artefactType);
             }
         }).on('focusout', function (ignore) {
             if (getModalActionType(modal) === action) {
-                sendEmpty(selectedArtefactName, selectedArtefactId,userId, userFirstName, userLastName, username, artefactType);
+                sendEmpty(selectedArtefactName, selectedArtefactId, userId, userFirstName, userLastName, username, artefactType);
             }
         });
     }
@@ -575,7 +554,7 @@
     function sendSavedLiveNotificationRequest(inputElementName, modal, action, artefactType){
         $(inputElementName).click(function() {
             if (getModalActionType(modal) === action) {
-                sendNameReload(selectedArtefactName, selectedArtefactId,userId, userFirstName, userLastName, username, artefactType);
+                sendNameReload(selectedArtefactName, selectedArtefactId, userId, userFirstName, userLastName, username, artefactType);
             }
         })
     }
@@ -591,7 +570,7 @@
     function sendStopEditingLiveNotificationRequest(inputElementName, modal, action, artefactType){
         $(inputElementName).click(function() {
             if (getModalActionType(modal) === action) {
-                sendEmpty(milestoneName, milestoneId,userId, userFirstName, userLastName, username, artefactType);
+                sendEmpty(selectedArtefactName, selectedArtefactId, userId, userFirstName, userLastName, username, artefactType);
             }
         })
     }

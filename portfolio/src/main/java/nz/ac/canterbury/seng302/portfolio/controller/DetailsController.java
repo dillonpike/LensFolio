@@ -3,17 +3,16 @@ package nz.ac.canterbury.seng302.portfolio.controller;
 import com.google.protobuf.Timestamp;
 import nz.ac.canterbury.seng302.portfolio.model.*;
 import nz.ac.canterbury.seng302.portfolio.service.*;
+import nz.ac.canterbury.seng302.portfolio.utility.Toast;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import nz.ac.canterbury.seng302.shared.identityprovider.ClaimDTO;
 import org.springframework.web.util.HtmlUtils;
 
 import javax.servlet.http.HttpServletRequest;
@@ -61,11 +60,17 @@ public class DetailsController {
      */
     private ArrayList<NotificationResponse> eventsToDisplay = new ArrayList<>();
 
+    /**
+     * Holds the number of toasts to be generated in the HTML. Must be the same as or greater than NUM_OF_TOASTS in DetailsLive.js and
+     * GroupsLive.js.
+     */
+    private static final int NUM_OF_TOASTS = 3;
+
 
     /***
      * GET request method, followed by the request URL(../details)
      *
-     * @param principal
+     * @param principal For getting the user ID
      * @param model Parameters sent to thymeleaf template to be rendered into HTML
      * @return projectDetails page
      * @throws Exception
@@ -117,32 +122,35 @@ public class DetailsController {
         List<List<Milestone>> milestonesForSprints = getAllMilestonesForAllSprints(sprintList);
         model.addAttribute("milestonesForSprints", milestonesForSprints);
 
+        List<Toast> toastsToGenerate = new ArrayList<>();
+        for (int i = 0; i < NUM_OF_TOASTS; i++) {
+            Toast toast = new Toast();
+            toastsToGenerate.add(toast);
+        }
+
         // Runs if the reload was triggered by saving an event. Checks the notifications' creation time to see if 2 seconds has passed yet.
-        int count = 1;
+        int count = 0;
         ArrayList<NotificationResponse> eventsToDelete = new ArrayList<>();
         for (NotificationResponse event : eventsToDisplay) {
             long timeDifference = Date.from(Instant.now()).toInstant().getEpochSecond() - event.getDateOfCreation();
             if (timeDifference <= 2) {
-                model.addAttribute("toastEventInformation" + count, event.getArtefactType());
-                model.addAttribute("toastEventName" + count, event.getArtefactName());
-                model.addAttribute("toastEventId" + count, event.getArtefactId());
-                model.addAttribute("toastUsername" + count, event.getUsername());
-                model.addAttribute("toastFirstName" + count, event.getUserFirstName());
-                model.addAttribute("toastLastName" + count, event.getUserLastName());
+                toastsToGenerate.get(count).setArtefactInformation(event.getArtefactType());
+                toastsToGenerate.get(count).setArtefactName(event.getArtefactName());
+                toastsToGenerate.get(count).setArtefactId(event.getArtefactId());
+                toastsToGenerate.get(count).setUsername(event.getUsername());
+                toastsToGenerate.get(count).setUserFirstName(event.getUserFirstName());
+                toastsToGenerate.get(count).setUserLastName(event.getUserLastName());
             } else {
                 eventsToDelete.add(event);
-                model.addAttribute("toastEventInformation" + count, "");
-                model.addAttribute("toastEventName" + count, "");
-                model.addAttribute("toastEventId" + count, "");
-                model.addAttribute("toastUsername" + count, "");
-                model.addAttribute("toastFirstName" + count, "");
-                model.addAttribute("toastLastName" + count, "");
+                toastsToGenerate.get(count).setArtefactInformation("");
             }
             count++;
         }
         for (NotificationResponse event : eventsToDelete) {
             eventsToDisplay.remove(event);
         }
+
+        model.addAttribute("toastsToGenerate", toastsToGenerate);
 
         List<Milestone> milestoneList = milestoneService.getAllEventsOrderedWithColour(sprintList);
         model.addAttribute("milestones", milestoneList);
@@ -187,7 +195,7 @@ public class DetailsController {
      * @return returns an NotificationResponse that holds information about the event being updated.
      */
     @MessageMapping("/editing-artefact")
-    @SendTo("/webSocketGet/being-edited")
+    @SendTo("/webSocketDetailsGet/being-edited")
     public NotificationResponse updatingArtefact(NotificationMessage message) {
         int artefactId = message.getArtefactId();
         String username = message.getUsername();
@@ -205,7 +213,7 @@ public class DetailsController {
      * @return Returns the message given.
      */
     @MessageMapping("/stop-editing-artefact")
-    @SendTo("/webSocketGet/stop-being-edited")
+    @SendTo("/webSocketDetailsGet/stop-being-edited")
     public NotificationResponse stopUpdatingArtefact(NotificationMessage message) {
         int artefactId = message.getArtefactId();
         String username = message.getUsername();
@@ -223,7 +231,7 @@ public class DetailsController {
      * @return returns an NotificationResponse that holds information about the event being updated.
      */
     @MessageMapping("/saved-edited-artefact")
-    @SendTo("/webSocketGet/save-edit")
+    @SendTo("/webSocketDetailsGet/save-edit")
     public NotificationResponse savingUpdatedArtefact(NotificationMessage message) {
         int artefactId = message.getArtefactId();
         String username = message.getUsername();
@@ -234,7 +242,7 @@ public class DetailsController {
         NotificationResponse response = new NotificationResponse(HtmlUtils.htmlEscape(message.getArtefactName()), artefactId, username, firstName, lastName, dateOfNotification, artefactType);
         // Trigger reload and save the last event's information
         eventsToDisplay.add(response);
-        while (eventsToDisplay.size() > 3) {
+        while (eventsToDisplay.size() > NUM_OF_TOASTS) {
             eventsToDisplay.remove(0);
         }
         return response;
