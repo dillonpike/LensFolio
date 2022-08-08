@@ -171,7 +171,7 @@ public class GroupController {
      * @return returns an NotificationResponse that holds information about the event being updated.
      */
     @MessageMapping("/editing-group")
-    @SendTo("/webSocketGroupsGet/being-edited")
+    @SendTo("/webSocketGet/group-being-edited")
     public NotificationResponse updatingArtefact(NotificationMessage message) {
         int groupId = message.getArtefactId();
         String username = message.getUsername();
@@ -189,7 +189,7 @@ public class GroupController {
      * @return Returns the message given.
      */
     @MessageMapping("/stop-editing-group")
-    @SendTo("/webSocketGroupsGet/stop-being-edited")
+    @SendTo("/webSocketGet/group-stop-being-edited")
     public NotificationResponse stopUpdatingArtefact(NotificationMessage message) {
         int groupId = message.getArtefactId();
         String username = message.getUsername();
@@ -207,7 +207,7 @@ public class GroupController {
      * @return returns an NotificationResponse that holds information about the event being updated.
      */
     @MessageMapping("/saved-edited-group")
-    @SendTo("/webSocketGroupsGet/save-edit")
+    @SendTo("/webSocketGet/group-save-edit")
     public NotificationResponse savingUpdatedArtefact(NotificationMessage message) {
         int groupId = message.getArtefactId();
         String username = message.getUsername();
