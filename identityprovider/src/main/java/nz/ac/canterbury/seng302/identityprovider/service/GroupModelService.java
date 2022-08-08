@@ -222,9 +222,6 @@ public class GroupModelService {
                 GroupModel group = groupOptional.get();
                 for (UserModel user : users) {
                     group.addMember(user);
-                    if (groupId.equals(GroupModelServerService.TEACHERS_GROUP_ID)) {
-                       userModelService.checkUserHasTeacherRole(user);
-                    }
                 }
                 repository.save(group);
                 logger.info(MessageFormat.format("Added the following users to group {0}: {1}", groupId, users));

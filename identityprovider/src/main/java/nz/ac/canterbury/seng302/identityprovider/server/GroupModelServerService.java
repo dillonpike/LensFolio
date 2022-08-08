@@ -1,5 +1,6 @@
 package nz.ac.canterbury.seng302.identityprovider.server;
 
+import com.fasterxml.jackson.databind.util.ArrayIterator;
 import com.google.protobuf.Empty;
 import io.grpc.stub.StreamObserver;
 import net.devh.boot.grpc.server.service.GrpcService;
@@ -10,6 +11,8 @@ import nz.ac.canterbury.seng302.identityprovider.service.GroupModelService;
 import nz.ac.canterbury.seng302.identityprovider.service.UserModelService;
 import nz.ac.canterbury.seng302.shared.identityprovider.*;
 import nz.ac.canterbury.seng302.shared.util.ValidationError;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.naming.directory.InvalidAttributesException;
@@ -23,6 +26,8 @@ import java.util.Set;
  */
 @GrpcService
 public class GroupModelServerService extends GroupsServiceGrpc.GroupsServiceImplBase {
+
+    private static final Logger logger = LoggerFactory.getLogger(GroupModelServerService.class);
 
     @Autowired
     private GroupModelService groupModelService;
@@ -199,12 +204,28 @@ public class GroupModelServerService extends GroupsServiceGrpc.GroupsServiceImpl
         AddGroupMembersResponse.Builder reply = AddGroupMembersResponse.newBuilder();
         Iterable<UserModel> users = userModelService.getUsersByIds(request.getUserIdsList());
         boolean isSuccess = groupModelService.addUsersToGroup(users, request.getGroupId());
+        checkUsersInTeachersGroup(users);
         if (request.getGroupId() == MEMBERS_WITHOUT_GROUP_ID && isSuccess) {
             userModelService.setOnlyGroup(users, groupModelService.getMembersWithoutAGroup());
         }
         reply.setIsSuccess(isSuccess);
         responseObserver.onNext(reply.build());
         responseObserver.onCompleted();
+    }
+
+    /**
+     * Checks to see if a list of users are part of the teachers group. If not, it adds them to it.
+     * @param users users to check if they are in the teachers group.
+     */
+    public void checkUsersInTeachersGroup(Iterable<UserModel> users) {
+
+        for (UserModel user : users) {
+            boolean addedToGroup = groupModelService.addUsersToGroup(new ArrayIterator<>(new UserModel[]{user}), GroupModelServerService.TEACHERS_GROUP_ID);
+            if (!addedToGroup) {
+                logger.error("Something went wrong with the teachers group");
+            }
+            userModelService.checkUserHasTeacherRole(user);
+        }
     }
 
     /**

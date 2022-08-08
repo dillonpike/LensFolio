@@ -29,9 +29,6 @@ public class UserModelService {
     @Autowired
     private UserModelRepository userModelRepository;
 
-    @Autowired
-    GroupModelService groupModelService;
-
     private static int userIdCount = 1;
 
     public UserModelService(UserModelRepository userModelRepository, RolesRepository rolesRepository) {
@@ -87,10 +84,6 @@ public class UserModelService {
         user.setUserId(userIdCount);
         userIdCount++;
         Roles studentRole = rolesRepository.findByRoleName("STUDENT");
-//        boolean wasAddedToNonGroup = groupModelService.addUserToGroup(user.getUserId(), GroupModelServerService.MEMBERS_WITHOUT_GROUP_ID);
-//        if (!wasAddedToNonGroup) {
-//            logger.error("Something went wrong with the 'members without a group' group. User not added to the group. ");
-//        }
         user.addRoles(studentRole);
         return repository.save(user);
     }
@@ -146,7 +139,6 @@ public class UserModelService {
         }
         for (Roles role : roles) {
             if (Objects.equals(role.getRoleName(), "TEACHER")) {
-                checkUserIsInTeachersGroup(user);
                 return "teacher";
             }
         }
@@ -186,18 +178,6 @@ public class UserModelService {
             response.addRolesValue(rolesArray[i].getId());
         }
         return response.build();
-    }
-
-    /**
-     * Checks to see if the user is part of the teachers group. If not, it adds the user to it.
-     * @param user user to check if they are in the teachers group.
-     */
-    public void checkUserIsInTeachersGroup(UserModel user) {
-
-        boolean addedToGroup = groupModelService.addUsersToGroup(new ArrayIterator<>(new UserModel[]{user}), GroupModelServerService.TEACHERS_GROUP_ID);
-        if (!addedToGroup) {
-            logger.error("Something went wrong with the teachers group");
-        }
     }
 
     /**

@@ -1,5 +1,6 @@
 package nz.ac.canterbury.seng302.identityprovider.server;
 
+import com.fasterxml.jackson.databind.util.ArrayIterator;
 import com.google.common.annotations.VisibleForTesting;
 import io.grpc.stub.StreamObserver;
 import net.devh.boot.grpc.server.service.GrpcService;
@@ -86,6 +87,10 @@ public class UserAccountServerService extends UserAccountServiceGrpc.UserAccount
                     "Unknown Pronouns" //request.getPersonalPronouns()
             );
             createdUser = userModelService.addUser(newUser);
+            boolean wasAddedToNonGroup = groupModelService.addUsersToGroup(new ArrayIterator<>(new UserModel[]{createdUser}), GroupModelServerService.MEMBERS_WITHOUT_GROUP_ID);
+            if (!wasAddedToNonGroup) {
+                logger.error("Something went wrong with the 'members without a group' group. User not added to the group. ");
+            }
             wasAdded = true;
         } catch (Exception e) {
             logger.error(MessageFormat.format(
