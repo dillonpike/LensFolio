@@ -100,7 +100,7 @@
         <div class="col-6 col-md-8 sticky-md-top card shadow">
             <div id="table_refresh" th:fragment="table_refresh">
                     <div class="container">
-                        <h1 th:text="${groupLongName}">No Group Selected</h1>
+                        <h1 th:text="${groupLongName}"></h1>
                         <h4 th:text="${groupShortName}"></h4>
                         <div class="hstack gap-3">
                             <span>Copy To </span>
@@ -191,6 +191,9 @@
             return true
         }
     }
+
+    $(`#groupCard1 button`).click() // Select members without a group
+
 </script>
 
 
