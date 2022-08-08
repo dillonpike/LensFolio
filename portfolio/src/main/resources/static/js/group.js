@@ -176,10 +176,8 @@ function copyUsers() {
         userIds: userTable.rows('.selected').data().toArray().map(row => row.DT_RowId)
     }
     $.post('copy-users' + "?" + new URLSearchParams(data)).done((result) => {
-        console.log('moved')
+        $(`#groupCard${data.groupId}`).replaceWith(result);
+        groupButtonSetup() // Allow group cards to be highlighted when selected
     }).fail((result) => {
-        console.log('failed')
-    }).always(() => {
-        console.log('always')
     })
 }

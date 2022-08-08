@@ -149,11 +149,14 @@ public class GroupController {
     public String moveUsers(
             @RequestParam("groupId") Integer groupId,
             @RequestParam("userIds") List<Integer> userIds,
+            Model model,
             HttpServletResponse httpServletResponse
     ) {
         AddGroupMembersResponse response = groupService.addMemberToGroup(groupId, userIds);
         if (response.getIsSuccess()) {
             httpServletResponse.setStatus(HttpServletResponse.SC_OK);
+            groupService.addGroupDetailToModel(model, groupId);
+            return "group::groupCard";
         } else {
             httpServletResponse.setStatus(HttpServletResponse.SC_BAD_REQUEST);
         }
