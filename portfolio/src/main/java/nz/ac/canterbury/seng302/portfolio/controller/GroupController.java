@@ -45,7 +45,7 @@ public class GroupController {
     public GroupService groupService;
 
     @Autowired
-    RegisterClientService registerClientService;
+    public RegisterClientService registerClientService;
 
     private final String updateMessageId = "isUpdateSuccess";
 

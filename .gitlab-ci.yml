@@ -125,6 +125,6 @@ sonarqube-report:
   stage: sonarqube
   script:
     - cd identityprovider
-    # - ./gradlew sonarqube
+    - ./gradlew sonarqube
     - cd ../portfolio
-    # - ./gradlew sonarqube
+    - ./gradlew sonarqube
