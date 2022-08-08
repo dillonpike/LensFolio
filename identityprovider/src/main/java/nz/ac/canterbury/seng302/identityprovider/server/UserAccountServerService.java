@@ -75,10 +75,10 @@ public class UserAccountServerService extends UserAccountServiceGrpc.UserAccount
                     request.getFirstName(),
                     request.getMiddleName(), //request.getMiddleName(),
                     request.getLastName(), //request.getLastName(),
-                    "", //request.getNickname(),
+                    request.getNickname(),
                     request.getEmail(),
-                    "Default Bio", //request.getBio(),
-                    "Unknown Pronouns" //request.getPersonalPronouns()
+                    request.getBio(),
+                    request.getPersonalPronouns()
             );
             createdUser = userModelService.addUser(newUser);
             wasAdded = true;

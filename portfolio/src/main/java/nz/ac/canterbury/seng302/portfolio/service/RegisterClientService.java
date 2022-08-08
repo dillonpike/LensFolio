@@ -46,7 +46,15 @@ public class RegisterClientService {
      * @param email Email of the new user
      * @return UserRegisterResponse that has the new userId and a conformation of the user being added.
      */
-    public UserRegisterResponse receiveConformation(final String username, final String password, final String firstName, final String middleName, final String lastName, final String email) {
+    public UserRegisterResponse receiveConformation(final String username,
+                                                    final String password,
+                                                    final String firstName,
+                                                    final String middleName,
+                                                    final String lastName,
+                                                    final String email,
+                                                    final String bio,
+                                                    final String pronouns,
+                                                    final String alias) {
         String encodedPassword = encryptPassword(password);
         UserRegisterRequest response = UserRegisterRequest.newBuilder()
                 .setUsername(username)
@@ -54,6 +62,9 @@ public class RegisterClientService {
                 .setFirstName(firstName)
                 .setMiddleName(middleName)
                 .setLastName(lastName)
+                .setBio(bio)
+                .setPersonalPronouns(pronouns)
+                .setNickname(alias)
                 .setEmail(email)
                 .build();
         return userAccountStub.register(response);
