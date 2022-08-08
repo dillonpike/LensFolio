@@ -70,6 +70,7 @@ public class GroupController {
             @RequestParam("groupId") int groupId)
     {
         groupService.addGroupDetailToModel(model, groupId);
+        groupService.addGroupListToModel(model);
         return "group::table_refresh";
     }
 
