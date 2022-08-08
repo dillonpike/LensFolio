@@ -71,7 +71,7 @@
                         Add Group
                     </button>
                 </a>
-                <div id="groupList" class="list-group list-group-flush border-bottom group-bar">
+                <div id="groupList" th:fragment="groupList" class="list-group list-group-flush border-bottom group-bar">
                     <div th:each="group : ${groupList}">
                         <div th:fragment="groupCard" th:id="|groupCard${group.getGroupId()}|">
                             <button  class="list-group-item list-group-item-action py-3 lh-tight" aria-current="true" th:attr="onclick=|updateTable('${group.groupId}')|" id="updateGroupButton">
