@@ -188,6 +188,7 @@ function copyUsers() {
             }
         }
         groupButtonSetup() // Allow group cards to be highlighted when selected
+        showAlertToast("Group Updated");
     }).fail((result) => {
     })
 }
