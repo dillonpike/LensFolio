@@ -3,6 +3,7 @@ package nz.ac.canterbury.seng302.identityprovider.service;
 import nz.ac.canterbury.seng302.identityprovider.model.GroupModel;
 import nz.ac.canterbury.seng302.identityprovider.model.UserModel;
 import nz.ac.canterbury.seng302.identityprovider.repository.GroupRepository;
+import nz.ac.canterbury.seng302.identityprovider.server.GroupModelServerService;
 import nz.ac.canterbury.seng302.shared.identityprovider.GroupDetailsResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -146,8 +147,15 @@ public class GroupModelService {
         }
     }
 
-    public boolean editGroup(Integer id, String shortName, String longName) {
-        Optional<GroupModel> groupOptional = repository.findById(id);
+    /**
+     * Edit and save changes of a group
+     * @param groupId ID of the group being editied.
+     * @param shortName New short name for group.
+     * @param longName New long name for group.
+     * @return Whether the new changes were saved.
+     */
+    public boolean editGroup(Integer groupId, String shortName, String longName) {
+        Optional<GroupModel> groupOptional = repository.findById(groupId);
 
         if (groupOptional.isPresent()) {
             GroupModel group = groupOptional.get();
@@ -162,7 +170,7 @@ public class GroupModelService {
 
     /**
      * Method to retrieve every group from database
-     * @return list of gorups
+     * @return list of groups
      */
     public List<GroupModel> getAllGroups() {
         return (List<GroupModel>) repository.findAll();
@@ -186,6 +194,11 @@ public class GroupModelService {
     }
 
 
+    /**
+     * Checks if a group exists by ID.
+     * @param groupId ID of group being checked.
+     * @return True if the group exists.
+     */
     public boolean isExistById(Integer groupId) {
         return repository.existsById(groupId);
     }
@@ -205,6 +218,9 @@ public class GroupModelService {
         } catch (Exception e) {
             return false;
         }
+        if (groupId.equals(GroupModelServerService.TEACHERS_GROUP_ID)) {
+            userModelService.checkUserIsInTeachersGroup(userId);
+        }
         return true;
     }
 
@@ -212,7 +228,7 @@ public class GroupModelService {
      * Remove users from a group. If a user was already not in the group, the method still returns true.
      * @param userId ID of user being removed from the group.
      * @param groupId Id of the group the user is being removed from.
-     * @return
+     * @return Whether the user was removed from the group.
      */
     public boolean removeUserFromGroup(Integer userId, Integer groupId) {
         try {
@@ -225,6 +241,13 @@ public class GroupModelService {
         return true;
     }
 
+    /**
+     * Checks if a user is in a given group.
+     * @param userId ID of the user
+     * @param groupId ID of the group
+     * @return True if user is in the group.
+     * @throws InvalidAttributesException Thrown when the group does not exist.
+     */
     public boolean isUserPartOfGroup(Integer userId, Integer groupId) throws InvalidAttributesException {
         Optional<GroupModel> groupOptional = repository.findById(groupId);
 

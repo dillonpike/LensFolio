@@ -1,8 +1,12 @@
 package nz.ac.canterbury.seng302.identityprovider.service;
 
 import nz.ac.canterbury.seng302.identityprovider.model.GroupModel;
+import nz.ac.canterbury.seng302.identityprovider.model.Roles;
 import nz.ac.canterbury.seng302.identityprovider.model.UserModel;
 import nz.ac.canterbury.seng302.identityprovider.repository.GroupRepository;
+import nz.ac.canterbury.seng302.identityprovider.repository.RolesRepository;
+import nz.ac.canterbury.seng302.identityprovider.repository.UserModelRepository;
+import nz.ac.canterbury.seng302.identityprovider.server.GroupModelServerService;
 import org.junit.Rule;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -11,14 +15,14 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.naming.directory.InvalidAttributesException;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class GroupModelServiceTest {
@@ -28,6 +32,15 @@ class GroupModelServiceTest {
 
     @InjectMocks
     private GroupModelService groupModelService;
+
+    @Mock
+    private UserModelService userModelService;
+
+    @Mock
+    private UserModelRepository userRepository;
+
+    @Mock
+    private RolesRepository rolesRepository;
 
     private final GroupModel testGroup = new GroupModel("Test", "Test Group", 1);
 
@@ -249,6 +262,28 @@ class GroupModelServiceTest {
 
         assertFalse(wasAdded);
         assertFalse(testGroup.getMemberIds().contains(testUser.getUserId()));
+    }
+
+    @Test
+    void checkUserAddedToTeachersGroupAndGivenRole() {
+        UserModel testUser = new UserModel();
+        testUser.setUserId(1);
+
+        GroupModel teacherTestGroup = new GroupModel("Teachers", "Teachers Group", 1);
+        teacherTestGroup.setGroupId(GroupModelServerService.TEACHERS_GROUP_ID);
+
+        when(groupRepository.getGroupModelByGroupId(any(Integer.class))).thenReturn(teacherTestGroup);
+//        when(rolesRepository.findByRoleName("TEACHER")).thenReturn(teacherRole);
+//        when(userRepository.findByUserId(any(Integer.class))).thenReturn(testUser);
+//        when(userRepository.save(any(UserModel.class))).thenReturn(testUser);
+
+        boolean wasAdded = groupModelService.addUserToGroup(testUser.getUserId(), GroupModelServerService.TEACHERS_GROUP_ID);
+
+        assertTrue(wasAdded);
+        assertTrue(teacherTestGroup.getMemberIds().contains(testUser.getUserId()));
+        verify(userModelService, times(1)).checkUserIsInTeachersGroup(any(Integer.class));
+//        assertEquals(1, testUser.getRoles().size());
+//        assertTrue(testUser.getRoles().contains(teacherRole));
     }
 
     /**

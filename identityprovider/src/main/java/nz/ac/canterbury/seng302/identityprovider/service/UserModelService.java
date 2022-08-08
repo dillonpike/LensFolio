@@ -142,7 +142,7 @@ public class UserModelService {
         }
         for (Roles role : roles) {
             if (Objects.equals(role.getRoleName(), "TEACHER")) {
-                checkUserIsInTeachersGroup(user);
+                checkUserIsInTeachersGroup(user.getUserId());
                 return "teacher";
             }
         }
@@ -185,15 +185,29 @@ public class UserModelService {
     }
 
     /**
-     * Checks to see if the user is part of the teachers group. If not, it adds the user to it.
-     * @param user user to check if they are in the teachers group.
+     * Checks to see if the user is part of the teachers group. If not, it adds the user to it. Also makes sure the
+     * user has the teacher role.
+     * @param userId user id to check if they are in the teachers group.
      */
-    protected void checkUserIsInTeachersGroup(UserModel user) {
+    public void checkUserIsInTeachersGroup(Integer userId) {
+        System.out.println("ISJDaoijdoiajsdoiajsdoiajsd");
         try {
-            if (!groupModelService.isUserPartOfGroup(user.getUserId(), GroupModelServerService.TEACHERS_GROUP_ID)) {
-                boolean addedToGroup = groupModelService.addUserToGroup(user.getUserId(), GroupModelServerService.TEACHERS_GROUP_ID);
+            if (!groupModelService.isUserPartOfGroup(userId, GroupModelServerService.TEACHERS_GROUP_ID)) {
+                System.out.println("if statement 2");
+                boolean addedToGroup = groupModelService.addUserToGroup(userId, GroupModelServerService.TEACHERS_GROUP_ID);
                 if (!addedToGroup) {
                     throw new InvalidAttributesException("Teachers group does not exist. ");
+                }
+            }
+            UserModel user = repository.findByUserId(userId);
+            Roles teacherRole = rolesRepository.findByRoleName("TEACHER");
+
+            if (!user.getRoles().contains(teacherRole)) {
+                System.out.println("if statement 2");
+                user.addRoles(teacherRole);
+                boolean addedRole = saveEditedUser(user);
+                if (!addedRole) {
+                    throw new InvalidAttributesException("Teacher role was not added to user. ");
                 }
             }
         } catch (Exception e) {
