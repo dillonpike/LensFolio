@@ -77,8 +77,13 @@ public class EventDic {
      */
     public void add(Event event) { // By removing the while loop system you can have events over multiple days rather than signal days.
         Calendar current = Calendar.getInstance();
-        Calendar end = Calendar.getInstance();
         current.setTime(event.getEventStartDate());
+        current.set(Calendar.HOUR_OF_DAY, 0);
+        current.set(Calendar.MINUTE,0);
+        current.set(Calendar.SECOND,0);
+        current.set(Calendar.MILLISECOND, 0);
+
+        Calendar end = Calendar.getInstance();
         end.setTime(event.getEventEndDate());
         // The time is set to the end of the day so that event that overlap on days but not time can still match.
         end.set(Calendar.HOUR_OF_DAY, 23);
