@@ -113,7 +113,7 @@
                             <button type="button" class="btn btn-success">
                                 Confirm
                             </button>
-                            <button type="button" class="btn btn-danger">
+                            <button type="button" class="btn btn-danger" data-bs-type="remove" data-bs-toggle="modal" data-bs-target="#removeUserModal">
                                 Remove
                             </button>
                         </div>
@@ -149,6 +149,7 @@
 </body>
 <div id="groupModal" th:replace="fragments/groupModal :: groupModal"></div>
 <div th:replace="fragments/deleteModalProject :: deleteModal"></div>
+<div th:replace="fragments/removeUserModal :: removeUserModal"></div>
 
 <script src="js/group.js"></script>
 <script src="js/detailsLive.js"></script>
@@ -158,6 +159,7 @@
     groupModalSetup()
     deleteModalSetup()
     groupDeleteModalSetup()
+    removeUserModalSetup()
 </script>
 <script>
     //updates characters left

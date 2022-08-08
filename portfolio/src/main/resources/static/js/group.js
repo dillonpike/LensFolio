@@ -169,3 +169,48 @@ function deleteGroupModalButtonFunction(type, id) {
         }
     })
 }
+
+/**
+ * Sets up the modal for removing a user from a group.
+ */
+function removeUserModalSetup() {
+    const removeUserModal = document.getElementById('removeUserModal')
+    removeUserModal.addEventListener('show.bs.modal', function (event) {
+        // Button that triggered the modal
+        const button = event.relatedTarget
+
+        // Extract info from data-bs-* attributes
+        const id = button.getAttribute('data-bs-id')
+        const user = button.getAttribute('data-bs-user')
+
+        const modalButton = removeUserModal.querySelector('.modal-footer button')
+        const modalLink = removeUserModal.querySelector('.modal-footer a')
+
+        modalLink.removeAttribute('href')
+        modalButton.onclick = () => {removeUserModalButtonFunction(user, id)}
+    })
+}
+
+/**
+ * Runs when the remove user modal button is pressed. Calls the endpoint for removing the user. Disables the remove
+ * button after being clicked. Removes the selected user upon success, and re-enables the remove button upon failure.
+ * @param type the string 'group'
+ * @param id id of the group
+ */
+function removeUserModalButtonFunction(user, id) {
+
+    const buttonFunction = document.getElementById('removeUserModalButton').onclick;
+    document.getElementById('removeUserModalButton').onclick = () => {console.log(user)}
+   /* $.ajax({
+        url: `delete-${type}/${id}`,
+        type: 'DELETE',
+        success: function() {
+            $('#removeUserModal').modal('toggle')
+            $(`#groupCard${id}`).remove()
+            $(`#groupCard1 button`).click() // Select members without a group
+        },
+        error: function() {
+            document.getElementById('removeUserModalButton').onclick = buttonFunction;
+        }
+    })*/
+}
