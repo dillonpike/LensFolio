@@ -1,19 +1,24 @@
 package nz.ac.canterbury.seng302.identityprovider.service;
 
-import nz.ac.canterbury.seng302.identityprovider.model.GroupModel;
 import nz.ac.canterbury.seng302.identityprovider.model.Roles;
-import nz.ac.canterbury.seng302.identityprovider.repository.GroupRepository;
 import nz.ac.canterbury.seng302.identityprovider.repository.RolesRepository;
 import nz.ac.canterbury.seng302.identityprovider.model.UserModel;
 import nz.ac.canterbury.seng302.identityprovider.repository.UserModelRepository;
+import nz.ac.canterbury.seng302.identityprovider.server.GroupModelServerService;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.naming.directory.InvalidAttributesException;
+import java.text.MessageFormat;
 import java.util.*;
 
 @Service
 public class UserModelService {
+
+    private static final Logger logger = LoggerFactory.getLogger(UserModelService.class);
 
     @Autowired
     UserModelRepository repository;
@@ -25,7 +30,7 @@ public class UserModelService {
     UserModelRepository userModelRepository;
 
     @Autowired
-    GroupRepository groupRepository;
+    GroupModelService groupModelService;
 
     private static int userIdCount = 1;
 
@@ -68,7 +73,8 @@ public class UserModelService {
     }
 
     /**
-     * Add new user to the database
+     * Add new user to the database. Makes sure they have the default student role
+     * and are added to the 'members without a group' group.
      * @param user contains all data of the user that will be persisted in database
      * @return UserModel object which is the saved entity
      */
@@ -77,10 +83,9 @@ public class UserModelService {
         user.setUserId(userIdCount);
         userIdCount++;
         Roles studentRole = rolesRepository.findByRoleName("STUDENT");
-        Optional<GroupModel> groupOptional = groupRepository.findByLongName("Members without a group");
-        if (groupOptional.isPresent()) {
-            GroupModel memberWithoutAGroupModel = groupOptional.get();
-            user.addGroup(memberWithoutAGroupModel);
+        boolean wasAddedToNonGroup = groupModelService.addUserToGroup(user.getUserId(), GroupModelServerService.MEMBERS_WITHOUT_GROUP_ID);
+        if (!wasAddedToNonGroup) {
+            logger.error("Something went wrong with the 'members without a group' group. User not added to the group. ");
         }
         user.addRoles(studentRole);
         return repository.save(user);
@@ -137,6 +142,7 @@ public class UserModelService {
         }
         for (Roles role : roles) {
             if (Objects.equals(role.getRoleName(), "TEACHER")) {
+                checkUserIsInTeachersGroup(user.getUserId());
                 return "teacher";
             }
         }
@@ -176,6 +182,39 @@ public class UserModelService {
             response.addRolesValue(rolesArray[i].getId());
         }
         return response.build();
+    }
+
+    /**
+     * Checks to see if the user is part of the teachers group. If not, it adds the user to it. Also makes sure the
+     * user has the teacher role.
+     * @param userId user id to check if they are in the teachers group.
+     */
+    public void checkUserIsInTeachersGroup(Integer userId) {
+        System.out.println("ISJDaoijdoiajsdoiajsdoiajsd");
+        try {
+            if (!groupModelService.isUserPartOfGroup(userId, GroupModelServerService.TEACHERS_GROUP_ID)) {
+                System.out.println("if statement 2");
+                boolean addedToGroup = groupModelService.addUserToGroup(userId, GroupModelServerService.TEACHERS_GROUP_ID);
+                if (!addedToGroup) {
+                    throw new InvalidAttributesException("Teachers group does not exist. ");
+                }
+            }
+            UserModel user = repository.findByUserId(userId);
+            Roles teacherRole = rolesRepository.findByRoleName("TEACHER");
+
+            if (!user.getRoles().contains(teacherRole)) {
+                System.out.println("if statement 2");
+                user.addRoles(teacherRole);
+                boolean addedRole = saveEditedUser(user);
+                if (!addedRole) {
+                    throw new InvalidAttributesException("Teacher role was not added to user. ");
+                }
+            }
+        } catch (Exception e) {
+            logger.error(MessageFormat.format(
+                    "Something went wrong with the teachers group: {0}", e.getMessage()));
+        }
+
     }
 
 }

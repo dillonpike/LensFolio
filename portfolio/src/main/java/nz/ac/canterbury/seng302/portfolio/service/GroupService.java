@@ -135,9 +135,6 @@ public class GroupService {
         PaginatedGroupsResponse groupList = getPaginatedGroups(1, 1, "null", false);
         groupDetailsResponseList = groupList.getGroupsList();
         model.addAttribute("groupList", groupDetailsResponseList);
-        model.addAttribute("groupLongName", "No select group");
-        model.addAttribute("groupShortName", "Please select one group");
-
     }
 
     /**
@@ -149,6 +146,7 @@ public class GroupService {
     public void addGroupDetailToModel(Model model, Integer groupId) {
         GroupDetailsResponse groupDetailsResponse = getGroupDetails(groupId);
         userResponseList = groupDetailsResponse.getMembersList();
+        System.out.println(groupDetailsResponse.getLongName());
         model.addAttribute("groupLongName", groupDetailsResponse.getLongName());
         model.addAttribute("groupShortName", groupDetailsResponse.getShortName());
 
