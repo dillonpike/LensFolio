@@ -15,7 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import javax.naming.directory.InvalidAttributesException;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -34,7 +33,9 @@ public class GroupModelServerService extends GroupsServiceGrpc.GroupsServiceImpl
     @Autowired
     private UserModelService userModelService;
 
-    private final Integer memberWithoutGroupID = 1;
+    public static final Integer MEMBERS_WITHOUT_GROUP_ID = 1;
+
+    public static final Integer TEACHERS_GROUP_ID = 2;
 
     /**
      * Attempts to delete a group with the id in the request. Sends a response with an isSuccess value and message.
@@ -60,12 +61,12 @@ public class GroupModelServerService extends GroupsServiceGrpc.GroupsServiceImpl
     @Override
     public void getMembersWithoutAGroup(Empty ignore, StreamObserver<GroupDetailsResponse> responseStreamObserver) {
         GroupDetailsResponse.Builder reply = GroupDetailsResponse.newBuilder();
-        reply.setGroupId(memberWithoutGroupID);
+        reply.setGroupId(MEMBERS_WITHOUT_GROUP_ID);
         Set<Integer> userIDs = new HashSet<>();
         GroupModel groupModel;
         try {
-            userIDs = groupModelService.getMembersOfGroup(memberWithoutGroupID);
-            groupModel = groupModelService.getGroupById(memberWithoutGroupID);
+            userIDs = groupModelService.getMembersOfGroup(MEMBERS_WITHOUT_GROUP_ID);
+            groupModel = groupModelService.getGroupById(MEMBERS_WITHOUT_GROUP_ID);
             reply.setLongName(groupModel.getLongName());
             reply.setShortName(groupModel.getShortName());
         } catch (InvalidAttributesException e) {
