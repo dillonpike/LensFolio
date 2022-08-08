@@ -1,11 +1,9 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
+import nz.ac.canterbury.seng302.portfolio.model.Milestone;
 import nz.ac.canterbury.seng302.portfolio.model.Project;
 import nz.ac.canterbury.seng302.portfolio.model.Sprint;
-import nz.ac.canterbury.seng302.portfolio.service.ElementService;
-import nz.ac.canterbury.seng302.portfolio.service.ProjectService;
-import nz.ac.canterbury.seng302.portfolio.service.SprintService;
-import nz.ac.canterbury.seng302.portfolio.service.UserAccountClientService;
+import nz.ac.canterbury.seng302.portfolio.service.*;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import nz.ac.canterbury.seng302.shared.identityprovider.ClaimDTO;
 import org.junit.Before;
@@ -64,6 +62,15 @@ class CalendarControllerTest {
     private ElementService elementService;
 
     @MockBean
+    private EventService eventService;
+
+    @MockBean
+    private DeadlineService deadlineService;
+
+    @MockBean
+    private MilestoneService milestoneService;
+
+    @MockBean
     private ProjectService projectService;
 
     @MockBean
@@ -109,7 +116,7 @@ class CalendarControllerTest {
 
         Project project = new Project("testProject", "test", projectStartDate, projectFinishDate);
 
-        String expected = "{id: '0', title: 'firstSprint', start: 'Thu Sep 16 00:00:00 NZST 2021', end: '2021-09-18T12:00:00Z', allDay: true, color: '#5897fc'},{id: '0', title: 'secondSprint', start: 'Thu Sep 23 00:00:00 NZST 2021', end: '2021-09-26T11:00:00Z', allDay: true, color: '#a758fc'},";
+        String expected = "{id: '0', title: 'firstSprint', start: 'Thu Sep 16 00:00:00 NZST 2021', end: '2021-09-18T12:00:00Z', allDay: true, color: '#5897fc', type: 'Sprint'},{id: '0', title: 'secondSprint', start: 'Thu Sep 23 00:00:00 NZST 2021', end: '2021-09-26T11:00:00Z', allDay: true, color: '#a758fc', type: 'Sprint'},";
 
         SecurityContext mockedSecurityContext = Mockito.mock(SecurityContext.class);
         when(mockedSecurityContext.getAuthentication()).thenReturn(new PreAuthenticatedAuthenticationToken(validAuthState, ""));
@@ -123,7 +130,7 @@ class CalendarControllerTest {
         mockMvc.perform(get("/calendar"))
                 .andExpect(status().isOk()) // Whether to return the status "200 OK"
                 .andExpect(view().name("calendar")) // Whether to return the template "account"
-                .andExpect(model().attribute("sprints", expected))
+                .andExpect(model().attribute("events", expected))
                 .andExpect(model().attribute("userId", 1))
                 .andExpect(model().attribute("projectName", "testProject"))
                 .andExpect(model().attribute("currentUserRole", "ADMIN"));

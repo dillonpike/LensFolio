@@ -58,6 +58,9 @@ class GroupControllerTest {
     @MockBean
     private UserAccountClientService userAccountClientService; // needed to load application context
 
+    @MockBean
+    private RegisterClientService registerClientService; // needed to load application context
+
     @Before
     public void setup() {
         mockMvc = MockMvcBuilders.standaloneSetup(GroupController.class).build();

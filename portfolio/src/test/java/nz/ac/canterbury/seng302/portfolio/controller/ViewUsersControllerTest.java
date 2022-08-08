@@ -1,10 +1,7 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
 import com.google.protobuf.Timestamp;
-import nz.ac.canterbury.seng302.portfolio.service.ElementService;
-import nz.ac.canterbury.seng302.portfolio.service.RegisterClientService;
-import nz.ac.canterbury.seng302.portfolio.service.UserAccountClientService;
-import nz.ac.canterbury.seng302.portfolio.service.UserSortingService;
+import nz.ac.canterbury.seng302.portfolio.service.*;
 import nz.ac.canterbury.seng302.shared.identityprovider.*;
 import org.apache.catalina.User;
 import org.junit.Before;
@@ -53,6 +50,15 @@ class ViewUsersControllerTest {
 
     @MockBean
     private UserSortingService userSortingService;
+
+    @MockBean
+    private PermissionService permissionService;
+
+
+    private UserResponse userResponse;
+
+    private int USER_ID = 1;
+    private String USERNAME = "Username";
 
     @Before
     public void setup() {
@@ -115,6 +121,10 @@ class ViewUsersControllerTest {
         SecurityContext mockedSecurityContext = Mockito.mock(SecurityContext.class);
         when(mockedSecurityContext.getAuthentication()).thenReturn(new PreAuthenticatedAuthenticationToken(validAuthState, ""));
 
+        userResponse = UserResponse.newBuilder().setUsername(USERNAME).setId(USER_ID).build();
+        when(userAccountClientService.getUserIDFromAuthState(any(AuthState.class))).thenReturn(USER_ID);
+        when(registerClientService.getUserData(any(Integer.class))).thenReturn(userResponse);
+
         SecurityContextHolder.setContext(mockedSecurityContext);
         when(userAccountClientService.getUserIDFromAuthState(any(AuthState.class))).thenReturn(1);
         when(userAccountClientService.getAllUsers()).thenReturn(mockedUserList);
@@ -131,6 +141,10 @@ class ViewUsersControllerTest {
         SecurityContext mockedSecurityContext = Mockito.mock(SecurityContext.class);
         when(mockedSecurityContext.getAuthentication()).thenReturn(new PreAuthenticatedAuthenticationToken(validAuthState, ""));
 
+        userResponse = UserResponse.newBuilder().setUsername(USERNAME).setId(USER_ID).build();
+        when(userAccountClientService.getUserIDFromAuthState(any(AuthState.class))).thenReturn(USER_ID);
+        when(registerClientService.getUserData(any(Integer.class))).thenReturn(userResponse);
+
         SecurityContextHolder.setContext(mockedSecurityContext);
         when(userAccountClientService.getUserIDFromAuthState(any(AuthState.class))).thenReturn(1);
         when(userAccountClientService.getAllUsers()).thenReturn(mockedUserList);
@@ -145,6 +159,10 @@ class ViewUsersControllerTest {
     void showViewUserPage_whenLoggedIn_returnUsersList() throws Exception {
         SecurityContext mockedSecurityContext = Mockito.mock(SecurityContext.class);
         when(mockedSecurityContext.getAuthentication()).thenReturn(new PreAuthenticatedAuthenticationToken(validAuthState, ""));
+
+        userResponse = UserResponse.newBuilder().setUsername(USERNAME).setId(USER_ID).build();
+        when(userAccountClientService.getUserIDFromAuthState(any(AuthState.class))).thenReturn(USER_ID);
+        when(registerClientService.getUserData(any(Integer.class))).thenReturn(userResponse);
 
         SecurityContextHolder.setContext(mockedSecurityContext);
         when(userAccountClientService.getUserIDFromAuthState(any(AuthState.class))).thenReturn(1);
@@ -161,6 +179,10 @@ class ViewUsersControllerTest {
         SecurityContext mockedSecurityContext = Mockito.mock(SecurityContext.class);
         when(mockedSecurityContext.getAuthentication()).thenReturn(new PreAuthenticatedAuthenticationToken(validAuthState, ""));
 
+        userResponse = UserResponse.newBuilder().setUsername(USERNAME).setId(USER_ID).build();
+        when(userAccountClientService.getUserIDFromAuthState(any(AuthState.class))).thenReturn(USER_ID);
+        when(registerClientService.getUserData(any(Integer.class))).thenReturn(userResponse);
+
         SecurityContextHolder.setContext(mockedSecurityContext);
         when(userAccountClientService.getUserIDFromAuthState(any(AuthState.class))).thenReturn(1);
         when(userAccountClientService.getAllUsers()).thenReturn(mockedUserList);
@@ -175,6 +197,10 @@ class ViewUsersControllerTest {
     void callDeleteRoleRequest_whenLoggedInAsCourseAdministrator_returnViewUserTemplate() throws Exception {
         SecurityContext mockedSecurityContext = Mockito.mock(SecurityContext.class);
         when(mockedSecurityContext.getAuthentication()).thenReturn(new PreAuthenticatedAuthenticationToken(validAuthState, ""));
+
+        userResponse = UserResponse.newBuilder().setUsername(USERNAME).setId(USER_ID).build();
+        when(userAccountClientService.getUserIDFromAuthState(any(AuthState.class))).thenReturn(USER_ID);
+        when(registerClientService.getUserData(any(Integer.class))).thenReturn(userResponse);
 
         SecurityContextHolder.setContext(mockedSecurityContext);
 
@@ -195,6 +221,10 @@ class ViewUsersControllerTest {
     void callAddRoleRequest_whenLoggedInAsCourseAdministrator_returnViewUserTemplate() throws Exception {
         SecurityContext mockedSecurityContext = Mockito.mock(SecurityContext.class);
         when(mockedSecurityContext.getAuthentication()).thenReturn(new PreAuthenticatedAuthenticationToken(validAuthState, ""));
+
+        userResponse = UserResponse.newBuilder().setUsername(USERNAME).setId(USER_ID).build();
+        when(userAccountClientService.getUserIDFromAuthState(any(AuthState.class))).thenReturn(USER_ID);
+        when(registerClientService.getUserData(any(Integer.class))).thenReturn(userResponse);
 
         SecurityContextHolder.setContext(mockedSecurityContext);
 

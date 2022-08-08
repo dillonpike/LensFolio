@@ -3,6 +3,8 @@ package nz.ac.canterbury.seng302.portfolio.controller;
 
 import nz.ac.canterbury.seng302.portfolio.model.Deadline;
 import nz.ac.canterbury.seng302.portfolio.service.DeadlineService;
+import nz.ac.canterbury.seng302.portfolio.service.ElementService;
+import nz.ac.canterbury.seng302.portfolio.service.PermissionService;
 import nz.ac.canterbury.seng302.portfolio.service.UserAccountClientService;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import nz.ac.canterbury.seng302.shared.identityprovider.ClaimDTO;
@@ -60,6 +62,12 @@ class EditDeadlineControllerTest {
     @MockBean
     private UserAccountClientService userAccountClientService; // needed to load application
 
+    @MockBean
+    private PermissionService permissionService;
+
+    @MockBean
+    private ElementService elementService;
+
     /***
      * Test the post request method to edit deadline
      * This only purpose of this test is to check whether the controller is called, and it called the correct method in
@@ -77,7 +85,7 @@ class EditDeadlineControllerTest {
         Date expectedDeadlineDate = new Date();
 
         Deadline newDeadline = new Deadline(0, expectedDeadlineName, expectedDeadlineDate);
-
+        when(permissionService.isValidToModifyProjectPage(any(Integer.class))).thenReturn(true);
         when(deadlineService.getDeadlineById(any(Integer.class))).thenReturn(newDeadline);
         when(deadlineService.updateDeadline(any(Deadline.class))).then(returnsFirstArg());
 

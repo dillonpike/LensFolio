@@ -1,12 +1,16 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
 import nz.ac.canterbury.seng302.portfolio.model.Milestone;
+import nz.ac.canterbury.seng302.portfolio.repository.MilestoneRepository;
+import nz.ac.canterbury.seng302.portfolio.service.ElementService;
 import nz.ac.canterbury.seng302.portfolio.service.MilestoneService;
+import nz.ac.canterbury.seng302.portfolio.service.PermissionService;
 import nz.ac.canterbury.seng302.portfolio.service.UserAccountClientService;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import nz.ac.canterbury.seng302.shared.identityprovider.ClaimDTO;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -19,12 +23,12 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.Date;
+import java.util.Optional;
 
 import static org.mockito.AdditionalAnswers.returnsFirstArg;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -57,6 +61,12 @@ class MilestoneLifetimeControllerTest {
     @MockBean
     private UserAccountClientService userAccountClientService; // needed to load application
 
+    @MockBean
+    private PermissionService permissionService; // needed to load application
+
+    @MockBean
+    private ElementService elementService; // needed to load application
+
     /**
      * Tests that the milestoneSave controller method can be called with the "/add-milestone" URL and saves the given
      * milestone to the database.
@@ -70,7 +80,7 @@ class MilestoneLifetimeControllerTest {
 
         Milestone expectedMilestone = new Milestone(0,"Test Milestone", new Date());
         when(milestoneService.addMilestone(any(Milestone.class))).then(returnsFirstArg());
-
+        when(permissionService.isValidToModifyProjectPage(any(Integer.class))).thenReturn(true);
         mockMvc.perform(post("/add-milestone").flashAttr("milestone", expectedMilestone))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/details"));
@@ -90,8 +100,8 @@ class MilestoneLifetimeControllerTest {
         SecurityContextHolder.setContext(mockedSecurityContext);
 
         Milestone expectedMilestone = new Milestone(0,"Test Milestone", new Date());
-
-        mockMvc.perform(delete("/delete-milestone/" + expectedMilestone.getId()))
+        when(permissionService.isValidToModifyProjectPage(any(Integer.class))).thenReturn(true);
+        mockMvc.perform(get("/delete-milestone/" + expectedMilestone.getId()))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/details"));
 

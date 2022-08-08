@@ -2,6 +2,7 @@ package nz.ac.canterbury.seng302.identityprovider.service;
 
 
 import nz.ac.canterbury.seng302.identityprovider.model.Roles;
+import nz.ac.canterbury.seng302.identityprovider.repository.GroupRepository;
 import nz.ac.canterbury.seng302.identityprovider.repository.RolesRepository;
 import nz.ac.canterbury.seng302.identityprovider.model.UserModel;
 import nz.ac.canterbury.seng302.identityprovider.repository.UserModelRepository;
@@ -50,11 +51,14 @@ public class UserModelServiceTests {
     @Mock
     private RolesRepository rolesRepository;
 
+    @Mock
+    private GroupRepository groupRepository;
+
     @Before
     public void setUp() {
         MockitoAnnotations.openMocks(this);
 
-        userModelService = new UserModelService(userModelRepository, rolesRepository);
+        userModelService = new UserModelService(userModelRepository, rolesRepository, groupRepository);
 
     }
 
@@ -190,9 +194,6 @@ public class UserModelServiceTests {
         when(userModelRepository.findByUserId(userModel1.getUserId())).thenReturn(userModel1);
         when(userModelRepository.findByUserId(userModel2.getUserId())).thenReturn(userModel2);
         when(userModelRepository.findByUserId(userModel3.getUserId())).thenReturn(userModel3);
-        when(userModelService.getUserInfo(userModel1)).thenReturn(userResponse1);
-        when(userModelService.getUserInfo(userModel2)).thenReturn(userResponse2);
-        when(userModelService.getUserInfo(userModel3)).thenReturn(userResponse3);
 
 
         List<UserResponse> userResponseList = userModelService.getUserInformationByList(userIds);
