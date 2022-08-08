@@ -10,10 +10,13 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.5/dist/umd/popper.min.js" integrity="sha384-Xe+8cL9oJa6tN/veChSP7q+mnSPaj5Bcu9mPX5F5xIGE0DVittaqT5lorf0EI7Vk" crossorigin="anonymous"></script>
-    <script src="webjars/sockjs-client/1.0.2/sockjs.min.js"></script>
-    <script src="webjars/stomp-websocket/2.3.3/stomp.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js" integrity="sha512-iKDtgDyTHjAitUDdLljGhenhPwrbBfqTKWO1mkhSFH3A7blITC9MhYon6SjnMhp4o0rADGw9yAC6EW4t5a4K3g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="webjars/jquery/3.6.0/dist/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdn.jsdelivr.net/gh/Eonasdan/tempus-dominus@master/dist/js/tempus-dominus.js"></script>
+    <link href="https://cdn.jsdelivr.net/gh/Eonasdan/tempus-dominus@master/dist/css/tempus-dominus.css" rel="stylesheet"/>
 </head>
 <body>
 <header th:replace="fragments/header"></header>
@@ -125,6 +128,12 @@
         <div class="content">
             <div>
                 <div class="flex-child green">
+                    <div class="alert alert-warning alert-dismissible fade show" role="alert" id="alertBanner" th:if="${isUpdateSuccess != null}">
+                        <div style="display: flex; justify-content: space-between;flex-direction: row; align-items: center">
+                            <strong th:text="${updateMessage}"></strong>
+                            <button id="removeUpdateAlert" type="button" class="btn btn-outline-warning" onclick="removeAlertBanner()">X</button>
+                        </div>
+                    </div>
                     <p class="sprints-top">Project Sprints</p>
                     <div th:each="sprint, meta: ${sprints}">
                         <div class="sprint-block">
@@ -149,7 +158,7 @@
                                         </button>
                                     </div>
                                     <div class="collapse" th:id="collapseEvent + ${sprint.getId()}">
-                                        <div th:each="event, meta: ${eventsForSprints.get(meta.index)}">
+                                    <div th:each="event, meta: ${eventsForSprints.get(meta.index)}">
                                             <div class="artefact-info-block">
                                                 <div class="artefact-title" th:text="${event.getEventName()}"/>
                                                 <div class="artefact-date event-start-date" th:text="From + ': ' + ${event.getStartDateDetail()}" th:style="color + ':' + ${event.getStartDateColour()}"/>
@@ -199,7 +208,7 @@
                                             <div th:each="deadline, meta: ${deadlinesForSprints.get(meta.index)}">
                                                 <div class="artefact-info-block">
                                                     <div class="artefact-title" th:text="${deadline.getDeadlineName()}"/>
-                                                    <div class="artefact-date event-start-date" th:text="From + ': ' + ${deadline.getDeadlineDateString()}" th:style="color + ':' + ${deadline.getDeadlineColour()}"/>
+                                                    <div class="artefact-date event-start-date" th:text="'Date: ' + ${deadline.getDeadlineDateString()} + ' ' + ${deadline.getDeadlineTimeString12Hour()}" th:style="color + ':' + ${deadline.getDeadlineColour()}"/>
                                                 </div>
                                             </div>
                                         </div>
@@ -399,10 +408,7 @@
                                             </div>
                                         </div>
                                         <ol class="widget-49-meeting-points">
-                                            <span class="widget-49-meeting-item" th:style="color + ':' + ${deadline.getDeadlineColour()}" th:text="Date + ': ' + ${deadline.getDeadlineDateString()}"></span>
-                                        </ol>
-                                        <ol class="widget-49-meeting-points">
-                                            <span class="widget-49-meeting-item" th:text="Time + ': ' + ${deadline.getDeadlineTimeString()}"></span>
+                                            <span class="widget-49-meeting-item" th:style="color + ':' + ${deadline.getDeadlineColour()}" th:text="Date + ': ' + ${deadline.getDeadlineDateString()} + ' ' + ${deadline.getDeadlineTimeString12Hour()}"></span>
                                         </ol>
                                     </div>
                                 </div>
@@ -432,7 +438,7 @@
      * Sends the message that an event is being updated, and sends the events names with it.
      */
     function sendName(artefactName, artefactId,userId, userFirstName, userLastName, username, artefactType) {
-        stompClient.send("/test/portfolio/app/editing-artefact", {}, JSON.stringify({
+        stompClient.send("/webSocketPost/editing-artefact", {}, JSON.stringify({
             'artefactName': artefactName,
             'artefactId' : artefactId,
             'artefactType' : artefactType,
@@ -447,7 +453,7 @@
      * Sends an empty message so that the other end can realise to close any popups it may have activated.
      */
     function sendEmpty(artefactName, artefactId,userId, userFirstName, userLastName, username, artefactType) {
-        stompClient.send("/test/portfolio/app/stop-editing-artefact", {}, JSON.stringify({
+        stompClient.send("/webSocketPost/stop-editing-artefact", {}, JSON.stringify({
             'artefactName': artefactName,
             'artefactId' : artefactId,
             'userId': userId,
@@ -462,7 +468,7 @@
      * Sends the message that an event has been updated (saved), and sends the events names with it.
      */
     function sendNameReload(artefactName, artefactId,userId, userFirstName, userLastName, username, artefactType) {
-        stompClient.send("/test/portfolio/app/saved-edited-artefact", {}, JSON.stringify({
+        stompClient.send("/webSocketPost/saved-edited-artefact", {}, JSON.stringify({
             'artefactName': artefactName,
             'artefactId' : artefactId,
             'userId': userId,
@@ -477,7 +483,7 @@
      * Sends the message that an artefact(milestone, event, deadline) is deleted
      */
     function pageReload() {
-        stompClient.send("/test/portfolio/app/delete-artefact", {}, JSON.stringify({}));
+        stompClient.send("/webSocketPost/delete-artefact", {}, JSON.stringify({}));
     }
 
     let userId = [[${userId}]];
@@ -527,6 +533,18 @@
     }
 
     /**
+     * get the action type of the modal that is currently open
+     * @param modal the modal that is currently open
+     * @returns {string} the action type
+     */
+    function getModalActionType(modal){
+        const requestURLList = document.getElementById(modal).querySelector('form').action.split('/')
+        const actionTypeIndex = requestURLList.length - 2;
+        return requestURLList[actionTypeIndex]
+
+    }
+
+    /**
      * this function is triggered when inputs on modal when being focused on (edited) will update and send a notification
      * to the details page. When these are no longer being updated (edited) they will disappear after a certain period.
      * @param inputElementName the id of the input element
@@ -536,13 +554,11 @@
      */
     function sendEditingLiveNotificationRequest(inputElementName, modal, action, artefactType){
         $(inputElementName).on('focusin', function (ignore) {
-            const actionType = document.getElementById(modal).querySelector('form').action.split('/')[3]; //getting the type of the request, this is necessary as same modal is being used for both adding and editing milestone
-            if (actionType === action) {
+            if (getModalActionType(modal) === action) {
                 sendName(selectedArtefactName,selectedArtefactId,userId, userFirstName, userLastName, username, artefactType);
             }
         }).on('focusout', function (ignore) {
-            const actionType = document.getElementById(modal).querySelector('form').action.split('/')[3]; //getting the type of the request, this is necessary as same modal is being used for both adding and editing milestone
-            if (actionType === action) {
+            if (getModalActionType(modal) === action) {
                 sendEmpty(selectedArtefactName, selectedArtefactId,userId, userFirstName, userLastName, username, artefactType);
             }
         });
@@ -558,8 +574,7 @@
      */
     function sendSavedLiveNotificationRequest(inputElementName, modal, action, artefactType){
         $(inputElementName).click(function() {
-            const actionType = document.getElementById(modal).querySelector('form').action.split('/')[3]; //getting the type of the request, this is necessary as same modal is being used for both adding and editing milestone
-            if (actionType === action) {
+            if (getModalActionType(modal) === action) {
                 sendNameReload(selectedArtefactName, selectedArtefactId,userId, userFirstName, userLastName, username, artefactType);
             }
         })
@@ -575,8 +590,7 @@
      */
     function sendStopEditingLiveNotificationRequest(inputElementName, modal, action, artefactType){
         $(inputElementName).click(function() {
-            const actionType = document.getElementById(modal).querySelector('form').action.split('/')[3];
-            if (actionType === action) {
+            if (getModalActionType(modal) === action) {
                 sendEmpty(milestoneName, milestoneId,userId, userFirstName, userLastName, username, artefactType);
             }
         })
@@ -611,6 +625,13 @@
 
     sendStopEditingLiveNotificationRequest("#closeEventModalButton", 'eventModal', 'edit-event', "Event");
 
+    /**
+     * Reload the calendar page when something(deadline, sprint, milestone, event) is deleted
+     */
+    $("#deleteModalButton").on('click', function (ignore) {
+        pageReload();
+    })
+
 
 
 </script>
@@ -633,14 +654,16 @@
 
 <script th:inline="javascript">
     /*<![CDATA[*/
-    let projectEndDate = /*[[${project.getEndDateString()}]]*/ "Error";
-    let projectStartDate = /*[[${project.getStartDateString()}]]*/ "Error";
+    let projectEndDate = /*[[${project.getEndDate()}]]*/ "Error";
+    let projectStartDate = /*[[${project.getStartDate()}]]*/ "Error";
     /*]]>*/
     /**
-     Check if the name of the item that the user inputted is not an empty string
-     Submit the form and return true if the input is not empty string, otherwise show error banner with the error message and return false
-     @param elementId the ID of the text input HTML element for item's name
-     @param formId the ID of the form which contains the input HTML element
+     * Check if the name of the item that the user inputted is not an empty string
+     * Submit the form and return true if the input is not empty string, otherwise show error banner with the error message and return false
+     * @param elementId the ID of the text input HTML element for item's name
+     * @param alertBanner the ID of the alert banner HTML element
+     * @param alertMessage the ID of the alert banner message HTML element
+     * @returns {boolean} true if the input is not empty string, otherwise false
      */
     function validateModalName(elementId, alertBanner, alertMessage) {
         const nameInput = document.getElementById(elementId).value;
@@ -669,26 +692,25 @@
         return checkDate(dateInput, submitElementId, alertBanner, alertMessage)
     }
 
-    // Check if the date of the item that the user inputted is within the project dates range
-    // Show error banner with error message and disable the submit button if the inputted date is outside the project dates range
-    // @param elementId the ID of the date input HTML element
-    // @param submitElementId the ID of the submit button on the modal
-    function validateModalDateTimeRange(dateStartId, dateEndId, timeStartId, timeEndId,  submitElementId, alertBanner, alertMessage) {
+    /**
+     * Check if the date of the item that the user inputted is within the project dates range
+     * Show error banner with error message and disable the submit button if the inputted date is outside the project dates range
+     * @param dateStartId the ID of the start date and time input element
+     * @param dateEndId the ID of the end date and time input element
+     * @param submitElementId the ID of the submit button on the modal
+     * @param alertBanner the ID of the banner element that will display the alert message
+     * @param alertMessage the ID of the alert message element
+     * @returns {boolean} true if the dates are valid, otherwise false
+     */
+    function validateModalDateTimeRange(dateStartId, dateEndId, submitElementId, alertBanner, alertMessage) {
         if (!checkEmpty(dateStartId, 'Start date', submitElementId, alertBanner, alertMessage)) {
             return false
         }
         if (!checkEmpty(dateEndId, 'End date', submitElementId, alertBanner, alertMessage)) {
             return false
         }
-        if (!checkEmpty(timeStartId, 'Start time', submitElementId, alertBanner, alertMessage)) {
-            return false
-        }
-        if (!checkEmpty(timeEndId, 'End time', submitElementId, alertBanner, alertMessage)) {
-            return false
-        }
-
-        const dateStartInput = new Date(`${document.getElementById(dateStartId).value}  ${document.getElementById(timeStartId).value} :00`)
-        const dateEndInput = new Date(`${document.getElementById(dateEndId).value}  ${document.getElementById(timeEndId).value} :00`)
+        const dateStartInput = new Date(`${document.getElementById(dateStartId).value}`)
+        const dateEndInput = new Date(`${document.getElementById(dateEndId).value}`)
 
         if (dateStartInput >= dateEndInput) {
             $('#' + submitElementId).prop('disabled', true);
@@ -713,20 +735,16 @@
     /**
      * Returns true if the user has entered a valid date and time, otherwise false
      * @param dateId id of element with date
-     * @param timeId id of element with time
      * @param submitElementId id of element for submitting the modal
      * @param alertBanner id of element that displays an error message
      * @param alertMessage id of element that stores the error message
      * @returns {boolean} true if valid date and time, otherwise false
      */
-    function validateModalDateTime(dateId, timeId, submitElementId, alertBanner, alertMessage) {
+    function validateModalDateTime(dateId, submitElementId, alertBanner, alertMessage) {
         if (!checkEmpty(dateId, 'Date', submitElementId, alertBanner, alertMessage)) {
             return false
         }
-        if (!checkEmpty(timeId, 'Time', submitElementId, alertBanner, alertMessage)) {
-            return false
-        }
-        const dateInput = new Date(`${document.getElementById(dateId).value}  ${document.getElementById(timeId).value} :00`)
+        const dateInput = new Date(`${document.getElementById(dateId).value}`)
         return checkDate(dateInput, submitElementId, alertBanner, alertMessage)
     }
 

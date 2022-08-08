@@ -9,12 +9,14 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import nz.ac.canterbury.seng302.shared.identityprovider.ClaimDTO;
 import org.springframework.web.util.HtmlUtils;
 
+import javax.servlet.http.HttpServletRequest;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -69,7 +71,10 @@ public class DetailsController {
      * @throws Exception
      */
     @GetMapping("/details")
-    public String details(@AuthenticationPrincipal AuthState principal, Model model) throws Exception {
+    public String details(@AuthenticationPrincipal AuthState principal,
+                          Model model,
+                          HttpServletRequest request
+                          ) throws Exception {
         /* Add project details to the model */
         // Gets the project with id 0 to plonk on the page
         Project project;
@@ -144,9 +149,13 @@ public class DetailsController {
 
         List<Deadline> deadlineList = deadlineService.getAllDeadlinesOrderedWithColour(sprintList);
         model.addAttribute("deadlines", deadlineList);
-
+        UserResponse getUserByIdReply;
         Integer id = userAccountClientService.getUserIDFromAuthState(principal);
         elementService.addHeaderAttributes(model, id);
+        getUserByIdReply = registerClientService.getUserData(id);
+        String role = elementService.getUserHighestRole(getUserByIdReply);
+        model.addAttribute("currentUserRole", role);
+
         model.addAttribute("userId", id);
         UserResponse user = registerClientService.getUserData(id);
         model.addAttribute("username", user.getUsername());
@@ -162,16 +171,11 @@ public class DetailsController {
         calendar.add(Calendar.DATE, 3);
         model.addAttribute("newEvent", new Event(0, "", new Date(), calendar.getTime(), LocalTime.now(), LocalTime.now()));
 
-        String role = principal.getClaimsList().stream()
-                .filter(claim -> claim.getType().equals("role"))
-                .findFirst()
-                .map(ClaimDTO::getValue)
-                .orElse("NOT FOUND");
-
-        model.addAttribute("currentUserRole", role);
+        elementService.addDeniedMessage(model, request);
 
         model.addAttribute("newSprint", sprintService.getSuggestedSprint());
         model.addAttribute("sprintDateError", "");
+
 
         return "projectDetails";
     }
@@ -183,7 +187,7 @@ public class DetailsController {
      * @return returns an NotificationResponse that holds information about the event being updated.
      */
     @MessageMapping("/editing-artefact")
-    @SendTo("/test/portfolio/artefact/being-edited")
+    @SendTo("/webSocketGet/being-edited")
     public NotificationResponse updatingArtefact(NotificationMessage message) {
         int artefactId = message.getArtefactId();
         String username = message.getUsername();
@@ -201,7 +205,7 @@ public class DetailsController {
      * @return Returns the message given.
      */
     @MessageMapping("/stop-editing-artefact")
-    @SendTo("/test/portfolio/artefact/stop-being-edited")
+    @SendTo("/webSocketGet/stop-being-edited")
     public NotificationResponse stopUpdatingArtefact(NotificationMessage message) {
         int artefactId = message.getArtefactId();
         String username = message.getUsername();
@@ -219,7 +223,7 @@ public class DetailsController {
      * @return returns an NotificationResponse that holds information about the event being updated.
      */
     @MessageMapping("/saved-edited-artefact")
-    @SendTo("/test/portfolio/artefact/save-edit")
+    @SendTo("/webSocketGet/save-edit")
     public NotificationResponse savingUpdatedArtefact(NotificationMessage message) {
         int artefactId = message.getArtefactId();
         String username = message.getUsername();
@@ -257,7 +261,7 @@ public class DetailsController {
      * @param ignore this parameter, even though it is not used, is necessary to exist in order to send the request to websocket
      */
     @MessageMapping("/delete-artefact")
-    @SendTo("/test/portfolio/artefact/delete-artefact")
+    @SendTo("/webSocketGet/delete-artefact")
     public NotificationResponse deleteArtefact(NotificationMessage ignore) {
         return new NotificationResponse();
     }
