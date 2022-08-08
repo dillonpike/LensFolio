@@ -1,18 +1,16 @@
 package nz.ac.canterbury.seng302.identityprovider.service;
 
+import nz.ac.canterbury.seng302.identityprovider.model.GroupModel;
 import nz.ac.canterbury.seng302.identityprovider.model.Roles;
 import nz.ac.canterbury.seng302.identityprovider.repository.RolesRepository;
 import nz.ac.canterbury.seng302.identityprovider.model.UserModel;
 import nz.ac.canterbury.seng302.identityprovider.repository.UserModelRepository;
-import nz.ac.canterbury.seng302.identityprovider.server.GroupModelServerService;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.naming.directory.InvalidAttributesException;
-import java.text.MessageFormat;
 import java.util.*;
 
 @Service
@@ -21,16 +19,16 @@ public class UserModelService {
     private static final Logger logger = LoggerFactory.getLogger(UserModelService.class);
 
     @Autowired
-    UserModelRepository repository;
+    private UserModelRepository repository;
 
     @Autowired
-    RolesRepository rolesRepository;
+    private RolesRepository rolesRepository;
 
     @Autowired
-    UserModelRepository userModelRepository;
+    private UserModelRepository userModelRepository;
 
 //    @Autowired
-//    GroupModelService groupModelService;
+//    private GroupModelService groupModelService;
 
     private static int userIdCount = 1;
 
@@ -219,4 +217,10 @@ public class UserModelService {
 
     }
 
+    public void setOnlyGroup(Iterable<UserModel> users, GroupModel group) {
+        for (UserModel user: users) {
+            user.setGroups(Set.of(group));
+        }
+        repository.saveAll(users);
+    }
 }

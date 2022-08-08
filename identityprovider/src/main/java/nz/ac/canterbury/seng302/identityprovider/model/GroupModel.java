@@ -1,9 +1,7 @@
 package nz.ac.canterbury.seng302.identityprovider.model;
 
 import javax.persistence.*;
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -142,6 +140,14 @@ public class GroupModel {
     }
 
     /**
+     * Returns the users a part of the group.
+     * @return users a part of the group
+     */
+    public Set<UserModel> getMembers() {
+        return users;
+    }
+
+    /**
      * Adds the given user to the group.
      * @param user user to add to the group
      */
@@ -154,10 +160,6 @@ public class GroupModel {
      * @param user user to remove from the group
      */
     public void removeMember(UserModel user) {
-        users.remove(user);
-    }
-
-    public Set<UserModel> getUsers() {
-        return users;
+        users.removeIf(userInGroup -> userInGroup.getUserId() == user.getUserId());
     }
 }

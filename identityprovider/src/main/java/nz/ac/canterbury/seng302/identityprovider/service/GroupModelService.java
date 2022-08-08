@@ -190,7 +190,7 @@ public class GroupModelService {
         response.setGroupId(groupModel.getGroupId());
         response.setLongName(groupModel.getLongName());
         response.setShortName(groupModel.getShortName());
-        Set<UserModel> userModelList = groupModel.getUsers();
+        Set<UserModel> userModelList = groupModel.getMembers();
         for (UserModel userModel : userModelList) {
             response.addMembers(userModelService.getUserInfo(userModel));
         }
@@ -244,6 +244,7 @@ public class GroupModelService {
                     group.addMember(user);
                 }
                 repository.save(group);
+                removeFromMembersWithoutAGroup(users);
                 logger.info("Added the following users to group " + groupId + ": " + users);
             } catch (Exception e) {
                 logger.info("Error adding user to group " + groupId);
@@ -253,6 +254,26 @@ public class GroupModelService {
             return true;
         }
         return false;
+    }
+
+    /**
+     * Removes the given users from the special "Members without a group" group.
+     * @param users users to remove
+     */
+    private void removeFromMembersWithoutAGroup(Iterable<UserModel> users) {
+        Optional<GroupModel> groupOptional = repository.findById(GroupModelServerService.MEMBERS_WITHOUT_GROUP_ID);
+        if (groupOptional.isPresent()) {
+            GroupModel group = groupOptional.get();
+            for (UserModel user: users) {
+                group.removeMember(user);
+            }
+            repository.save(group);
+        }
+    }
+
+    public GroupModel getMembersWithoutAGroup() {
+        Optional<GroupModel> groupOptional = repository.findById(GroupModelServerService.MEMBERS_WITHOUT_GROUP_ID);
+        return groupOptional.orElse(null);
     }
 
 //    /**
