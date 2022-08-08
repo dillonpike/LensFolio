@@ -190,6 +190,19 @@ public class GroupModelServerService extends GroupsServiceGrpc.GroupsServiceImpl
     }
 
     /**
+     * Adds the users in the request to the group in the request.
+     * @param request contains group and id and user ids
+     * @param responseObserver used to send the response to portfolio
+     */
+    @Override
+    public void addGroupMembers(AddGroupMembersRequest request, StreamObserver<AddGroupMembersResponse> responseObserver) {
+        AddGroupMembersResponse.Builder reply = AddGroupMembersResponse.newBuilder();
+        reply.setIsSuccess(groupModelService.addUsersToGroup(request.getUserIdsList(), request.getGroupId()));
+        responseObserver.onNext(reply.build());
+        responseObserver.onCompleted();
+    }
+
+    /**
      * Adds a validation error to the response if the short name is not unique.
      * @param shortNameUnique boolean value indicating if the short name is unique
      * @param reply reply to add the validation error to
@@ -218,4 +231,5 @@ public class GroupModelServerService extends GroupsServiceGrpc.GroupsServiceImpl
             reply.setIsSuccess(false).setMessage("Name was not unique");
         }
     }
+
 }

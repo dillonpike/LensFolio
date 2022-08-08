@@ -29,8 +29,8 @@ public class UserModelService {
     @Autowired
     UserModelRepository userModelRepository;
 
-    @Autowired
-    GroupModelService groupModelService;
+//    @Autowired
+//    GroupModelService groupModelService;
 
     private static int userIdCount = 1;
 
@@ -83,10 +83,10 @@ public class UserModelService {
         user.setUserId(userIdCount);
         userIdCount++;
         Roles studentRole = rolesRepository.findByRoleName("STUDENT");
-        boolean wasAddedToNonGroup = groupModelService.addUserToGroup(user.getUserId(), GroupModelServerService.MEMBERS_WITHOUT_GROUP_ID);
-        if (!wasAddedToNonGroup) {
-            logger.error("Something went wrong with the 'members without a group' group. User not added to the group. ");
-        }
+//        boolean wasAddedToNonGroup = groupModelService.addUserToGroup(user.getUserId(), GroupModelServerService.MEMBERS_WITHOUT_GROUP_ID);
+//        if (!wasAddedToNonGroup) {
+//            logger.error("Something went wrong with the 'members without a group' group. User not added to the group. ");
+//        }
         user.addRoles(studentRole);
         return repository.save(user);
     }
@@ -190,30 +190,28 @@ public class UserModelService {
      * @param userId user id to check if they are in the teachers group.
      */
     public void checkUserIsInTeachersGroup(Integer userId) {
-        System.out.println("ISJDaoijdoiajsdoiajsdoiajsd");
-        try {
-            if (!groupModelService.isUserPartOfGroup(userId, GroupModelServerService.TEACHERS_GROUP_ID)) {
-                System.out.println("if statement 2");
-                boolean addedToGroup = groupModelService.addUserToGroup(userId, GroupModelServerService.TEACHERS_GROUP_ID);
-                if (!addedToGroup) {
-                    throw new InvalidAttributesException("Teachers group does not exist. ");
-                }
-            }
-            UserModel user = repository.findByUserId(userId);
-            Roles teacherRole = rolesRepository.findByRoleName("TEACHER");
 
-            if (!user.getRoles().contains(teacherRole)) {
-                System.out.println("if statement 2");
-                user.addRoles(teacherRole);
-                boolean addedRole = saveEditedUser(user);
-                if (!addedRole) {
-                    throw new InvalidAttributesException("Teacher role was not added to user. ");
-                }
-            }
-        } catch (Exception e) {
-            logger.error(MessageFormat.format(
-                    "Something went wrong with the teachers group: {0}", e.getMessage()));
-        }
+//        try {
+//            if (!groupModelService.isUserPartOfGroup(userId, GroupModelServerService.TEACHERS_GROUP_ID)) {
+//                boolean addedToGroup = groupModelService.addUserToGroup(userId, GroupModelServerService.TEACHERS_GROUP_ID);
+//                if (!addedToGroup) {
+//                    throw new InvalidAttributesException("Teachers group does not exist. ");
+//                }
+//            }
+//            UserModel user = repository.findByUserId(userId);
+//            Roles teacherRole = rolesRepository.findByRoleName("TEACHER");
+//
+//            if (!user.getRoles().contains(teacherRole)) {
+//                user.addRoles(teacherRole);
+//                boolean addedRole = saveEditedUser(user);
+//                if (!addedRole) {
+//                    throw new InvalidAttributesException("Teacher role was not added to user. ");
+//                }
+//            }
+//        } catch (Exception e) {
+//            logger.error(MessageFormat.format(
+//                    "Something went wrong with the teachers group: {0}", e.getMessage()));
+//        }
 
     }
 

@@ -225,6 +225,39 @@ public class GroupModelService {
     }
 
     /**
+     * Adds a list of members to a group by their user id. If a user was already part of the group, no distinction is
+     * made when trying to re-add them to the group (returns true if the user was already a part of the group).
+     * @param userIds IDs of the users
+     * @param groupId ID of the group
+     * @return Whether the user was added or not.
+     */
+    public boolean addUsersToGroup(List<Integer> userIds, Integer groupId) {
+        Optional<GroupModel> groupOptional = repository.findById(groupId);
+        group.
+
+        if (groupOptional.isPresent()) {
+            try {
+                GroupModel group = groupOptional.get();
+                System.out.println("1");
+                for (Integer userId : userIds) {
+                    System.out.println("2");
+                    System.out.println(group.getMemberIds());
+                    group.addMember(userId);
+                    System.out.println("added " + userId);
+                }
+                System.out.println("presave");
+                repository.save(group);
+                System.out.println("saved");
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
+                return false;
+            }
+            return true;
+        }
+        return false;
+    }
+
+    /**
      * Remove users from a group. If a user was already not in the group, the method still returns true.
      * @param userId ID of user being removed from the group.
      * @param groupId Id of the group the user is being removed from.

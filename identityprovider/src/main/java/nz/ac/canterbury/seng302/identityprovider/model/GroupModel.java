@@ -49,6 +49,7 @@ public class GroupModel {
     @ElementCollection
     @CollectionTable(name="user_to_group", joinColumns=@JoinColumn(name="group_id"))
     @Column(name="User_Id")
+
     private Set<Integer> memberIds = new HashSet<>();
 
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)

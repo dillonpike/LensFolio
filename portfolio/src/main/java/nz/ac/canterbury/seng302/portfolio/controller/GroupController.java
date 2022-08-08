@@ -4,11 +4,8 @@ import nz.ac.canterbury.seng302.portfolio.model.Group;
 import nz.ac.canterbury.seng302.portfolio.service.ElementService;
 import nz.ac.canterbury.seng302.portfolio.service.GroupService;
 import nz.ac.canterbury.seng302.portfolio.service.UserAccountClientService;
-import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
-import nz.ac.canterbury.seng302.shared.identityprovider.CreateGroupResponse;
+import nz.ac.canterbury.seng302.shared.identityprovider.*;
 import nz.ac.canterbury.seng302.shared.util.ValidationError;
-import nz.ac.canterbury.seng302.shared.identityprovider.DeleteGroupResponse;
-import nz.ac.canterbury.seng302.shared.identityprovider.ModifyGroupDetailsResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
@@ -146,5 +143,20 @@ public class GroupController {
         groupService.addGroupNameErrorsToModel(model, errors);
         httpServletResponse.setStatus(HttpServletResponse.SC_BAD_REQUEST);
         return "fragments/groupModal::groupModalBody";
+    }
+
+    @PostMapping("/copy-users")
+    public String moveUsers(
+            @RequestParam("groupId") Integer groupId,
+            @RequestParam("userIds") List<Integer> userIds,
+            HttpServletResponse httpServletResponse
+    ) {
+        AddGroupMembersResponse response = groupService.addMemberToGroup(groupId, userIds);
+        if (response.getIsSuccess()) {
+            httpServletResponse.setStatus(HttpServletResponse.SC_OK);
+        } else {
+            httpServletResponse.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+        }
+        return null;
     }
 }

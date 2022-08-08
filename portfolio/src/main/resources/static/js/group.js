@@ -169,3 +169,17 @@ function deleteGroupModalButtonFunction(type, id) {
         }
     })
 }
+
+function copyUsers() {
+    const data = {
+        groupId: document.getElementById('groupDropdownList').value,
+        userIds: userTable.rows('.selected').data().toArray().map(row => row.DT_RowId)
+    }
+    $.post('copy-users' + "?" + new URLSearchParams(data)).done((result) => {
+        console.log('moved')
+    }).fail((result) => {
+        console.log('failed')
+    }).always(() => {
+        console.log('always')
+    })
+}
