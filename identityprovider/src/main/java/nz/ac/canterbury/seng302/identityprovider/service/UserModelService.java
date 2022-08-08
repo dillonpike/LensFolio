@@ -6,6 +6,7 @@ import nz.ac.canterbury.seng302.identityprovider.model.Roles;
 import nz.ac.canterbury.seng302.identityprovider.repository.RolesRepository;
 import nz.ac.canterbury.seng302.identityprovider.model.UserModel;
 import nz.ac.canterbury.seng302.identityprovider.repository.UserModelRepository;
+import nz.ac.canterbury.seng302.identityprovider.server.GroupModelServerService;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -107,7 +108,7 @@ public class UserModelService {
             status = true;
         } catch(Exception e) {
             status = false;
-            System.err.println("Edited user not saved");
+            logger.error("Edited user not saved");
         }
         return status;
     }
