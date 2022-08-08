@@ -163,6 +163,11 @@ public class GroupService {
         model.addAttribute("members", userResponseList);
     }
 
+    /**
+     * This method makes it so that toasts are displayed when editing/adding something in the modal
+     * @param model model attribute to add variables into html
+     * @param numOfToasts the number of toasts that will be displayed
+     */
     public void addToastsToModel(Model model, Integer numOfToasts) {
         List<Toast> toastsToGenerate = new ArrayList<>();
         for (int i = 0; i < numOfToasts; i++) {
@@ -195,6 +200,11 @@ public class GroupService {
         model.addAttribute("toastsToGenerate", toastsToGenerate);
     }
 
+    /**
+     * Adds the notification so that the toast can be displayed
+     * @param response sends the message that something is being edited
+     * @param numOfToasts the number of toasts that will be displayed
+     */
     public void addNotification(NotificationResponse response, Integer numOfToasts) {
         groupsToDisplay.add(response);
         while (groupsToDisplay.size() > numOfToasts) {
