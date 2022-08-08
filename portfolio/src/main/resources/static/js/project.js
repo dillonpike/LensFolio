@@ -151,10 +151,8 @@ function milestoneModalSetup() {
         }
 
         modalForm.setAttribute('object', milestone);
-        modalBodyInput.value = milestone.milestoneName;
-        milestoneDatePicker.dates.setValue(tempusDominus.DateTime.convert(new Date(milestone.milestoneDate)));
-        // Set minimum and maximum dates for greying out in the calendar
-        milestoneDatePicker.updateOptions({restrictions: {minDate: new Date(projectStartDate), maxDate: new Date(projectEndDate)}});
+        modalBodyInput.value = milestone.milestoneName
+        $('#milestoneDateInput').datepicker('setDate', milestone.milestoneDateString)
 
         // Initial run of validation functions in case initial values are invalid
         validateModalDate('milestoneDate', 'milestoneModalButton', 'milestoneDateAlertBanner', 'milestoneDateAlertMessage')
@@ -213,10 +211,8 @@ function deadlineModalSetup() {
  * Customises the event modal attributes with depending on what event it should display and whether it's being
  * used for adding or editing a event. Also greys out the required dates to ensure only the dates in the
  * project date range are selectable.
- * @param projectStartDate the start date of the project
- * @param projectEndDate the end date of the project
  */
-function eventModalSetup(projectStartDate, projectEndDate) {
+function eventModalSetup() {
     const eventModal = document.getElementById('eventModal')
     eventModal.addEventListener('show.bs.modal', function (event) {
         // Button that triggered the modal
