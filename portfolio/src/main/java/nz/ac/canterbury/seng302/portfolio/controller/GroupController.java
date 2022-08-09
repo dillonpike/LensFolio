@@ -147,6 +147,12 @@ public class GroupController {
         return "fragments/groupModal::groupModalBody";
     }
 
+    /**
+     * Post method for copying users from one group to another
+     * @param model  Parameters sent to thymeleaf template to be rendered into HTML
+     * @param groupId id of group to copy users to
+     * @return Group detail page
+     */
     @PostMapping("/copy-users")
     public String moveUsers(
             @RequestParam("groupId") Integer groupId,
@@ -170,6 +176,11 @@ public class GroupController {
         return null;
     }
 
+    /**
+     * Submits a request to the identity provider to copy users when they are not in a group.
+     * @param model Parameters sent to thymeleaf template to be rendered into HTML
+     * @return Group detail page
+     */
     @GetMapping("/members-without-a-group")
     public String membersWithoutAGroupCard(
             Model model
