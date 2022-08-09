@@ -214,6 +214,7 @@ public class GroupModelServerService extends GroupsServiceGrpc.GroupsServiceImpl
             isSuccess = groupModelService.addUsersToGroup(users, request.getGroupId());
         }
         if (request.getGroupId() == MEMBERS_WITHOUT_GROUP_ID && isSuccess) {
+            checkUsersNotInTeachersGroup(users);
             userModelService.setOnlyGroup(users, groupModelService.getMembersWithoutAGroup());
         }
         reply.setIsSuccess(isSuccess);
@@ -236,6 +237,25 @@ public class GroupModelServerService extends GroupsServiceGrpc.GroupsServiceImpl
             boolean roleWasAdded = userModelService.checkUserHasTeacherRole(user);
             if (!roleWasAdded) {
                 logger.warn(MessageFormat.format("User {0} was not given teacher role. ", user.getUserId()));
+            }
+        }
+    }
+
+    /**
+     * Checks to see if a list of users are part of the teachers group. If so, it removes them from it.
+     * Also removes the teacher role to the user, if they don't have it already removed.
+     * @param users users to check if they are in the teachers group or have the teacher role.
+     */
+    public void checkUsersNotInTeachersGroup(Iterable<UserModel> users) {
+
+        for (UserModel user : users) {
+            boolean removedFromGroup = groupModelService.removeUsersFromGroup(new ArrayIterator<>(new UserModel[]{user}), GroupModelServerService.TEACHERS_GROUP_ID);
+            if (!removedFromGroup) {
+                logger.warn(MessageFormat.format("Something went wrong with removing the user {0} from the teachers group", user.getUserId()));
+            }
+            boolean roleWasRemoved = userModelService.checkUserDoesNotHaveTeacherRole(user);
+            if (!roleWasRemoved) {
+                logger.warn(MessageFormat.format("User {0} did not have their teacher role removed. ", user.getUserId()));
             }
         }
     }
