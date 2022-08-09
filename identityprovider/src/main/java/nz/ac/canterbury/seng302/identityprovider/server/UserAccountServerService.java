@@ -118,6 +118,14 @@ public class UserAccountServerService extends UserAccountServiceGrpc.UserAccount
             } else {
                 UserModel user = userModelService.getUserById(request.getId());
 
+                // Make sure the user is in the 'members without a group' group if they are in no groups.
+                if (user.getGroups().isEmpty()) {
+                    boolean wasAddedToNonGroup = groupModelService.addUsersToGroup(new ArrayIterator<>(new UserModel[]{user}), GroupModelServerService.MEMBERS_WITHOUT_GROUP_ID);
+                    if (!wasAddedToNonGroup) {
+                        logger.error("Something went wrong with the 'members without a group' group. User not added to the group. ");
+                    }
+                }
+
                 // If there isn't a user image it returns an empty string which is then identified by the portfolio.
                 // It will then display the default user image.
                 String imageDirectory = user.getPhotoDirectory();
