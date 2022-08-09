@@ -207,6 +207,15 @@ public class RegisterController {
         }
     }
 
+    /**
+     * Method to add model attribute(current user's inputs) to the register page, Save user's information on form
+     * @param rm RedirectAttributes
+     * @param username user's username
+     * @param firstName user's first name
+     * @param middleName user's middle name
+     * @param lastName user's last name
+     * @param email user's email
+     */
     private void addModelAttribute(RedirectAttributes rm,
                                    String username,
                                    String firstName,
@@ -221,6 +230,11 @@ public class RegisterController {
     }
 
 
+    /**
+     * Method to check if password is in right format
+     * @param password user's password
+     * @return false if any formatting issue
+     */
     public boolean isValid(String password) {
         Matcher matcher = pattern.matcher(password);
         return matcher.matches();
