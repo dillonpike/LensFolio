@@ -63,7 +63,7 @@
                 <div id="groupList" th:fragment="groupList" class="list-group list-group-flush border-bottom group-bar">
                     <div th:each="group : ${groupList}">
                         <div th:fragment="groupCard" th:id="|groupCard${group.getGroupId()}|">
-                            <button  class="list-group-item list-group-item-action py-3 lh-tight" aria-current="true" th:attr="onclick=|updateTable('${group.groupId}')|" id="updateGroupButton">
+                            <button  class="list-group-item list-group-item-action py-3 lh-tight" aria-current="true" th:attr="onclick=|updateTable('${group.groupId}', '${currentUserRole}')|" id="updateGroupButton">
                                 <div class="d-flex flex-row w-100 align-items-center justify-content-between">
                                     <strong class="mb-1" th:text="${group.shortName}"></strong>
                                     <div>
@@ -91,7 +91,7 @@
                     <div class="container">
                         <h1 th:text="${groupLongName}"></h1>
                         <h4 th:text="${groupShortName}"></h4>
-                        <div class="hstack gap-3">
+                        <div class="hstack gap-3" th:if="${currentUserRole != 'student'}">
                             <span>Copy Users To </span>
                             <select class="form-select input-sm" aria-label="Default select example" id="groupDropdownList">
                                 <option th:each="copyToGroup : ${groupList}" th:if="${group?.getGroupId() != copyToGroup.getGroupId()}" th:value="${copyToGroup.getGroupId()}" th:text="${copyToGroup.getShortName()}"></option>
@@ -292,9 +292,9 @@
 </script>
 
 <script>
-    function updateTable(groupId) {
+    function updateTable(groupId, role) {
         const url = "groups/local?";
-        $('#table_refresh').load(url, "groupId=" + groupId)
+        $('#table_refresh').load(url, {"groupId":groupId, "role": role})
     }
 </script>
 

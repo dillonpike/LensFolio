@@ -64,12 +64,15 @@ public class GroupController {
     ) {
         Integer id = userAccountClientService.getUserIDFromAuthState(principal);
         elementService.addHeaderAttributes(model, id);
-        model.addAttribute("userId", id);
+
         UserResponse user = registerClientService.getUserData(id);
+        String role = elementService.getUserHighestRole(user);
+
+        model.addAttribute("userId", id);
         model.addAttribute("username", user.getUsername());
         model.addAttribute("userFirstName", user.getFirstName());
         model.addAttribute("userLastName", user.getLastName());
-
+        model.addAttribute("currentUserRole", role);
         groupService.addGroupListToModel(model);
 
         groupService.addToastsToModel(model, 3);
@@ -86,8 +89,11 @@ public class GroupController {
     @RequestMapping("/groups/local")
     public String localRefresh(
             Model model,
-            @RequestParam("groupId") int groupId)
+            @RequestParam("groupId") int groupId,
+            @RequestParam("role") String role
+            )
     {
+        model.addAttribute("currentUserRole", role);
         groupService.addGroupDetailToModel(model, groupId);
         groupService.addGroupListToModel(model);
         return "group::table_refresh";
