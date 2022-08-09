@@ -238,6 +238,7 @@ public class GroupModelServerService extends GroupsServiceGrpc.GroupsServiceImpl
             isSuccess = groupModelService.addUsersToGroup(users, request.getGroupId());
         }
         if (request.getGroupId() == MEMBERS_WITHOUT_GROUP_ID && isSuccess) {
+            checkUsersNotInTeachersGroup(users);
             userModelService.setOnlyGroup(users, groupModelService.getMembersWithoutAGroup());
         }
         reply.setIsSuccess(isSuccess);
