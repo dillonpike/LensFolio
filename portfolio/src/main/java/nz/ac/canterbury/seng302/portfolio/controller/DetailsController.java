@@ -195,7 +195,7 @@ public class DetailsController {
      * @return returns an NotificationResponse that holds information about the event being updated.
      */
     @MessageMapping("/editing-artefact")
-    @SendTo("/webSocketDetailsGet/being-edited")
+    @SendTo("/webSocketGet/being-edited")
     public NotificationResponse updatingArtefact(NotificationMessage message) {
         int artefactId = message.getArtefactId();
         String username = message.getUsername();
@@ -213,7 +213,7 @@ public class DetailsController {
      * @return Returns the message given.
      */
     @MessageMapping("/stop-editing-artefact")
-    @SendTo("/webSocketDetailsGet/stop-being-edited")
+    @SendTo("/webSocketGet/stop-being-edited")
     public NotificationResponse stopUpdatingArtefact(NotificationMessage message) {
         int artefactId = message.getArtefactId();
         String username = message.getUsername();
@@ -231,7 +231,7 @@ public class DetailsController {
      * @return returns an NotificationResponse that holds information about the event being updated.
      */
     @MessageMapping("/saved-edited-artefact")
-    @SendTo("/webSocketDetailsGet/save-edit")
+    @SendTo("/webSocketGet/save-edit")
     public NotificationResponse savingUpdatedArtefact(NotificationMessage message) {
         int artefactId = message.getArtefactId();
         String username = message.getUsername();

@@ -21,15 +21,15 @@ function connect() {
     stompClient = Stomp.over(socket);
     stompClient.connect({}, function (frame) {
         console.log('Connected: ' + frame);
-        stompClient.subscribe('/webSocketGroupsGet/being-edited', function (eventResponseArg) {
+        stompClient.subscribe('/webSocketGet/group-being-edited', function (eventResponseArg) {
             const eventResponse = JSON.parse(eventResponseArg.body);
             showToast(eventResponse.artefactName, eventResponse.artefactId, eventResponse.username, eventResponse.userFirstName, eventResponse.userLastName, false, eventResponse.artefactType);
         });
-        stompClient.subscribe('/webSocketGroupsGet/stop-being-edited', function (eventResponseArg) {
+        stompClient.subscribe('/webSocketGet/group-stop-being-edited', function (eventResponseArg) {
             const eventResponse = JSON.parse(eventResponseArg.body);
             showToast(eventResponse.artefactName, eventResponse.artefactId, eventResponse.username, eventResponse.userFirstName, eventResponse.userLastName, true, eventResponse.artefactType);
         })
-        stompClient.subscribe('/webSocketGroupsGet/save-edit', function (eventResponseArg) {
+        stompClient.subscribe('/webSocketGet/group-save-edit', function (eventResponseArg) {
             const eventResponse = JSON.parse(eventResponseArg.body);
             refreshEvents();
             showToastSave(eventResponse.artefactName, eventResponse.artefactId, eventResponse.username, eventResponse.userFirstName, eventResponse.userLastName, eventResponse.artefactType);

@@ -57,7 +57,7 @@
                                 <div class="d-flex flex-row w-100 align-items-center justify-content-between">
                                     <strong class="mb-1" th:text="${group.shortName}"></strong>
                                     <div>
-                                        <svg th:if="${group.getLongName() != 'Members without a group' && group.getLongName() != 'Teachers Group'}" id="editGroupButton" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil" viewBox="0 0 16 16" data-bs-toggle="modal" data-bs-target="#groupModal" th:data-bs-id="${group.getGroupId()}" th:data-bs-shortname="${group.getShortName()}" th:data-bs-longname="${group.getLongName()}" data-bs-type="edit">
+                                        <svg th:if="${group.getLongName() != 'Members without a group' && group.getLongName() != 'Teachers Group'}" id="editGroupButton" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil" viewBox="0 0 16 16" data-bs-toggle="modal" data-bs-target="#groupModal" th:data-bs-id="${group.getGroupId()}" th:data-bs-shortname="${group.getShortName()}" th:data-bs-longname="${group.getLongName()}" data-bs-type="edit" th:attr="onclick='editArtefact(\'' + ${group.getShortName} + '\',\'' + ${group.getGroupId()}+  '\');'">
                                             <path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207 11.207 2.5zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293l6.5-6.5zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z"/>
                                         </svg>
                                         <svg th:if="${group.getLongName() != 'Members without a group' && group.getLongName() != 'Teachers Group'}" id="deleteGroupButton" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash-fill" viewBox="0 0 16 16" data-bs-toggle="modal" data-bs-target="#deleteModal" th:data-bs-id="${group.getGroupId()}" th:data-bs-name="${group.getShortName()}" th:data-bs-member="${group.getMembersCount()}" data-bs-type="group" >
@@ -187,7 +187,7 @@
         connect();
         document.addEventListener("visibilitychange", (ignore) => {
             if (document.visibilityState !== "visible") {
-                sendEmpty(milestoneName, milestoneId,userId, userFirstName, userLastName, username, "Milestone");
+                sendEmpty(selectedArtefactName, selectedArtefactId, userId, userFirstName, userLastName, username, "Group");
             }
         });
     });
@@ -202,8 +202,8 @@
     /**
      * get the selected group to edit then set it in global variable
      */
-    function editArtefact(milestone, id) {
-        selectedArtefactName = milestone;
+    function editArtefact(group, id) {
+        selectedArtefactName = group;
         selectedArtefactId = id;
     }
 
