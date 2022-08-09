@@ -112,15 +112,15 @@
                         <h1 th:text="${groupLongName}"></h1>
                         <h4 th:text="${groupShortName}"></h4>
                         <div class="hstack gap-3">
-                            <span>Copy To </span>
+                            <span>Copy Users To </span>
                             <select class="form-select input-sm" aria-label="Default select example" id="groupDropdownList">
                                 <option th:each="copyToGroup : ${groupList}" th:if="${group?.getGroupId() != copyToGroup.getGroupId()}" th:value="${copyToGroup.getGroupId()}" th:text="${copyToGroup.getShortName()}"></option>
                             </select>
                             <button type="button" class="btn btn-success" onclick="copyUsers()">
                                 Confirm
                             </button>
-                            <button type="button" class="btn btn-danger">
-                                Remove
+                            <button type="button" class="btn btn-danger ms-auto">
+                                Remove Users
                             </button>
                         </div>
 
