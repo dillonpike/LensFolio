@@ -1,5 +1,6 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
+import com.google.protobuf.Timestamp;
 import nz.ac.canterbury.seng302.portfolio.model.Group;
 import nz.ac.canterbury.seng302.portfolio.service.*;
 import nz.ac.canterbury.seng302.shared.identityprovider.*;
@@ -34,6 +35,22 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class GroupControllerTest {
 
     /**
+     * Mocked user response which contains the data of the user
+     */
+    private UserResponse mockUser = UserResponse.newBuilder()
+            .setBio("default bio")
+            .setCreated(Timestamp.newBuilder().setSeconds(55))
+            .setEmail("hello@test.com")
+            .setFirstName("firsttestname")
+            .setLastName("lasttestname")
+            .setMiddleName("middlettestname")
+            .setNickname("niktestname")
+            .setPersonalPronouns("He/him")
+            .addRoles(UserRole.STUDENT)
+            .build();
+
+
+    /**
      * AuthState object to be used when we mock security context
      */
     public AuthState validAuthState = AuthState.newBuilder()
@@ -61,6 +78,9 @@ class GroupControllerTest {
     @MockBean
     private RegisterClientService registerClientService; // needed to load application context
 
+    @MockBean
+    private PhotoService photoService;
+
     @Before
     public void setup() {
         mockMvc = MockMvcBuilders.standaloneSetup(GroupController.class).build();
@@ -68,6 +88,32 @@ class GroupControllerTest {
 
     private final Group testGroup = new Group("Test", "Test Group", 1);
 
+    /**
+     * Test GET request for group page at initial stage.
+     * @throws Exception Can be caused during mocking the MVC system.
+     */
+    @Test
+    void testShowGroupPage() throws Exception {
+        SecurityContext mockedSecurityContext = Mockito.mock(SecurityContext.class);
+        when(mockedSecurityContext.getAuthentication()).thenReturn(new PreAuthenticatedAuthenticationToken(validAuthState, ""));
+        SecurityContextHolder.setContext(mockedSecurityContext);
+
+        when(userAccountClientService.getUserIDFromAuthState(any(AuthState.class))).thenReturn(1);
+        when(registerClientService.getUserData(1)).thenReturn(mockUser);
+
+        GroupDetailsResponse groupDetailsResponse = GroupDetailsResponse.newBuilder().setGroupId(testGroup.getGroupId())
+                .setShortName(testGroup.getShortName()).setLongName(testGroup.getLongName()).build();
+
+        PaginatedGroupsResponse paginatedGroupsResponse = PaginatedGroupsResponse.newBuilder().addGroups(groupDetailsResponse).build();
+
+        doReturn(paginatedGroupsResponse).when(groupService).getPaginatedGroups(1,1, "null", false);
+
+        mockMvc.perform(get("/groups")).andExpect(status().isOk())
+                .andExpect(model().attribute("groupList", paginatedGroupsResponse.getGroupsList()))
+                .andExpect(model().attribute("groupLongName", "No select group"))
+                .andExpect(model().attribute("groupShortName", "Please select one group"));
+
+    }
     /**
      * Test that if given any valid GroupId, table refresh successfully.
      * @throws Exception Can be caused during mocking the MVC system.

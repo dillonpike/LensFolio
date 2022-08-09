@@ -11,6 +11,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import javax.swing.*;
+import java.util.ArrayList;
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.*;
@@ -40,10 +44,17 @@ class GroupModelServerServiceTest {
     @Mock
     private StreamObserver<GroupDetailsResponse> groupDetailsResponseObserver;
 
+    @Mock
+    private StreamObserver<PaginatedGroupsResponse> paginatedGroupsResponseObserver;
+
     @InjectMocks
     private GroupModelServerService groupModelServerService = Mockito.spy(GroupModelServerService.class);
 
     private final GroupModel testGroup = new GroupModel("Short Name", "Long Name", 1);
+
+    private final GroupModel testGroup1 = new GroupModel("Short Name", "Long Name", 1);
+
+    private final GroupModel testGroup2 = new GroupModel("Short Name", "Long Name", 1);
 
     /**
      * Tests the ability given a valid group ID is sent in the request through GRPC from the portfolio.
@@ -383,6 +394,32 @@ class GroupModelServerServiceTest {
         assertEquals("Long Name", response.getLongName());
         assertEquals("Short Name", response.getShortName());
         assertEquals(0, response.getGroupId());
+    }
+
+
+    @Test
+    void testGetPaginatedGroups() {
+        GetPaginatedGroupsRequest request = GetPaginatedGroupsRequest
+                .newBuilder()
+                .build();
+        List<GroupModel> groupModelList = new ArrayList<>();
+        groupModelList.add(testGroup);
+        groupModelList.add(testGroup1);
+        groupModelList.add(testGroup2);
+
+        when(groupRepository.findAll()).thenReturn(groupModelList);
+        groupModelServerService.getPaginatedGroups(request, paginatedGroupsResponseObserver);
+
+        // Checks it ran .onCompleted().
+        verify(paginatedGroupsResponseObserver, times(1)).onCompleted();
+        // Sets up captures to get the response.
+        ArgumentCaptor<PaginatedGroupsResponse> captor = ArgumentCaptor.forClass(PaginatedGroupsResponse.class);
+        // Checks it ran .onNext() and captor the response.
+        verify(paginatedGroupsResponseObserver, times(1)).onNext(captor.capture());
+        // Gets the value of the response from the captor.
+        PaginatedGroupsResponse response = captor.getValue();
+
+        assertEquals(3, response.getGroupsCount());
 
     }
 
