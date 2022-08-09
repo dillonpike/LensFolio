@@ -94,7 +94,9 @@
     function  deleteUserRole(id, role) {
         const url = "delete_role?userId="+id+"&deletedRole="+role;
         $.post(url);
-        // window.location.reload();
+        setTimeout(() => {
+            window.location.reload();
+        }, 150);
     }
 
     const table = $('#sortTable');
