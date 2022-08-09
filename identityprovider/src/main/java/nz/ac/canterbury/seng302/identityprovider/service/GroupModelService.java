@@ -54,9 +54,9 @@ public class GroupModelService {
         Optional<GroupModel> groupOptional = repository.findById(id);
 
         if (groupOptional.isPresent()) {
-            GroupModel groupUpdate = groupOptional.get();
-            repository.deleteById(groupUpdate.getGroupId());
-            return true;
+            repository.deleteById(id);
+            Optional<GroupModel> groupStillThere = repository.findById(id);
+            return groupStillThere.isEmpty();
         }
         return false;
     }

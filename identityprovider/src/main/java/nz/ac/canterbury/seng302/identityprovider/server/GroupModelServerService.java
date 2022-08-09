@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import javax.naming.directory.InvalidAttributesException;
 import java.text.MessageFormat;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -52,9 +53,25 @@ public class GroupModelServerService extends GroupsServiceGrpc.GroupsServiceImpl
     public void deleteGroup(DeleteGroupRequest request, StreamObserver<DeleteGroupResponse> responseObserver) {
         DeleteGroupResponse.Builder reply = DeleteGroupResponse.newBuilder();
 
-        if (groupModelService.removeGroup(request.getGroupId())) {
-            responseObserver.onNext(reply.setIsSuccess(true).setMessage("Successful").build());
-        } else {
+        Integer groupId = null;
+        try {
+            groupId = request.getGroupId();
+            GroupModel group = groupModelService.getGroupById(request.getGroupId());
+            Set<UserModel> users = group.getMembers();
+
+            if (groupModelService.removeGroup(request.getGroupId())) {
+                groupId = MEMBERS_WITHOUT_GROUP_ID;
+                for (UserModel user : users) {
+                    if (user.getGroups().isEmpty()) {
+                        groupModelService.addUsersToGroup(new ArrayIterator<>(new UserModel[]{user}) , MEMBERS_WITHOUT_GROUP_ID);
+                    }
+                }
+                responseObserver.onNext(reply.setIsSuccess(true).setMessage("Successful").build());
+            } else {
+                responseObserver.onNext(reply.setIsSuccess(false).setMessage("Unsuccessful").build());
+            }
+        } catch (InvalidAttributesException e) {
+            logger.error(MessageFormat.format("Group {0} does not exist, so cannot be retrieved. ", groupId));
             responseObserver.onNext(reply.setIsSuccess(false).setMessage("Unsuccessful").build());
         }
         responseObserver.onCompleted();

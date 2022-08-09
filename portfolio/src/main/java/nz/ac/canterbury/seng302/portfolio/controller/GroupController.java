@@ -112,8 +112,10 @@ public class GroupController {
                               HttpServletResponse httpServletResponse) {
         DeleteGroupResponse response = groupService.deleteGroup(id);
         if (response.getIsSuccess()) {
+            System.out.println("IT worse");
             httpServletResponse.setStatus(HttpServletResponse.SC_OK);
         } else {
+            System.out.println("IT Bad");
             httpServletResponse.setStatus(HttpServletResponse.SC_BAD_REQUEST);
         }
     }
