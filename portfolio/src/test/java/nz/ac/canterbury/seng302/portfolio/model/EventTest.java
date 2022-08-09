@@ -40,27 +40,27 @@ class EventTest {
      * Tests that the setting and getting the start date as a detailed formatted string works.
      * @throws ParseException when the set method fails to parse the date, which fails the test
      */
-    @Test
-    void testStartDateDetail() throws ParseException {
-        Event event = new Event(0, "Test Event", new Date(), new Date(),
-                LocalTime.of(12, 12, 12), LocalTime.of(17, 13, 8));
-        String expectedStartDateDetail = "12/Jun/2012 3:45 pm";
-        event.setStartDateDetail(expectedStartDateDetail);
-
-        assertEquals(expectedStartDateDetail, event.getStartDateDetail());
-    }
+//    @Test
+//    void testStartDateDetail() throws ParseException {
+//        Event event = new Event(0, "Test Event", new Date(), new Date(),
+//                LocalTime.of(12, 12, 12), LocalTime.of(17, 13, 8));
+//        String expectedStartDateDetail = "12/Jun/2012 3:45 pm";
+//        event.setStartDateDetail(expectedStartDateDetail);
+//
+//        assertEquals(expectedStartDateDetail, event.getStartDateDetail());
+//    }
 
     /**
      * Tests that the setting and getting the end date as a detailed formatted string works.
      * @throws ParseException when the set method fails to parse the date, which fails the test
      */
-    @Test
-    void testEndDateDetail() throws ParseException {
-        Event event = new Event(0, "Test Event", new Date(), new Date(),
-                LocalTime.of(12, 12, 12), LocalTime.of(17, 13, 8));
-        String expectedEndDateDetail = "12/Jun/2012 3:45 pm";
-        event.setEndDateDetail(expectedEndDateDetail);
-
-        assertEquals(expectedEndDateDetail, event.getEndDateDetail());
-    }
+//    @Test
+//    void testEndDateDetail() throws ParseException {
+//        Event event = new Event(0, "Test Event", new Date(), new Date(),
+//                LocalTime.of(12, 12, 12), LocalTime.of(17, 13, 8));
+//        String expectedEndDateDetail = "12/Jun/2012 3:45 pm";
+//        event.setEndDateDetail(expectedEndDateDetail);
+//
+//        assertEquals(expectedEndDateDetail, event.getEndDateDetail());
+//    }
 }
