@@ -33,6 +33,34 @@
             <div th:id="${#ids.seq('toastFirstName')}" th:text="${toast.getUserFirstName()}" hidden="true"></div>
             <div th:id="${#ids.seq('toastLastName')}" th:text="${toast.getUserLastName()}" hidden="true"></div>
         </div>
+        <div class="toast-body" id="popupText2"></div>
+        <div id="toastInformation2" th:text="${toastEventInformation2}" hidden="true"></div>
+        <div id="toastEventName2" th:text="${toastEventName2}" hidden="true"></div>
+        <div id="toastEventId2" th:text="${toastEventId2}" hidden="true"></div>
+        <div id="toastUsername2" th:text="${toastUsername2}" hidden="true"></div>
+        <div id="toastFirstName2" th:text="${toastFirstName2}" hidden="true"></div>
+        <div id="toastLastName2" th:text="${toastLastName2}" hidden="true"></div>
+    </div>
+    <div class="toast" role="alert" aria-live="assertive" aria-atomic="true" id="liveToast3" data-bs-autohide="false" data-bs-animation="false">
+        <div class="toast-header">
+            <strong class="me-auto" id="toastTitle3"></strong>
+        </div>
+        <div class="toast-body" id="popupText3"></div>
+        <div id="toastInformation3" th:text="${toastEventInformation3}" hidden="true"></div>
+        <div id="toastEventName3" th:text="${toastEventName3}" hidden="true"></div>
+        <div id="toastEventId3" th:text="${toastEventId3}" hidden="true"></div>
+        <div id="toastUsername3" th:text="${toastUsername3}" hidden="true"></div>
+        <div id="toastFirstName3" th:text="${toastFirstName3}" hidden="true"></div>
+        <div id="toastLastName3" th:text="${toastLastName3}" hidden="true"></div>
+    </div>
+</div>
+<!-- Toast for success of copying members to groups -->
+<div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 2000">
+    <div class="toast hide text-white" role="alert" aria-live="assertive" aria-atomic="true" id="alertToast" data-bs-animation="true" data-bs-autohide="true" data-bs-delay="7000">
+        <div class="toast-body">
+            <span id="alertToastText">Hidden</span>
+            <button id="toastBtn" type="button" class="btn-close btn-close-white me-2 m-auto float-end" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
     </div>
 </div>
 <div class="container">
@@ -51,7 +79,7 @@
                         Add Group
                     </button>
                 </a>
-                <div id="groupList" class="list-group list-group-flush border-bottom group-bar">
+                <div id="groupList" th:fragment="groupList" class="list-group list-group-flush border-bottom group-bar">
                     <div th:each="group : ${groupList}">
                         <div th:fragment="groupCard" th:id="|groupCard${group.getGroupId()}|">
                             <button  class="list-group-item list-group-item-action py-3 lh-tight" aria-current="true" th:attr="onclick=|updateTable('${group.groupId}')|" id="updateGroupButton">
@@ -83,16 +111,15 @@
                         <h1 th:text="${groupLongName}"></h1>
                         <h4 th:text="${groupShortName}"></h4>
                         <div class="hstack gap-3">
-                            <span>Copy To </span>
+                            <span>Copy Users To </span>
                             <select class="form-select input-sm" aria-label="Default select example" id="groupDropdownList">
-                                <option value="0">Select</option>
-                                <option th:each="group : ${groupList}" th:value="${group.getGroupId()}" th:text="${group.getShortName()}"></option>
+                                <option th:each="copyToGroup : ${groupList}" th:if="${group?.getGroupId() != copyToGroup.getGroupId()}" th:value="${copyToGroup.getGroupId()}" th:text="${copyToGroup.getShortName()}"></option>
                             </select>
-                            <button type="button" class="btn btn-success">
+                            <button type="button" class="btn btn-success" onclick="copyUsers()">
                                 Confirm
                             </button>
-                            <button type="button" class="btn btn-danger" data-bs-type="remove" data-bs-toggle="modal" data-bs-target="#removeUserModal">
-                                Remove
+                            <button type="button" class="btn btn-danger ms-auto" data-bs-type="remove" data-bs-toggle="modal" data-bs-target="#removeUserModal">
+                                Remove Users
                             </button>
                         </div>
 
@@ -133,6 +160,7 @@
 <script src="js/Notification.js"></script>
 <script src="js/groupLive.js"></script>
 <script src="js/project.js"></script>
+<script src="js/banner.js"></script>
 
 <script th:inline="javascript">
     /**

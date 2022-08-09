@@ -1,18 +1,16 @@
 package nz.ac.canterbury.seng302.identityprovider.service;
 
+import nz.ac.canterbury.seng302.identityprovider.model.GroupModel;
 import nz.ac.canterbury.seng302.identityprovider.model.Roles;
 import nz.ac.canterbury.seng302.identityprovider.repository.RolesRepository;
 import nz.ac.canterbury.seng302.identityprovider.model.UserModel;
 import nz.ac.canterbury.seng302.identityprovider.repository.UserModelRepository;
-import nz.ac.canterbury.seng302.identityprovider.server.GroupModelServerService;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.naming.directory.InvalidAttributesException;
-import java.text.MessageFormat;
 import java.util.*;
 
 @Service
@@ -21,23 +19,16 @@ public class UserModelService {
     private static final Logger logger = LoggerFactory.getLogger(UserModelService.class);
 
     @Autowired
-    UserModelRepository repository;
+    private UserModelRepository repository;
 
     @Autowired
-    RolesRepository rolesRepository;
-
-    @Autowired
-    UserModelRepository userModelRepository;
-
-    @Autowired
-    GroupModelService groupModelService;
+    private RolesRepository rolesRepository;
 
     private static int userIdCount = 1;
 
     public UserModelService(UserModelRepository userModelRepository, RolesRepository rolesRepository) {
         this.repository = userModelRepository;
         this.rolesRepository = rolesRepository;
-        this.userModelRepository = userModelRepository;
     }
 
     /**
@@ -47,6 +38,10 @@ public class UserModelService {
      */
     public UserModel getUserById(int userId) {
         return repository.findByUserId(userId);
+    }
+
+    public Iterable<UserModel> getUsersByIds(List<Integer> userIds) {
+        return repository.findAllById(userIds);
     }
 
     /**
@@ -83,10 +78,6 @@ public class UserModelService {
         user.setUserId(userIdCount);
         userIdCount++;
         Roles studentRole = rolesRepository.findByRoleName("STUDENT");
-        boolean wasAddedToNonGroup = groupModelService.addUserToGroup(user.getUserId(), GroupModelServerService.MEMBERS_WITHOUT_GROUP_ID);
-        if (!wasAddedToNonGroup) {
-            logger.error("Something went wrong with the 'members without a group' group. User not added to the group. ");
-        }
         user.addRoles(studentRole);
         return repository.save(user);
     }
@@ -104,7 +95,7 @@ public class UserModelService {
             status = true;
         } catch(Exception e) {
             status = false;
-            System.err.println("Edited user not saved");
+            logger.error("Edited user not saved");
         }
         return status;
     }
@@ -142,7 +133,6 @@ public class UserModelService {
         }
         for (Roles role : roles) {
             if (Objects.equals(role.getRoleName(), "TEACHER")) {
-                checkUserIsInTeachersGroup(user.getUserId());
                 return "teacher";
             }
         }
@@ -185,36 +175,24 @@ public class UserModelService {
     }
 
     /**
-     * Checks to see if the user is part of the teachers group. If not, it adds the user to it. Also makes sure the
-     * user has the teacher role.
-     * @param userId user id to check if they are in the teachers group.
+     * Checks to see if the user has the teacher role. If not, it adds the role to the user.
+     * @param user user to check if they are in the teachers group.
      */
-    public void checkUserIsInTeachersGroup(Integer userId) {
-        System.out.println("ISJDaoijdoiajsdoiajsdoiajsd");
-        try {
-            if (!groupModelService.isUserPartOfGroup(userId, GroupModelServerService.TEACHERS_GROUP_ID)) {
-                System.out.println("if statement 2");
-                boolean addedToGroup = groupModelService.addUserToGroup(userId, GroupModelServerService.TEACHERS_GROUP_ID);
-                if (!addedToGroup) {
-                    throw new InvalidAttributesException("Teachers group does not exist. ");
-                }
-            }
-            UserModel user = repository.findByUserId(userId);
-            Roles teacherRole = rolesRepository.findByRoleName("TEACHER");
+    public boolean checkUserHasTeacherRole(UserModel user) {
+        Roles teacherRole = rolesRepository.findByRoleName("TEACHER");
 
-            if (!user.getRoles().contains(teacherRole)) {
-                System.out.println("if statement 2");
-                user.addRoles(teacherRole);
-                boolean addedRole = saveEditedUser(user);
-                if (!addedRole) {
-                    throw new InvalidAttributesException("Teacher role was not added to user. ");
-                }
-            }
-        } catch (Exception e) {
-            logger.error(MessageFormat.format(
-                    "Something went wrong with the teachers group: {0}", e.getMessage()));
+        boolean addedRole = false;
+        if (!user.getRoles().contains(teacherRole)) {
+            user.addRoles(teacherRole);
+            addedRole = saveEditedUser(user);
         }
-
+        return addedRole;
     }
 
+    public void setOnlyGroup(Iterable<UserModel> users, GroupModel group) {
+        for (UserModel user: users) {
+            user.setGroups(Set.of(group));
+        }
+        repository.saveAll(users);
+    }
 }

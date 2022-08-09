@@ -65,8 +65,7 @@ public class GroupModel {
             inverseJoinColumns =
             @JoinColumn(name = "User_Id")
     )
-    private final List<UserModel> users = new ArrayList<>();
-
+    private final Set<UserModel> users = new HashSet<>();
 
     /**
      * Empty constructor for JPA.
@@ -154,21 +153,14 @@ public class GroupModel {
      * @return ids of the users a part of the group
      */
     public Set<Integer> getMemberIds() {
-        return memberIds;
+        return users.stream().map(UserModel::getUserId).collect(HashSet::new, HashSet::add, HashSet::addAll);
     }
 
     /**
-     * Adds the user represented by the given user id to the group.
-     * @param userId id of user to add to the group
+     * Returns the users a part of the group.
+     * @return users a part of the group
      */
-    public void addMember(int userId) {
-        memberIds.add(userId);
-    }
-
-    /**
-     * Removes the user represented by the given user id from the group.
-     * @param userId id of user to remove from the group
-     */
+    public Set<UserModel> getMembers() {
     public void removeMember(int userId) {
         memberIds.remove(userId);
     }
@@ -190,5 +182,21 @@ public class GroupModel {
 
     public List<UserModel> getUsers() {
         return users;
+    }
+
+    /**
+     * Adds the given user to the group.
+     * @param user user to add to the group
+     */
+    public void addMember(UserModel user) {
+        users.add(user);
+    }
+
+    /**
+     * Removes the user from the group.
+     * @param user user to remove from the group
+     */
+    public void removeMember(UserModel user) {
+        users.removeIf(userInGroup -> userInGroup.getUserId() == user.getUserId());
     }
 }

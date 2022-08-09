@@ -1,5 +1,6 @@
 package nz.ac.canterbury.seng302.identityprovider.server;
 
+import com.fasterxml.jackson.databind.util.ArrayIterator;
 import com.google.protobuf.Empty;
 import io.grpc.stub.StreamObserver;
 import net.devh.boot.grpc.server.service.GrpcService;
@@ -10,9 +11,12 @@ import nz.ac.canterbury.seng302.identityprovider.service.GroupModelService;
 import nz.ac.canterbury.seng302.identityprovider.service.UserModelService;
 import nz.ac.canterbury.seng302.shared.identityprovider.*;
 import nz.ac.canterbury.seng302.shared.util.ValidationError;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.naming.directory.InvalidAttributesException;
+import java.text.MessageFormat;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -23,6 +27,8 @@ import java.util.Set;
  */
 @GrpcService
 public class GroupModelServerService extends GroupsServiceGrpc.GroupsServiceImplBase {
+
+    private static final Logger logger = LoggerFactory.getLogger(GroupModelServerService.class);
 
     @Autowired
     private GroupModelService groupModelService;
@@ -180,13 +186,58 @@ public class GroupModelServerService extends GroupsServiceGrpc.GroupsServiceImpl
             reply.setLongName(groupModel.getLongName());
             reply.setShortName(groupModel.getShortName());
 
-            List<UserModel> userModelList = groupModel.getUsers();
+            Set<UserModel> userModelList = groupModel.getMembers();
             for (UserModel userModel : userModelList) {
                 reply.addMembers(userModelService.getUserInfo(userModel));
             }
         }
         responseObserver.onNext(reply.build());
         responseObserver.onCompleted();
+    }
+
+    /**
+     * Adds the users in the request to the group in the request.
+     * @param request contains group and id and user ids
+     * @param responseObserver used to send the response to portfolio
+     */
+    @Override
+    public void addGroupMembers(AddGroupMembersRequest request, StreamObserver<AddGroupMembersResponse> responseObserver) {
+        AddGroupMembersResponse.Builder reply = AddGroupMembersResponse.newBuilder();
+        Iterable<UserModel> users = userModelService.getUsersByIds(request.getUserIdsList());
+        boolean isSuccess;
+        if (request.getGroupId() == (TEACHERS_GROUP_ID)) {
+            checkUsersInTeachersGroup(users);
+            // This is done as it assumes there's no returned issues with adding the user to the teachers group.
+            // If roles are not being added or users not being added to the group correctly, check logs.
+            isSuccess = true;
+        } else {
+            isSuccess = groupModelService.addUsersToGroup(users, request.getGroupId());
+        }
+        if (request.getGroupId() == MEMBERS_WITHOUT_GROUP_ID && isSuccess) {
+            userModelService.setOnlyGroup(users, groupModelService.getMembersWithoutAGroup());
+        }
+        reply.setIsSuccess(isSuccess);
+        responseObserver.onNext(reply.build());
+        responseObserver.onCompleted();
+    }
+
+    /**
+     * Checks to see if a list of users are part of the teachers group. If not, it adds them to it.
+     * Also adds the teacher role to the user, if they don't have it already.
+     * @param users users to check if they are in the teachers group and have the teacher role.
+     */
+    public void checkUsersInTeachersGroup(Iterable<UserModel> users) {
+
+        for (UserModel user : users) {
+            boolean addedToGroup = groupModelService.addUsersToGroup(new ArrayIterator<>(new UserModel[]{user}), GroupModelServerService.TEACHERS_GROUP_ID);
+            if (!addedToGroup) {
+                logger.error("Something went wrong with the teachers group");
+            }
+            boolean roleWasAdded = userModelService.checkUserHasTeacherRole(user);
+            if (!roleWasAdded) {
+                logger.warn(MessageFormat.format("User {0} was not given teacher role. ", user.getUserId()));
+            }
+        }
     }
 
     /**
@@ -218,4 +269,5 @@ public class GroupModelServerService extends GroupsServiceGrpc.GroupsServiceImpl
             reply.setIsSuccess(false).setMessage("Name was not unique");
         }
     }
+
 }

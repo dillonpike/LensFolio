@@ -1,5 +1,6 @@
 package nz.ac.canterbury.seng302.identityprovider.server;
 
+import com.fasterxml.jackson.databind.util.ArrayIterator;
 import com.google.common.annotations.VisibleForTesting;
 import io.grpc.stub.StreamObserver;
 import net.devh.boot.grpc.server.service.GrpcService;
@@ -86,6 +87,10 @@ public class UserAccountServerService extends UserAccountServiceGrpc.UserAccount
                     "Unknown Pronouns" //request.getPersonalPronouns()
             );
             createdUser = userModelService.addUser(newUser);
+            boolean wasAddedToNonGroup = groupModelService.addUsersToGroup(new ArrayIterator<>(new UserModel[]{createdUser}), GroupModelServerService.MEMBERS_WITHOUT_GROUP_ID);
+            if (!wasAddedToNonGroup) {
+                logger.error("Something went wrong with the 'members without a group' group. User not added to the group. ");
+            }
             wasAdded = true;
         } catch (Exception e) {
             logger.error(MessageFormat.format(
@@ -112,6 +117,14 @@ public class UserAccountServerService extends UserAccountServiceGrpc.UserAccount
                 reply.setEmail("");
             } else {
                 UserModel user = userModelService.getUserById(request.getId());
+
+                // Make sure the user is in the 'members without a group' group if they are in no groups.
+                if (user.getGroups().isEmpty()) {
+                    boolean wasAddedToNonGroup = groupModelService.addUsersToGroup(new ArrayIterator<>(new UserModel[]{user}), GroupModelServerService.MEMBERS_WITHOUT_GROUP_ID);
+                    if (!wasAddedToNonGroup) {
+                        logger.error("Something went wrong with the 'members without a group' group. User not added to the group. ");
+                    }
+                }
 
                 // If there isn't a user image it returns an empty string which is then identified by the portfolio.
                 // It will then display the default user image.
@@ -427,9 +440,9 @@ public class UserAccountServerService extends UserAccountServiceGrpc.UserAccount
                     Roles studentRole = rolesRepository.findByRoleName("TEACHER");
                     user.addRoles(studentRole);
                     userModelService.saveEditedUser(user);
-                    boolean wasAddedToGroup = groupModelService.addUserToGroup(user.getUserId(), GroupModelServerService.TEACHERS_GROUP_ID);
+                    boolean wasAddedToGroup = groupModelService.addUsersToGroup(new ArrayIterator<>(new UserModel[]{user}), GroupModelServerService.TEACHERS_GROUP_ID);
                     if (!wasAddedToGroup) {
-                        throw new InvalidAttributesException("User or Teacher Group did not exist. Or user already part of the Teachers group. ");
+                        throw new InvalidAttributesException("Teacher Group did not exist. ");
                     }
                 } else if (role.getNumber() == 2) {
                     Roles studentRole = rolesRepository.findByRoleName("COURSE ADMINISTRATOR");
@@ -496,9 +509,9 @@ public class UserAccountServerService extends UserAccountServiceGrpc.UserAccount
                     Roles teacherRole = rolesRepository.findByRoleName("TEACHER");
                     user.deleteRole(teacherRole);
                     userModelService.saveEditedUser(user);
-                    boolean wasRemovedFromGroup = groupModelService.removeUserFromGroup(user.getUserId(), GroupModelServerService.TEACHERS_GROUP_ID);
+                    boolean wasRemovedFromGroup = groupModelService.removeUsersFromGroup(new ArrayIterator<>(new UserModel[]{user}), GroupModelServerService.TEACHERS_GROUP_ID);
                     if (!wasRemovedFromGroup) {
-                        throw new InvalidAttributesException("User or Teacher Group did not exist. Or user already not part of the Teachers group. ");
+                        throw new InvalidAttributesException("Teacher Group did not exist. ");
                     }
                     reply.setIsSuccess(true);
                 } else {
