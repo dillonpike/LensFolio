@@ -213,6 +213,7 @@ public class UserModelService {
             Set<GroupModel> usersGroups = user.getGroups();
             if (usersGroups.isEmpty()) {
                 user.addGroup(usersWithoutGroupGroup);
+                repository.save(user);
                 logger.info(MessageFormat.format("New user id:{0} found without group, added them to 'users without a group' group", user.getUserId()));
             }
         }
