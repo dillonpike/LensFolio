@@ -274,22 +274,6 @@ public class GroupModelService {
         return groupOptional.orElse(null);
     }
 
-//    /**
-//     * Remove users from a group. If a user was already not in the group, the method still returns true.
-//     * @param userId ID of user being removed from the group.
-//     * @param groupId Id of the group the user is being removed from.
-//     * @return Whether the user was removed from the group.
-//     */
-//    public boolean removeUserFromGroup(Integer userId, Integer groupId) {
-//        try {
-//            GroupModel group = repository.getGroupModelByGroupId(groupId);
-//            group.removeMember(userId);
-//            repository.save(group);
-//        } catch (Exception e) {
-//            return false;
-//        }
-//        return true;
-//    }
     /**
      * Remove users from a group. If a user was already not in the group, the method still returns true.
      * @param users iterable list of users to be removed from the group.

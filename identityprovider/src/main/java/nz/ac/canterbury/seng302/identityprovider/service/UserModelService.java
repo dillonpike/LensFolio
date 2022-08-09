@@ -2,6 +2,7 @@ package nz.ac.canterbury.seng302.identityprovider.service;
 
 import nz.ac.canterbury.seng302.identityprovider.model.GroupModel;
 import nz.ac.canterbury.seng302.identityprovider.model.Roles;
+import nz.ac.canterbury.seng302.identityprovider.repository.GroupRepository;
 import nz.ac.canterbury.seng302.identityprovider.repository.RolesRepository;
 import nz.ac.canterbury.seng302.identityprovider.model.UserModel;
 import nz.ac.canterbury.seng302.identityprovider.repository.UserModelRepository;
@@ -174,8 +175,8 @@ public class UserModelService {
         Set<Roles> roles = user.getRoles();
         Roles[] rolesArray = roles.toArray(new Roles[roles.size()]);
 
-        for (int i = 0; i < rolesArray.length; i++) {
-            response.addRolesValue(rolesArray[i].getId());
+        for (Roles value : rolesArray) {
+            response.addRolesValue(value.getId());
         }
         return response.build();
     }

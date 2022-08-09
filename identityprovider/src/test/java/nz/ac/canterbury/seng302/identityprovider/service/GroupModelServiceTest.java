@@ -18,6 +18,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import javax.naming.directory.InvalidAttributesException;
+import java.util.HashSet;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -68,7 +69,7 @@ class GroupModelServiceTest {
      */
     @Test
     void testDeleteExistingGroup() {
-        when(groupRepository.findById(any(Integer.class))).thenReturn(Optional.of(testGroup));
+        when(groupRepository.findById(any(Integer.class))).thenReturn(Optional.of(testGroup)).thenReturn(Optional.empty());
         doNothing().when(groupRepository).deleteById(testGroup.getGroupId());
 
         boolean isSuccess = groupModelService.removeGroup(testGroup.getGroupId());

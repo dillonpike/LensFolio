@@ -159,6 +159,9 @@ public class GroupModel {
      * @return users a part of the group
      */
     public Set<UserModel> getMembers() {
+        return this.users;
+    }
+
     public void removeMember(int userId) {
         memberIds.remove(userId);
     }
@@ -176,10 +179,6 @@ public class GroupModel {
      */
     public void setGroupRepositoryModels(Set<GroupRepositoryModel> groupRepositoryModels) {
         this.groupRepositoryModels = groupRepositoryModels;
-    }
-
-    public List<UserModel> getUsers() {
-        return users;
     }
 
     /**

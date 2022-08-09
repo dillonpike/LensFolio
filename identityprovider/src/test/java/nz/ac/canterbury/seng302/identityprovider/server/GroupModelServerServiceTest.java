@@ -4,6 +4,7 @@ import io.grpc.stub.StreamObserver;
 import nz.ac.canterbury.seng302.identityprovider.model.GroupModel;
 import nz.ac.canterbury.seng302.identityprovider.repository.GroupRepository;
 import nz.ac.canterbury.seng302.identityprovider.service.GroupModelService;
+import nz.ac.canterbury.seng302.identityprovider.service.UserModelService;
 import nz.ac.canterbury.seng302.shared.identityprovider.*;
 import nz.ac.canterbury.seng302.shared.util.ValidationError;
 import org.junit.jupiter.api.Test;
@@ -11,6 +12,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import javax.naming.directory.InvalidAttributesException;
 import javax.swing.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -47,6 +49,9 @@ class GroupModelServerServiceTest {
     @Mock
     private StreamObserver<PaginatedGroupsResponse> paginatedGroupsResponseObserver;
 
+    @Mock
+    private UserModelService userModelService;
+
     @InjectMocks
     private GroupModelServerService groupModelServerService = Mockito.spy(GroupModelServerService.class);
 
@@ -61,12 +66,13 @@ class GroupModelServerServiceTest {
      * That it will successfully delete the group from the repository.
      */
     @Test
-    void testDeleteExistingGroup() {
+    void testDeleteExistingGroup() throws InvalidAttributesException {
         // Build the request.
         DeleteGroupRequest request = DeleteGroupRequest.newBuilder().setGroupId(1).build();
 
         // Setups up mock outcomes.
         when(groupModelService.removeGroup(anyInt())).thenReturn(true);
+        when(groupModelService.getGroupById(any(Integer.class))).thenReturn(testGroup);
 
         // Runs tasks for deleting existing group.
         groupModelServerService.deleteGroup(request, deleteObserver);
@@ -89,12 +95,13 @@ class GroupModelServerServiceTest {
      * that it will unsuccessfully delete the group from the repository.
      */
     @Test
-    void testDeleteNonExistingGroup() {
+    void testDeleteNonExistingGroup() throws InvalidAttributesException {
         // Build the request.
         DeleteGroupRequest request = DeleteGroupRequest.newBuilder().setGroupId(1).build();
 
         // Setups up mock outcomes.
         when(groupModelService.removeGroup(anyInt())).thenReturn(false);
+        when(groupModelService.getGroupById(any(Integer.class))).thenReturn(testGroup);
 
         // Runs tasks for deleting existing group.
         groupModelServerService.deleteGroup(request, deleteObserver);
@@ -155,7 +162,6 @@ class GroupModelServerServiceTest {
         // Static variables
         String shortName = "Short Name";
         String longName = "Long Name";
-        GroupModel testGroup = new GroupModel(shortName, longName, 1);
 
         // Build the request
         CreateGroupRequest request = CreateGroupRequest.newBuilder().setShortName(shortName).setLongName(longName).build();
@@ -420,7 +426,6 @@ class GroupModelServerServiceTest {
         PaginatedGroupsResponse response = captor.getValue();
 
         assertEquals(3, response.getGroupsCount());
-
     }
 
 

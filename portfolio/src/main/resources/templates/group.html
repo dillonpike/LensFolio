@@ -271,7 +271,7 @@
     function sendStopEditingLiveNotificationRequest(inputElementName, modal, action){
         $(inputElementName).click(function() {
             if (getModalActionType(modal) === action) {
-                sendEmpty(milestoneName, milestoneId, userId, userFirstName, userLastName, username, "Group");
+                sendEmpty(selectedArtefactName, selectedArtefactId, userId, userFirstName, userLastName, username, "Group");
             }
         })
     }
