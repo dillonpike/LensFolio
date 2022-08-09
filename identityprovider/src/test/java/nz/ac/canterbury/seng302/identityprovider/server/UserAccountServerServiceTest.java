@@ -5,6 +5,7 @@ import nz.ac.canterbury.seng302.identityprovider.model.Roles;
 import nz.ac.canterbury.seng302.identityprovider.model.UserModel;
 import nz.ac.canterbury.seng302.identityprovider.repository.RolesRepository;
 import nz.ac.canterbury.seng302.identityprovider.server.UserAccountServerService;
+import nz.ac.canterbury.seng302.identityprovider.service.GroupModelService;
 import nz.ac.canterbury.seng302.identityprovider.service.UserModelService;
 import nz.ac.canterbury.seng302.shared.identityprovider.ModifyRoleOfUserRequest;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserRole;
@@ -13,9 +14,11 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.*;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 /***
  * Testing class which contains unit test for methods in UserAccountServerService
@@ -27,6 +30,9 @@ class UserAccountServerServiceTest {
 
     @Mock
     private RolesRepository rolesRepository;
+
+    @Mock
+    private GroupModelService groupModelService;
 
     @InjectMocks
     UserAccountServerService userAccountServerService = Mockito.spy(UserAccountServerService.class);
@@ -62,9 +68,9 @@ class UserAccountServerServiceTest {
         ArgumentCaptor<UserModel> addedUserModel = ArgumentCaptor.forClass(UserModel.class);
 
         UserRoleChangeResponse reply = userAccountServerService.addRoleToUserHelper(request);
-        Assertions.assertEquals(true,reply.getIsSuccess());
-        Mockito.verify(mockUserModel).addRoles(roleAdded.capture());
-        Mockito.verify(userModelService).saveEditedUser(addedUserModel.capture());
+        assertTrue(reply.getIsSuccess());
+        verify(mockUserModel).addRoles(roleAdded.capture());
+        verify(userModelService).saveEditedUser(addedUserModel.capture());
     }
 
     /***
@@ -91,9 +97,9 @@ class UserAccountServerServiceTest {
         ArgumentCaptor<UserModel> addedUserModel = ArgumentCaptor.forClass(UserModel.class);
 
         UserRoleChangeResponse reply = userAccountServerService.addRoleToUserHelper(request);
-        Assertions.assertEquals(true,reply.getIsSuccess());
-        Mockito.verify(mockUserModel).addRoles(roleAdded.capture());
-        Mockito.verify(userModelService).saveEditedUser(addedUserModel.capture());
+        assertTrue(reply.getIsSuccess());
+        verify(mockUserModel).addRoles(roleAdded.capture());
+        verify(userModelService).saveEditedUser(addedUserModel.capture());
     }
 
     /***
@@ -120,9 +126,9 @@ class UserAccountServerServiceTest {
         ArgumentCaptor<UserModel> addedUserModel = ArgumentCaptor.forClass(UserModel.class);
 
         UserRoleChangeResponse reply = userAccountServerService.addRoleToUserHelper(request);
-        Assertions.assertEquals(true,reply.getIsSuccess());
-        Mockito.verify(mockUserModel).addRoles(roleAdded.capture());
-        Mockito.verify(userModelService).saveEditedUser(addedUserModel.capture());
+        assertTrue(reply.getIsSuccess());
+        verify(mockUserModel).addRoles(roleAdded.capture());
+        verify(userModelService).saveEditedUser(addedUserModel.capture());
     }
 
     /***
@@ -149,9 +155,9 @@ class UserAccountServerServiceTest {
         ArgumentCaptor<UserModel> deletedRoleModel = ArgumentCaptor.forClass(UserModel.class);
 
         UserRoleChangeResponse reply = userAccountServerService.removeRoleFromUserHelper(request);
-        Assertions.assertEquals(true,reply.getIsSuccess());
-        Mockito.verify(mockUserModel).deleteRole(deletedRole.capture());
-        Mockito.verify(userModelService).saveEditedUser(deletedRoleModel.capture());
+        assertTrue(reply.getIsSuccess());
+        verify(mockUserModel).deleteRole(deletedRole.capture());
+        verify(userModelService).saveEditedUser(deletedRoleModel.capture());
 
     }
 
@@ -179,9 +185,9 @@ class UserAccountServerServiceTest {
         ArgumentCaptor<UserModel> deletedRoleModel = ArgumentCaptor.forClass(UserModel.class);
 
         UserRoleChangeResponse reply = userAccountServerService.removeRoleFromUserHelper(request);
-        Assertions.assertEquals(true,reply.getIsSuccess());
-        Mockito.verify(mockUserModel).deleteRole(deletedRole.capture());
-        Mockito.verify(userModelService).saveEditedUser(deletedRoleModel.capture());
+        assertTrue(reply.getIsSuccess());
+        verify(mockUserModel).deleteRole(deletedRole.capture());
+        verify(userModelService).saveEditedUser(deletedRoleModel.capture());
 
     }
 
@@ -209,9 +215,9 @@ class UserAccountServerServiceTest {
         ArgumentCaptor<UserModel> deletedRoleModel = ArgumentCaptor.forClass(UserModel.class);
 
         UserRoleChangeResponse reply = userAccountServerService.removeRoleFromUserHelper(request);
-        Assertions.assertEquals(true,reply.getIsSuccess());
-        Mockito.verify(mockUserModel).deleteRole(deletedRole.capture());
-        Mockito.verify(userModelService).saveEditedUser(deletedRoleModel.capture());
+        assertTrue(reply.getIsSuccess());
+        verify(mockUserModel).deleteRole(deletedRole.capture());
+        verify(userModelService).saveEditedUser(deletedRoleModel.capture());
 
     }
 }

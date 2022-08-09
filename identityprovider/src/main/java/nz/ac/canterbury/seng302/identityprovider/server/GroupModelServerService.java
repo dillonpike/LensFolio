@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.naming.directory.InvalidAttributesException;
+import java.text.MessageFormat;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -203,8 +204,15 @@ public class GroupModelServerService extends GroupsServiceGrpc.GroupsServiceImpl
     public void addGroupMembers(AddGroupMembersRequest request, StreamObserver<AddGroupMembersResponse> responseObserver) {
         AddGroupMembersResponse.Builder reply = AddGroupMembersResponse.newBuilder();
         Iterable<UserModel> users = userModelService.getUsersByIds(request.getUserIdsList());
-        boolean isSuccess = groupModelService.addUsersToGroup(users, request.getGroupId());
-        checkUsersInTeachersGroup(users);
+        boolean isSuccess;
+        if (request.getGroupId() == (TEACHERS_GROUP_ID)) {
+            checkUsersInTeachersGroup(users);
+            // This is done as it assumes there's no returned issues with adding the user to the teachers group.
+            // If roles are not being added or users not being added to the group correctly, check logs.
+            isSuccess = true;
+        } else {
+            isSuccess = groupModelService.addUsersToGroup(users, request.getGroupId());
+        }
         if (request.getGroupId() == MEMBERS_WITHOUT_GROUP_ID && isSuccess) {
             userModelService.setOnlyGroup(users, groupModelService.getMembersWithoutAGroup());
         }
@@ -215,7 +223,8 @@ public class GroupModelServerService extends GroupsServiceGrpc.GroupsServiceImpl
 
     /**
      * Checks to see if a list of users are part of the teachers group. If not, it adds them to it.
-     * @param users users to check if they are in the teachers group.
+     * Also adds the teacher role to the user, if they don't have it already.
+     * @param users users to check if they are in the teachers group and have the teacher role.
      */
     public void checkUsersInTeachersGroup(Iterable<UserModel> users) {
 
@@ -224,7 +233,10 @@ public class GroupModelServerService extends GroupsServiceGrpc.GroupsServiceImpl
             if (!addedToGroup) {
                 logger.error("Something went wrong with the teachers group");
             }
-            userModelService.checkUserHasTeacherRole(user);
+            boolean roleWasAdded = userModelService.checkUserHasTeacherRole(user);
+            if (!roleWasAdded) {
+                logger.warn(MessageFormat.format("User {0} was not given teacher role. ", user.getUserId()));
+            }
         }
     }
 
