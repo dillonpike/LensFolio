@@ -284,7 +284,7 @@ class GroupModelServiceTest {
      * Try to remove a user from a group after they are added.
      */
     @Test
-    void removeUserFromGroup() {
+    void removeUserFromGroup() throws InvalidAttributesException {
         UserModel testUser = new UserModel();
         testUser.setUserId(1);
 
@@ -302,7 +302,7 @@ class GroupModelServiceTest {
     }
 
     @Test
-    void removeUserFromGroupWhenNotInGroup() {
+    void removeUserFromGroupWhenNotInGroup() throws InvalidAttributesException {
         UserModel testUser = new UserModel();
         testUser.setUserId(1);
 
@@ -317,7 +317,7 @@ class GroupModelServiceTest {
     }
 
     @Test
-    void removeUserFromGroupThatDoesNotExist() {
+    void removeUserFromGroupThatDoesNotExist() throws InvalidAttributesException {
         UserModel testUser = new UserModel();
         testUser.setUserId(1);
 

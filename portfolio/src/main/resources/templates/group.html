@@ -118,7 +118,7 @@
                             <button type="button" class="btn btn-success" onclick="copyUsers()">
                                 Confirm
                             </button>
-                            <button type="button" class="btn btn-danger ms-auto" data-bs-type="remove" data-bs-toggle="modal" data-bs-target="#removeUserModal">
+                            <button th:if="${groupLongName != 'Members without a group'}" type="button" class="btn btn-danger ms-auto" data-bs-type="remove" data-bs-toggle="modal" data-bs-target="#removeUserModal">
                                 Remove Users
                             </button>
                         </div>

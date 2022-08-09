@@ -1,5 +1,6 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
+import java.util.Objects;
 import nz.ac.canterbury.seng302.portfolio.model.Group;
 import nz.ac.canterbury.seng302.portfolio.model.NotificationMessage;
 import nz.ac.canterbury.seng302.portfolio.model.NotificationResponse;
@@ -23,7 +24,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import java.time.Instant;
 import java.util.Date;
 import java.util.List;
-import java.util.Objects;
 
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.HtmlUtils;
@@ -48,7 +48,7 @@ public class GroupController {
     @Autowired
     RegisterClientService registerClientService;
 
-    private final String updateMessageId = "isUpdateSuccess";
+    private static final String updateMessageId = "isUpdateSuccess";
 
     private static final Integer MEMBERS_WITHOUT_GROUP_ID = 1;
 
@@ -136,6 +136,34 @@ public class GroupController {
         } else {
             httpServletResponse.setStatus(HttpServletResponse.SC_BAD_REQUEST);
         }
+    }
+
+    /**
+     * Submits a request to the identity provider to delete the group with the given id from the database. Adds a
+     * variable to the model indicating whether or not this was successful.
+     * @param httpServletResponse for adding status codes to
+     */
+    @PostMapping("/remove-users")
+    public String removeUsers(
+        @RequestParam("groupId") Integer groupId,
+        @RequestParam("userIds") List<Integer> userIds,
+        Model model,
+        HttpServletResponse httpServletResponse
+    ) {
+        RemoveGroupMembersResponse response = groupService.removeMembersFromGroup(groupId, userIds);
+        if (response.getIsSuccess()) {
+            httpServletResponse.setStatus(HttpServletResponse.SC_OK);
+            if (Objects.equals(groupId, MEMBERS_WITHOUT_GROUP_ID)) {
+                groupService.addGroupListToModel(model);
+                return "group::groupList";
+            } else {
+                groupService.addGroupDetailToModel(model, groupId);
+                return "group::groupCard";
+            }
+        } else {
+            httpServletResponse.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+        }
+        return null;
     }
 
     /**

@@ -211,15 +211,11 @@ function removeUserModalSetup() {
         // Button that triggered the modal
         const button = event.relatedTarget
 
-        // Extract info from data-bs-* attributes
-        const id = button.getAttribute('data-bs-id')
-        const user = button.getAttribute('data-bs-user')
-
         const modalButton = removeUserModal.querySelector('.modal-footer button')
         const modalLink = removeUserModal.querySelector('.modal-footer a')
 
         modalLink.removeAttribute('href')
-        modalButton.onclick = () => {removeUserModalButtonFunction(user, id)}
+        modalButton.onclick = () => {removeUserModalButtonFunction()}
     })
 }
 
@@ -229,20 +225,29 @@ function removeUserModalSetup() {
  * @param type the string 'group'
  * @param id id of the group
  */
-function removeUserModalButtonFunction(user, id) {
+function removeUserModalButtonFunction() {
+    const modal = document.getElementById('removeUserModal');
 
-    const buttonFunction = document.getElementById('removeUserModalButton').onclick;
-    document.getElementById('removeUserModalButton').onclick = () => {console.log(user)}
-   /* $.ajax({
-        url: `delete-${type}/${id}`,
-        type: 'DELETE',
-        success: function() {
+    const table = document.getElementById('table');
+    const selected = userTable.rows('.selected').data().toArray().map(row => row.DT_RowId);
+    const groupId = document.getElementsByClassName("active")[0].parentElement.id.substring('groupCard'.length)
+    const data = {groupId: groupId, userIds: selected}
+
+    $.post('remove-users' + "?" + new URLSearchParams(data)).done((result) => {
+            if (data.groupId === '1') {
+                $(`#groupList`).replaceWith(result)
+                updateTable(groupId)
+            } else {
+                $(`#groupCard${data.groupId}`).replaceWith(result)
+                if (groupId === '1') {
+                    updateMembersWithoutAGroupCard()
+                    updateTable(groupId)
+                }
+            }
+            updateTable(groupId)
+            updateMembersWithoutAGroupCard()
             $('#removeUserModal').modal('toggle')
-            $(`#groupCard${id}`).remove()
-            $(`#groupCard1 button`).click() // Select members without a group
-        },
-        error: function() {
-            document.getElementById('removeUserModalButton').onclick = buttonFunction;
-        }
-    })*/
+            groupButtonSetup() // Allow group cards to be highlighted when selected
+            showAlertToast("Group " + data.groupId + " Updated");
+        })
 }

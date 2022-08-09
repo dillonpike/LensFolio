@@ -270,4 +270,33 @@ public class GroupModelServerService extends GroupsServiceGrpc.GroupsServiceImpl
         }
     }
 
+    /**
+     * Adds the users in the request to the group in the request.
+     * @param request contains group and id and user ids
+     * @param responseObserver used to send the response to portfolio
+     */
+    @Override
+    public void removeGroupMembers(RemoveGroupMembersRequest request, StreamObserver<RemoveGroupMembersResponse> responseObserver) {
+        RemoveGroupMembersResponse.Builder reply = RemoveGroupMembersResponse.newBuilder();
+        Iterable<UserModel> users = userModelService.getUsersByIds(request.getUserIdsList());
+        boolean isSuccess = false;
+        if (request.getGroupId() == (TEACHERS_GROUP_ID)) {
+            checkUsersInTeachersGroup(users);
+            // This is done as it assumes there's no returned issues with adding the user to the teachers group.
+            // If roles are not being added or users not being added to the group correctly, check logs.
+            isSuccess = true;
+        } else {
+            try {
+                isSuccess = groupModelService.removeUsersFromGroup(users, request.getGroupId());
+            } catch (InvalidAttributesException e) {
+                isSuccess = false;
+            }
+        }
+        if (request.getGroupId() == MEMBERS_WITHOUT_GROUP_ID && isSuccess) {
+            userModelService.setOnlyGroup(users, groupModelService.getMembersWithoutAGroup());
+        }
+        reply.setIsSuccess(isSuccess);
+        responseObserver.onNext(reply.build());
+        responseObserver.onCompleted();
+    }
 }

@@ -1,5 +1,6 @@
 package nz.ac.canterbury.seng302.identityprovider.service;
 
+import java.util.ArrayList;
 import nz.ac.canterbury.seng302.identityprovider.model.GroupModel;
 import nz.ac.canterbury.seng302.identityprovider.model.UserModel;
 import nz.ac.canterbury.seng302.identityprovider.repository.GroupRepository;
@@ -225,7 +226,9 @@ public class GroupModelService {
                 }
                 repository.save(group);
                 logger.info(MessageFormat.format("Added the following users to group {0}: {1}", groupId, users));
+
                 removeFromMembersWithoutAGroup(users);
+
             } catch (Exception e) {
                 logger.error(MessageFormat.format("Error adding user to group {0}", groupId));
                 logger.error(e.getMessage());
@@ -278,12 +281,32 @@ public class GroupModelService {
      * @param groupId Id of the group the users are being removed from.
      * @return Whether the user was removed from the group.
      */
-    public boolean removeUsersFromGroup(Iterable<UserModel> users, Integer groupId) {
+    public boolean removeUsersFromGroup(Iterable<UserModel> users, Integer groupId)
+        throws InvalidAttributesException {
         Optional<GroupModel> groupOptional = repository.findById(groupId);
         if (groupOptional.isPresent()) {
             GroupModel group = groupOptional.get();
             for (UserModel user : users) {
                 group.removeMember(user);
+                boolean noGroup = true;
+                List<GroupModel> groups = getAllGroups();
+                for (GroupModel newGroup : groups) {
+                    if (newGroup.getGroupId() != group.getGroupId()) {
+                        Set<UserModel> userModelList = newGroup.getMembers();
+                        for (UserModel userModel : userModelList) {
+                            if (userModel.getUserId() == user.getUserId()) {
+                                noGroup = false;
+                            }
+                        }
+                    }
+                }
+                if (noGroup) {
+                    ArrayList<UserModel> groupuser = new ArrayList<>();
+                    groupuser.add(user);
+                    GroupModel g = getGroupById(GroupModelServerService.MEMBERS_WITHOUT_GROUP_ID);
+                    userModelService.setOnlyGroup(groupuser,g);
+                }
+                // if user not part of any other groups, addUsersToGroup([user], GroupModelServerService.MEMBERS....)
             }
             repository.save(group);
             return true;
