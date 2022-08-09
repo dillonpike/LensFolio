@@ -8,6 +8,7 @@ import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import java.util.List;
 import org.openqa.selenium.By;
+import org.openqa.selenium.ElementClickInterceptedException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
@@ -98,7 +99,9 @@ public class ListOfUsersStepDefs {
 
     @And("I go to the next page")
     public void iGoToTheNextPage() {
-        wait.until(ExpectedConditions.elementToBeClickable(By.id("sortTable_next"))).click();
+        wait.until(ExpectedConditions.elementToBeClickable(webDriver.findElement(By.id("sortTable_next")).findElement(By.tagName("a"))));
+        webDriver.findElement(By.id("sortTable_next")).findElement(By.tagName("a")).click();
+        //webDriver.findElement(By.xpath("//a[contains(text(),'Next')]")).click();
     }
 
     @When("I remove a role")

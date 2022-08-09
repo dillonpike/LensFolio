@@ -81,10 +81,10 @@ public class UserAccountServerService extends UserAccountServiceGrpc.UserAccount
                     request.getFirstName(),
                     request.getMiddleName(), //request.getMiddleName(),
                     request.getLastName(), //request.getLastName(),
-                    "", //request.getNickname(),
+                    request.getNickname(),
                     request.getEmail(),
-                    "Default Bio", //request.getBio(),
-                    "Unknown Pronouns" //request.getPersonalPronouns()
+                    request.getBio(),
+                    request.getPersonalPronouns()
             );
             createdUser = userModelService.addUser(newUser);
             boolean wasAddedToNonGroup = groupModelService.addUsersToGroup(new ArrayIterator<>(new UserModel[]{createdUser}), GroupModelServerService.MEMBERS_WITHOUT_GROUP_ID);
@@ -412,6 +412,7 @@ public class UserAccountServerService extends UserAccountServiceGrpc.UserAccount
     @Override
     public void getPaginatedUsers(GetPaginatedUsersRequest request, StreamObserver<PaginatedUsersResponse> responseObserver) {
         PaginatedUsersResponse.Builder reply = PaginatedUsersResponse.newBuilder();
+
         List<UserModel> allUsers = userModelService.findAllUser();
         for (UserModel allUser : allUsers) {
             reply.addUsers(userModelService.getUserInfo(allUser));

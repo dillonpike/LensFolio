@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import javax.naming.directory.InvalidAttributesException;
 import java.text.MessageFormat;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -55,8 +56,23 @@ public class GroupModelService {
         Optional<GroupModel> groupOptional = repository.findById(id);
 
         if (groupOptional.isPresent()) {
-            GroupModel groupUpdate = groupOptional.get();
-            repository.deleteById(groupUpdate.getGroupId());
+            // Backup the old members
+            GroupModel group = groupOptional.get();
+            Set<UserModel> users = Set.copyOf(group.getMembers());
+            group.setMembers(new HashSet<>());
+            repository.save(group);
+
+            repository.deleteById(group.getGroupId());
+
+            // Check to see if the user was deleted
+            Optional<GroupModel> groupStillThere = repository.findById(id);
+            if (groupStillThere.isPresent()) {
+                // Add the users back since deleting the group did not work
+                GroupModel emptyGroup = groupStillThere.get();
+                emptyGroup.setMembers(users);
+                repository.save(emptyGroup);
+                return false;
+            }
             return true;
         }
         return false;
@@ -226,9 +242,9 @@ public class GroupModelService {
                 }
                 repository.save(group);
                 logger.info(MessageFormat.format("Added the following users to group {0}: {1}", groupId, users));
-
-                removeFromMembersWithoutAGroup(users);
-
+                if (!groupId.equals(GroupModelServerService.MEMBERS_WITHOUT_GROUP_ID)) {
+                    removeFromMembersWithoutAGroup(users);
+                }
             } catch (Exception e) {
                 logger.error(MessageFormat.format("Error adding user to group {0}", groupId));
                 logger.error(e.getMessage());
@@ -259,22 +275,6 @@ public class GroupModelService {
         return groupOptional.orElse(null);
     }
 
-//    /**
-//     * Remove users from a group. If a user was already not in the group, the method still returns true.
-//     * @param userId ID of user being removed from the group.
-//     * @param groupId Id of the group the user is being removed from.
-//     * @return Whether the user was removed from the group.
-//     */
-//    public boolean removeUserFromGroup(Integer userId, Integer groupId) {
-//        try {
-//            GroupModel group = repository.getGroupModelByGroupId(groupId);
-//            group.removeMember(userId);
-//            repository.save(group);
-//        } catch (Exception e) {
-//            return false;
-//        }
-//        return true;
-//    }
     /**
      * Remove users from a group. If a user was already not in the group, the method still returns true.
      * @param users iterable list of users to be removed from the group.

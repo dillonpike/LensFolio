@@ -42,7 +42,9 @@ public class RegisterController {
     String defaultMiddleName = "defaultMiddleName";
     String defaultLastName = "defaultLastName";
     String defaultEmail = "defaultEmail";
-
+    String defaultBio = "defaultBio";
+    String defaultNickName = "defaultNickName";
+    String defaultPronouns = "defaultPronouns";
     /***
      *  GET method to return registration web page
      * @return the registration page(registration.html)
@@ -54,6 +56,9 @@ public class RegisterController {
             @RequestParam(value = "defaultLastName", required = false) String lastName,
             @RequestParam(value = "defaultEmail", required = false) String email,
             @RequestParam(value = "defaultUsername", required = false) String username,
+            @RequestParam(value = "defaultNickName", required = false) String nickName,
+            @RequestParam(value = "defaultPronouns", required = false) String pronouns,
+            @RequestParam(value = "defaultBio", required = false) String bio,
             Model model) {
 
         model.addAttribute("defaultFirstName", firstName);
@@ -61,6 +66,10 @@ public class RegisterController {
         model.addAttribute("defaultLastName", lastName);
         model.addAttribute("defaultEmail", email);
         model.addAttribute("defaultUsername", username);
+        model.addAttribute("defaultPronouns", pronouns);
+        model.addAttribute("defaultNickName", nickName);
+        model.addAttribute("defaultBio", bio);
+
         return "registration";
     }
 
@@ -91,28 +100,30 @@ public class RegisterController {
             @RequestParam(name = "email") String email,
             @RequestParam(name = "password") String password,
             @RequestParam(name = "confirmPassword") String confirmPassword,
+            @RequestParam(name = "bio") String bio,
+            @RequestParam(name = "personalPronouns") String personalPronouns,
+            @RequestParam(name = "nickName") String nickName,
             Model model,
             RedirectAttributes rm
 
     ) {
         AuthenticateResponse loginReply;
         UserRegisterResponse registrationReply;
-
+        String userBio = bio;
+        String userNickName = nickName;
         if (!isValid(password)) {
-            rm.addAttribute(defaultUsername, username);
-            rm.addAttribute(defaultFirstName, firstName);
-            rm.addAttribute(defaultMiddleName, middleName);
-            rm.addAttribute(defaultLastName, lastName);
-            rm.addAttribute(defaultEmail, email);
+            addModelAttribute(rm, username, firstName, middleName, lastName, email);
+            rm.addAttribute(defaultNickName, nickName);
+            rm.addAttribute(defaultPronouns, personalPronouns);
+            rm.addAttribute(defaultBio, bio);
             return "redirect:register?passwordFormatError";
         }
 
         if (!password.equals(confirmPassword)) {
-            rm.addAttribute(defaultUsername, username);
-            rm.addAttribute(defaultFirstName, firstName);
-            rm.addAttribute(defaultMiddleName, middleName);
-            rm.addAttribute(defaultLastName, lastName);
-            rm.addAttribute(defaultEmail, email);
+            addModelAttribute(rm, username, firstName, middleName, lastName, email);
+            rm.addAttribute(defaultNickName, nickName);
+            rm.addAttribute(defaultPronouns, personalPronouns);
+            rm.addAttribute(defaultBio, bio);
             return "redirect:register?passwordError";
         }
 
@@ -121,11 +132,10 @@ public class RegisterController {
             firstNameMatchesPattern = true;
         }
         if (firstNameMatchesPattern) {
-            rm.addAttribute(defaultUsername, username);
-            rm.addAttribute(defaultFirstName, firstName);
-            rm.addAttribute(defaultMiddleName, middleName);
-            rm.addAttribute(defaultLastName, lastName);
-            rm.addAttribute(defaultEmail, email);
+            addModelAttribute(rm, username, firstName, middleName, lastName, email);
+            rm.addAttribute(defaultNickName, nickName);
+            rm.addAttribute(defaultPronouns, personalPronouns);
+            rm.addAttribute(defaultBio, bio);
             return "redirect:register?firstNameError";
         }
 
@@ -134,15 +144,34 @@ public class RegisterController {
             lastNameMatchesPattern = true;
         }
         if (lastNameMatchesPattern) {
-            rm.addAttribute(defaultUsername, username);
-            rm.addAttribute(defaultFirstName, firstName);
-            rm.addAttribute(defaultMiddleName, middleName);
-            rm.addAttribute(defaultLastName, lastName);
-            rm.addAttribute(defaultEmail, email);
+            addModelAttribute(rm, username, firstName, middleName, lastName, email);
+            rm.addAttribute(defaultNickName, nickName);
+            rm.addAttribute(defaultPronouns, personalPronouns);
+            rm.addAttribute(defaultBio, bio);
             return "redirect:register?lastNameError";
         }
+
+        if (userBio.isEmpty()) {
+            userBio = "Default Bio";
+        }
+
+        if (userNickName.length() > 50) {
+            addModelAttribute(rm, username, firstName, middleName, lastName, email);
+            rm.addAttribute(defaultBio, bio);
+            rm.addAttribute(defaultPronouns, personalPronouns);
+            return "redirect:register?nickNameError";
+        }
+
+        if (userBio.length() > 100) {
+            addModelAttribute(rm, username, firstName, middleName, lastName, email);
+            rm.addAttribute(defaultNickName, nickName);
+            rm.addAttribute(defaultPronouns, personalPronouns);
+
+            return "redirect:register?bioError";
+        }
+
         try {
-            registrationReply = registerClientService.receiveConformation(username, password, firstName, middleName, lastName, email);
+            registrationReply = registerClientService.receiveConformation(username, password, firstName, middleName, lastName, email, userBio, personalPronouns, nickName);
         } catch (Exception e) {
             model.addAttribute("err", "Error connecting to Identity Provider...");
             return "redirect:register?idpConnectionError";
@@ -163,25 +192,49 @@ public class RegisterController {
         } else {
             if (registrationReply.getMessage().equals("Username taken")) {
                 model.addAttribute("err", "Username Taken");
-                rm.addAttribute(defaultUsername, username);
-                rm.addAttribute(defaultFirstName, firstName);
-                rm.addAttribute(defaultMiddleName, middleName);
-                rm.addAttribute(defaultLastName, lastName);
-                rm.addAttribute(defaultEmail, email);
+                addModelAttribute(rm, username, firstName, middleName, lastName, email);
+                rm.addAttribute(defaultNickName, nickName);
+                rm.addAttribute(defaultPronouns, personalPronouns);
+                rm.addAttribute(defaultBio, bio);
+
                 return "redirect:register?usernameError";
             } else {
                 model.addAttribute("err", "Something went wrong");
-                rm.addAttribute(defaultUsername, username);
-                rm.addAttribute(defaultFirstName, firstName);
-                rm.addAttribute(defaultMiddleName, middleName);
-                rm.addAttribute(defaultLastName, lastName);
-                rm.addAttribute(defaultEmail, email);
+                addModelAttribute(rm, username, firstName, middleName, lastName, email);
                 return "redirect:register?registerError";
             }
 
         }
     }
 
+    /**
+     * Method to add model attribute(current user's inputs) to the register page, Save user's information on form
+     * @param rm RedirectAttributes
+     * @param username user's username
+     * @param firstName user's first name
+     * @param middleName user's middle name
+     * @param lastName user's last name
+     * @param email user's email
+     */
+    private void addModelAttribute(RedirectAttributes rm,
+                                   String username,
+                                   String firstName,
+                                   String middleName,
+                                   String lastName,
+                                   String email) {
+        rm.addAttribute(defaultUsername, username);
+        rm.addAttribute(defaultFirstName, firstName);
+        rm.addAttribute(defaultMiddleName, middleName);
+        rm.addAttribute(defaultLastName, lastName);
+        rm.addAttribute(defaultEmail, email);
+    }
+
+
+    /**
+     * Method to check if password is in right format
+     * @param password user's password
+     * @return false if any formatting issue
+     */
     public boolean isValid(String password) {
         Matcher matcher = pattern.matcher(password);
         return matcher.matches();

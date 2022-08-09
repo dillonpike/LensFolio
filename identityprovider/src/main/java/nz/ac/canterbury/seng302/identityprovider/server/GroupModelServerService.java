@@ -43,6 +43,8 @@ public class GroupModelServerService extends GroupsServiceGrpc.GroupsServiceImpl
 
     public static final Integer TEACHERS_GROUP_ID = 2;
 
+    private static boolean first_time_load_users = true;
+
     /**
      * Attempts to delete a group with the id in the request. Sends a response with an isSuccess value and message.
      * @param request request that contains a group id
@@ -52,9 +54,26 @@ public class GroupModelServerService extends GroupsServiceGrpc.GroupsServiceImpl
     public void deleteGroup(DeleteGroupRequest request, StreamObserver<DeleteGroupResponse> responseObserver) {
         DeleteGroupResponse.Builder reply = DeleteGroupResponse.newBuilder();
 
-        if (groupModelService.removeGroup(request.getGroupId())) {
-            responseObserver.onNext(reply.setIsSuccess(true).setMessage("Successful").build());
-        } else {
+        Integer groupId = null;
+        try {
+            groupId = request.getGroupId();
+            GroupModel group = groupModelService.getGroupById(request.getGroupId());
+            Set<UserModel> users = group.getMembers();
+
+            if (groupModelService.removeGroup(request.getGroupId())) {
+                groupId = MEMBERS_WITHOUT_GROUP_ID;
+                for (UserModel user : users) {
+                    user.getGroups().remove(group);
+                    if (user.getGroups().isEmpty()) {
+                        groupModelService.addUsersToGroup(new ArrayIterator<>(new UserModel[]{user}) , MEMBERS_WITHOUT_GROUP_ID);
+                    }
+                }
+                responseObserver.onNext(reply.setIsSuccess(true).setMessage("Successful").build());
+            } else {
+                responseObserver.onNext(reply.setIsSuccess(false).setMessage("Unsuccessful").build());
+            }
+        } catch (InvalidAttributesException e) {
+            logger.error(MessageFormat.format("Group {0} does not exist, so cannot be retrieved. ", groupId));
             responseObserver.onNext(reply.setIsSuccess(false).setMessage("Unsuccessful").build());
         }
         responseObserver.onCompleted();
@@ -167,6 +186,11 @@ public class GroupModelServerService extends GroupsServiceGrpc.GroupsServiceImpl
         for (GroupModel groupModel : allGroups) {
             reply.addGroups(groupModelService.getGroupInfo(groupModel));
         }
+        if (first_time_load_users) {
+            userModelService.usersAddedToUsersWithoutGroup(groupModelService.getMembersWithoutAGroup());
+            first_time_load_users = false;
+        }
+
         responseObserver.onNext(reply.build());
         responseObserver.onCompleted();
     }

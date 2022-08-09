@@ -2,6 +2,7 @@ package nz.ac.canterbury.seng302.identityprovider.service;
 
 import nz.ac.canterbury.seng302.identityprovider.model.GroupModel;
 import nz.ac.canterbury.seng302.identityprovider.model.Roles;
+import nz.ac.canterbury.seng302.identityprovider.repository.GroupRepository;
 import nz.ac.canterbury.seng302.identityprovider.repository.RolesRepository;
 import nz.ac.canterbury.seng302.identityprovider.model.UserModel;
 import nz.ac.canterbury.seng302.identityprovider.repository.UserModelRepository;
@@ -12,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.text.MessageFormat;
 import java.util.*;
 
 @Service
@@ -27,7 +29,7 @@ public class UserModelService {
 
     private static int userIdCount = 1;
 
-    public UserModelService(UserModelRepository userModelRepository, RolesRepository rolesRepository) {
+    public UserModelService(UserModelRepository userModelRepository, RolesRepository rolesRepository, GroupRepository groupRepository) {
         this.repository = userModelRepository;
         this.rolesRepository = rolesRepository;
     }
@@ -41,6 +43,11 @@ public class UserModelService {
         return repository.findByUserId(userId);
     }
 
+    /**
+     * Returns all users from a list of user ids.
+     * @param userIds List of user ids to get.
+     * @return Iterable list of UserModels with ids of given list.
+     */
     public Iterable<UserModel> getUsersByIds(List<Integer> userIds) {
         return repository.findAllById(userIds);
     }
@@ -169,8 +176,8 @@ public class UserModelService {
         Set<Roles> roles = user.getRoles();
         Roles[] rolesArray = roles.toArray(new Roles[roles.size()]);
 
-        for (int i = 0; i < rolesArray.length; i++) {
-            response.addRolesValue(rolesArray[i].getId());
+        for (Roles value : rolesArray) {
+            response.addRolesValue(value.getId());
         }
         return response.build();
     }
@@ -196,4 +203,21 @@ public class UserModelService {
         }
         repository.saveAll(users);
     }
+
+    /**
+     * Adds user to 'users without a group' group if they are not in any other groups.
+     * @param usersWithoutGroupGroup 'users without a group' group
+     */
+    public void usersAddedToUsersWithoutGroup(GroupModel usersWithoutGroupGroup) {
+        Iterable<UserModel> users = repository.findAll();
+        for (UserModel user : users) {
+            Set<GroupModel> usersGroups = user.getGroups();
+            if (usersGroups.isEmpty()) {
+                user.addGroup(usersWithoutGroupGroup);
+                repository.save(user);
+                logger.info(MessageFormat.format("New user id:{0} found without group, added them to 'users without a group' group", user.getUserId()));
+            }
+        }
+    }
+
 }

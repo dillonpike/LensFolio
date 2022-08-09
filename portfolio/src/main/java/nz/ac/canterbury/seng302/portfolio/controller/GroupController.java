@@ -1,6 +1,5 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
-import java.util.Objects;
 import nz.ac.canterbury.seng302.portfolio.model.Group;
 import nz.ac.canterbury.seng302.portfolio.model.NotificationMessage;
 import nz.ac.canterbury.seng302.portfolio.model.NotificationResponse;
@@ -24,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import java.time.Instant;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.HtmlUtils;
@@ -46,9 +46,9 @@ public class GroupController {
     public GroupService groupService;
 
     @Autowired
-    RegisterClientService registerClientService;
+    public RegisterClientService registerClientService;
 
-    private static final String updateMessageId = "isUpdateSuccess";
+    private final String updateMessageId = "isUpdateSuccess";
 
     private static final Integer MEMBERS_WITHOUT_GROUP_ID = 1;
 
@@ -244,7 +244,7 @@ public class GroupController {
      * @return returns an NotificationResponse that holds information about the event being updated.
      */
     @MessageMapping("/editing-group")
-    @SendTo("/webSocketGroupsGet/being-edited")
+    @SendTo("/webSocketGet/group-being-edited")
     public NotificationResponse updatingArtefact(NotificationMessage message) {
         int groupId = message.getArtefactId();
         String username = message.getUsername();
@@ -262,7 +262,7 @@ public class GroupController {
      * @return Returns the message given.
      */
     @MessageMapping("/stop-editing-group")
-    @SendTo("/webSocketGroupsGet/stop-being-edited")
+    @SendTo("/webSocketGet/group-stop-being-edited")
     public NotificationResponse stopUpdatingArtefact(NotificationMessage message) {
         int groupId = message.getArtefactId();
         String username = message.getUsername();
@@ -280,7 +280,7 @@ public class GroupController {
      * @return returns an NotificationResponse that holds information about the event being updated.
      */
     @MessageMapping("/saved-edited-group")
-    @SendTo("/webSocketGroupsGet/save-edit")
+    @SendTo("/webSocketGet/group-save-edit")
     public NotificationResponse savingUpdatedArtefact(NotificationMessage message) {
         int groupId = message.getArtefactId();
         String username = message.getUsername();
@@ -294,4 +294,46 @@ public class GroupController {
         return response;
     }
 
+
+    /**
+     * Post method for copying users from one group to another
+     * @param model  Parameters sent to thymeleaf template to be rendered into HTML
+     * @param groupId id of group to copy users to
+     * @return Group detail page
+     */
+    @PostMapping("/copy-users")
+    public String moveUsers(
+            @RequestParam("groupId") Integer groupId,
+            @RequestParam("userIds") List<Integer> userIds,
+            Model model,
+            HttpServletResponse httpServletResponse
+    ) {
+        AddGroupMembersResponse response = groupService.addMemberToGroup(groupId, userIds);
+        if (response.getIsSuccess()) {
+            httpServletResponse.setStatus(HttpServletResponse.SC_OK);
+            if (Objects.equals(groupId, MEMBERS_WITHOUT_GROUP_ID)) {
+                groupService.addGroupListToModel(model);
+                return "group::groupList";
+            } else {
+                groupService.addGroupDetailToModel(model, groupId);
+                return "group::groupCard";
+            }
+        } else {
+            httpServletResponse.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+        }
+        return null;
+    }
+
+    /**
+     * Submits a request to the identity provider to copy users when they are not in a group.
+     * @param model Parameters sent to thymeleaf template to be rendered into HTML
+     * @return Group detail page
+     */
+    @GetMapping("/members-without-a-group")
+    public String membersWithoutAGroupCard(
+            Model model
+    ) {
+        groupService.addGroupDetailToModel(model, MEMBERS_WITHOUT_GROUP_ID);
+        return "group::groupCard";
+    }
 }

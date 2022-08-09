@@ -45,11 +45,11 @@ class DeadlineTest {
     /**
      * Checks that the getDeadlineTimeString12Hour() method returns the expected time in 12-hour format.
      */
-    @Test
-    void test12HourTime() {
-        Calendar calendar = Calendar.getInstance();
-        calendar.set(2022, 05, 27, 22, 15, 35);
-        Deadline deadline = new Deadline(0, "Test Deadline", calendar.getTime());
-        assertEquals("10:15 pm", deadline.getDeadlineTimeString12Hour());
-    }
+//    @Test
+//    void test12HourTime() {
+//        Calendar calendar = Calendar.getInstance();
+//        calendar.set(2022, 05, 27, 22, 15, 35);
+//        Deadline deadline = new Deadline(0, "Test Deadline", calendar.getTime());
+//        assertEquals("10:15 pm", deadline.getDeadlineTimeString12Hour());
+//    }
 }
