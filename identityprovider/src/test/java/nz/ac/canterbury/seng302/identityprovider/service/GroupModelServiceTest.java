@@ -265,25 +265,19 @@ class GroupModelServiceTest {
     }
 
     @Test
-    void checkUserAddedToTeachersGroupAndGivenRole() {
+    void checkUserAddedToTeachersGroup() {
         UserModel testUser = new UserModel();
         testUser.setUserId(1);
 
-        Roles teacherRole = new Roles(1, "TEACHER");
         GroupModel teacherTestGroup = new GroupModel("Teachers", "Teachers Group", 1);
         teacherTestGroup.setGroupId(GroupModelServerService.TEACHERS_GROUP_ID);
 
         when(groupRepository.findById(any(Integer.class))).thenReturn(Optional.of(teacherTestGroup));
-        when(userModelService.checkUserHasTeacherRole(any(UserModel.class))).thenReturn(true);
 
         boolean wasAdded = groupModelService.addUsersToGroup(new ArrayIterator<>(new UserModel[]{testUser}), GroupModelServerService.TEACHERS_GROUP_ID);
 
         assertTrue(wasAdded);
         assertTrue(teacherTestGroup.getMemberIds().contains(testUser.getUserId()));
-        verify(userModelService, times(1)).checkUserHasTeacherRole(any(UserModel.class));
-        testUser.addRoles(teacherRole); // Only runs once checkUserHasTeacherRole has been run
-        assertEquals(1, testUser.getRoles().size());
-        assertTrue(testUser.getRoles().contains(teacherRole));
     }
 
     /**
