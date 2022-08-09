@@ -48,7 +48,7 @@ public class GroupModel {
             inverseJoinColumns =
             @JoinColumn(name = "User_Id")
     )
-    private final Set<UserModel> users = new HashSet<>();
+    private Set<UserModel> users = new HashSet<>();
 
     /**
      * Empty constructor for JPA.
@@ -145,6 +145,14 @@ public class GroupModel {
      */
     public Set<UserModel> getMembers() {
         return users;
+    }
+
+    /**
+     * Sets the members of the group. Overwrites the old members, so be careful using this method.
+     * @param members set of users to add
+     */
+    public void setMembers(Set<UserModel> members) {
+        this.users = members;
     }
 
     /**

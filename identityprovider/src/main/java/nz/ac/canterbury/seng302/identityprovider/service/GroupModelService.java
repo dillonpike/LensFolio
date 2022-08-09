@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import javax.naming.directory.InvalidAttributesException;
 import java.text.MessageFormat;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -54,9 +55,24 @@ public class GroupModelService {
         Optional<GroupModel> groupOptional = repository.findById(id);
 
         if (groupOptional.isPresent()) {
-            repository.deleteById(id);
+            // Backup the old members
+            GroupModel group = groupOptional.get();
+            Set<UserModel> users = Set.copyOf(group.getMembers());
+            group.setMembers(new HashSet<>());
+            repository.save(group);
+
+            repository.deleteById(group.getGroupId());
+
+            // Check to see if the user was deleted
             Optional<GroupModel> groupStillThere = repository.findById(id);
-            return groupStillThere.isEmpty();
+            if (groupStillThere.isPresent()) {
+                // Add the users back since deleting the group did not work
+                GroupModel emptyGroup = groupStillThere.get();
+                emptyGroup.setMembers(users);
+                repository.save(emptyGroup);
+                return false;
+            }
+            return true;
         }
         return false;
     }
@@ -225,7 +241,9 @@ public class GroupModelService {
                 }
                 repository.save(group);
                 logger.info(MessageFormat.format("Added the following users to group {0}: {1}", groupId, users));
-                removeFromMembersWithoutAGroup(users);
+                if (!groupId.equals(GroupModelServerService.MEMBERS_WITHOUT_GROUP_ID)) {
+                    removeFromMembersWithoutAGroup(users);
+                }
             } catch (Exception e) {
                 logger.error(MessageFormat.format("Error adding user to group {0}", groupId));
                 logger.error(e.getMessage());

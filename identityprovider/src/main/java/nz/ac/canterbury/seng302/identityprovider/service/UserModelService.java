@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.text.MessageFormat;
 import java.util.*;
 
 @Service
@@ -195,4 +196,20 @@ public class UserModelService {
         }
         repository.saveAll(users);
     }
+
+    /**
+     * Adds user to 'users without a group' group if they are not in any other groups.
+     * @param usersWithoutGroupGroup 'users without a group' group
+     */
+    public void usersAddedToUsersWithoutGroup(GroupModel usersWithoutGroupGroup) {
+        Iterable<UserModel> users = repository.findAll();
+        for (UserModel user : users) {
+            Set<GroupModel> usersGroups = user.getGroups();
+            if (usersGroups.isEmpty()) {
+                user.addGroup(usersWithoutGroupGroup);
+                logger.info(MessageFormat.format("New user id:{0} found without group, added them to 'users without a group' group", user.getUserId()));
+            }
+        }
+    }
+
 }

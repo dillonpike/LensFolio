@@ -412,6 +412,7 @@ public class UserAccountServerService extends UserAccountServiceGrpc.UserAccount
     @Override
     public void getPaginatedUsers(GetPaginatedUsersRequest request, StreamObserver<PaginatedUsersResponse> responseObserver) {
         PaginatedUsersResponse.Builder reply = PaginatedUsersResponse.newBuilder();
+
         List<UserModel> allUsers = userModelService.findAllUser();
         for (UserModel allUser : allUsers) {
             reply.addUsers(userModelService.getUserInfo(allUser));
