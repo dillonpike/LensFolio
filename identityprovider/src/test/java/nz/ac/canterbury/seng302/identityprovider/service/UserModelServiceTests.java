@@ -1,33 +1,38 @@
 package nz.ac.canterbury.seng302.identityprovider.service;
 
 
+import com.fasterxml.jackson.databind.util.ArrayIterator;
+import nz.ac.canterbury.seng302.identityprovider.model.GroupModel;
 import nz.ac.canterbury.seng302.identityprovider.model.Roles;
 import nz.ac.canterbury.seng302.identityprovider.repository.GroupRepository;
 import nz.ac.canterbury.seng302.identityprovider.repository.RolesRepository;
 import nz.ac.canterbury.seng302.identityprovider.model.UserModel;
 import nz.ac.canterbury.seng302.identityprovider.repository.UserModelRepository;
+import nz.ac.canterbury.seng302.identityprovider.server.GroupModelServerService;
+import nz.ac.canterbury.seng302.identityprovider.server.UserAccountServerService;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import static org.mockito.Mockito.when; //should normally use this one
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import javax.naming.directory.InvalidAttributesException;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+import java.io.*;
+import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.AdditionalAnswers.returnsFirstArg;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 @ExtendWith(SpringExtension.class)
@@ -54,12 +59,21 @@ public class UserModelServiceTests {
     @Mock
     private GroupRepository groupRepository;
 
+    private static final Logger logger = LoggerFactory.getLogger(UserAccountServerService.class);
+
+    private final GroupModel testGroup = new GroupModel("Test", "Test Group", 1);
+
+    private final Roles teacherRole = new Roles(1, "TEACHER");
+
+    private UserModel testUser = new UserModel();
+
     @Before
     public void setUp() {
         MockitoAnnotations.openMocks(this);
 
         userModelService = new UserModelService(userModelRepository, rolesRepository, groupRepository);
 
+        testUser.setUserId(1);
     }
 
     /**
@@ -200,5 +214,19 @@ public class UserModelServiceTests {
         assertThat(userResponseList.size()).isSameAs(userResponseExpectedList.size());
 
     }
+
+    @Test
+    void testCheckUserHasTeachersRole() {
+
+        testUser.setRoles(new HashSet<>());
+
+        when(rolesRepository.findByRoleName("TEACHER")).thenReturn(teacherRole);
+
+        userModelService.checkUserHasTeacherRole(testUser);
+
+        assertTrue(testUser.getRoles().contains(teacherRole));
+    }
+
+
 
 }

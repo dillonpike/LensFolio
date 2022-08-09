@@ -169,3 +169,35 @@ function deleteGroupModalButtonFunction(type, id) {
         }
     })
 }
+
+function copyUsers() {
+    const originGroupId = document.getElementsByClassName("active")[0].parentElement.id.substring('groupCard'.length)
+    const data = {
+        groupId: document.getElementById('groupDropdownList').value,
+        groupName: $( "#groupDropdownList option:selected" ).text(),
+        userIds: userTable.rows('.selected').data().toArray().map(row => row.DT_RowId)
+    }
+    $.post('copy-users' + "?" + new URLSearchParams(data)).done((result) => {
+        if (data.groupId === '1') {
+            $(`#groupList`).replaceWith(result)
+            updateTable(originGroupId)
+        } else {
+            $(`#groupCard${data.groupId}`).replaceWith(result)
+            if (originGroupId === '1') {
+                updateMembersWithoutAGroupCard()
+                updateTable(originGroupId)
+            }
+        }
+        groupButtonSetup() // Allow group cards to be highlighted when selected
+        showAlertToast("Group " + data.groupName + " Updated");
+    }).fail((result) => {
+        showAlertErrorToast("Group " + data.groupName + " failed to be updated");
+    })
+}
+
+function updateMembersWithoutAGroupCard() {
+    $.get('members-without-a-group').done((result) => {
+        $(`#groupCard1`).replaceWith(result)
+        groupButtonSetup() // Allow group cards to be highlighted when selected
+    })
+}

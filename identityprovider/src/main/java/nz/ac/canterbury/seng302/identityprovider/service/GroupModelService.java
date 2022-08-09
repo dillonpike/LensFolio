@@ -3,13 +3,16 @@ package nz.ac.canterbury.seng302.identityprovider.service;
 import nz.ac.canterbury.seng302.identityprovider.model.GroupModel;
 import nz.ac.canterbury.seng302.identityprovider.model.UserModel;
 import nz.ac.canterbury.seng302.identityprovider.repository.GroupRepository;
+import nz.ac.canterbury.seng302.identityprovider.server.GroupModelServerService;
 import nz.ac.canterbury.seng302.shared.identityprovider.GroupDetailsResponse;
-import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.naming.directory.InvalidAttributesException;
-import java.util.ArrayList;
+import java.text.MessageFormat;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -25,6 +28,8 @@ public class GroupModelService {
 
     @Autowired
     private UserModelService userModelService;
+
+    private static final Logger logger = LoggerFactory.getLogger(GroupModelService.class);
 
     /**
      * Adds a group to the database
@@ -50,8 +55,23 @@ public class GroupModelService {
         Optional<GroupModel> groupOptional = repository.findById(id);
 
         if (groupOptional.isPresent()) {
-            GroupModel groupUpdate = groupOptional.get();
-            repository.deleteById(groupUpdate.getGroupId());
+            // Backup the old members
+            GroupModel group = groupOptional.get();
+            Set<UserModel> users = Set.copyOf(group.getMembers());
+            group.setMembers(new HashSet<>());
+            repository.save(group);
+
+            repository.deleteById(group.getGroupId());
+
+            // Check to see if the user was deleted
+            Optional<GroupModel> groupStillThere = repository.findById(id);
+            if (groupStillThere.isPresent()) {
+                // Add the users back since deleting the group did not work
+                GroupModel emptyGroup = groupStillThere.get();
+                emptyGroup.setMembers(users);
+                repository.save(emptyGroup);
+                return false;
+            }
             return true;
         }
         return false;
@@ -148,8 +168,15 @@ public class GroupModelService {
         }
     }
 
-    public boolean editGroup(Integer id, String shortName, String longName) {
-        Optional<GroupModel> groupOptional = repository.findById(id);
+    /**
+     * Edit and save changes of a group
+     * @param groupId ID of the group being editied.
+     * @param shortName New short name for group.
+     * @param longName New long name for group.
+     * @return Whether the new changes were saved.
+     */
+    public boolean editGroup(Integer groupId, String shortName, String longName) {
+        Optional<GroupModel> groupOptional = repository.findById(groupId);
 
         if (groupOptional.isPresent()) {
             GroupModel group = groupOptional.get();
@@ -164,7 +191,7 @@ public class GroupModelService {
 
     /**
      * Method to retrieve every group from database
-     * @return list of gorups
+     * @return list of groups
      */
     public List<GroupModel> getAllGroups() {
         return (List<GroupModel>) repository.findAll();
@@ -180,7 +207,7 @@ public class GroupModelService {
         response.setGroupId(groupModel.getGroupId());
         response.setLongName(groupModel.getLongName());
         response.setShortName(groupModel.getShortName());
-        List<UserModel> userModelList = groupModel.getUsers();
+        Set<UserModel> userModelList = groupModel.getMembers();
         for (UserModel userModel : userModelList) {
             response.addMembers(userModelService.getUserInfo(userModel));
         }
@@ -188,7 +215,115 @@ public class GroupModelService {
     }
 
 
+    /**
+     * Checks if a group exists by ID.
+     * @param groupId ID of group being checked.
+     * @return True if the group exists.
+     */
     public boolean isExistById(Integer groupId) {
         return repository.existsById(groupId);
+    }
+
+    /**
+     * Adds an iterable of users to a group. If a user was already part of the group, no distinction is
+     * made when trying to re-add them to the group (returns true if the user was already a part of the group).
+     * @param users users to be added
+     * @param groupId ID of the group
+     * @return Whether the user was added or not.
+     */
+    public boolean addUsersToGroup(Iterable<UserModel> users, Integer groupId) {
+        Optional<GroupModel> groupOptional = repository.findById(groupId);
+        if (groupOptional.isPresent()) {
+            try {
+                GroupModel group = groupOptional.get();
+                for (UserModel user : users) {
+                    group.addMember(user);
+                }
+                repository.save(group);
+                logger.info(MessageFormat.format("Added the following users to group {0}: {1}", groupId, users));
+                if (!groupId.equals(GroupModelServerService.MEMBERS_WITHOUT_GROUP_ID)) {
+                    removeFromMembersWithoutAGroup(users);
+                }
+            } catch (Exception e) {
+                logger.error(MessageFormat.format("Error adding user to group {0}", groupId));
+                logger.error(e.getMessage());
+                return false;
+            }
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Removes the given users from the special "Members without a group" group.
+     * @param users users to remove
+     */
+    private void removeFromMembersWithoutAGroup(Iterable<UserModel> users) {
+        Optional<GroupModel> groupOptional = repository.findById(GroupModelServerService.MEMBERS_WITHOUT_GROUP_ID);
+        if (groupOptional.isPresent()) {
+            GroupModel group = groupOptional.get();
+            for (UserModel user: users) {
+                group.removeMember(user);
+            }
+            repository.save(group);
+        }
+    }
+
+    public GroupModel getMembersWithoutAGroup() {
+        Optional<GroupModel> groupOptional = repository.findById(GroupModelServerService.MEMBERS_WITHOUT_GROUP_ID);
+        return groupOptional.orElse(null);
+    }
+
+//    /**
+//     * Remove users from a group. If a user was already not in the group, the method still returns true.
+//     * @param userId ID of user being removed from the group.
+//     * @param groupId Id of the group the user is being removed from.
+//     * @return Whether the user was removed from the group.
+//     */
+//    public boolean removeUserFromGroup(Integer userId, Integer groupId) {
+//        try {
+//            GroupModel group = repository.getGroupModelByGroupId(groupId);
+//            group.removeMember(userId);
+//            repository.save(group);
+//        } catch (Exception e) {
+//            return false;
+//        }
+//        return true;
+//    }
+    /**
+     * Remove users from a group. If a user was already not in the group, the method still returns true.
+     * @param users iterable list of users to be removed from the group.
+     * @param groupId Id of the group the users are being removed from.
+     * @return Whether the user was removed from the group.
+     */
+    public boolean removeUsersFromGroup(Iterable<UserModel> users, Integer groupId) {
+        Optional<GroupModel> groupOptional = repository.findById(groupId);
+        if (groupOptional.isPresent()) {
+            GroupModel group = groupOptional.get();
+            for (UserModel user : users) {
+                group.removeMember(user);
+            }
+            repository.save(group);
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Checks if a user is in a given group.
+     * @param userId ID of the user
+     * @param groupId ID of the group
+     * @return True if user is in the group.
+     * @throws InvalidAttributesException Thrown when the group does not exist.
+     */
+    public boolean isUserPartOfGroup(Integer userId, Integer groupId) throws InvalidAttributesException {
+        Optional<GroupModel> groupOptional = repository.findById(groupId);
+
+        if (groupOptional.isPresent()) {
+            Set<Integer> userIds = groupOptional.get().getMemberIds();
+            return userIds.contains(userId);
+        } else {
+            throw new InvalidAttributesException("Group does not exist!");
+        }
     }
 }
