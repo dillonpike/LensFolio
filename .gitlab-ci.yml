@@ -126,6 +126,5 @@ sonarqube-report:
   script:
     - cd identityprovider
     - ./gradlew sonarqube
-    - git fetch --unshallow
     - cd ../portfolio
     - ./gradlew sonarqube
