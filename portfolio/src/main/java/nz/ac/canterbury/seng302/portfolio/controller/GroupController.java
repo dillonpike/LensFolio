@@ -294,46 +294,4 @@ public class GroupController {
         return response;
     }
 
-
-    /**
-     * Post method for copying users from one group to another
-     * @param model  Parameters sent to thymeleaf template to be rendered into HTML
-     * @param groupId id of group to copy users to
-     * @return Group detail page
-     */
-    @PostMapping("/copy-users")
-    public String moveUsers(
-            @RequestParam("groupId") Integer groupId,
-            @RequestParam("userIds") List<Integer> userIds,
-            Model model,
-            HttpServletResponse httpServletResponse
-    ) {
-        AddGroupMembersResponse response = groupService.addMemberToGroup(groupId, userIds);
-        if (response.getIsSuccess()) {
-            httpServletResponse.setStatus(HttpServletResponse.SC_OK);
-            if (Objects.equals(groupId, MEMBERS_WITHOUT_GROUP_ID)) {
-                groupService.addGroupListToModel(model);
-                return "group::groupList";
-            } else {
-                groupService.addGroupDetailToModel(model, groupId);
-                return "group::groupCard";
-            }
-        } else {
-            httpServletResponse.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-        }
-        return null;
-    }
-
-    /**
-     * Submits a request to the identity provider to copy users when they are not in a group.
-     * @param model Parameters sent to thymeleaf template to be rendered into HTML
-     * @return Group detail page
-     */
-    @GetMapping("/members-without-a-group")
-    public String membersWithoutAGroupCard(
-            Model model
-    ) {
-        groupService.addGroupDetailToModel(model, MEMBERS_WITHOUT_GROUP_ID);
-        return "group::groupCard";
-    }
 }

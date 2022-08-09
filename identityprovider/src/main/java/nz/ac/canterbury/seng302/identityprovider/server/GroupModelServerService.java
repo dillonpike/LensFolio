@@ -305,9 +305,9 @@ public class GroupModelServerService extends GroupsServiceGrpc.GroupsServiceImpl
         Iterable<UserModel> users = userModelService.getUsersByIds(request.getUserIdsList());
         boolean isSuccess = false;
         if (request.getGroupId() == (TEACHERS_GROUP_ID)) {
-            checkUsersInTeachersGroup(users);
-            // This is done as it assumes there's no returned issues with adding the user to the teachers group.
-            // If roles are not being added or users not being added to the group correctly, check logs.
+            checkUsersNotInTeachersGroup(users);
+            // This is done as it assumes there's no returned issues with removing the user from the teachers group.
+            // If roles are not being removed or users not being removed to the group correctly, check logs.
             isSuccess = true;
         } else {
             try {
@@ -322,5 +322,29 @@ public class GroupModelServerService extends GroupsServiceGrpc.GroupsServiceImpl
         reply.setIsSuccess(isSuccess);
         responseObserver.onNext(reply.build());
         responseObserver.onCompleted();
+    }
+
+    /**
+     * Checks to see if a list of users are part of the teachers group. If so, it removes them from it.
+     * Also removes the teacher role from the user, if they have it.
+     * @param users users to check if they are in the teachers group and have the teacher role.
+     */
+    public void checkUsersNotInTeachersGroup(Iterable<UserModel> users) {
+
+        for (UserModel user : users) {
+            try {
+                boolean removedFromGroup = groupModelService.removeUsersFromGroup(new ArrayIterator<>(new UserModel[]{user}), GroupModelServerService.TEACHERS_GROUP_ID);
+                if (!removedFromGroup) {
+                    logger.error("Something went wrong with the teachers group");
+                }
+            } catch (InvalidAttributesException e) {
+                logger.error("Teachers group does not exist");
+            }
+
+            boolean roleWasRemoved = userModelService.checkUserDoesNotHaveTeacherRole(user);
+            if (!roleWasRemoved) {
+                logger.warn(MessageFormat.format("User {0} was not given teacher role. ", user.getUserId()));
+            }
+        }
     }
 }

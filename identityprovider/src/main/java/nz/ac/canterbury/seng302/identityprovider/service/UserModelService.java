@@ -197,9 +197,30 @@ public class UserModelService {
         return addedRole;
     }
 
+    /**
+     * Checks to see if the user has the teacher role. If so, it removes the role from the user.
+     * @param user user to check if they are in the teachers group.
+     * @return Whether it was removed.
+     */
+    public boolean checkUserDoesNotHaveTeacherRole(UserModel user) {
+        Roles teacherRole = rolesRepository.findByRoleName("TEACHER");
+
+        boolean addedRole = false;
+        for (Roles role : user.getRoles()) {
+            if (role.getRoleName().equals(teacherRole.getRoleName())) {
+                user.getRoles().remove(role);
+                addedRole = saveEditedUser(user);
+            }
+        }
+        return addedRole;
+    }
+
     public void setOnlyGroup(Iterable<UserModel> users, GroupModel group) {
         for (UserModel user: users) {
             user.setGroups(Set.of(group));
+            if (group.getGroupId() == GroupModelServerService.MEMBERS_WITHOUT_GROUP_ID) {
+                user.getRoles().remove(rolesRepository.findByRoleName("TEACHER"));
+            }
         }
         repository.saveAll(users);
     }
