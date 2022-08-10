@@ -146,7 +146,6 @@
         let username = /*[[${currentUsername}]]*/ "Error";
         /*]]>*/        stompClient = Stomp.over(socket);
         stompClient.connect({}, function (frame) {
-            console.log('Connected: ' + frame);
 
             stompClient.subscribe('/webSocketGet/add-roles', function (response) {
                 const updateResponse = JSON.parse(response.body);
