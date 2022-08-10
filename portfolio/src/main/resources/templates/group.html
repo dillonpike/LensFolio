@@ -177,7 +177,7 @@
     /**
      * Sends the message that a group has been updated (saved), and sends the events names with it.
      */
-    function sendNameReload(artefactName, artefactId,userId, userFirstName, userLastName, username, artefactType) {
+    function sendNameReload(artefactName, artefactId, userId, userFirstName, userLastName, username, artefactType) {
         stompClient.send("/webSocketPost/saved-edited-group", {}, JSON.stringify({
             'artefactName': artefactName,
             'artefactId' : artefactId,
@@ -279,7 +279,7 @@
 
     sendEditingLiveNotificationRequest('#shortGroupName', 'groupModal', 'edit-group');
     sendEditingLiveNotificationRequest("#longGroupName", 'groupModal', 'edit-group');
-    sendSavedLiveNotificationRequest("#groupModalButton", 'groupModal', 'edit-group');
+    // sendSavedLiveNotificationRequest("#groupModalButton", 'groupModal', 'edit-group');
     sendStopEditingLiveNotificationRequest("#closeGroupModalButton", 'groupModal', 'edit-group');
 </script>
 

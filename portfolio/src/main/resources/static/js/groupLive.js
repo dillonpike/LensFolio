@@ -31,7 +31,7 @@ function connect() {
         })
         stompClient.subscribe('/webSocketGet/group-save-edit', function (eventResponseArg) {
             const eventResponse = JSON.parse(eventResponseArg.body);
-            refreshEvents();
+            updateGroupList();
             showToastSave(eventResponse.artefactName, eventResponse.artefactId, eventResponse.username, eventResponse.userFirstName, eventResponse.userLastName, eventResponse.artefactType);
         });
 
@@ -76,16 +76,6 @@ function showToastSave(groupName, groupId, username, firstName, lastName, type) 
     newNotification.show();
     newNotification.hideTimed(SECONDS_TILL_HIDE);
 }
-
-/**
- * Refresh the DOM after some delay, to account for the saving function completing.
- */
-function refreshEvents() {
-    setTimeout(() => {
-        document.location.reload();
-    }, 100);
-}
-
 
 /**
  * Initialises functions/injections
