@@ -231,6 +231,7 @@ public class GroupModelServerService extends GroupsServiceGrpc.GroupsServiceImpl
         boolean isSuccess;
         if (request.getGroupId() == (TEACHERS_GROUP_ID)) {
             checkUsersInTeachersGroup(users);
+            groupModelService.removeFromMembersWithoutAGroup(users);
             // This is done as it assumes there's no returned issues with adding the user to the teachers group.
             // If roles are not being added or users not being added to the group correctly, check logs.
             isSuccess = true;
@@ -252,7 +253,6 @@ public class GroupModelServerService extends GroupsServiceGrpc.GroupsServiceImpl
      * @param users users to check if they are in the teachers group and have the teacher role.
      */
     public void checkUsersInTeachersGroup(Iterable<UserModel> users) {
-
         for (UserModel user : users) {
             boolean addedToGroup = groupModelService.addUsersToGroup(new ArrayIterator<>(new UserModel[]{user}), GroupModelServerService.TEACHERS_GROUP_ID);
             if (!addedToGroup) {
