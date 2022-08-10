@@ -292,13 +292,6 @@
 </script>
 
 <script>
-    function updateTable(groupId) {
-        const url = "groups/local?";
-        $('#table_refresh').load(url, "groupId=" + groupId)
-    }
-</script>
-
-<script>
     //updates characters left
     function updateCharsLeft(elementId, messageElementId, numChars) {
         let chars_left = numChars - document.getElementById(elementId).value.length;
@@ -332,18 +325,6 @@
             return true
         }
     }
-
-    async function validateGroup() {
-        if (validateModalName('shortGroupName', 'groupShortNameAlertBanner', 'groupShortNameAlertMessage') &&
-            validateModalName('longGroupName', 'groupLongNameAlertBanner', 'groupLongNameAlertMessage')
-        ) {
-            document.getElementById('groupForm').onsubmit = () => { return false };
-            document.getElementById('groupForm').submit();
-        };
-    }
-
-    $(`#groupCard1 button`).click() // Select members without a group
-
 </script>
 
 
