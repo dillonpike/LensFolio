@@ -61,6 +61,10 @@ public class RegisterController {
             @RequestParam(value = "defaultBio", required = false) String bio,
             Model model) {
 
+        if (pronouns == null || pronouns.isEmpty()) {
+            pronouns = "Unknown Pronouns";
+        }
+
         model.addAttribute("defaultFirstName", firstName);
         model.addAttribute("defaultMiddleName", middleName);
         model.addAttribute("defaultLastName", lastName);
