@@ -3,10 +3,7 @@ package nz.ac.canterbury.seng302.portfolio.controller;
 import nz.ac.canterbury.seng302.portfolio.model.Group;
 import nz.ac.canterbury.seng302.portfolio.model.NotificationMessage;
 import nz.ac.canterbury.seng302.portfolio.model.NotificationResponse;
-import nz.ac.canterbury.seng302.portfolio.service.ElementService;
-import nz.ac.canterbury.seng302.portfolio.service.GroupService;
-import nz.ac.canterbury.seng302.portfolio.service.RegisterClientService;
-import nz.ac.canterbury.seng302.portfolio.service.UserAccountClientService;
+import nz.ac.canterbury.seng302.portfolio.service.*;
 import nz.ac.canterbury.seng302.shared.identityprovider.*;
 import nz.ac.canterbury.seng302.shared.util.ValidationError;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -64,12 +61,15 @@ public class GroupController {
     ) {
         Integer id = userAccountClientService.getUserIDFromAuthState(principal);
         elementService.addHeaderAttributes(model, id);
-        model.addAttribute("userId", id);
+
         UserResponse user = registerClientService.getUserData(id);
+        String role = elementService.getUserHighestRole(user);
+
+        model.addAttribute("userId", id);
         model.addAttribute("username", user.getUsername());
         model.addAttribute("userFirstName", user.getFirstName());
         model.addAttribute("userLastName", user.getLastName());
-
+        model.addAttribute("currentUserRole", role);
         groupService.addGroupListToModel(model);
 
         groupService.addToastsToModel(model, 3);
@@ -86,8 +86,18 @@ public class GroupController {
     @RequestMapping("/groups/local")
     public String localRefresh(
             Model model,
-            @RequestParam("groupId") int groupId)
+            @RequestParam("groupId") int groupId,
+            @AuthenticationPrincipal AuthState principal
+
+    )
     {
+        Integer id = userAccountClientService.getUserIDFromAuthState(principal);
+        elementService.addHeaderAttributes(model, id);
+
+        UserResponse user = registerClientService.getUserData(id);
+        String role = elementService.getUserHighestRole(user);
+
+        model.addAttribute("currentUserRole", role);
         groupService.addGroupDetailToModel(model, groupId);
         groupService.addGroupListToModel(model);
         return "group::table_refresh";
@@ -104,10 +114,11 @@ public class GroupController {
     public String addGroup(
             @ModelAttribute("group") Group group,
             Model model,
-            HttpServletResponse httpServletResponse
+            HttpServletResponse httpServletResponse,
+            @AuthenticationPrincipal AuthState principal
+
     ) {
         CreateGroupResponse response = groupService.createNewGroup(group.getShortName(), group.getLongName());
-
         if (response.getIsSuccess()) {
             groupService.addGroupDetailToModel(model, response.getNewGroupId());
             httpServletResponse.setStatus(HttpServletResponse.SC_OK);
@@ -129,7 +140,8 @@ public class GroupController {
     @DeleteMapping("/delete-group/{id}")
     @ResponseBody
     public void groupRemove(@PathVariable("id") Integer id,
-                              HttpServletResponse httpServletResponse) {
+                              HttpServletResponse httpServletResponse
+    ) {
         DeleteGroupResponse response = groupService.deleteGroup(id);
         if (response.getIsSuccess()) {
             httpServletResponse.setStatus(HttpServletResponse.SC_OK);
