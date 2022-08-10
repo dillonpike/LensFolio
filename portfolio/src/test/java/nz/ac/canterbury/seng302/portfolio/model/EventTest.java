@@ -22,18 +22,14 @@ class EventTest {
         String expectedEventName = "Test Event";
         Date expectedEventStartDate = new Date();
         Date expectedEventEndDate = new Date();
-        LocalTime expectedEventStartTime = LocalTime.of(12, 12, 12);
-        LocalTime expectedEventEndTime = LocalTime.of(17, 13, 8);
 
         Event event = new Event(expectedParentProjectId, expectedEventName, expectedEventStartDate,
-                expectedEventEndDate, expectedEventStartTime, expectedEventEndTime);
+                expectedEventEndDate);
 
         assertEquals(expectedParentProjectId, event.getParentProjectId());
         assertEquals(expectedEventName, event.getEventName());
         assertEquals(expectedEventStartDate, event.getEventStartDate());
         assertEquals(expectedEventEndDate, event.getEventEndDate());
-        assertEquals(expectedEventStartTime, event.getEventStartTime());
-        assertEquals(expectedEventEndTime, event.getEventEndTime());
     }
 
     /**
