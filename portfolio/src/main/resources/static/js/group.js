@@ -114,6 +114,7 @@ function editGroup() {
     }
     const action = document.getElementById('groupForm').action
     $.post(action + "?" + new URLSearchParams(data)).done((result) => {
+        sendNameReload(selectedArtefactName, selectedArtefactId, userId, userFirstName, userLastName, username, "Group")
         $('#groupModal').modal('toggle')
         const id = action.substring(action.lastIndexOf('/') + 1)
         $(`#groupCard${id}`).replaceWith(result)
@@ -198,6 +199,13 @@ function copyUsers() {
 function updateMembersWithoutAGroupCard() {
     $.get('members-without-a-group').done((result) => {
         $(`#groupCard1`).replaceWith(result)
+        groupButtonSetup() // Allow group cards to be highlighted when selected
+    })
+}
+
+function updateGroupList() {
+    $.get('group-list').done((result) => {
+        $(`#groupList`).replaceWith(result)
         groupButtonSetup() // Allow group cards to be highlighted when selected
     })
 }
