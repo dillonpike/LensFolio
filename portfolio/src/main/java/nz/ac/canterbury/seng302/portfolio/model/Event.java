@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.sun.istack.NotNull;
+import nz.ac.canterbury.seng302.portfolio.utility.DateUtility;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -24,8 +25,6 @@ public class Event {
     private String eventName;
     private Date eventStartDate;
     private Date eventEndDate;
-    private LocalTime eventStartTime;
-    private LocalTime eventEndTime;
     private String startDateColour;
     private String endDateColour;
 
@@ -38,30 +37,26 @@ public class Event {
 
     public Event() {}
 
-    public Event(int id, int parentProjectId, String eventName, Date eventStartDate, Date eventEndDate, LocalTime startTime, LocalTime endTime) {
+    public Event(int id, int parentProjectId, String eventName, Date eventStartDate, Date eventEndDate) {
         this.id = id;
         this.parentProjectId = parentProjectId;
         this.eventName = eventName;
         this.eventStartDate = eventStartDate;
         this.eventEndDate = eventEndDate;
-        this.eventStartTime = startTime;
-        this.eventEndTime = endTime;
     }
 
-    public Event(int parentProjectId, String eventName, Date eventStartDate, Date eventEndDate, LocalTime startTime, LocalTime endTime) {
+    public Event(int parentProjectId, String eventName, Date eventStartDate, Date eventEndDate) {
         this.parentProjectId = parentProjectId;
         this.eventName = eventName;
         this.eventStartDate = eventStartDate;
         this.eventEndDate = eventEndDate;
-        this.eventStartTime = startTime;
-        this.eventEndTime = endTime;
     }
 
     @Override
     public String toString() {
         return String.format(
-                "event[id=%d, parentProjectId='%d', eventName='%s', eventStartDate='%s', eventEndDate='%s', eventStartTime='%s', eventEndTime='%s']",
-                id, parentProjectId, eventName, eventStartDate, eventEndDate, eventStartTime, eventEndTime);
+                "event[id=%d, parentProjectId='%d', eventName='%s', eventStartDate='%s', eventEndDate='%s']",
+                id, parentProjectId, eventName, eventStartDate, eventEndDate);
     }
 
     /**
@@ -143,9 +138,8 @@ public class Event {
      * @return String of the start date. Null if start date is null.
      */
     public String getStartDateDetail()  {
-        DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("h:mm a");
         if (eventStartDate != null) {
-            return (Project.dateToString(eventStartDate)  + " " + eventStartTime.format(dateFormat));
+            return (Project.dateToString(eventStartDate)  + " " + getEventStartTime());
         }
         return null;
 
@@ -157,7 +151,22 @@ public class Event {
      * @throws ParseException when the given string isn't in the right format
      */
     public void setStartDateDetail(String startDateDetail) throws ParseException {
-        eventStartDate = simpleDateFormatter.parse(startDateDetail);
+        Date dateTime = DateUtility.stringToDateTime(startDateDetail);
+        if (dateTime != null) {
+            this.eventStartDate = dateTime;
+        } else {
+            if (this.eventStartDate != null) {
+                Calendar cal = Calendar.getInstance();
+                cal.setTime(Project.stringToDate(startDateDetail));
+                SimpleDateFormat hourFormat = new SimpleDateFormat("HH");
+                SimpleDateFormat minuteFormat = new SimpleDateFormat("mm");
+                cal.add(Calendar.HOUR_OF_DAY, Integer.parseInt(hourFormat.format(eventStartDate)));
+                cal.add(Calendar.MINUTE, Integer.parseInt(minuteFormat.format(eventStartDate)));
+                this.eventStartDate = cal.getTime();
+            } else {
+                this.eventStartDate = Project.stringToDate(startDateDetail);
+            }
+        }
     }
 
     /**
@@ -165,9 +174,8 @@ public class Event {
      * @return String of the end date. Null if end date is null.
      */
     public String getEndDateDetail()  {
-        DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("h:mm a");
         if (eventStartDate != null) {
-            return (Project.dateToString(eventEndDate) + " " + eventEndTime.format(dateFormat));
+            return (Project.dateToString(eventEndDate) + " " + getEventEndTime());
         }
         return null;
     }
@@ -178,7 +186,22 @@ public class Event {
      * @throws ParseException when the given string isn't in the right format
      */
     public void setEndDateDetail(String endDateDetail) throws ParseException {
-        eventEndDate = simpleDateFormatter.parse(endDateDetail);
+        Date dateTime = DateUtility.stringToDateTime(endDateDetail);
+        if (dateTime != null) {
+            this.eventEndDate = dateTime;
+        } else {
+            if (this.eventEndDate != null) {
+                Calendar cal = Calendar.getInstance();
+                cal.setTime(Project.stringToDate(endDateDetail));
+                SimpleDateFormat hourFormat = new SimpleDateFormat("HH");
+                SimpleDateFormat minuteFormat = new SimpleDateFormat("mm");
+                cal.add(Calendar.HOUR_OF_DAY, Integer.parseInt(hourFormat.format(eventEndDate)));
+                cal.add(Calendar.MINUTE, Integer.parseInt(minuteFormat.format(eventEndDate)));
+                this.eventEndDate = cal.getTime();
+            } else {
+                this.eventEndDate = Project.stringToDate(endDateDetail);
+            }
+        }
     }
 
     /**
@@ -195,12 +218,7 @@ public class Event {
     }
 
     public void setEventStartDate(Date eventStartDate) {
-        if (this.eventStartTime != null) {
-            this.eventStartDate = addTimeToDate(eventStartDate, this.eventStartTime);
-        } else {
-            this.eventStartDate = eventStartDate;
-        }
-
+        this.eventStartDate = eventStartDate;
     }
 
     public Date getEventEndDate() {
@@ -208,35 +226,23 @@ public class Event {
     }
 
     public void setEventEndDate(Date eventEndDate) {
-        if (this.eventEndTime != null) {
-            this.eventEndDate = addTimeToDate(eventEndDate, this.eventEndTime);
-        } else {
-            this.eventEndDate = eventEndDate;
+        this.eventEndDate = eventEndDate;
+    }
+
+    public String getEventStartTime() {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("h:mm a");
+        if (eventStartDate != null) {
+            return (dateFormat.format(eventStartDate));
         }
-
+        return null;
     }
 
-    public LocalTime getEventStartTime() {
-        return eventStartTime;
-    }
-
-    public void setEventStartTime(LocalTime eventStartTime) {
-        this.eventStartTime = eventStartTime;
-        if (this.eventStartDate != null) {
-            this.eventStartDate = addTimeToDate(this.eventStartDate, eventStartTime);
+    public String getEventEndTime() {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("h:mm a");
+        if (eventEndDate != null) {
+            return (dateFormat.format(eventEndDate));
         }
-    }
-
-    public LocalTime getEventEndTime() {
-        return eventEndTime;
-    }
-
-    public void setEventEndTime(LocalTime eventEndTime) {
-        this.eventEndTime = eventEndTime;
-        if (this.eventEndDate != null) {
-            this.eventEndDate = addTimeToDate(this.eventEndDate, eventEndTime);
-        }
-
+        return null;
     }
 
     /**
@@ -261,51 +267,12 @@ public class Event {
         }
     }
 
-
-    public void setStartDateString(String date) {
-        if (this.eventStartTime == null) {
-            this.eventStartDate = Project.stringToDate(date);
-        } else {
-            this.eventStartDate = addTimeToDate(Project.stringToDate(date), this.eventStartTime);
-        }
-    }
-
     public String getStartDateString() {
         return Project.dateToString(this.eventStartDate);
     }
 
-    public void setEndDateString(String date) {
-        if (this.eventEndTime == null) {
-            this.eventEndDate = Project.stringToDate(date);
-        } else {
-            this.eventEndDate = addTimeToDate(Project.stringToDate(date), this.eventEndTime);
-        }
-    }
-
     public String getEndDateString() {
         return Project.dateToString(this.eventEndDate);
-    }
-
-    public void setStartTimeString(String time) {
-        this.eventStartTime = Event.stringToTime(time);
-        if (this.eventStartDate != null) {
-            this.eventStartDate = addTimeToDate(this.eventStartDate, this.eventStartTime);
-        }
-    }
-
-    public String getStartTimeString() {
-        return Event.timeToString(this.eventStartTime);
-    }
-
-    public void setEndTimeString(String time) {
-        this.eventEndTime = Event.stringToTime(time);
-        if (this.eventEndDate != null) {
-            this.eventEndDate = addTimeToDate(this.eventEndDate, this.eventEndTime);
-        }
-    }
-
-    public String getEndTimeString() {
-        return Event.timeToString(this.eventEndTime);
     }
 
     /**

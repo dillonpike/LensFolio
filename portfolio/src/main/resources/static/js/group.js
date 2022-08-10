@@ -172,10 +172,10 @@ function deleteGroupModalButtonFunction(type, id) {
 }
 
 function copyUsers() {
-    const originGroupId = document.getElementsByClassName("active")[0].parentElement.id.substring('groupCard'.length)
+    const originGroupId = document.getElementsByClassName("active")[0].parentElement.id.substring('groupCard'.length);
+    const groupName = $( "#groupDropdownList option:selected" ).text();
     const data = {
         groupId: document.getElementById('groupDropdownList').value,
-        groupName: $( "#groupDropdownList option:selected" ).text(),
         userIds: userTable.rows('.selected').data().toArray().map(row => row.DT_RowId)
     }
     $.post('copy-users' + "?" + new URLSearchParams(data)).done((result) => {
@@ -190,9 +190,9 @@ function copyUsers() {
             }
         }
         groupButtonSetup() // Allow group cards to be highlighted when selected
-        showAlertToast("Group " + data.groupName + " Updated");
+        showAlertToast("Group " + groupName + " Updated");
     }).fail((result) => {
-        showAlertErrorToast("Group " + data.groupName + " failed to be updated");
+        showAlertErrorToast("Group " + groupName + " failed to be updated");
     })
 }
 

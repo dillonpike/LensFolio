@@ -49,14 +49,7 @@ public class EditEventController {
         elementService.addHeaderAttributes(model, userID);
 
         if (permissionService.isValidToModifyProjectPage(userID)) {
-            Event newEvent = eventService.getEventById(id);
-            newEvent.setEventName(event.getEventName());
-            newEvent.setStartDateString(event.getStartDateString());
-            newEvent.setEndDateString(event.getEndDateString());
-            newEvent.setStartTimeString(event.getStartTimeString());
-            newEvent.setEndTimeString(event.getEndTimeString());
-
-            eventService.updateEvent(newEvent);
+            eventService.updateEvent(event);
         } else {
             rm.addFlashAttribute("isAccessDenied", true);
         }
