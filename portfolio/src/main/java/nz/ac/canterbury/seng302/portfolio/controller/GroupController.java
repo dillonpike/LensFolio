@@ -90,9 +90,16 @@ public class GroupController {
     public String localRefresh(
             Model model,
             @RequestParam("groupId") int groupId,
-            @RequestParam("role") String role
-            )
+            @AuthenticationPrincipal AuthState principal
+
+    )
     {
+        Integer id = userAccountClientService.getUserIDFromAuthState(principal);
+        elementService.addHeaderAttributes(model, id);
+
+        UserResponse user = registerClientService.getUserData(id);
+        String role = elementService.getUserHighestRole(user);
+
         model.addAttribute("currentUserRole", role);
         groupService.addGroupDetailToModel(model, groupId);
         groupService.addGroupListToModel(model);
