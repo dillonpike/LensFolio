@@ -1,9 +1,13 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
+import nz.ac.canterbury.seng302.portfolio.model.NotificationMessage;
+import nz.ac.canterbury.seng302.portfolio.model.NotificationResponse;
 import nz.ac.canterbury.seng302.portfolio.model.UserSorting;
 import nz.ac.canterbury.seng302.portfolio.service.*;
 import nz.ac.canterbury.seng302.shared.identityprovider.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -160,6 +164,16 @@ public class ViewUsersController {
         }
 //        rm.addFlashAttribute("isAccessDenied", true);
         return "redirect:viewUsers";
+    }
+
+    /**
+     * This method used to mainly reload the calendar page when an artefact is being edited or deleted on the project details
+     * @param message this parameter, even though it is not used, is necessary to exist in order to send the request to websocket
+     */
+    @MessageMapping("/add-roles")
+    @SendTo("/webSocketGet/add-roles")
+    public NotificationResponse addRoles(NotificationMessage message) {
+        return new NotificationResponse(message.getUsername());
     }
 
 
