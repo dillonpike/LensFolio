@@ -259,7 +259,7 @@ public class GroupModelService {
      * Removes the given users from the special "Members without a group" group.
      * @param users users to remove
      */
-    private void removeFromMembersWithoutAGroup(Iterable<UserModel> users) {
+    public void removeFromMembersWithoutAGroup(Iterable<UserModel> users) {
         Optional<GroupModel> groupOptional = repository.findById(GroupModelServerService.MEMBERS_WITHOUT_GROUP_ID);
         if (groupOptional.isPresent()) {
             GroupModel group = groupOptional.get();

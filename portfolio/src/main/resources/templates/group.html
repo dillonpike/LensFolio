@@ -89,9 +89,9 @@
         <div class="col-6 col-md-8 sticky-md-top card shadow">
             <div id="table_refresh" th:fragment="table_refresh">
                     <div class="container">
-                        <h1 th:text="${groupLongName}"></h1>
+                        <h1 class="mt-3" th:text="${groupLongName}"></h1>
                         <h4 th:text="${groupShortName}"></h4>
-                        <div class="hstack gap-3">
+                        <div class="hstack gap-3 mb-3">
                             <span>Copy Users To </span>
                             <select class="form-select input-sm" aria-label="Default select example" id="groupDropdownList">
                                 <option th:each="copyToGroup : ${groupList}" th:if="${group?.getGroupId() != copyToGroup.getGroupId()}" th:value="${copyToGroup.getGroupId()}" th:text="${copyToGroup.getShortName()}"></option>
@@ -177,7 +177,7 @@
     /**
      * Sends the message that a group has been updated (saved), and sends the events names with it.
      */
-    function sendNameReload(artefactName, artefactId,userId, userFirstName, userLastName, username, artefactType) {
+    function sendNameReload(artefactName, artefactId, userId, userFirstName, userLastName, username, artefactType) {
         stompClient.send("/webSocketPost/saved-edited-group", {}, JSON.stringify({
             'artefactName': artefactName,
             'artefactId' : artefactId,
@@ -279,7 +279,7 @@
 
     sendEditingLiveNotificationRequest('#shortGroupName', 'groupModal', 'edit-group');
     sendEditingLiveNotificationRequest("#longGroupName", 'groupModal', 'edit-group');
-    sendSavedLiveNotificationRequest("#groupModalButton", 'groupModal', 'edit-group');
+    // sendSavedLiveNotificationRequest("#groupModalButton", 'groupModal', 'edit-group');
     sendStopEditingLiveNotificationRequest("#closeGroupModalButton", 'groupModal', 'edit-group');
 </script>
 
@@ -289,13 +289,6 @@
     deleteModalSetup()
     groupDeleteModalSetup()
     removeUserModalSetup()
-</script>
-
-<script>
-    function updateTable(groupId) {
-        const url = "groups/local?";
-        $('#table_refresh').load(url, "groupId=" + groupId)
-    }
 </script>
 
 <script>
@@ -332,18 +325,6 @@
             return true
         }
     }
-
-    async function validateGroup() {
-        if (validateModalName('shortGroupName', 'groupShortNameAlertBanner', 'groupShortNameAlertMessage') &&
-            validateModalName('longGroupName', 'groupLongNameAlertBanner', 'groupLongNameAlertMessage')
-        ) {
-            document.getElementById('groupForm').onsubmit = () => { return false };
-            document.getElementById('groupForm').submit();
-        };
-    }
-
-    $(`#groupCard1 button`).click() // Select members without a group
-
 </script>
 
 
