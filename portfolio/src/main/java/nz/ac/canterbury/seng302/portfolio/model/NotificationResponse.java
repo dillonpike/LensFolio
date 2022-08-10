@@ -39,6 +39,10 @@ public class NotificationResponse {
 
     public NotificationResponse() {}
 
+    public NotificationResponse(String username) {
+        this.username = username;
+    }
+
     public String getArtefactType() {
         return artefactType;
     }
