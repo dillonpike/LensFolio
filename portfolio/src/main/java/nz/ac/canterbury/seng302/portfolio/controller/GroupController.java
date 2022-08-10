@@ -45,9 +45,6 @@ public class GroupController {
     @Autowired
     public RegisterClientService registerClientService;
 
-    @Autowired
-    private PermissionService permissionService;
-
     private final String updateMessageId = "isUpdateSuccess";
 
     private static final Integer MEMBERS_WITHOUT_GROUP_ID = 1;
@@ -122,20 +119,16 @@ public class GroupController {
 
     ) {
         CreateGroupResponse response = groupService.createNewGroup(group.getShortName(), group.getLongName());
-        Integer id = userAccountClientService.getUserIDFromAuthState(principal);
-        if (permissionService.isValidToModifyProjectPage(id)) {
-            if (response.getIsSuccess()) {
-                groupService.addGroupDetailToModel(model, response.getNewGroupId());
-                httpServletResponse.setStatus(HttpServletResponse.SC_OK);
-                return "group::groupCard";
-            }
-
-            List<ValidationError> errors = response.getValidationErrorsList();
-            groupService.addGroupNameErrorsToModel(model, errors);
-            httpServletResponse.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            return "fragments/groupModal::groupModalBody";
+        if (response.getIsSuccess()) {
+            groupService.addGroupDetailToModel(model, response.getNewGroupId());
+            httpServletResponse.setStatus(HttpServletResponse.SC_OK);
+            return "group::groupCard";
         }
-        return "group";
+
+        List<ValidationError> errors = response.getValidationErrorsList();
+        groupService.addGroupNameErrorsToModel(model, errors);
+        httpServletResponse.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+        return "fragments/groupModal::groupModalBody";
     }
 
     /**
