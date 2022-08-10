@@ -83,7 +83,7 @@ function showToastSave(eventName, eventId, username, firstName, lastName, type) 
 function refreshEvents() {
     setTimeout(() => {
         document.location.reload();
-    }, 100);
+    }, 1000);
 }
 
 /**

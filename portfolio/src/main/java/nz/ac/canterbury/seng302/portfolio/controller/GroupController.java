@@ -237,9 +237,9 @@ public class GroupController {
     }
 
     /**
-     * Submits a request to the identity provider to copy users when they are not in a group.
+     * Returns the group card for the "members without a group" group.
      * @param model Parameters sent to thymeleaf template to be rendered into HTML
-     * @return Group detail page
+     * @return group card for members without a group
      */
     @GetMapping("/members-without-a-group")
     public String membersWithoutAGroupCard(
@@ -247,6 +247,19 @@ public class GroupController {
     ) {
         groupService.addGroupDetailToModel(model, MEMBERS_WITHOUT_GROUP_ID);
         return "group::groupCard";
+    }
+
+    /**
+     * Returns the list of groups for the group page.
+     * @param model Parameters sent to thymeleaf template to be rendered into HTML
+     * @return group list
+     */
+    @GetMapping("/group-list")
+    public String getGroupList(
+            Model model
+    ) {
+        groupService.addGroupListToModel(model);
+        return "group::groupList";
     }
 
     /**

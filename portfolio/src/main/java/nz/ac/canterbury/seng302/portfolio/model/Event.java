@@ -158,9 +158,6 @@ public class Event {
      */
     public void setStartDateDetail(String startDateDetail) throws ParseException {
         eventStartDate = simpleDateFormatter.parse(startDateDetail);
-
-        LocalDateTime date = LocalDateTime.parse(startDateDetail, dateFormatter);
-        eventStartTime = LocalTime.of(date.getHour(), date.getMinute());
     }
 
     /**
@@ -182,9 +179,6 @@ public class Event {
      */
     public void setEndDateDetail(String endDateDetail) throws ParseException {
         eventEndDate = simpleDateFormatter.parse(endDateDetail);
-
-        LocalDateTime date = LocalDateTime.parse(endDateDetail, dateFormatter);
-        eventEndTime = LocalTime.of(date.getHour(), date.getMinute());
     }
 
     /**
