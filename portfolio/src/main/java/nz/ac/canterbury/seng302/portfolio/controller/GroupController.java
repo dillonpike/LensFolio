@@ -3,10 +3,7 @@ package nz.ac.canterbury.seng302.portfolio.controller;
 import nz.ac.canterbury.seng302.portfolio.model.Group;
 import nz.ac.canterbury.seng302.portfolio.model.NotificationMessage;
 import nz.ac.canterbury.seng302.portfolio.model.NotificationResponse;
-import nz.ac.canterbury.seng302.portfolio.service.ElementService;
-import nz.ac.canterbury.seng302.portfolio.service.GroupService;
-import nz.ac.canterbury.seng302.portfolio.service.RegisterClientService;
-import nz.ac.canterbury.seng302.portfolio.service.UserAccountClientService;
+import nz.ac.canterbury.seng302.portfolio.service.*;
 import nz.ac.canterbury.seng302.shared.identityprovider.*;
 import nz.ac.canterbury.seng302.shared.util.ValidationError;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,6 +44,9 @@ public class GroupController {
 
     @Autowired
     public RegisterClientService registerClientService;
+
+    @Autowired
+    private PermissionService permissionService;
 
     private final String updateMessageId = "isUpdateSuccess";
 
@@ -110,20 +110,25 @@ public class GroupController {
     public String addGroup(
             @ModelAttribute("group") Group group,
             Model model,
-            HttpServletResponse httpServletResponse
+            HttpServletResponse httpServletResponse,
+            @AuthenticationPrincipal AuthState principal
+
     ) {
         CreateGroupResponse response = groupService.createNewGroup(group.getShortName(), group.getLongName());
+        Integer id = userAccountClientService.getUserIDFromAuthState(principal);
+        if (permissionService.isValidToModifyProjectPage(id)) {
+            if (response.getIsSuccess()) {
+                groupService.addGroupDetailToModel(model, response.getNewGroupId());
+                httpServletResponse.setStatus(HttpServletResponse.SC_OK);
+                return "group::groupCard";
+            }
 
-        if (response.getIsSuccess()) {
-            groupService.addGroupDetailToModel(model, response.getNewGroupId());
-            httpServletResponse.setStatus(HttpServletResponse.SC_OK);
-            return "group::groupCard";
+            List<ValidationError> errors = response.getValidationErrorsList();
+            groupService.addGroupNameErrorsToModel(model, errors);
+            httpServletResponse.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            return "fragments/groupModal::groupModalBody";
         }
-
-        List<ValidationError> errors = response.getValidationErrorsList();
-        groupService.addGroupNameErrorsToModel(model, errors);
-        httpServletResponse.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-        return "fragments/groupModal::groupModalBody";
+        return "group";
     }
 
     /**
@@ -135,7 +140,8 @@ public class GroupController {
     @DeleteMapping("/delete-group/{id}")
     @ResponseBody
     public void groupRemove(@PathVariable("id") Integer id,
-                              HttpServletResponse httpServletResponse) {
+                              HttpServletResponse httpServletResponse
+    ) {
         DeleteGroupResponse response = groupService.deleteGroup(id);
         if (response.getIsSuccess()) {
             httpServletResponse.setStatus(HttpServletResponse.SC_OK);
