@@ -249,15 +249,23 @@ public class GroupController {
         return "group::groupCard";
     }
 
+
     /**
      * Returns the list of groups for the group page.
+     * @param principal authentication principal
      * @param model Parameters sent to thymeleaf template to be rendered into HTML
      * @return group list
      */
     @GetMapping("/group-list")
     public String getGroupList(
+            @AuthenticationPrincipal AuthState principal,
             Model model
     ) {
+        Integer id = userAccountClientService.getUserIDFromAuthState(principal);
+        UserResponse user = registerClientService.getUserData(id);
+        String role = elementService.getUserHighestRole(user);
+        model.addAttribute("currentUserRole", role);
+
         groupService.addGroupListToModel(model);
         return "group::groupList";
     }
