@@ -177,7 +177,7 @@ public class DetailsController {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(new Date());
         calendar.add(Calendar.DATE, 3);
-        model.addAttribute("newEvent", new Event(0, "", new Date(), calendar.getTime(), LocalTime.now(), LocalTime.now()));
+        model.addAttribute("newEvent", new Event(0, "", new Date(), calendar.getTime()));
 
         elementService.addDeniedMessage(model, request);
 
