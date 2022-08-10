@@ -81,6 +81,9 @@ class GroupControllerTest {
     @MockBean
     private PhotoService photoService;
 
+    @MockBean
+    private PermissionService permissionService;
+
     @Before
     public void setup() {
         mockMvc = MockMvcBuilders.standaloneSetup(GroupController.class).build();
@@ -88,32 +91,30 @@ class GroupControllerTest {
 
     private final Group testGroup = new Group("Test", "Test Group", 1);
 
-//    /**
-//     * Test GET request for group page at initial stage.
-//     * @throws Exception Can be caused during mocking the MVC system.
-//     */
-//    @Test
-//    void testShowGroupPage() throws Exception {
-//        SecurityContext mockedSecurityContext = Mockito.mock(SecurityContext.class);
-//        when(mockedSecurityContext.getAuthentication()).thenReturn(new PreAuthenticatedAuthenticationToken(validAuthState, ""));
-//        SecurityContextHolder.setContext(mockedSecurityContext);
-//
-//        when(userAccountClientService.getUserIDFromAuthState(any(AuthState.class))).thenReturn(1);
-//        when(registerClientService.getUserData(1)).thenReturn(mockUser);
-//
-//        GroupDetailsResponse groupDetailsResponse = GroupDetailsResponse.newBuilder().setGroupId(testGroup.getGroupId())
-//                .setShortName(testGroup.getShortName()).setLongName(testGroup.getLongName()).build();
-//
-//        PaginatedGroupsResponse paginatedGroupsResponse = PaginatedGroupsResponse.newBuilder().addGroups(groupDetailsResponse).build();
-//
-//        doReturn(paginatedGroupsResponse).when(groupService).getPaginatedGroups(1,1, "null", false);
-//
-//        mockMvc.perform(get("/groups")).andExpect(status().isOk())
-//                .andExpect(model().attribute("groupList", paginatedGroupsResponse.getGroupsList()))
-//                .andExpect(model().attribute("groupLongName", "No select group"))
-//                .andExpect(model().attribute("groupShortName", "Please select one group"));
-//
-//    } TODO FIX THIS TEST
+    /**
+     * Test GET request for group page at initial stage.
+     * @throws Exception Can be caused during mocking the MVC system.
+     */
+    @Test
+    void testShowGroupPage() throws Exception {
+        SecurityContext mockedSecurityContext = Mockito.mock(SecurityContext.class);
+        when(mockedSecurityContext.getAuthentication()).thenReturn(new PreAuthenticatedAuthenticationToken(validAuthState, ""));
+        SecurityContextHolder.setContext(mockedSecurityContext);
+
+        when(userAccountClientService.getUserIDFromAuthState(any(AuthState.class))).thenReturn(1);
+        when(registerClientService.getUserData(1)).thenReturn(mockUser);
+
+        GroupDetailsResponse groupDetailsResponse = GroupDetailsResponse.newBuilder().setGroupId(testGroup.getGroupId())
+                .setShortName(testGroup.getShortName()).setLongName(testGroup.getLongName()).build();
+
+        PaginatedGroupsResponse paginatedGroupsResponse = PaginatedGroupsResponse.newBuilder().addGroups(groupDetailsResponse).build();
+
+        doReturn(paginatedGroupsResponse).when(groupService).getPaginatedGroups(1,1, "null", false);
+
+        mockMvc.perform(get("/groups")).andExpect(status().isOk())
+                .andExpect(model().attribute("groupList", paginatedGroupsResponse.getGroupsList()));
+
+    }
 
 //    /**
 //     * Test that if given any valid GroupId, table refresh successfully.
