@@ -151,7 +151,6 @@ public class Event {
      * @throws ParseException when the given string isn't in the right format
      */
     public void setStartDateDetail(String startDateDetail) throws ParseException {
-//        eventStartDate = simpleDateFormatter.parse(startDateDetail);
         Date dateTime = DateUtility.stringToDateTime(startDateDetail);
         if (dateTime != null) {
             this.eventStartDate = dateTime;
@@ -187,7 +186,6 @@ public class Event {
      * @throws ParseException when the given string isn't in the right format
      */
     public void setEndDateDetail(String endDateDetail) throws ParseException {
-//        eventEndDate = simpleDateFormatter.parse(endDateDetail);
         Date dateTime = DateUtility.stringToDateTime(endDateDetail);
         if (dateTime != null) {
             this.eventEndDate = dateTime;
