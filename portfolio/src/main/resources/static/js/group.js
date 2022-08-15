@@ -15,7 +15,16 @@ function groupButtonSetup() {
  */
 function updateTable(groupId) {
     const url = "groups/local?";
-    $('#table_refresh').load(url, "groupId=" + groupId)
+    $('#tableRefreshContainer').load(url, "groupId=" + groupId)
+}
+
+
+/**
+ * Returns the id of the currently selected group.
+ * @returns {*} id of the currently selected group
+ */
+function getCurrentGroupId() {
+    return $('#table_refresh').attr('data-groupid')
 }
 
 /**
@@ -172,8 +181,8 @@ function deleteGroupModalButtonFunction(type, id) {
 }
 
 function copyUsers() {
-    const originGroupId = document.getElementsByClassName("active")[0].parentElement.id.substring('groupCard'.length);
-    const groupName = $( "#groupDropdownList option:selected" ).text();
+    const originGroupId = getCurrentGroupId()
+    const groupName = $( "#groupDropdownList option:selected" ).text()
     const data = {
         groupId: document.getElementById('groupDropdownList').value,
         userIds: userTable.rows('.selected').data().toArray().map(row => row.DT_RowId)
@@ -190,9 +199,9 @@ function copyUsers() {
             }
         }
         groupButtonSetup() // Allow group cards to be highlighted when selected
-        showAlertToast("Group " + groupName + " Updated");
+        showAlertToast("Group " + groupName + " Updated")
     }).fail((result) => {
-        showAlertErrorToast("Group " + groupName + " failed to be updated");
+        showAlertErrorToast("Group " + groupName + " failed to be updated")
     })
 }
 
@@ -230,15 +239,10 @@ function removeUserModalSetup() {
 /**
  * Runs when the remove user modal button is pressed. Calls the endpoint for removing the user. Disables the remove
  * button after being clicked. Removes the selected user upon success, and re-enables the remove button upon failure.
- * @param type the string 'group'
- * @param id id of the group
  */
 function removeUserModalButtonFunction() {
-    const modal = document.getElementById('removeUserModal');
-
-    const table = document.getElementById('table');
-    const selected = userTable.rows('.selected').data().toArray().map(row => row.DT_RowId);
-    const groupId = document.getElementsByClassName("active")[0].parentElement.id.substring('groupCard'.length)
+    const selected = userTable.rows('.selected').data().toArray().map(row => row.DT_RowId)
+    const groupId = getCurrentGroupId()
     const data = {groupId: groupId, userIds: selected}
 
     $.post('remove-users' + "?" + new URLSearchParams(data)).done((result) => {
@@ -256,6 +260,6 @@ function removeUserModalButtonFunction() {
             updateMembersWithoutAGroupCard()
             $('#removeUserModal').modal('toggle')
             groupButtonSetup() // Allow group cards to be highlighted when selected
-            showAlertToast("Group " + data.groupId + " Updated");
+            showAlertToast("Group " + data.groupId + " Updated")
         })
 }
