@@ -263,7 +263,6 @@ function eventModalSetup() {
         const endDate = moment(`${events.endDateDetail}`, 'DD/MMM/yyyy h:mm a').toDate();
         eventEndDatePicker.dates.setValue(tempusDominus.DateTime.convert(endDate));
         // Set min and max dates based on project dates
-        const a = moment('01/03/2022', 'DD/MMM/yyyy h:mm a').toDate();
         eventStartDatePicker.updateOptions({restrictions: {minDate: new Date(projectStartDate), maxDate: new Date(projectEndDate)}});
         eventEndDatePicker.updateOptions({restrictions: {minDate: new Date(projectStartDate), maxDate: new Date(projectEndDate)}});
 
