@@ -52,7 +52,7 @@
                     <div class="hstack gap-3 p-2 flex-grow-1" id="group_list">
                         <strong class="fs-5">Groups</strong>
                     </div>
-                    <button type="button" data-bs-type="add" class="btn p-2" data-bs-toggle="modal" data-bs-target="#groupModal">
+                    <button type="button" data-bs-type="add" class="btn p-2" data-bs-toggle="modal" data-bs-target="#groupModal" th:if="${currentUserRole != 'student'}">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-circle" viewBox="0 0 16 16">
                             <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"></path>
                             <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"></path>
@@ -248,21 +248,6 @@
     }
 
     /**
-     * send request to show the live notification's toast when an update on a milestone is saved by a user
-     * this function is triggered when save button on Modal is clicked
-     * @param inputElementName the id of the input element
-     * @param modal the modal that currently open
-     * @param action what action that the currently open modal does (must be editing-...)
-     */
-    function sendSavedLiveNotificationRequest(inputElementName, modal, action){
-        $(inputElementName).click(function() {
-            if (getModalActionType(modal) === action) {
-                sendNameReload(selectedArtefactName, selectedArtefactId, userId, userFirstName, userLastName, username, "Group");
-            }
-        })
-    }
-
-    /**
      * send request to hide the live notification's toast when an update is saved by a user
      * this function is triggered when close button on Modal is clicked
      * @param inputElementName the id of the input element
@@ -279,7 +264,6 @@
 
     sendEditingLiveNotificationRequest('#shortGroupName', 'groupModal', 'edit-group');
     sendEditingLiveNotificationRequest("#longGroupName", 'groupModal', 'edit-group');
-    sendSavedLiveNotificationRequest("#groupModalButton", 'groupModal', 'edit-group');
     sendStopEditingLiveNotificationRequest("#closeGroupModalButton", 'groupModal', 'edit-group');
 </script>
 
@@ -290,13 +274,6 @@
     groupDeleteModalSetup()
     removeUserModalSetup()
     nameValidateCheck()
-</script>
-
-<script>
-    function updateTable(groupId) {
-        const url = "groups/local?";
-        $('#table_refresh').load(url, "groupId=" + groupId)
-    }
 </script>
 
 <script>
@@ -333,17 +310,6 @@
             return true
         }
     }
-
-    async function validateGroup() {
-        if (validateModalName('shortGroupName', 'groupShortNameAlertBanner', 'groupShortNameAlertMessage') &&
-            validateModalName('longGroupName', 'groupLongNameAlertBanner', 'groupLongNameAlertMessage')
-        ) {
-            document.getElementById('groupForm').onsubmit = () => { return false };
-            document.getElementById('groupForm').submit();
-        };
-    }
-
-    $(`#groupCard1 button`).click() // Select members without a group
 </script>
 
 
