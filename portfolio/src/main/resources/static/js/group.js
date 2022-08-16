@@ -261,5 +261,7 @@ function removeUserModalButtonFunction() {
             $('#removeUserModal').modal('toggle')
             groupButtonSetup() // Allow group cards to be highlighted when selected
             showAlertToast("Group " + groupName + " Updated")
-        })
+        }).fail((result) => {
+        showAlertErrorToast("Group " + groupName + " failed to be updated")
+    })
 }
