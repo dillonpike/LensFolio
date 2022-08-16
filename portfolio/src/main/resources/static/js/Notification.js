@@ -29,7 +29,6 @@ class Notification {
     toastTitleTextVar;
     titleName = "";
     bodyText = "";
-    hasBeenSaved = false;
     selectedDate = (new Date(Date.now())).valueOf();
     isHidden = true;
     type = "";
@@ -51,10 +50,9 @@ class Notification {
      * @param username Username of the user updating the item.
      * @param firstName Users first name.
      * @param lastName Users last name.
-     * @param hasBeenSaved Whether the item has just been saved, rather than just being edited.
+     * @param action
      */
-    constructor(type, name, id, username, firstName, lastName, hasBeenSaved, action) {
-        this.hasBeenSaved = hasBeenSaved;
+    constructor(type, name, id, username, firstName, lastName, action) {
         this.name = name;
         this.username = username;
         this.firstName = firstName;
@@ -88,9 +86,6 @@ class Notification {
     get titleName() {
         return this.titleName;
     }
-    get hasBeenSaved() {
-        return this.hasBeenSaved;
-    }
     get id() {
         return this.id;
     }
@@ -100,8 +95,9 @@ class Notification {
     get type() {
         return this.type;
     }
-
-
+    get action() {
+        return this.action;
+    }
 
     set username(username) {
         this.username = username;
@@ -119,10 +115,6 @@ class Notification {
         this.action = action;
     }
 
-    get action() {
-        return this.action;
-    }
-
     /**
      * Shows the notification with the assigned toast with the correct message and title.
      */
@@ -130,32 +122,17 @@ class Notification {
         this.isHidden = false;
         this.isWaitingToBeHidden = false;
         this.selectedDate = (new Date(Date.now())).valueOf();
-//        if (!this.hasBeenSaved) {
-//            this.bodyText = "'" + this.name + "' is being edited by " +
-//                this.firstName + " " + this.lastName + " (" + this.username + ").";
-//        } else {
-//            if(this.action.includes("add")){
-//                this.bodyText = this.firstName + " " + this.lastName + " (" + this.username + ") has added a new " + this.type.toLowerCase() + "."
-//            } else if (this.action.includes("delete")) {
-//                this.bodyText = "'" + this.name + "' has been deleted by " +
-//                    this.firstName + " " + this.lastName + " (" + this.username + ").";
-//            } else {
-//                this.bodyText = "'" + this.name + "' has been updated by " +
-//                    this.firstName + " " + this.lastName + " (" + this.username + ").";
-//            }
-//
-//        }
         switch(this.action){
-          case "save":
+          case SAVEACTION:
               this.bodyText = "'" + this.name + "' has been updated by " + this.firstName + " " + this.lastName + " (" + this.username + ").";
               break;
-          case "edit":
+          case EDITACTION:
               this.bodyText = "'" + this.name + "' is being edited by " + this.firstName + " " + this.lastName + " (" + this.username + ").";
               break;
-          case "add":
+          case ADDACTION:
               this.bodyText = this.firstName + " " + this.lastName + " (" + this.username + ") has added a new " + this.type.toLowerCase() + "."
               break;
-          case "delete":
+          case DELETEACTION:
               this.bodyText = "'" + this.name + "' has been deleted by " + this.firstName + " " + this.lastName + " (" + this.username + ").";
               break;
           default:
@@ -217,8 +194,8 @@ class Notification {
      * @returns {Notification} Returns its updated self.
      */
     updateNotification(newNotification) {
-        this.name = newNotification.name
-        this.hasBeenSaved = newNotification.hasBeenSaved;
+        this.name = newNotification.name;
+        this.action = newNotification.action;
 
         return this;
     }
