@@ -113,7 +113,7 @@
                         </tr>
                         </thead>
                         <tbody>
-                        <tr th:each="member : ${members}" th:id="${member.Id}">
+                        <tr id="rows" th:each="member : ${members}" th:id="${member.Id}">
                             <td th:text="${member.FirstName}"></td>
                             <td th:text="${member.LastName}"></td>
                             <td th:text="${member.username}"></td>
@@ -308,6 +308,11 @@
             return true
         }
     }
+
+    $(document).on("click", "#table tr", function(e) {
+        var data = userTable.row( this ).data();
+        alert( 'You clicked on '+data[0]+'\'s row' );
+    });
 </script>
 
 
