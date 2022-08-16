@@ -1,6 +1,6 @@
 
 /**
- * Add a 'active' class to the selected group, highlight current selected group for better user experience
+ * Add an 'active' class to the selected group, highlight current selected group for better user experience
  */
 function groupButtonSetup() {
     $('.group-bar button').on('click', function () {
@@ -71,7 +71,7 @@ function groupModalSetup() {
  }
 
 /**
- * Checks that the group modal inputs have text enetered in them, then submits the group adding/editing form and adds
+ * Checks that the group modal inputs have text entered in them, then submits the group adding/editing form and adds
  * the new group to the page or updates the edited group if the action was successful, otherwise updates the modal
  * with error messages.
  * @returns {Promise<void>} null
@@ -203,6 +203,12 @@ function copyUsers() {
     }).fail((result) => {
         showAlertErrorToast("Group " + groupName + " failed to be updated")
     })
+}
+
+function highlightCurrentGroup() {
+    const groupId = getCurrentGroupId()
+    console.log(groupId);
+    $(`#groupCard${groupId}`).firstElementChild.addClass('active')
 }
 
 function updateMembersWithoutAGroupCard() {
