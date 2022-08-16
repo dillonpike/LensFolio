@@ -197,13 +197,7 @@ public class DetailsController {
     @MessageMapping("/editing-artefact")
     @SendTo("/webSocketGet/being-edited")
     public NotificationResponse updatingArtefact(NotificationMessage message) {
-        int artefactId = message.getArtefactId();
-        String username = message.getUsername();
-        String firstName = message.getUserFirstName();
-        String lastName = message.getUserLastName();
-        String artefactType = message.getArtefactType();
-        long dateOfNotification = Date.from(Instant.now()).toInstant().getEpochSecond();
-        return new NotificationResponse(HtmlUtils.htmlEscape(message.getArtefactName()), artefactId, username, firstName, lastName, dateOfNotification, artefactType);
+        return NotificationResponse.fromMessage(message, "edit");
     }
 
     /**
@@ -215,13 +209,7 @@ public class DetailsController {
     @MessageMapping("/stop-editing-artefact")
     @SendTo("/webSocketGet/stop-being-edited")
     public NotificationResponse stopUpdatingArtefact(NotificationMessage message) {
-        int artefactId = message.getArtefactId();
-        String username = message.getUsername();
-        String firstName = message.getUserFirstName();
-        String lastName = message.getUserLastName();
-        String artefactType = message.getArtefactType();
-        long dateOfNotification = Date.from(Instant.now()).toInstant().getEpochSecond();
-        return new NotificationResponse(HtmlUtils.htmlEscape(message.getArtefactName()), artefactId, username, firstName, lastName, dateOfNotification, artefactType);
+        return NotificationResponse.fromMessage(message, "edit");
     }
 
     /**
@@ -231,15 +219,33 @@ public class DetailsController {
      * @return returns an NotificationResponse that holds information about the event being updated.
      */
     @MessageMapping("/saved-edited-artefact")
-    @SendTo("/webSocketGet/save-edit")
+    @SendTo("/webSocketGet/artefact-save")
     public NotificationResponse savingUpdatedArtefact(NotificationMessage message) {
-        int artefactId = message.getArtefactId();
-        String username = message.getUsername();
-        String firstName = message.getUserFirstName();
-        String lastName = message.getUserLastName();
-        long dateOfNotification = Date.from(Instant.now()).toInstant().getEpochSecond();
-        String artefactType = message.getArtefactType();
-        NotificationResponse response = new NotificationResponse(HtmlUtils.htmlEscape(message.getArtefactName()), artefactId, username, firstName, lastName, dateOfNotification, artefactType);
+        NotificationResponse response = NotificationResponse.fromMessage(message, "save");
+        // Trigger reload and save the last event's information
+        eventsToDisplay.add(response);
+        while (eventsToDisplay.size() > NUM_OF_TOASTS) {
+            eventsToDisplay.remove(0);
+        }
+        return response;
+    }
+
+    @MessageMapping("/added-artefact")
+    @SendTo("/webSocketGet/artefact-add")
+    public NotificationResponse addingArtefact(NotificationMessage message) {
+        NotificationResponse response = NotificationResponse.fromMessage(message, "add");
+        // Trigger reload and save the last event's information
+        eventsToDisplay.add(response);
+        while (eventsToDisplay.size() > NUM_OF_TOASTS) {
+            eventsToDisplay.remove(0);
+        }
+        return response;
+    }
+
+    @MessageMapping("/deleted-artefact")
+    @SendTo("/webSocketGet/artefact-delete")
+    public NotificationResponse deletingArtefact(NotificationMessage message) {
+        NotificationResponse response = NotificationResponse.fromMessage(message, "delete");
         // Trigger reload and save the last event's information
         eventsToDisplay.add(response);
         while (eventsToDisplay.size() > NUM_OF_TOASTS) {

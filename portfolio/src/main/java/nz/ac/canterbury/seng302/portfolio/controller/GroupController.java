@@ -279,13 +279,7 @@ public class GroupController {
     @MessageMapping("/editing-group")
     @SendTo("/webSocketGet/group-being-edited")
     public NotificationResponse updatingArtefact(NotificationMessage message) {
-        int groupId = message.getArtefactId();
-        String username = message.getUsername();
-        String firstName = message.getUserFirstName();
-        String lastName = message.getUserLastName();
-        String artefactType = message.getArtefactType();
-        long dateOfNotification = Date.from(Instant.now()).toInstant().getEpochSecond();
-        return new NotificationResponse(HtmlUtils.htmlEscape(message.getArtefactName()), groupId, username, firstName, lastName, dateOfNotification, artefactType);
+        return NotificationResponse.fromMessage(message, "edit");
     }
 
     /**
@@ -297,13 +291,7 @@ public class GroupController {
     @MessageMapping("/stop-editing-group")
     @SendTo("/webSocketGet/group-stop-being-edited")
     public NotificationResponse stopUpdatingArtefact(NotificationMessage message) {
-        int groupId = message.getArtefactId();
-        String username = message.getUsername();
-        String firstName = message.getUserFirstName();
-        String lastName = message.getUserLastName();
-        String artefactType = message.getArtefactType();
-        long dateOfNotification = Date.from(Instant.now()).toInstant().getEpochSecond();
-        return new NotificationResponse(HtmlUtils.htmlEscape(message.getArtefactName()), groupId, username, firstName, lastName, dateOfNotification, artefactType);
+        return NotificationResponse.fromMessage(message, "edit");
     }
 
     /**
@@ -315,13 +303,7 @@ public class GroupController {
     @MessageMapping("/saved-edited-group")
     @SendTo("/webSocketGet/group-save-edit")
     public NotificationResponse savingUpdatedArtefact(NotificationMessage message) {
-        int groupId = message.getArtefactId();
-        String username = message.getUsername();
-        String firstName = message.getUserFirstName();
-        String lastName = message.getUserLastName();
-        long dateOfNotification = Date.from(Instant.now()).toInstant().getEpochSecond();
-        String artefactType = message.getArtefactType();
-        NotificationResponse response = new NotificationResponse(HtmlUtils.htmlEscape(message.getArtefactName()), groupId, username, firstName, lastName, dateOfNotification, artefactType);
+        NotificationResponse response = NotificationResponse.fromMessage(message, "save");
         // Trigger reload and save the last event's information
         groupService.addNotification(response, 3);
         return response;
