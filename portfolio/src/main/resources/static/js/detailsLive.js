@@ -8,6 +8,12 @@
 const NUM_OF_TOASTS = 3;
 
 /**
+ * Number of milliseconds to wait for artefacts to save to the database.
+ * @type {number}
+ */
+const SAVE_TIME = 1000;
+
+/**
  * Stores the stomp client to connect to and send to for WebSockets/SockJS.
  */
 let stompClient = null;
@@ -19,7 +25,7 @@ let stompClient = null;
 function connect() {
     let socket = new SockJS('mywebsockets');
     stompClient = Stomp.over(socket);
-    stompClient.connect({}, function (frame) {
+    stompClient.connect({}, function () {
         stompClient.subscribe('/webSocketGet/being-edited', function (eventResponseArg) {
             const eventResponse = JSON.parse(eventResponseArg.body);
             showToast(eventResponse.artefactName, eventResponse.artefactId, eventResponse.username, eventResponse.userFirstName, eventResponse.userLastName, false, eventResponse.artefactType);
@@ -77,12 +83,29 @@ function showToastSave(eventName, eventId, username, firstName, lastName, type) 
 }
 
 /**
- * Refresh the DOM after some delay, to account for the saving function completing.
+ * Refresh the DOM after some delay if all modals are closed. Otherwise, set DOM to refresh when this modal is closed,
+ * a minimum of SAVE_TIME milliseconds after this function is called.
  */
 function refreshEvents() {
+    if (isModalOpen()) {
+        const modal = getOpenModal();
+        modal.addEventListener('hide.bs.modal', reloadAfterDelay);
+        setTimeout(() => {
+            modal.addEventListener('hide.bs.modal', () => {document.location.reload();})
+            modal.removeEventListener('hide.bs.modal', reloadAfterDelay);
+        }, SAVE_TIME)
+    } else {
+        reloadAfterDelay();
+    }
+}
+
+/**
+ * Refresh the DOM after some delay, to account for the saving function completing.
+ */
+function reloadAfterDelay() {
     setTimeout(() => {
         document.location.reload();
-    }, 1000);
+    }, SAVE_TIME);
 }
 
 /**
