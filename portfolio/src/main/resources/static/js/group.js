@@ -208,7 +208,8 @@ function copyUsers() {
 function highlightCurrentGroup() {
     const groupId = getCurrentGroupId()
     console.log(groupId);
-    $(`#groupCard${groupId}`).firstElementChild.addClass('active')
+    //$(`#groupCard${groupId}`).firstElementChild.addClass('active')
+    document.getElementById("groupCard1").firstElementChild.classList.add("active")
 }
 
 function updateMembersWithoutAGroupCard() {
