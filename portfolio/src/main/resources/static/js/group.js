@@ -105,11 +105,7 @@ function addGroup() {
         $('#groupModal').modal('toggle')
         document.getElementById("groupList").innerHTML += result
         groupButtonSetup() // Allow group cards to be highlighted when selected
-    }).fail((result) => {
-        $("#groupModalBody").replaceWith(result.responseText)
-        updateCharsLeft('shortGroupName', 'shortGroupNameLength', 10)
-        updateCharsLeft('longGroupName', 'longGroupNameLength', 30)
-    })
+    }).fail(replaceModalBody)
 }
 
 /**
@@ -129,11 +125,17 @@ function editGroup() {
         $(`#groupCard${id}`).replaceWith(result)
         groupButtonSetup() // Allow group cards to be highlighted when selected
         $(`#groupCard${id} button`).click() // Select edited group
-    }).fail((result) => {
-        $("#groupModalBody").replaceWith(result.responseText)
-        updateCharsLeft('shortGroupName', 'shortGroupNameLength', 10)
-        updateCharsLeft('longGroupName', 'longGroupNameLength', 30)
-    })
+    }).fail(replaceModalBody)
+}
+
+/**
+ * Replaces the body of the modal with the given modalBody response from the backend.
+ * @param modalBodyResponse response with new modalBody to display (groupModalBody fragment)
+ */
+function replaceModalBody(modalBodyResponse) {
+    $("#groupModalBody").replaceWith(modalBodyResponse.responseText)
+    updateCharsLeft('shortGroupName', 'shortGroupNameLength', 10)
+    updateCharsLeft('longGroupName', 'longGroupNameLength', 30)
 }
 
 /**
@@ -180,6 +182,11 @@ function deleteGroupModalButtonFunction(type, id) {
     })
 }
 
+/**
+ * Copies the users currently selected in the table to the group currently selected in the group dropdown.
+ * After this action is completed the relevant groups and tables displayed to the user are updated.
+ * A toast indicating success or failure is also displayed.
+ */
 function copyUsers() {
     const originGroupId = getCurrentGroupId()
     const groupName = $( "#groupDropdownList option:selected" ).text()
@@ -200,11 +207,14 @@ function copyUsers() {
         }
         groupButtonSetup() // Allow group cards to be highlighted when selected
         showAlertToast("Group " + groupName + " Updated")
-    }).fail((result) => {
+    }).fail(() => {
         showAlertErrorToast("Group " + groupName + " failed to be updated")
     })
 }
 
+/**
+ * Requests an up-to-date version of the members without a group card and replaces the current card with it.
+ */
 function updateMembersWithoutAGroupCard() {
     $.get('members-without-a-group').done((result) => {
         $(`#groupCard1`).replaceWith(result)
@@ -212,6 +222,9 @@ function updateMembersWithoutAGroupCard() {
     })
 }
 
+/**
+ * Requests an up-to-date version of the group card list and updates the current list with it.
+ */
 function updateGroupList() {
     $.get('group-list').done((result) => {
         $(`#groupList`).replaceWith(result)
@@ -224,10 +237,7 @@ function updateGroupList() {
  */
 function removeUserModalSetup() {
     const removeUserModal = document.getElementById('removeUserModal')
-    removeUserModal.addEventListener('show.bs.modal', function (event) {
-        // Button that triggered the modal
-        const button = event.relatedTarget
-
+    removeUserModal.addEventListener('show.bs.modal', function () {
         const modalButton = removeUserModal.querySelector('.modal-footer button')
         const modalLink = removeUserModal.querySelector('.modal-footer a')
 
@@ -246,20 +256,20 @@ function removeUserModalButtonFunction() {
     const data = {groupId: groupId, userIds: selected}
 
     $.post('remove-users' + "?" + new URLSearchParams(data)).done((result) => {
-            if (data.groupId === '1') {
-                $(`#groupList`).replaceWith(result)
-                updateTable(groupId)
-            } else {
-                $(`#groupCard${data.groupId}`).replaceWith(result)
-                if (groupId === '1') {
-                    updateMembersWithoutAGroupCard()
-                    updateTable(groupId)
-                }
-            }
+        if (data.groupId === '1') {
+            $(`#groupList`).replaceWith(result)
             updateTable(groupId)
-            updateMembersWithoutAGroupCard()
-            $('#removeUserModal').modal('toggle')
-            groupButtonSetup() // Allow group cards to be highlighted when selected
-            showAlertToast("Group " + data.groupId + " Updated")
-        })
+        } else {
+            $(`#groupCard${data.groupId}`).replaceWith(result)
+            if (groupId === '1') {
+                updateMembersWithoutAGroupCard()
+                updateTable(groupId)
+            }
+        }
+        updateTable(groupId)
+        updateMembersWithoutAGroupCard()
+        $('#removeUserModal').modal('toggle')
+        groupButtonSetup() // Allow group cards to be highlighted when selected
+        showAlertToast("Group " + data.groupId + " Updated")
+    })
 }
