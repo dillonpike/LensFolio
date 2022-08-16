@@ -207,7 +207,7 @@
                                                     </li>
                                                     <li>
                                                         <a class="button-link" data-bs-toggle="modal" data-bs-target="#deleteModal" th:data-bs-id="${sprint.id}" th:data-bs-name="${sprint.name}" data-bs-type="sprint">
-                                                            <button id="deleteSprintButton" class="dropdown-item" type="button">
+                                                            <button class="dropdown-item delete-artefact-button" type="button">
                                                                 <span class='bi bi-trash' style='color: red'></span> <i style='color: red'>Delete</i>
                                                             </button>
                                                         </a>
@@ -283,7 +283,7 @@
                                                             </li>
                                                             <li>
                                                                 <a class="button-link" data-bs-toggle="modal" data-bs-target="#deleteModal" th:data-bs-id="${event.id}" th:data-bs-name="${event.eventName}" data-bs-type="event">
-                                                                    <button class="dropdown-item delete-artefact-button" type="button">
+                                                                    <button class="dropdown-item delete-artefact-button" type="button" th:attr="onclick='editArtefact(\'' + ${event.getEventName()} + '\',\'' + ${event.getId()}+  '\');'">
                                                                         <span class='bi bi-trash' style='color: red'></span> <i style='color: red'>Delete</i>
                                                                     </button>
                                                                 </a>
@@ -540,7 +540,6 @@
         const requestURLStr = document.getElementById(modal).querySelector('form').action
         const requestURLList = document.getElementById(modal).querySelector('form').action.split("/")
         let actionTypeIndex = requestURLList.length - 2;
-        console.log(requestURLStr)
         if (requestURLStr.includes("add")){
             actionTypeIndex = requestURLList.length - 1;
         }
@@ -580,7 +579,11 @@
         $(inputElementName).click(function() {
             console.log(getModalActionType(modal));
             if (getModalActionType(modal) === action) {
-                sendNameReload(selectedArtefactName, selectedArtefactId, userId, userFirstName, userLastName, username, artefactType);
+                if (action.includes("add")) {
+                    addPageReload(selectedArtefactName, selectedArtefactId, userId, userFirstName, userLastName, username, artefactType);
+                } else {
+                    sendNameReload(selectedArtefactName, selectedArtefactId, userId, userFirstName, userLastName, username, artefactType);
+                }
             }
         })
     }
@@ -636,7 +639,9 @@
      * Reload the calendar page when something(deadline, sprint, milestone, event) is deleted
      */
     $("#deleteModalButton").on('click', function (ignore) {
-        pageReload();
+        const title = document.getElementById('deleteModal').querySelector('.modal-title').innerText;
+        const text = title.split(" ");
+        deletePageReload(selectedArtefactName, selectedArtefactId,userId, userFirstName, userLastName, username, text[1]);
     })
 
 
