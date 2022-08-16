@@ -86,12 +86,12 @@
                 </div>
             </div>
         </div>
-        <div class="col-6 col-md-8 sticky-md-top card shadow" id="tableRefreshContainer">
+        <div class="col-6 col-md-8 sticky-md-top card shadow pb-3 mb-5" id="tableRefreshContainer">
             <div id="table_refresh" th:fragment="table_refresh" th:data-groupid="${group?.getGroupId()}">
                 <div class="container">
                     <h1 class="mt-3" th:text="${groupLongName}"></h1>
                     <h4 id= "shortGroupName" th:text="${groupShortName}"></h4>
-                    <div class="hstack gap-3" th:if="${currentUserRole != 'student'}">
+                    <div class="hstack gap-3 pb-2" th:if="${currentUserRole != 'student'}">
                         <span>Copy Users To </span>
                         <select class="form-select input-sm" aria-label="Default select example" id="groupDropdownList">
                             <option th:each="copyToGroup : ${groupList}" th:if="${group?.getGroupId() != copyToGroup.getGroupId()}" th:value="${copyToGroup.getGroupId()}" th:text="${copyToGroup.getShortName()}"></option>
