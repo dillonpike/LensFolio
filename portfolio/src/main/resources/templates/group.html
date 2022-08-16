@@ -90,7 +90,7 @@
             <div id="table_refresh" th:fragment="table_refresh" th:data-groupid="${group?.getGroupId()}">
                 <div class="container">
                     <h1 class="mt-3" th:text="${groupLongName}"></h1>
-                    <h4 th:text="${groupShortName}"></h4>
+                    <h4 id= "shortGroupName" th:text="${groupShortName}"></h4>
                     <div class="hstack gap-3" th:if="${currentUserRole != 'student'}">
                         <span>Copy Users To </span>
                         <select class="form-select input-sm" aria-label="Default select example" id="groupDropdownList">
