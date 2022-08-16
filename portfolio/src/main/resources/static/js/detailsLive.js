@@ -66,7 +66,7 @@ function connect() {
  * @param type they type of the artefact it is either Milestone, Deadline, or event
  */
 function showToast(eventName, eventId, username, firstName, lastName, hide, type) {
-    let newNotification = new Notification(type, eventName, eventId, username, firstName, lastName, false);
+    let newNotification = new Notification(type, eventName, eventId, username, firstName, lastName, EDITACTION);
     newNotification = addNotification(newNotification);
     if (!hide) {
         newNotification.show();
@@ -84,6 +84,7 @@ function showToast(eventName, eventId, username, firstName, lastName, hide, type
  * @param firstName First name of the user
  * @param lastName Last name of the user
  * @param type type of artefact
+ * @param action Action that the artefact has done. Can be 'save', 'add', or 'delete'.
  */
 function showToastSave(eventName, eventId, username, firstName, lastName, type, action) {
     let newNotification = new Notification(type, eventName, eventId, username, firstName, lastName, action);

@@ -191,7 +191,7 @@ public class DetailsController {
     /**
      * This method maps @MessageMapping endpoint to the @SendTo endpoint. Called when something is sent to
      * the MessageMapping endpoint.
-     * @param message NotificationMessage that holds information about the event being updated
+     * @param message NotificationMessage that holds information about the artefact being updated
      * @return returns an NotificationResponse that holds information about the event being updated.
      */
     @MessageMapping("/editing-artefact")
@@ -215,7 +215,7 @@ public class DetailsController {
     /**
      * This method maps @MessageMapping endpoint to the @SendTo endpoint. Called when something is sent to
      * the MessageMapping endpoint. This method also triggers some sort of re-render of the events.
-     * @param message NotificationMessage that holds information about the event being updated
+     * @param message NotificationMessage that holds information about the artefact being updated
      * @return returns an NotificationResponse that holds information about the event being updated.
      */
     @MessageMapping("/saved-edited-artefact")
@@ -230,6 +230,11 @@ public class DetailsController {
         return response;
     }
 
+    /**
+     * This method maps @MessageMapping endpoint to the @SendTo endpoint. Called when an artefact is added.
+     * @param message NotificationMessage that holds information about the artefact being added
+     * @return returns an NotificationResponse that holds information about the artefact being added.
+     */
     @MessageMapping("/added-artefact")
     @SendTo("/webSocketGet/artefact-add")
     public NotificationResponse addingArtefact(NotificationMessage message) {
@@ -242,6 +247,11 @@ public class DetailsController {
         return response;
     }
 
+    /**
+     * This method maps @MessageMapping endpoint to the @SendTo endpoint. Called when an artefact is deleted.
+     * @param message NotificationMessage that holds information about the artefact being deleted
+     * @return returns an NotificationResponse that holds information about the artefact being deleted.
+     */
     @MessageMapping("/deleted-artefact")
     @SendTo("/webSocketGet/artefact-delete")
     public NotificationResponse deletingArtefact(NotificationMessage message) {

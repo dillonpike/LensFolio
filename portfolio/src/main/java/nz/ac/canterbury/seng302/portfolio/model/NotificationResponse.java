@@ -31,6 +31,8 @@ public class NotificationResponse {
      * @param userFirstName First name of user editing.
      * @param userLastName Last name of user editing.
      * @param dateOfCreation Date/Time in seconds of when the response was created.
+     * @param artefactType Type of artefact being edited.
+     * @param action Action of the artefact. Can be "add", "edit", "delete" or "save".
      */
     public NotificationResponse(String artefactName, int artefactId, String username, String userFirstName, String userLastName, long dateOfCreation, String artefactType, String action) {
         this.artefactName = artefactName;
@@ -118,6 +120,12 @@ public class NotificationResponse {
         this.action = action;
     }
 
+    /**
+     * Converts a NotificationMessage to a NotificationResponse. Gives it a relevant action and date of creation.
+     * @param message The NotificationMessage to convert.
+     * @param action The action to give the NotificationResponse.
+     * @return The converted NotificationResponse.
+     */
     public static NotificationResponse fromMessage(NotificationMessage message, String action) {
         long dateOfNotification = Date.from(Instant.now()).toInstant().getEpochSecond();
         return new NotificationResponse(message.getArtefactName(), message.getArtefactId(), message.getUsername(), message.getUserFirstName(), message.getUserLastName(), dateOfNotification, message.getArtefactType(), action);
