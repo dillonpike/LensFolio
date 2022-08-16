@@ -167,7 +167,7 @@ function groupDeleteModalSetup() {
  */
 function deleteGroupModalButtonFunction(type, id) {
     const buttonFunction = document.getElementById('deleteModalButton').onclick;
-    document.getElementById('deleteModalButton').onclick = () => {}
+    document.getElementById('deleteModalButton').onclick = () => {return false}
     $.ajax({
         url: `delete-${type}/${id}`,
         type: 'DELETE',
@@ -251,10 +251,12 @@ function removeUserModalSetup() {
  * button after being clicked. Removes the selected user upon success, and re-enables the remove button upon failure.
  */
 function removeUserModalButtonFunction() {
+    const buttonFunction = document.getElementById('removeUserModalButton').onclick
+    document.getElementById('removeUserModalButton').onclick = () => {return false}
+
     const selected = userTable.rows('.selected').data().toArray().map(row => row.DT_RowId)
     const groupId = getCurrentGroupId()
     const data = {groupId: groupId, userIds: selected}
-
     $.post('remove-users' + "?" + new URLSearchParams(data)).done((result) => {
         if (data.groupId === '1') {
             $(`#groupList`).replaceWith(result)
@@ -271,5 +273,7 @@ function removeUserModalButtonFunction() {
         $('#removeUserModal').modal('toggle')
         groupButtonSetup() // Allow group cards to be highlighted when selected
         showAlertToast("Group " + data.groupId + " Updated")
+    }).fail(() => {
+        document.getElementById('removeUserModalButton').onclick = buttonFunction;
     })
 }
