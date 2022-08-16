@@ -6,6 +6,13 @@ const DEADLINETYPE = "Deadline";
 const MILESTONETYPE = "Milestone";
 const GROUPTYPE = "Group";
 
+
+const ADDACTION = "add";
+const SAVEACTION = "save";
+const EDITACTION = "edit";
+const DELETEACTION = "delete";
+
+
 /**
  * The amount of time in seconds the toast will take before hiding on a timed hide function.
  * @type {number}
@@ -27,6 +34,7 @@ class Notification {
     isHidden = true;
     type = "";
     isWaitingToBeHidden = false;
+    action = "";
 
     id = "";
     id_number = -1;
@@ -45,7 +53,7 @@ class Notification {
      * @param lastName Users last name.
      * @param hasBeenSaved Whether the item has just been saved, rather than just being edited.
      */
-    constructor(type, name, id, username, firstName, lastName, hasBeenSaved) {
+    constructor(type, name, id, username, firstName, lastName, hasBeenSaved, action) {
         this.hasBeenSaved = hasBeenSaved;
         this.name = name;
         this.username = username;
@@ -65,6 +73,7 @@ class Notification {
         }
         this.id = type.toLowerCase() + "_" + username + "_" + id;
         this.id_number = id;
+        this.action = action;
     }
 
     get username() {
@@ -92,6 +101,8 @@ class Notification {
         return this.type;
     }
 
+
+
     set username(username) {
         this.username = username;
     }
@@ -104,6 +115,13 @@ class Notification {
     set name(name) {
         this.name = name;
     }
+    set action(action) {
+        this.action = action;
+    }
+
+    get action() {
+        return this.action;
+    }
 
     /**
      * Shows the notification with the assigned toast with the correct message and title.
@@ -112,18 +130,41 @@ class Notification {
         this.isHidden = false;
         this.isWaitingToBeHidden = false;
         this.selectedDate = (new Date(Date.now())).valueOf();
-        if (!this.hasBeenSaved) {
-            this.bodyText = "'" + this.name + "' is being edited by " +
-                this.firstName + " " + this.lastName + " (" + this.username + ").";
-        } else {
-            if(this.name === ""){
-                this.bodyText = this.firstName + " " + this.lastName + " (" + this.username + ") has added a new " + this.type.toLowerCase() + "."
-            } else {
-                this.bodyText = "'" + this.name + "' has been updated by " +
-                    this.firstName + " " + this.lastName + " (" + this.username + ").";
-            }
+//        if (!this.hasBeenSaved) {
+//            this.bodyText = "'" + this.name + "' is being edited by " +
+//                this.firstName + " " + this.lastName + " (" + this.username + ").";
+//        } else {
+//            if(this.action.includes("add")){
+//                this.bodyText = this.firstName + " " + this.lastName + " (" + this.username + ") has added a new " + this.type.toLowerCase() + "."
+//            } else if (this.action.includes("delete")) {
+//                this.bodyText = "'" + this.name + "' has been deleted by " +
+//                    this.firstName + " " + this.lastName + " (" + this.username + ").";
+//            } else {
+//                this.bodyText = "'" + this.name + "' has been updated by " +
+//                    this.firstName + " " + this.lastName + " (" + this.username + ").";
+//            }
+//
+//        }
+        switch(this.action){
+          case "save":
+              this.bodyText = "'" + this.name + "' has been updated by " + this.firstName + " " + this.lastName + " (" + this.username + ").";
+              break;
+          case "edit":
+              this.bodyText = "'" + this.name + "' is being edited by " + this.firstName + " " + this.lastName + " (" + this.username + ").";
+              break;
+          case "add":
+              this.bodyText = this.firstName + " " + this.lastName + " (" + this.username + ") has added a new " + this.type.toLowerCase() + "."
+              break;
+          case "delete":
+              this.bodyText = "'" + this.name + "' has been deleted by " + this.firstName + " " + this.lastName + " (" + this.username + ").";
+              break;
+          default:
+              this.bodyText = "'" + this.name + "' has been changed by " + this.firstName + " " + this.lastName + " (" + this.username + ").";
+
 
         }
+
+
         this.toastBodyTextVar.text(this.bodyText);
         this.toastTitleTextVar.text(this.titleName);
         this.toast.show();
