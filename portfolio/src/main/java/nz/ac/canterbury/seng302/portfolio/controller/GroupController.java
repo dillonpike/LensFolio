@@ -182,7 +182,7 @@ public class GroupController {
      * Tries to save new data to group with given groupId to the database.
      * @param id id of event edited
      * @param group Group data to be updated
-     * @param model model to add attributes to for Thyemeleaf to inject into the HTML
+     * @param model model to add attributes to for Thymeleaf to inject into the HTML
      * @param httpServletResponse for adding status codes to
      * @throws IllegalArgumentException if sprint cannot be found from the given ID or if it cannot be saved.
      */

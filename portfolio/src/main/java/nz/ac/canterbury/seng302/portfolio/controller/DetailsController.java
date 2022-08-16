@@ -4,6 +4,7 @@ import com.google.protobuf.Timestamp;
 import nz.ac.canterbury.seng302.portfolio.model.*;
 import nz.ac.canterbury.seng302.portfolio.service.*;
 import nz.ac.canterbury.seng302.portfolio.utility.Toast;
+import nz.ac.canterbury.seng302.portfolio.utility.ToastUtility;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -122,35 +123,7 @@ public class DetailsController {
         List<List<Milestone>> milestonesForSprints = getAllMilestonesForAllSprints(sprintList);
         model.addAttribute("milestonesForSprints", milestonesForSprints);
 
-        List<Toast> toastsToGenerate = new ArrayList<>();
-        for (int i = 0; i < NUM_OF_TOASTS; i++) {
-            Toast toast = new Toast();
-            toastsToGenerate.add(toast);
-        }
-
-        // Runs if the reload was triggered by saving an event. Checks the notifications' creation time to see if 2 seconds has passed yet.
-        int count = 0;
-        ArrayList<NotificationResponse> eventsToDelete = new ArrayList<>();
-        for (NotificationResponse event : eventsToDisplay) {
-            long timeDifference = Date.from(Instant.now()).toInstant().getEpochSecond() - event.getDateOfCreation();
-            if (timeDifference <= 2) {
-                toastsToGenerate.get(count).setArtefactInformation(event.getArtefactType());
-                toastsToGenerate.get(count).setArtefactName(event.getArtefactName());
-                toastsToGenerate.get(count).setArtefactId(event.getArtefactId());
-                toastsToGenerate.get(count).setUsername(event.getUsername());
-                toastsToGenerate.get(count).setUserFirstName(event.getUserFirstName());
-                toastsToGenerate.get(count).setUserLastName(event.getUserLastName());
-            } else {
-                eventsToDelete.add(event);
-                toastsToGenerate.get(count).setArtefactInformation("");
-            }
-            count++;
-        }
-        for (NotificationResponse event : eventsToDelete) {
-            eventsToDisplay.remove(event);
-        }
-
-        model.addAttribute("toastsToGenerate", toastsToGenerate);
+        ToastUtility.addToastsToModel(model, eventsToDisplay, NUM_OF_TOASTS);
 
         List<Milestone> milestoneList = milestoneService.getAllEventsOrderedWithColour(sprintList);
         model.addAttribute("milestones", milestoneList);
