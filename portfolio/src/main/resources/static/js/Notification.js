@@ -116,8 +116,13 @@ class Notification {
             this.bodyText = "'" + this.name + "' is being edited by " +
                 this.firstName + " " + this.lastName + " (" + this.username + ").";
         } else {
-            this.bodyText = "'" + this.name + "' has been updated by " +
-                this.firstName + " " + this.lastName + " (" + this.username + ").";
+            if(this.name === ""){
+                this.bodyText = this.firstName + " " + this.lastName + " (" + this.username + ") has added a new " + this.type.toLowerCase() + "."
+            } else {
+                this.bodyText = "'" + this.name + "' has been updated by " +
+                    this.firstName + " " + this.lastName + " (" + this.username + ").";
+            }
+
         }
         this.toastBodyTextVar.text(this.bodyText);
         this.toastTitleTextVar.text(this.titleName);

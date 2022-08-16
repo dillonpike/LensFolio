@@ -517,8 +517,13 @@
      * @returns {string} the action type
      */
     function getModalActionType(modal){
-        const requestURLList = document.getElementById(modal).querySelector('form').action.split('/')
-        const actionTypeIndex = requestURLList.length - 2;
+        const requestURLStr = document.getElementById(modal).querySelector('form').action
+        const requestURLList = document.getElementById(modal).querySelector('form').action.split("/")
+        let actionTypeIndex = requestURLList.length - 2;
+        console.log(requestURLStr)
+        if (requestURLStr.includes("add")){
+            actionTypeIndex = requestURLList.length - 1;
+        }
         return requestURLList[actionTypeIndex]
 
     }
@@ -553,6 +558,7 @@
      */
     function sendSavedLiveNotificationRequest(inputElementName, modal, action, artefactType){
         $(inputElementName).click(function() {
+            console.log(getModalActionType(modal));
             if (getModalActionType(modal) === action) {
                 sendNameReload(selectedArtefactName, selectedArtefactId, userId, userFirstName, userLastName, username, artefactType);
             }
@@ -601,6 +607,8 @@
     sendEditingLiveNotificationRequest("#eventEndTime", 'eventModal', 'edit-event', "Event");
 
     sendSavedLiveNotificationRequest("#eventModalButton", 'eventModal', 'edit-event', "Event");
+    sendSavedLiveNotificationRequest("#eventModalButton", 'eventModal', 'add-event', "Event");
+
 
     sendStopEditingLiveNotificationRequest("#closeEventModalButton", 'eventModal', 'edit-event', "Event");
 
