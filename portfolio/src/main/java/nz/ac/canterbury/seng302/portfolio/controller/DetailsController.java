@@ -271,16 +271,6 @@ public class DetailsController {
     }
 
     /**
-     * This method used to mainly reload the calendar page when an artefact is being edited or deleted on the project details
-     * @param ignore this parameter, even though it is not used, is necessary to exist in order to send the request to websocket
-     */
-    @MessageMapping("/delete-artefact")
-    @SendTo("/webSocketGet/delete-artefact")
-    public NotificationResponse deleteArtefact(NotificationMessage ignore) {
-        return new NotificationResponse();
-    }
-
-    /**
      * Get a list where each element is a list of deadline that is a part of the sprint from sprintList with the same index
      * @param sprintList List of sprints to get the deadlines of.
      * @return List of lists of deadlines that are within their given sprint

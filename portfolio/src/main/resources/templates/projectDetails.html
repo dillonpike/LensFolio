@@ -461,8 +461,28 @@
     /**
      * Sends the message that an artefact(milestone, event, deadline) is deleted
      */
-    function pageReload() {
-        stompClient.send("/webSocketPost/delete-artefact", {}, JSON.stringify({}));
+    function deletePageReload(artefactName, artefactId,userId, userFirstName, userLastName, username, artefactType) {
+        stompClient.send("/webSocketPost/deleted-artefact", {}, JSON.stringify({
+            'artefactName': artefactName,
+            'artefactId' : artefactId,
+            'userId': userId,
+            'artefactType' : artefactType,
+            'userFirstName': userFirstName,
+            'userLastName': userLastName,
+            'username': username
+        }));
+    }
+
+    function addPageReload(artefactName, artefactId,userId, userFirstName, userLastName, username, artefactType) {
+        stompClient.send("/webSocketPost/added-artefact", {}, JSON.stringify({
+            'artefactName': artefactName,
+            'artefactId' : artefactId,
+            'userId': userId,
+            'artefactType' : artefactType,
+            'userFirstName': userFirstName,
+            'userLastName': userLastName,
+            'username': username
+        }));
     }
 
     let userId = [[${userId}]];

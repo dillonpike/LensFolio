@@ -85,8 +85,8 @@ function showToast(eventName, eventId, username, firstName, lastName, hide, type
  * @param lastName Last name of the user
  * @param type type of artefact
  */
-function showToastSave(eventName, eventId, username, firstName, lastName, type, ) {
-    let newNotification = new Notification(type, eventName, eventId, username, firstName, lastName, true);
+function showToastSave(eventName, eventId, username, firstName, lastName, type, action) {
+    let newNotification = new Notification(type, eventName, eventId, username, firstName, lastName, action);
     newNotification = addNotification(newNotification);
     newNotification.show();
     newNotification.hideTimed(SECONDS_TILL_HIDE);
