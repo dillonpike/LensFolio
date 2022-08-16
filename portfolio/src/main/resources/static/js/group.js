@@ -273,5 +273,4 @@ function nameValidateCheck() {
     ShortNameText.addEventListener( "paste", event => {
         ShortNameText.value = ShortNameText.value.replace( /[^a-zA-Z0-9~!@#$%^&*()_+|}{:"?><,./;' ]/gm, '');
     }, false);
-
 }
