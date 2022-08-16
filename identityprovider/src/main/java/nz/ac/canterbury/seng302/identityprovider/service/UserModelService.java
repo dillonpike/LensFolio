@@ -219,6 +219,9 @@ public class UserModelService {
         for (UserModel user: users) {
             user.setGroups(Set.of(group));
             if (group.getGroupId() == GroupModelServerService.MEMBERS_WITHOUT_GROUP_ID) {
+                if (!user.getRoles().contains(rolesRepository.findByRoleName("STUDENT"))) {
+                    user.getRoles().add(rolesRepository.findByRoleName("STUDENT"));
+                }
                 user.getRoles().remove(rolesRepository.findByRoleName("TEACHER"));
             }
         }
