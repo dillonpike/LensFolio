@@ -314,13 +314,9 @@
      * if so, show the group options(copy/remove users).
      */
     $(document).on("click", "#table tr", function(e) {
-         table = $("table").DataTable();
+         const table = $("table").DataTable();
          var rows = table.rows('.selected').data();
-         if (rows.length > 0) {
-             document.getElementById("groupOption").hidden = false;
-         } else {
-             document.getElementById("groupOption").hidden = true;
-         }
+        document.getElementById("groupOption").hidden = rows.length<=0;
     });
 </script>
 
