@@ -279,3 +279,27 @@ function removeUserModalButtonFunction() {
         showAlertErrorToast("Group " + groupName + " failed to be updated")
     })
 }
+
+/**
+ * Each time a character is typed/pasted will be checked uses a regex validator that are not part of a valid set,
+ * replace invalid character with a blank character
+ */
+function nameValidateCheck() {
+    const ShortNameText = document.getElementById('shortGroupName');
+    ShortNameText.addEventListener( "input", event => {
+        ShortNameText.value = ShortNameText.value.replace( /[^a-zA-Z0-9~!@#$%^&*()_+|}{:"?><,./;' ]/gm, '');
+    }, false);
+
+    ShortNameText.addEventListener( "paste", event => {
+        ShortNameText.value = ShortNameText.value.replace( /[^a-zA-Z0-9~!@#$%^&*()_+|}{:"?><,./;' ]/gm, '');
+    }, false);
+
+    const longNameText = document.getElementById('longGroupName');
+    longNameText.addEventListener( "input", event => {
+        longNameText.value = longNameText.value.replace( /[^a-zA-Z0-9~!@#$%^&*()_+|}{:"?><,./;' ]/gm, '');
+    }, false);
+
+    longNameText.addEventListener( "paste", event => {
+        longNameText.value = longNameText.value.replace( /[^a-zA-Z0-9~!@#$%^&*()_+|}{:"?><,./;' ]/gm, '');
+    }, false);
+}
