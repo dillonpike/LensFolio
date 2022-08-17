@@ -3,6 +3,7 @@
  * Add an 'active' class to the selected group, highlight current selected group for better user experience
  */
 function groupButtonSetup() {
+    $(`#groupCard1 button`).click() // Loads the page with the Non-members group selected
     $('.group-bar button').on('click', function () {
         $("div.group-bar button").removeClass('active');
         $(this).addClass("active");
@@ -190,6 +191,7 @@ function copyUsers() {
     $.post('copy-users' + "?" + new URLSearchParams(data)).done((result) => {
         if (data.groupId === '1') {
             $(`#groupList`).replaceWith(result)
+            highlightCurrentGroup()
             updateTable(originGroupId)
         } else {
             $(`#groupCard${data.groupId}`).replaceWith(result)
@@ -198,23 +200,27 @@ function copyUsers() {
                 updateTable(originGroupId)
             }
         }
+
         groupButtonSetup() // Allow group cards to be highlighted when selected
         showAlertToast("Group " + groupName + " Updated")
-    }).fail((result) => {
+    }).fail(() => {
         showAlertErrorToast("Group " + groupName + " failed to be updated")
     })
 }
 
+/**
+ * Highlights the currently selected group. This is needed as sometimes the selected group is not highlighted when the
+ * table is reloaded.
+ */
 function highlightCurrentGroup() {
     const groupId = getCurrentGroupId()
-    console.log(groupId);
-    //$(`#groupCard${groupId}`).firstElementChild.addClass('active')
-    document.getElementById("groupCard1").firstElementChild.classList.add("active")
+    document.getElementById("groupCard" + groupId).firstElementChild.classList.add("active")
 }
 
 function updateMembersWithoutAGroupCard() {
     $.get('members-without-a-group').done((result) => {
         $(`#groupCard1`).replaceWith(result)
+        highlightCurrentGroup()
         groupButtonSetup() // Allow group cards to be highlighted when selected
     })
 }
