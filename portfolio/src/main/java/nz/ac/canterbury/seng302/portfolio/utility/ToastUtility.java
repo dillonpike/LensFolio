@@ -10,6 +10,7 @@ import java.util.List;
 
 public class ToastUtility {
 
+    private ToastUtility() {}
 
     public static void addToastsToModel(Model model, List<NotificationResponse> artefactsToDisplay, Integer numberOfToasts) {
         List<Toast> toastsToGenerate = new ArrayList<>();
@@ -23,7 +24,7 @@ public class ToastUtility {
         ArrayList<NotificationResponse> eventsToDelete = new ArrayList<>();
         for (NotificationResponse artefact : artefactsToDisplay) {
             long timeDifference = Date.from(Instant.now()).toInstant().getEpochSecond() - artefact.getDateOfCreation();
-            if (timeDifference <= 2) {
+            if (timeDifference <= 5) {
                 toastsToGenerate.get(count).setArtefactInformation(artefact.getArtefactType());
                 toastsToGenerate.get(count).setArtefactName(artefact.getArtefactName());
                 toastsToGenerate.get(count).setArtefactId(artefact.getArtefactId());
