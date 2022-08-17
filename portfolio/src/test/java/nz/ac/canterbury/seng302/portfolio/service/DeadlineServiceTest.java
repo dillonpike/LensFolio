@@ -122,14 +122,14 @@ class DeadlineServiceTest {
      * Expect it throws Exception with message 'Event not found'
      */
     @Test
-    void getEventByIdWhenDeadlineDoesNotExist() {
+    void getDeadlineByIdWhenDeadlineDoesNotExist() {
         Exception exception = assertThrows(Exception.class, () -> {
             Optional<Deadline> sOptional = Optional.empty();
             when(deadlinesRepository.findById(any(Integer.class))).thenReturn(sOptional);
             deadlineService.getDeadlineById(1);
         });
-
-        String expectedMessage = "Event not found";
+        System.out.println(exception.getMessage());
+        String expectedMessage = "Unknown deadline#1";
         String actualMessage = exception.getMessage();
 
         assertTrue(actualMessage.contains(expectedMessage));
