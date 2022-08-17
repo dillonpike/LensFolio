@@ -1,5 +1,6 @@
 package nz.ac.canterbury.seng302.identityprovider.server;
 
+import com.google.protobuf.Empty;
 import io.grpc.stub.StreamObserver;
 import nz.ac.canterbury.seng302.identityprovider.model.GroupModel;
 import nz.ac.canterbury.seng302.identityprovider.model.UserModel;
@@ -16,6 +17,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import javax.naming.directory.InvalidAttributesException;
 import java.util.List;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -35,10 +37,13 @@ class GroupModelServerServiceTest {
     private StreamObserver<DeleteGroupResponse> deleteObserver;
 
     @Mock
-    private  StreamObserver<CreateGroupResponse> createObserver;
+    private StreamObserver<CreateGroupResponse> createObserver;
 
     @Mock
     private GroupRepository groupRepository;
+
+    @Mock
+    private StreamObserver<GroupDetailsResponse> detailsObserver;
 
     @Mock
     private StreamObserver<ModifyGroupDetailsResponse> modifyObserver;
@@ -69,16 +74,19 @@ class GroupModelServerServiceTest {
 
     private static List<Integer> userIds;
 
+    private static Set<Integer> userIdsSet;
+
     private static List<UserModel> users;
 
     @BeforeAll
     static void setUp() {
         membersGroup.setGroupId(1);
         teachersGroup.setGroupId(2);
-        userIds = List.of(1, 2);
-        UserModel testUser1 = new UserModel();
+        userIds = List.of(0, 1);
+        userIdsSet = Set.of(0, 1);
+        UserModel testUser1 = new UserModel("test", "test", "test", "test", "test", "test", "test", "test", "test");
         testUser1.setUserId(userIds.get(0));
-        UserModel testUser2 = new UserModel();
+        UserModel testUser2 = new UserModel("test", "test", "test", "test", "test", "test", "test", "test", "test");
         testUser2.setUserId(userIds.get(1));
         users = List.of(testUser1, testUser2);
     }
@@ -642,6 +650,38 @@ class GroupModelServerServiceTest {
 
         // Checks response attributes.
         assertTrue(response.getIsSuccess());
+    }
+
+    @Test
+    void testGetMembersWithoutAGroup() throws InvalidAttributesException {
+        // Mock the empty request
+        Empty empty = mock(Empty.class);
+
+        // Setup mock outcomes.
+        when(groupModelService.getMembersOfGroup(membersGroup.getGroupId())).thenReturn(userIdsSet);
+        when(groupModelService.getGroupById(membersGroup.getGroupId())).thenReturn(membersGroup);
+        when(userModelService.getUserInformationByList(userIdsSet)).thenCallRealMethod();
+        when(userModelService.getUserById(anyInt())).thenAnswer(i -> users.get(i.getArgument(0)));
+        when(userModelService.getUserInfo(any(UserModel.class))).thenCallRealMethod();
+
+        // Runs tasks for modifying existing group.
+        groupModelServerService.getMembersWithoutAGroup(empty, detailsObserver);
+
+        // Checks it ran .onCompleted().
+        verify(detailsObserver, times(1)).onCompleted();
+        // Sets up captures to get the response.
+        ArgumentCaptor<GroupDetailsResponse> captor = ArgumentCaptor.forClass(GroupDetailsResponse.class);
+        // Checks it ran .onNext() and captor the response.
+        verify(detailsObserver, times(1)).onNext(captor.capture());
+        // Gets the value of the response from the captor.
+        GroupDetailsResponse response = captor.getValue();
+
+        // Checks response attributes.
+        assertEquals(2, response.getMembersCount());
+
+        // Ids could be out of order, so tests that the set of expected ids are equal to the set of received ids
+        assertEquals(Set.of(users.get(0).getUserId(), users.get(1).getUserId()),
+                Set.of(response.getMembers(0).getId(), response.getMembers(1).getId()));
     }
 
 
