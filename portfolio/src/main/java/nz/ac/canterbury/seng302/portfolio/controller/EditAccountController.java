@@ -52,6 +52,12 @@ public class EditAccountController {
 
     private static final Logger logger = LoggerFactory.getLogger(EditAccountController.class);
 
+    private static final String REDIRECT_TO_EDIT_ACCOUNT = "redirect:editAccount";
+
+    private static final String UPDATE_CHECK_ID = "isUpdateSuccess";
+
+    private static final String USER_ID_ATTRIBUTE_NAME = "userId";
+
     /***
      * GET method to generate the edit account page which let user edit info/attributes
      * @param userIdInput ID for the current user
@@ -63,7 +69,7 @@ public class EditAccountController {
     public String showEditAccountPage(
             Model model,
             HttpServletRequest request,
-            @RequestParam(value = "userId") String userIdInput,
+            @RequestParam(value = USER_ID_ATTRIBUTE_NAME) String userIdInput,
             @AuthenticationPrincipal AuthState principal
     ) {
         Integer id = userAccountClientService.getUserIDFromAuthState(principal);
@@ -89,7 +95,7 @@ public class EditAccountController {
             model.addAttribute("bio", getUserByIdReply.getBio());
             String fullName = getUserByIdReply.getFirstName() + " " + getUserByIdReply.getMiddleName() + " " + getUserByIdReply.getLastName();
             model.addAttribute("fullName", fullName);
-            model.addAttribute("userId", id);
+            model.addAttribute(USER_ID_ATTRIBUTE_NAME, id);
             model.addAttribute("dateAdded", DateUtility.getDateAddedString(getUserByIdReply.getCreated()));
             model.addAttribute("monthsSinceAdded", DateUtility.getDateSinceAddedString(getUserByIdReply.getCreated()));
             model.addAttribute("userImage", photoService.getPhotoPath(getUserByIdReply.getProfileImagePath(), userId));
@@ -98,7 +104,7 @@ public class EditAccountController {
             logger.error(MessageFormat.format(
                     "Error connecting to Identity Provider: {0}", e.getMessage()));
         } catch (NumberFormatException numberFormatException) {
-            model.addAttribute("userId", id);
+            model.addAttribute(USER_ID_ATTRIBUTE_NAME, id);
             return "404NotFound";
         }
        return "editAccount";
@@ -123,12 +129,12 @@ public class EditAccountController {
     public String editAccount(
             HttpServletRequest request,
             HttpServletResponse response,
-            @ModelAttribute("userId") int userId,
+            @ModelAttribute(USER_ID_ATTRIBUTE_NAME) int userId,
             RedirectAttributes rm,
             Model model
     ) {
-        rm.addAttribute("userId", userId);
-        return "redirect:editAccount";
+        rm.addAttribute(USER_ID_ATTRIBUTE_NAME, userId);
+        return REDIRECT_TO_EDIT_ACCOUNT;
     }
 
     /***
@@ -155,7 +161,7 @@ public class EditAccountController {
     public String saveEditAccount(
             HttpServletRequest request,
             HttpServletResponse response,
-            @ModelAttribute("userId") int userId,
+            @ModelAttribute(USER_ID_ATTRIBUTE_NAME) int userId,
             @ModelAttribute("email") String email,
             @ModelAttribute("firstName") String firstName,
             @ModelAttribute("lastName") String lastName,
@@ -169,16 +175,16 @@ public class EditAccountController {
         try {
             EditUserResponse saveUserdata = registerClientService.setUserData(userId, firstName, middleName, lastName, email, bio, nickName, personalPronouns);
             if (saveUserdata.getIsSuccess()) {
-                rm.addFlashAttribute("isUpdateSuccess", true);
+                rm.addFlashAttribute(UPDATE_CHECK_ID, true);
             } else {
-                rm.addFlashAttribute("isUpdateSuccess", false);
+                rm.addFlashAttribute(UPDATE_CHECK_ID, false);
             }
         } catch (Exception e) {
             logger.error(MessageFormat.format(
                     "Something went wrong retrieving the data to save: {0}", e.getMessage()));
         }
 
-        rm.addAttribute("userId", userId);
+        rm.addAttribute(USER_ID_ATTRIBUTE_NAME, userId);
 
         return "redirect:account";
     }
@@ -203,25 +209,25 @@ public class EditAccountController {
 
         String message = "Photo failed to delete.";
         String messageID = "message";
-        String updateCheckID = "isUpdateSuccess";
+
 
         try {
             DeleteUserProfilePhotoResponse reply = registerClientService.deleteUserProfilePhoto(userId);
             message = reply.getMessage();
 
             if (reply.getIsSuccess()) { // Updated successful
-                rm.addFlashAttribute(updateCheckID, true);
+                rm.addFlashAttribute(UPDATE_CHECK_ID, true);
             } else { // Updated not successful
-                rm.addFlashAttribute(updateCheckID, false);
+                rm.addFlashAttribute(UPDATE_CHECK_ID, false);
                 rm.addFlashAttribute(messageID, message);
             }
         } catch (Exception ignore) { // Updated error
-            rm.addFlashAttribute(updateCheckID, false);
+            rm.addFlashAttribute(UPDATE_CHECK_ID, false);
             rm.addFlashAttribute(messageID, message);
         }
-        rm.addAttribute("userId", userId);
+        rm.addAttribute(USER_ID_ATTRIBUTE_NAME, userId);
 
-        return "redirect:editAccount";
+        return REDIRECT_TO_EDIT_ACCOUNT;
     }
 
 
@@ -238,47 +244,50 @@ public class EditAccountController {
      */
     @PostMapping("/saveAccountPhoto")
     public String savePhoto(
-            @ModelAttribute("userId") int userId,
+            @ModelAttribute(USER_ID_ATTRIBUTE_NAME) int userId,
             RedirectAttributes rm,
             @RequestParam("avatar") MultipartFile multipartFile,
             Model model
     ) {
         String messageID = "message";
-        String updateCheckID = "isUpdateSuccess";
+
 
         if (multipartFile.isEmpty()) { // Checks that the file isn't empty.
             rm.addFlashAttribute(messageID, "Please select a file to upload.");
-            rm.addFlashAttribute(updateCheckID, false);
-            return "redirect:editAccount";
-        }
+            rm.addFlashAttribute(UPDATE_CHECK_ID, false);
 
-        String directory = MessageFormat.format("{0}/{1}/{2}/",
-                PortfolioApplication.IMAGE_DIR, getApplicationLocation(dataSource), userId);
-        String filePath = directory + "/UploadedFile";
-        File imageFile = new File(filePath); // Saves image locally so the file can be streamed to the IDP.
-        if (!new File(directory).mkdirs()) { // Ensures folders are made.
-            logger.warn("Not all folders may have been created.");
-        }
-        try ( // Makes image folder structure and then saves multipart image which is then streamed to the IDP.
-               FileOutputStream fos = new FileOutputStream(imageFile);
-            )
-        {
-            fos.write(multipartFile.getBytes());
-            fos.close();
-            if (registerClientService.uploadUserProfilePhoto(userId, new File(filePath))) { // Saves image on IDP.
-                rm.addFlashAttribute(updateCheckID, true);
-                rm.addFlashAttribute("reloadImage", true);
-            } else {
-                rm.addFlashAttribute(updateCheckID, false);
-                rm.addFlashAttribute(messageID, "Photo failed to save");
+        } else {
+
+            String directory = MessageFormat.format("{0}/{1}/{2}/",
+                    PortfolioApplication.IMAGE_DIR, getApplicationLocation(dataSource), userId);
+            String filePath = directory + "/UploadedFile";
+            File imageFile = new File(filePath); // Saves image locally so the file can be streamed to the IDP.
+            if (!new File(directory).mkdirs()) { // Ensures folders are made.
+                logger.warn("Not all folders may have been created.");
             }
-        } catch (Exception e) { // Error in saving locally.
-            logger.error(MessageFormat.format(
-                    "Something went wrong requesting to save the photo: {0}", e.getMessage()));
+            try ( // Makes image folder structure and then saves multipart image which is then streamed to the IDP.
+                  FileOutputStream fos = new FileOutputStream(imageFile);
+            )
+            {
+                fos.write(multipartFile.getBytes());
+                fos.close();
+                if (registerClientService.uploadUserProfilePhoto(userId, new File(filePath))) { // Saves image on IDP.
+                    rm.addFlashAttribute(UPDATE_CHECK_ID, true);
+                    rm.addFlashAttribute("reloadImage", true);
+                } else {
+                    rm.addFlashAttribute(UPDATE_CHECK_ID, false);
+                    rm.addFlashAttribute(messageID, "Photo failed to save");
+                }
+            } catch (Exception e) { // Error in saving locally.
+                logger.error(MessageFormat.format(
+                        "Something went wrong requesting to save the photo: {0}", e.getMessage()));
+            }
+
+            rm.addAttribute(USER_ID_ATTRIBUTE_NAME, userId);
         }
 
-        rm.addAttribute("userId", userId);
-        return "redirect:editAccount";
+
+        return REDIRECT_TO_EDIT_ACCOUNT;
     }
 
     /**
@@ -288,12 +297,12 @@ public class EditAccountController {
      */
     @GetMapping("/reloadAccountSuccessfulPage")
     public String reloadPage(
-            @ModelAttribute("userId") int userId,
+            @ModelAttribute(USER_ID_ATTRIBUTE_NAME) int userId,
             RedirectAttributes rm
     ) {
-        rm.addAttribute("userId", userId);
-        rm.addFlashAttribute("isUpdateSuccess", true);
-        return "redirect:editAccount";
+        rm.addAttribute(USER_ID_ATTRIBUTE_NAME, userId);
+        rm.addFlashAttribute(UPDATE_CHECK_ID, true);
+        return REDIRECT_TO_EDIT_ACCOUNT;
     }
 
 

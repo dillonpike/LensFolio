@@ -36,6 +36,8 @@ public class AccountController {
     @Autowired
     private PhotoService photoService;
 
+    public static final String userIdAttributeName = "userId";
+
     /***
      * GET method for account controller to generate user's info
      *
@@ -63,7 +65,7 @@ public class AccountController {
             }
             getUserByIdReply = registerClientService.getUserData(userId);
             if (getUserByIdReply.getEmail().length() == 0) {
-                model.addAttribute("userId", id);
+                model.addAttribute(userIdAttributeName, id);
                 return "404NotFound";
             }
             elementService.addRoles(model, getUserByIdReply);
@@ -77,7 +79,7 @@ public class AccountController {
             model.addAttribute("bio", getUserByIdReply.getBio());
             String fullName = getUserByIdReply.getFirstName() + " " + getUserByIdReply.getMiddleName() + " " + getUserByIdReply.getLastName();
             model.addAttribute("fullName", fullName);
-            model.addAttribute("userId", id);
+            model.addAttribute(userIdAttributeName, id);
             model.addAttribute("dateAdded", DateUtility.getDateAddedString(getUserByIdReply.getCreated()));
             model.addAttribute("monthsSinceAdded", DateUtility.getDateSinceAddedString(getUserByIdReply.getCreated()));
             model.addAttribute("userImage", photoService.getPhotoPath(getUserByIdReply.getProfileImagePath(), userId));
@@ -85,7 +87,7 @@ public class AccountController {
             model.addAttribute("loginMessage", "Error connecting to Identity Provider...");
             e.printStackTrace();
         } catch (NumberFormatException numberFormatException) {
-            model.addAttribute("userId", id);
+            model.addAttribute(userIdAttributeName, id);
             return "404NotFound";
         }
 
