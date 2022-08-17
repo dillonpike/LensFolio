@@ -172,7 +172,10 @@ function milestoneModalSetup() {
 
         modalForm.setAttribute('object', milestone);
         modalBodyInput.value = milestone.milestoneName
-        $('#milestoneDateInput').datepicker('setDate', milestone.milestoneDateString)
+
+        milestoneDatePicker.dates.setValue(tempusDominus.DateTime.convert(new Date(milestone.milestoneDate)));
+        // Set minimum and maximum dates for greying out in the calendar
+        milestoneDatePicker.updateOptions({restrictions: {minDate: new Date(projectStartDate), maxDate: new Date(projectEndDate)}});
 
         // Initial run of validation functions in case initial values are invalid
         validateModalDate('milestoneDate', 'milestoneModalButton', 'milestoneDateAlertBanner', 'milestoneDateAlertMessage')
