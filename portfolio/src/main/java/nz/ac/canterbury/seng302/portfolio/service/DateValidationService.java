@@ -1,6 +1,7 @@
 package nz.ac.canterbury.seng302.portfolio.service;
 
 import java.time.LocalTime;
+import java.util.Calendar;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -194,7 +195,7 @@ public class DateValidationService {
         String message = "";
         if (!projectStartDateString.equals("") && !projectEndDateString.equals("")) {
             Date projectStartDate = Project.stringToDate(projectStartDateString);
-            Date projectEndDate = Project.stringToDate(projectEndDateString);
+            Date projectEndDate = setToEndOfDay(Project.stringToDate(projectEndDateString));
             List<Sprint> ordered = sprintService.getAllSprintsOrdered();
             if (!ordered.isEmpty()) {
                 Sprint first = ordered.get(0);
@@ -220,7 +221,7 @@ public class DateValidationService {
         String message = "";
         if (!projectStartDateString.equals("") && !projectEndDateString.equals("")) {
             Date projectStartDate = Project.stringToDate(projectStartDateString);
-            Date projectEndDate = Project.stringToDate(projectEndDateString);
+            Date projectEndDate = setToEndOfDay(Project.stringToDate(projectEndDateString));
             List<Event> orderedStartDate = eventService.getAllEventsOrderedStartDate();
             List<Event> orderedEndDate = eventService.getAllEventsOrderedEndDate();
             if (!orderedStartDate.isEmpty()) {
@@ -247,7 +248,7 @@ public class DateValidationService {
         String message = "";
         if (!projectStartDateString.equals("") && !projectEndDateString.equals("")) {
             Date projectStartDate = Project.stringToDate(projectStartDateString);
-            Date projectEndDate = Project.stringToDate(projectEndDateString);
+            Date projectEndDate = setToEndOfDay(Project.stringToDate(projectEndDateString));
             List<Milestone> ordered = milestoneService.getAllMilestonesOrdered();
             if (!ordered.isEmpty()) {
                 Milestone first = ordered.get(0);
@@ -273,14 +274,12 @@ public class DateValidationService {
         String message = "";
         if (!projectStartDateString.equals("") && !projectEndDateString.equals("")) {
             Date projectStartDate = Project.stringToDate(projectStartDateString);
-            Date projectEndDate = Project.stringToDate(projectEndDateString);
+            Date projectEndDate = setToEndOfDay(Project.stringToDate(projectEndDateString));
             List<Deadline> ordered = deadlineService.getAllDeadlinesOrdered();
             if (!ordered.isEmpty()) {
                 Deadline first = ordered.get(0);
                 Deadline last = ordered.get(ordered.size() - 1);
-                boolean firstValid = deadlineService.validateDeadlineDateInDateRange(first, projectStartDate, projectEndDate);
-                boolean lastValid = deadlineService.validateDeadlineDateInDateRange(last, projectStartDate, projectEndDate);
-                if (!firstValid && !lastValid) {
+                if (projectStartDate.after(first.getDeadlineDate()) || projectEndDate.before(last.getDeadlineDate())) {
                     message = "Start date must be on or before the date of the first deadline (" +
                             first.getDeadlineDateString() + ") and end date must be on or after the date of " +
                             "the last deadline (" + last.getDeadlineDateString() + ").";
@@ -290,6 +289,19 @@ public class DateValidationService {
         return message;
     }
 
+    /**
+     * Returns the given date but with the time set to 23:59:59.
+     * @param date date to be converted
+     * @return date with time set to 23:59:59
+     */
+    private Date setToEndOfDay(Date date) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        calendar.set(Calendar.HOUR_OF_DAY, 23);
+        calendar.set(Calendar.MINUTE, 59);
+        calendar.set(Calendar.SECOND, 59);
+        return calendar.getTime();
+    }
 
     /**
      * Returns an error message if a given time is empty or null, otherwise returns a blank message.
