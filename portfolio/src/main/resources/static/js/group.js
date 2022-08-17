@@ -3,7 +3,7 @@
  * Add an 'active' class to the selected group, highlight current selected group for better user experience
  */
 function groupButtonSetup() {
-    $(`#groupCard1 button`).click() // Loads the page with the Non-members group selected
+
     $('.group-bar button').on('click', function () {
         $("div.group-bar button").removeClass('active');
         $(this).addClass("active");
