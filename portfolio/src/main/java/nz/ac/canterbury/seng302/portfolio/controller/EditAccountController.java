@@ -252,20 +252,19 @@ public class EditAccountController {
             return "redirect:editAccount";
         }
 
-        try { // Makes image folder structure and then saves multipart image which is then streamed to the IDP.
-            String directory = MessageFormat.format("{0}/{1}/{2}/",
-                    PortfolioApplication.IMAGE_DIR, getApplicationLocation(dataSource), userId);
-            String filePath = directory + "/UploadedFile";
-
-            if (!new File(directory).mkdirs()) { // Ensures folders are made.
-                logger.warn("Not all folders may have been created.");
-            }
-
-            File imageFile = new File(filePath); // Saves image locally so the file can be streamed to the IDP.
-            FileOutputStream fos = new FileOutputStream(imageFile);
+        String directory = MessageFormat.format("{0}/{1}/{2}/",
+                PortfolioApplication.IMAGE_DIR, getApplicationLocation(dataSource), userId);
+        String filePath = directory + "/UploadedFile";
+        File imageFile = new File(filePath); // Saves image locally so the file can be streamed to the IDP.
+        if (!new File(directory).mkdirs()) { // Ensures folders are made.
+            logger.warn("Not all folders may have been created.");
+        }
+        try ( // Makes image folder structure and then saves multipart image which is then streamed to the IDP.
+               FileOutputStream fos = new FileOutputStream(imageFile);
+            )
+        {
             fos.write(multipartFile.getBytes());
             fos.close();
-
             if (registerClientService.uploadUserProfilePhoto(userId, new File(filePath))) { // Saves image on IDP.
                 rm.addFlashAttribute(updateCheckID, true);
                 rm.addFlashAttribute("reloadImage", true);
