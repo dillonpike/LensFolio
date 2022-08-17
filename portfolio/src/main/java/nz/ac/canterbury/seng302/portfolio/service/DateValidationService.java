@@ -1,11 +1,11 @@
 package nz.ac.canterbury.seng302.portfolio.service;
 
 import java.time.LocalTime;
-import java.util.Calendar;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import nz.ac.canterbury.seng302.portfolio.model.*;
+import nz.ac.canterbury.seng302.portfolio.utility.DateUtility;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -195,7 +195,7 @@ public class DateValidationService {
         String message = "";
         if (!projectStartDateString.equals("") && !projectEndDateString.equals("")) {
             Date projectStartDate = Project.stringToDate(projectStartDateString);
-            Date projectEndDate = setToEndOfDay(Project.stringToDate(projectEndDateString));
+            Date projectEndDate = DateUtility.setToEndOfDay(Project.stringToDate(projectEndDateString));
             List<Sprint> ordered = sprintService.getAllSprintsOrdered();
             if (!ordered.isEmpty()) {
                 Sprint first = ordered.get(0);
@@ -221,7 +221,7 @@ public class DateValidationService {
         String message = "";
         if (!projectStartDateString.equals("") && !projectEndDateString.equals("")) {
             Date projectStartDate = Project.stringToDate(projectStartDateString);
-            Date projectEndDate = setToEndOfDay(Project.stringToDate(projectEndDateString));
+            Date projectEndDate = DateUtility.setToEndOfDay(Project.stringToDate(projectEndDateString));
             List<Event> orderedStartDate = eventService.getAllEventsOrderedStartDate();
             List<Event> orderedEndDate = eventService.getAllEventsOrderedEndDate();
             if (!orderedStartDate.isEmpty()) {
@@ -248,7 +248,7 @@ public class DateValidationService {
         String message = "";
         if (!projectStartDateString.equals("") && !projectEndDateString.equals("")) {
             Date projectStartDate = Project.stringToDate(projectStartDateString);
-            Date projectEndDate = setToEndOfDay(Project.stringToDate(projectEndDateString));
+            Date projectEndDate = DateUtility.setToEndOfDay(Project.stringToDate(projectEndDateString));
             List<Milestone> ordered = milestoneService.getAllMilestonesOrdered();
             if (!ordered.isEmpty()) {
                 Milestone first = ordered.get(0);
@@ -274,7 +274,7 @@ public class DateValidationService {
         String message = "";
         if (!projectStartDateString.equals("") && !projectEndDateString.equals("")) {
             Date projectStartDate = Project.stringToDate(projectStartDateString);
-            Date projectEndDate = setToEndOfDay(Project.stringToDate(projectEndDateString));
+            Date projectEndDate = DateUtility.setToEndOfDay(Project.stringToDate(projectEndDateString));
             List<Deadline> ordered = deadlineService.getAllDeadlinesOrdered();
             if (!ordered.isEmpty()) {
                 Deadline first = ordered.get(0);
@@ -287,20 +287,6 @@ public class DateValidationService {
             }
         }
         return message;
-    }
-
-    /**
-     * Returns the given date but with the time set to 23:59:59.
-     * @param date date to be converted
-     * @return date with time set to 23:59:59
-     */
-    private Date setToEndOfDay(Date date) {
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(date);
-        calendar.set(Calendar.HOUR_OF_DAY, 23);
-        calendar.set(Calendar.MINUTE, 59);
-        calendar.set(Calendar.SECOND, 59);
-        return calendar.getTime();
     }
 
     /**
