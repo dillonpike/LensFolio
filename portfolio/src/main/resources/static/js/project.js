@@ -62,9 +62,12 @@ function sprintModalSetup() {
         }
 
         modalBodyInputs[0].value = sprint.name
-        $('#sprintStart').datepicker('setDate', sprint.startDateString)
-        $('#sprintEnd').datepicker('setDate', sprint.endDateString)
         modalBodyTextArea.value = sprint.description
+
+        sprintStartDatePicker.dates.setValue(tempusDominus.DateTime.convert(new Date(sprint.startDate)));
+        sprintStartDatePicker.updateOptions({restrictions: {minDate: new Date(projectStartDate), maxDate: new Date(projectEndDate)}});
+        sprintEndDatePicker.dates.setValue(tempusDominus.DateTime.convert(new Date(sprint.endDate)));
+        sprintEndDatePicker.updateOptions({restrictions: {minDate: new Date(projectStartDate), maxDate: new Date(projectEndDate)}});
 
         // Initial run of updateSprintDateError function in case initial values are invalid
         updateSprintDateError();
@@ -124,9 +127,10 @@ function projectModalSetup() {
         const modalBodyTextArea = projectModal.querySelector('.modal-body textarea')
 
         modalBodyInputs[0].value = project.name
-        $('#projectStart').datepicker('setDate', project.startDateString)
-        $('#projectEnd').datepicker('setDate', project.endDateString)
         modalBodyTextArea.value = project.description
+
+        projectStartDatePicker.dates.setValue(tempusDominus.DateTime.convert(new Date(project.startDate)));
+        projectEndDatePicker.dates.setValue(tempusDominus.DateTime.convert(new Date(project.endDate)));
 
         // Initial run of updateProjectDateError function in case initial values are invalid
         updateProjectDateError();
@@ -168,7 +172,10 @@ function milestoneModalSetup() {
 
         modalForm.setAttribute('object', milestone);
         modalBodyInput.value = milestone.milestoneName
-        $('#milestoneDateInput').datepicker('setDate', milestone.milestoneDateString)
+
+        milestoneDatePicker.dates.setValue(tempusDominus.DateTime.convert(new Date(milestone.milestoneDate)));
+        // Set minimum and maximum dates for greying out in the calendar
+        milestoneDatePicker.updateOptions({restrictions: {minDate: new Date(projectStartDate), maxDate: new Date(projectEndDate)}});
 
         // Initial run of validation functions in case initial values are invalid
         validateModalDate('milestoneDate', 'milestoneModalButton', 'milestoneDateAlertBanner', 'milestoneDateAlertMessage')

@@ -24,12 +24,12 @@
                     </div>
                     <div class="mb-3">
                         <label for="milestoneDate" class="col-form-label">Milestone Date:</label>
-                        <div class="input-group date" id="milestoneDateInput">
-                            <input onkeydown="return checkDateKeys(event)" onchange="validateModalDate('milestoneDate', 'milestoneModalButton', 'milestoneDateAlertBanner', 'milestoneDateAlertMessage')" type="text" class="form-control" id="milestoneDate" th:name="milestoneDateString">
-                            <span class="input-group-append">
-                                <span class="input-group-text bg-white">
-                                    <em class="bi bi-calendar"></em>
-                                </span>
+                        <div class="input-group" id="milestoneDateInput" data-td-target-input="nearest" data-td-target-toggle="nearest">
+                            <input id="milestoneDate" type="text" class="form-control" data-td-target="#milestoneDateInput"
+                                   onkeydown="return false" th:name="milestoneDateString" onchange="validateModalDateTime(
+                                            'milestoneDate', 'milestoneModalButton', 'milestoneDateAlertBanner', 'milestoneDateAlertMessage')"/>
+                            <span class="input-group-text bg-white" data-td-target="#milestoneDateInput" data-td-toggle="datetimepicker">
+                                <span class="bi bi-calendar"></span>
                             </span>
                         </div>
                     </div>
@@ -40,6 +40,7 @@
             </form>
         </div>
     </div>
+    <script src="js/datepicker.js"></script>
     <script type="text/javascript">
 
         /**
@@ -53,15 +54,6 @@
             }
         }
 
-        // fills in the date pickers
-        $(function() {
-            $('#milestoneDateInput').datepicker({
-                format: 'dd/M/yyyy',
-                todayHighlight: true,
-                todayBtn: true,
-                clearBtn: true,
-                orientation: 'bottom'
-            });
-        });
+        milestoneDatePicker = configureDateTimePicker('milestoneDateInput');
     </script>
 </div>
