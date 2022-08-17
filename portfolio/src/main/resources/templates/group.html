@@ -309,6 +309,10 @@
         }
     }
 
+    /**
+     * Check if the group table has any rows been selected,
+     * if so, show the group options(copy/remove users).
+     */
     $(document).on("click", "#table tr", function(e) {
          table = $("table").DataTable();
          var rows = table.rows('.selected').data();
@@ -317,7 +321,6 @@
          } else {
              document.getElementById("groupOption").hidden = true;
          }
-
     });
 </script>
 
