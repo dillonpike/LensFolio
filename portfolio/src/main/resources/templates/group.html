@@ -91,7 +91,7 @@
                 <div class="container">
                     <h1 class="mt-3" th:text="${groupLongName}"></h1>
                     <h4 th:text="${groupShortName}"></h4>
-                    <div class="hstack gap-3" th:if="${currentUserRole != 'student'}">
+                    <div class="hstack gap-3" th:if="${currentUserRole != 'student'}" id="groupOption" hidden>
                         <span>Copy Users To </span>
                         <select class="form-select input-sm" aria-label="Default select example" id="groupDropdownList">
                             <option th:each="copyToGroup : ${groupList}" th:if="${group?.getGroupId() != copyToGroup.getGroupId()}" th:value="${copyToGroup.getGroupId()}" th:text="${copyToGroup.getShortName()}"></option>
@@ -310,8 +310,14 @@
     }
 
     $(document).on("click", "#table tr", function(e) {
-        var data = userTable.row( this ).data();
-        alert( 'You clicked on '+data[0]+'\'s row' );
+         table = $("table").DataTable();
+         var rows = table.rows('.selected').data();
+         if (rows.length > 0) {
+             document.getElementById("groupOption").hidden = false;
+         } else {
+             document.getElementById("groupOption").hidden = true;
+         }
+
     });
 </script>
 
