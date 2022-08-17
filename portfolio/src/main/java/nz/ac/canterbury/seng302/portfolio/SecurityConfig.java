@@ -14,6 +14,8 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
+    private final String LOGIN_URL = "/login";
+
     @Override
     protected void configure(HttpSecurity security) throws Exception
     {
@@ -21,7 +23,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         security
             .addFilterBefore(new JwtAuthenticationFilter(), BasicAuthenticationFilter.class)
                 .authorizeRequests()
-                    .antMatchers(HttpMethod.GET, "/login", "/register", "/css/**", "/", "/webjars/**")
+                    .antMatchers(HttpMethod.GET, LOGIN_URL, "/register", "/css/**", "/", "/webjars/**")
                     .permitAll()
                     .and()
                 .authorizeRequests()
@@ -35,7 +37,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .invalidateHttpSession(true)
                 .deleteCookies("lens-session-token")
                 .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
-                .logoutSuccessUrl("/login");
+                .logoutSuccessUrl(LOGIN_URL);
 
         // Disable basic http security and the spring security login form
         security
@@ -50,6 +52,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     public void configure(WebSecurity web) throws Exception
     {
-        web.ignoring().antMatchers("/login", "/register", "/css/**", "/", "/webjars/**", "/mywebsockets/**");
+        web.ignoring().antMatchers(LOGIN_URL, "/register", "/css/**", "/", "/webjars/**", "/mywebsockets/**");
     }
 }
