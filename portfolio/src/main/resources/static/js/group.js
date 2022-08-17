@@ -257,23 +257,25 @@ function removeUserModalButtonFunction() {
     const selected = userTable.rows('.selected').data().toArray().map(row => row.DT_RowId)
     const groupId = getCurrentGroupId()
     const data = {groupId: groupId, userIds: selected}
+    const groupName = document.getElementById('shortGroupName').innerText
     $.post('remove-users' + "?" + new URLSearchParams(data)).done((result) => {
-        if (data.groupId === '1') {
-            $(`#groupList`).replaceWith(result)
-            updateTable(groupId)
-        } else {
-            $(`#groupCard${data.groupId}`).replaceWith(result)
-            if (groupId === '1') {
-                updateMembersWithoutAGroupCard()
+            if (data.groupId === '1') {
+                $(`#groupList`).replaceWith(result)
                 updateTable(groupId)
+            } else {
+                $(`#groupCard${data.groupId}`).replaceWith(result)
+                if (groupId === '1') {
+                    updateMembersWithoutAGroupCard()
+                    updateTable(groupId)
+                }
             }
-        }
-        updateTable(groupId)
-        updateMembersWithoutAGroupCard()
-        $('#removeUserModal').modal('toggle')
-        groupButtonSetup() // Allow group cards to be highlighted when selected
-        showAlertToast("Group " + data.groupId + " Updated")
-    }).fail(() => {
+            updateTable(groupId)
+            updateMembersWithoutAGroupCard()
+            $('#removeUserModal').modal('toggle')
+            groupButtonSetup() // Allow group cards to be highlighted when selected
+            showAlertToast("Group " + groupName + " Updated")
+        }).fail(() => {
         document.getElementById('removeUserModalButton').onclick = buttonFunction;
+        showAlertErrorToast("Group " + groupName + " failed to be updated")
     })
 }
