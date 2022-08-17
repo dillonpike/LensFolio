@@ -1,6 +1,5 @@
 package nz.ac.canterbury.seng302.identityprovider.server;
 
-import com.fasterxml.jackson.databind.util.ArrayIterator;
 import io.grpc.stub.StreamObserver;
 import nz.ac.canterbury.seng302.identityprovider.model.GroupModel;
 import nz.ac.canterbury.seng302.identityprovider.model.UserModel;
@@ -9,7 +8,6 @@ import nz.ac.canterbury.seng302.identityprovider.service.GroupModelService;
 import nz.ac.canterbury.seng302.identityprovider.service.UserModelService;
 import nz.ac.canterbury.seng302.shared.identityprovider.*;
 import nz.ac.canterbury.seng302.shared.util.ValidationError;
-import org.junit.Before;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -17,8 +15,6 @@ import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import javax.naming.directory.InvalidAttributesException;
-import javax.swing.*;
-import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -49,6 +45,9 @@ class GroupModelServerServiceTest {
 
     @Mock
     private StreamObserver<AddGroupMembersResponse> addMemberObserver;
+
+    @Mock
+    private StreamObserver<RemoveGroupMembersResponse> removeMemberObserver;
 
     @Mock
     private StreamObserver<GroupDetailsResponse> groupDetailsResponseObserver;
@@ -532,6 +531,113 @@ class GroupModelServerServiceTest {
         verify(groupModelServerService, times(0)).checkUsersInTeachersGroup(users);
         verify(groupModelService, times(0)).removeFromMembersWithoutAGroup(users);
         verify(groupModelServerService, times(1)).checkUsersNotInTeachersGroup(users);
+        verify(userModelService, times(1)).setOnlyGroup(users, membersGroup);
+
+        // Checks response attributes.
+        assertTrue(response.getIsSuccess());
+    }
+
+    /**
+     * Tests the removeGroupMembers method when adding to a non-special group.
+     */
+    @Test
+    void testRemoveGroupMembersNonSpecial() throws InvalidAttributesException {
+        // Build the request.
+        RemoveGroupMembersRequest request = RemoveGroupMembersRequest.newBuilder()
+                .setGroupId(testGroup.getGroupId())
+                .addAllUserIds(userIds)
+                .build();
+
+        // Setup mock outcomes.
+        when(userModelService.getUsersByIds(userIds)).thenReturn(users);
+        when(groupModelService.removeUsersFromGroup(users, testGroup.getGroupId())).thenReturn(true);
+
+        // Runs tasks for modifying existing group.
+        groupModelServerService.removeGroupMembers(request, removeMemberObserver);
+
+        // Checks it ran .onCompleted().
+        verify(removeMemberObserver, times(1)).onCompleted();
+        // Sets up captures to get the response.
+        ArgumentCaptor<RemoveGroupMembersResponse> captor = ArgumentCaptor.forClass(RemoveGroupMembersResponse.class);
+        // Checks it ran .onNext() and captor the response.
+        verify(removeMemberObserver, times(1)).onNext(captor.capture());
+        // Gets the value of the response from the captor.
+        RemoveGroupMembersResponse response = captor.getValue();
+
+        verify(groupModelService, times(1)).removeUsersFromGroup(users, testGroup.getGroupId());
+        verify(groupModelServerService, times(0)).checkUsersNotInTeachersGroup(users);
+        verify(userModelService, times(0)).setOnlyGroup(eq(users), any(GroupModel.class));
+
+        // Checks response attributes.
+        assertTrue(response.getIsSuccess());
+    }
+
+    /**
+     * Tests the removeGroupMembers method when adding to the special teacher's group.
+     */
+    @Test
+    void testRemoveGroupMembersTeachers() throws InvalidAttributesException {
+        // Build the request.
+        RemoveGroupMembersRequest request = RemoveGroupMembersRequest.newBuilder()
+                .setGroupId(teachersGroup.getGroupId())
+                .addAllUserIds(userIds)
+                .build();
+
+        // Setup mock outcomes.
+        when(userModelService.getUsersByIds(userIds)).thenReturn(users);
+        when(groupModelService.removeUsersFromGroup(anyIterable(), eq(teachersGroup.getGroupId()))).thenReturn(true);
+
+        // Runs tasks for modifying existing group.
+        groupModelServerService.removeGroupMembers(request, removeMemberObserver);
+
+        // Checks it ran .onCompleted().
+        verify(removeMemberObserver, times(1)).onCompleted();
+        // Sets up captures to get the response.
+        ArgumentCaptor<RemoveGroupMembersResponse> captor = ArgumentCaptor.forClass(RemoveGroupMembersResponse.class);
+        // Checks it ran .onNext() and captor the response.
+        verify(removeMemberObserver, times(1)).onNext(captor.capture());
+        // Gets the value of the response from the captor.
+        RemoveGroupMembersResponse response = captor.getValue();
+
+        verify(groupModelService, times(2)).removeUsersFromGroup(anyIterable(), eq(teachersGroup.getGroupId()));
+        verify(groupModelServerService, times(1)).checkUsersNotInTeachersGroup(users);
+        verify(userModelService, times(0)).setOnlyGroup(eq(users), any(GroupModel.class));
+        verify(userModelService, times(2)).checkUserDoesNotHaveTeacherRole(any(UserModel.class));
+
+        // Checks response attributes.
+        assertTrue(response.getIsSuccess());
+    }
+
+    /**
+     * Tests the removeGroupMembers method when adding to the special non-members group.
+     */
+    @Test
+    void testRemoveGroupMembersNonMembers() throws InvalidAttributesException {
+        // Build the request.
+        RemoveGroupMembersRequest request = RemoveGroupMembersRequest.newBuilder()
+                .setGroupId(membersGroup.getGroupId())
+                .addAllUserIds(userIds)
+                .build();
+
+        // Setup mock outcomes.
+        when(userModelService.getUsersByIds(userIds)).thenReturn(users);
+        when(groupModelService.removeUsersFromGroup(anyIterable(), eq(membersGroup.getGroupId()))).thenReturn(true);
+        when(groupModelService.getMembersWithoutAGroup()).thenReturn(membersGroup);
+
+        // Runs tasks for modifying existing group.
+        groupModelServerService.removeGroupMembers(request, removeMemberObserver);
+
+        // Checks it ran .onCompleted().
+        verify(removeMemberObserver, times(1)).onCompleted();
+        // Sets up captures to get the response.
+        ArgumentCaptor<RemoveGroupMembersResponse> captor = ArgumentCaptor.forClass(RemoveGroupMembersResponse.class);
+        // Checks it ran .onNext() and captor the response.
+        verify(removeMemberObserver, times(1)).onNext(captor.capture());
+        // Gets the value of the response from the captor.
+        RemoveGroupMembersResponse response = captor.getValue();
+
+        verify(groupModelService, times(1)).removeUsersFromGroup(users, membersGroup.getGroupId());
+        verify(groupModelServerService, times(0)).checkUsersNotInTeachersGroup(users);
         verify(userModelService, times(1)).setOnlyGroup(users, membersGroup);
 
         // Checks response attributes.
