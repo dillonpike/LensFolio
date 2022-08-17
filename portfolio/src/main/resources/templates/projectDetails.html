@@ -331,7 +331,7 @@
                                                             </li>
                                                             <li>
                                                                 <a class="button-link" data-bs-toggle="modal" data-bs-target="#deleteModal" th:data-bs-id="${milestone.id}" th:data-bs-name="${milestone.milestoneName}" data-bs-type="milestone">
-                                                                    <button class="dropdown-item delete-artefact-button" type="button">
+                                                                    <button class="dropdown-item delete-artefact-button" type="button" th:attr="onclick='editArtefact(\'' + ${milestone.getMilestoneName()} + '\',\'' + ${milestone.getId()}+  '\');'">
                                                                         <span class='bi bi-trash' style='color: red'></span> <i style='color: red'>Delete</i>
                                                                     </button>
                                                                 </a>
@@ -577,7 +577,6 @@
      */
     function sendSavedLiveNotificationRequest(inputElementName, modal, action, artefactType){
         $(inputElementName).click(function() {
-            console.log(getModalActionType(modal));
             if (getModalActionType(modal) === action) {
                 if (action.includes("add")) {
                     addPageReload(selectedArtefactName, selectedArtefactId, userId, userFirstName, userLastName, username, artefactType);
@@ -608,6 +607,8 @@
     sendEditingLiveNotificationRequest("#milestoneDate", 'milestoneModal', 'edit-milestone', "Milestone");
 
     sendSavedLiveNotificationRequest("#milestoneModalButton", 'milestoneModal', 'edit-milestone', "Milestone")
+    sendSavedLiveNotificationRequest("#milestoneModalButton", 'milestoneModal', 'add-milestone', "Milestone");
+
 
     sendStopEditingLiveNotificationRequest("#closeMilestoneModalButton", 'milestoneModal', 'edit-milestone', "Milestone");
 </script>
