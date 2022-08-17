@@ -45,7 +45,13 @@ public class GroupController {
     @Autowired
     public RegisterClientService registerClientService;
 
-    private final String updateMessageId = "isUpdateSuccess";
+    private static final String updateMessageId = "isUpdateSuccess";
+
+    private static final String CURRENT_USER_ROLE = "currentUserRole";
+
+    private static final String GROUP_CARD_FRAGMENT = "group::groupCard";
+
+    private static final String GROUP_LIST_FRAGMENT = "group::groupList";
 
     private static final Integer MEMBERS_WITHOUT_GROUP_ID = 1;
 
@@ -69,7 +75,7 @@ public class GroupController {
         model.addAttribute("username", user.getUsername());
         model.addAttribute("userFirstName", user.getFirstName());
         model.addAttribute("userLastName", user.getLastName());
-        model.addAttribute("currentUserRole", role);
+        model.addAttribute(CURRENT_USER_ROLE, role);
         groupService.addGroupListToModel(model);
 
         groupService.addToastsToModel(model, 3);
@@ -97,7 +103,7 @@ public class GroupController {
         UserResponse user = registerClientService.getUserData(id);
         String role = elementService.getUserHighestRole(user);
 
-        model.addAttribute("currentUserRole", role);
+        model.addAttribute(CURRENT_USER_ROLE, role);
         groupService.addGroupDetailToModel(model, groupId);
         groupService.addGroupListToModel(model);
         return "group::table_refresh";
@@ -122,7 +128,7 @@ public class GroupController {
         if (response.getIsSuccess()) {
             groupService.addGroupDetailToModel(model, response.getNewGroupId());
             httpServletResponse.setStatus(HttpServletResponse.SC_OK);
-            return "group::groupCard";
+            return GROUP_CARD_FRAGMENT;
         }
 
         List<ValidationError> errors = response.getValidationErrorsList();
@@ -167,10 +173,10 @@ public class GroupController {
             httpServletResponse.setStatus(HttpServletResponse.SC_OK);
             if (Objects.equals(groupId, MEMBERS_WITHOUT_GROUP_ID)) {
                 groupService.addGroupListToModel(model);
-                return "group::groupList";
+                return GROUP_LIST_FRAGMENT;
             } else {
                 groupService.addGroupDetailToModel(model, groupId);
-                return "group::groupCard";
+                return GROUP_CARD_FRAGMENT;
             }
         } else {
             httpServletResponse.setStatus(HttpServletResponse.SC_BAD_REQUEST);
@@ -198,7 +204,7 @@ public class GroupController {
         if (response.getIsSuccess()) {
             groupService.addGroupDetailToModel(model, id);
             httpServletResponse.setStatus(HttpServletResponse.SC_OK);
-            return "group::groupCard";
+            return GROUP_CARD_FRAGMENT;
         }
 
         List<ValidationError> errors = response.getValidationErrorsList();
@@ -225,10 +231,10 @@ public class GroupController {
             httpServletResponse.setStatus(HttpServletResponse.SC_OK);
             if (Objects.equals(groupId, MEMBERS_WITHOUT_GROUP_ID)) {
                 groupService.addGroupListToModel(model);
-                return "group::groupList";
+                return GROUP_LIST_FRAGMENT;
             } else {
                 groupService.addGroupDetailToModel(model, groupId);
-                return "group::groupCard";
+                return GROUP_CARD_FRAGMENT;
             }
         } else {
             httpServletResponse.setStatus(HttpServletResponse.SC_BAD_REQUEST);
@@ -246,7 +252,7 @@ public class GroupController {
             Model model
     ) {
         groupService.addGroupDetailToModel(model, MEMBERS_WITHOUT_GROUP_ID);
-        return "group::groupCard";
+        return GROUP_CARD_FRAGMENT;
     }
 
 
@@ -264,10 +270,10 @@ public class GroupController {
         Integer id = userAccountClientService.getUserIDFromAuthState(principal);
         UserResponse user = registerClientService.getUserData(id);
         String role = elementService.getUserHighestRole(user);
-        model.addAttribute("currentUserRole", role);
+        model.addAttribute(CURRENT_USER_ROLE, role);
 
         groupService.addGroupListToModel(model);
-        return "group::groupList";
+        return GROUP_LIST_FRAGMENT;
     }
 
     /**

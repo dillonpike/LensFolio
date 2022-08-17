@@ -39,7 +39,6 @@ public class ViewUsersController {
     @Autowired
     private UserSortingService userSortingService;
 
-    private List<UserResponse> userResponseList;
 
     /***
      * HTTP GET method request handler when url is "/viewUsers"
@@ -66,7 +65,7 @@ public class ViewUsersController {
         model.addAttribute("teacherRole", UserRole.TEACHER);
         model.addAttribute("adminRole", UserRole.COURSE_ADMINISTRATOR);
         PaginatedUsersResponse response = userAccountClientService.getAllUsers();
-        userResponseList = response.getUsersList();
+        List<UserResponse> userResponseList = response.getUsersList();
         model.addAttribute("users", userResponseList);
         UserSorting userSorting;
         try {
