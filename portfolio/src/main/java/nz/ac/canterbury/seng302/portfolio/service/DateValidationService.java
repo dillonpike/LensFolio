@@ -278,7 +278,9 @@ public class DateValidationService {
             if (!ordered.isEmpty()) {
                 Deadline first = ordered.get(0);
                 Deadline last = ordered.get(ordered.size() - 1);
-                if (projectStartDate.after(first.getDeadlineDate()) || projectEndDate.before(last.getDeadlineDate())) {
+                boolean firstValid = deadlineService.validateDeadlineDateInDateRange(first, projectStartDate, projectEndDate);
+                boolean lastValid = deadlineService.validateDeadlineDateInDateRange(last, projectStartDate, projectEndDate);
+                if (!firstValid && !lastValid) {
                     message = "Start date must be on or before the date of the first deadline (" +
                             first.getDeadlineDateString() + ") and end date must be on or after the date of " +
                             "the last deadline (" + last.getDeadlineDateString() + ").";
