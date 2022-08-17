@@ -1,12 +1,16 @@
 package nz.ac.canterbury.seng302.identityprovider.server;
 
+import com.fasterxml.jackson.databind.util.ArrayIterator;
 import io.grpc.stub.StreamObserver;
 import nz.ac.canterbury.seng302.identityprovider.model.GroupModel;
+import nz.ac.canterbury.seng302.identityprovider.model.UserModel;
 import nz.ac.canterbury.seng302.identityprovider.repository.GroupRepository;
 import nz.ac.canterbury.seng302.identityprovider.service.GroupModelService;
 import nz.ac.canterbury.seng302.identityprovider.service.UserModelService;
 import nz.ac.canterbury.seng302.shared.identityprovider.*;
 import nz.ac.canterbury.seng302.shared.util.ValidationError;
+import org.junit.Before;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.*;
@@ -44,6 +48,9 @@ class GroupModelServerServiceTest {
     private StreamObserver<ModifyGroupDetailsResponse> modifyObserver;
 
     @Mock
+    private StreamObserver<AddGroupMembersResponse> addMemberObserver;
+
+    @Mock
     private StreamObserver<GroupDetailsResponse> groupDetailsResponseObserver;
 
     @Mock
@@ -55,11 +62,27 @@ class GroupModelServerServiceTest {
     @InjectMocks
     private GroupModelServerService groupModelServerService = Mockito.spy(GroupModelServerService.class);
 
-    private final GroupModel testGroup = new GroupModel("Short Name", "Long Name", 1);
+    private final GroupModel testGroup = new GroupModel("Short Name", "Long Name", 5);
 
-    private final GroupModel testGroup1 = new GroupModel("Short Name", "Long Name", 1);
+    private static final GroupModel membersGroup = new GroupModel("Short Name", "Long Name", 2);
 
-    private final GroupModel testGroup2 = new GroupModel("Short Name", "Long Name", 1);
+    private static final GroupModel teachersGroup = new GroupModel("Short Name", "Long Name", 1);
+
+    private static List<Integer> userIds;
+
+    private static List<UserModel> users;
+
+    @BeforeAll
+    static void setUp() {
+        membersGroup.setGroupId(1);
+        teachersGroup.setGroupId(2);
+        userIds = List.of(1, 2);
+        UserModel testUser1 = new UserModel();
+        testUser1.setUserId(userIds.get(0));
+        UserModel testUser2 = new UserModel();
+        testUser2.setUserId(userIds.get(1));
+        users = List.of(testUser1, testUser2);
+    }
 
     /**
      * Tests the ability given a valid group ID is sent in the request through GRPC from the portfolio.
@@ -400,6 +423,119 @@ class GroupModelServerServiceTest {
         assertEquals("Long Name", response.getLongName());
         assertEquals("Short Name", response.getShortName());
         assertEquals(0, response.getGroupId());
+    }
+
+    /**
+     * Tests the addGroupMembers method when adding to a non-special group.
+     */
+    @Test
+    void testAddGroupMembersNonSpecial() {
+        // Build the request.
+        AddGroupMembersRequest request = AddGroupMembersRequest.newBuilder()
+                .setGroupId(testGroup.getGroupId())
+                .addAllUserIds(userIds)
+                .build();
+
+        // Setup mock outcomes.
+        when(userModelService.getUsersByIds(userIds)).thenReturn(users);
+        when(groupModelService.addUsersToGroup(users, testGroup.getGroupId())).thenReturn(true);
+
+        // Runs tasks for modifying existing group.
+        groupModelServerService.addGroupMembers(request, addMemberObserver);
+
+        // Checks it ran .onCompleted().
+        verify(addMemberObserver, times(1)).onCompleted();
+        // Sets up captures to get the response.
+        ArgumentCaptor<AddGroupMembersResponse> captor = ArgumentCaptor.forClass(AddGroupMembersResponse.class);
+        // Checks it ran .onNext() and captor the response.
+        verify(addMemberObserver, times(1)).onNext(captor.capture());
+        // Gets the value of the response from the captor.
+        AddGroupMembersResponse response = captor.getValue();
+
+        verify(groupModelService, times(1)).addUsersToGroup(users, testGroup.getGroupId());
+        verify(groupModelServerService, times(0)).checkUsersInTeachersGroup(users);
+        verify(groupModelService, times(0)).removeFromMembersWithoutAGroup(users);
+        verify(groupModelServerService, times(0)).checkUsersNotInTeachersGroup(users);
+        verify(userModelService, times(0)).setOnlyGroup(eq(users), any(GroupModel.class));
+
+        // Checks response attributes.
+        assertTrue(response.getIsSuccess());
+    }
+
+    /**
+     * Tests the addGroupMembers method when adding to the special teacher's group.
+     */
+    @Test
+    void testAddGroupMembersTeachers() {
+        // Build the request.
+        AddGroupMembersRequest request = AddGroupMembersRequest.newBuilder()
+                .setGroupId(teachersGroup.getGroupId())
+                .addAllUserIds(userIds)
+                .build();
+
+        // Setup mock outcomes.
+        when(userModelService.getUsersByIds(userIds)).thenReturn(users);
+        when(groupModelService.addUsersToGroup(anyIterable(), eq(teachersGroup.getGroupId()))).thenReturn(true);
+
+        // Runs tasks for modifying existing group.
+        groupModelServerService.addGroupMembers(request, addMemberObserver);
+
+        // Checks it ran .onCompleted().
+        verify(addMemberObserver, times(1)).onCompleted();
+        // Sets up captures to get the response.
+        ArgumentCaptor<AddGroupMembersResponse> captor = ArgumentCaptor.forClass(AddGroupMembersResponse.class);
+        // Checks it ran .onNext() and captor the response.
+        verify(addMemberObserver, times(1)).onNext(captor.capture());
+        // Gets the value of the response from the captor.
+        AddGroupMembersResponse response = captor.getValue();
+
+        verify(groupModelService, times(2)).addUsersToGroup(anyIterable(), eq(teachersGroup.getGroupId()));
+        verify(groupModelServerService, times(1)).checkUsersInTeachersGroup(users);
+        verify(groupModelService, times(1)).removeFromMembersWithoutAGroup(users);
+        verify(groupModelServerService, times(0)).checkUsersNotInTeachersGroup(users);
+        verify(userModelService, times(0)).setOnlyGroup(eq(users), any(GroupModel.class));
+        verify(userModelService, times(2)).checkUserHasTeacherRole(any(UserModel.class));
+
+        // Checks response attributes.
+        assertTrue(response.getIsSuccess());
+    }
+
+    /**
+     * Tests the addGroupMembers method when adding to the special non-members group.
+     */
+    @Test
+    void testAddGroupMembersNonMembers() {
+        // Build the request.
+        AddGroupMembersRequest request = AddGroupMembersRequest.newBuilder()
+                .setGroupId(membersGroup.getGroupId())
+                .addAllUserIds(userIds)
+                .build();
+
+        // Setup mock outcomes.
+        when(userModelService.getUsersByIds(userIds)).thenReturn(users);
+        when(groupModelService.addUsersToGroup(anyIterable(), eq(membersGroup.getGroupId()))).thenReturn(true);
+        when(groupModelService.getMembersWithoutAGroup()).thenReturn(membersGroup);
+
+        // Runs tasks for modifying existing group.
+        groupModelServerService.addGroupMembers(request, addMemberObserver);
+
+        // Checks it ran .onCompleted().
+        verify(addMemberObserver, times(1)).onCompleted();
+        // Sets up captures to get the response.
+        ArgumentCaptor<AddGroupMembersResponse> captor = ArgumentCaptor.forClass(AddGroupMembersResponse.class);
+        // Checks it ran .onNext() and captor the response.
+        verify(addMemberObserver, times(1)).onNext(captor.capture());
+        // Gets the value of the response from the captor.
+        AddGroupMembersResponse response = captor.getValue();
+
+        verify(groupModelService, times(1)).addUsersToGroup(users, membersGroup.getGroupId());
+        verify(groupModelServerService, times(0)).checkUsersInTeachersGroup(users);
+        verify(groupModelService, times(0)).removeFromMembersWithoutAGroup(users);
+        verify(groupModelServerService, times(1)).checkUsersNotInTeachersGroup(users);
+        verify(userModelService, times(1)).setOnlyGroup(users, membersGroup);
+
+        // Checks response attributes.
+        assertTrue(response.getIsSuccess());
     }
 
 
