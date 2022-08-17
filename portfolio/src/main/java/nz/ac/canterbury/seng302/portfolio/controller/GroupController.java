@@ -45,8 +45,6 @@ public class GroupController {
     @Autowired
     public RegisterClientService registerClientService;
 
-    private static final String updateMessageId = "isUpdateSuccess";
-
     private static final String CURRENT_USER_ROLE = "currentUserRole";
 
     private static final String GROUP_CARD_FRAGMENT = "group::groupCard";
@@ -276,15 +274,13 @@ public class GroupController {
         return GROUP_LIST_FRAGMENT;
     }
 
+
     /**
-     * This method maps @MessageMapping endpoint to the @SendTo endpoint. Called when something is sent to
-     * the MessageMapping endpoint.
-     * @param message NotificationMessage that holds information about the event being updated
-     * @return returns an NotificationResponse that holds information about the event being updated.
+     * This function get the information needed from message which is a NotificationMessage object and then create a response object
+     * @param message NotificationMessage that holds information about the artefact being updated
+     * @return returns an NotificationResponse that holds information about the artefact being updated.
      */
-    @MessageMapping("/editing-group")
-    @SendTo("/webSocketGet/group-being-edited")
-    public NotificationResponse updatingArtefact(NotificationMessage message) {
+    public NotificationResponse createNewNotificationResponse(NotificationMessage message){
         int groupId = message.getArtefactId();
         String username = message.getUsername();
         String firstName = message.getUserFirstName();
@@ -296,6 +292,18 @@ public class GroupController {
 
     /**
      * This method maps @MessageMapping endpoint to the @SendTo endpoint. Called when something is sent to
+     * the MessageMapping endpoint.
+     * @param message NotificationMessage that holds information about the event being updated
+     * @return returns an NotificationResponse that holds information about the event being updated.
+     */
+    @MessageMapping("/editing-group")
+    @SendTo("/webSocketGet/group-being-edited")
+    public NotificationResponse updatingArtefact(NotificationMessage message) {
+        return createNewNotificationResponse(message);
+    }
+
+    /**
+     * This method maps @MessageMapping endpoint to the @SendTo endpoint. Called when something is sent to
      * the MessageMapping endpoint. This is triggered when the user is no longer editing.
      * @param message Information about the editing state.
      * @return Returns the message given.
@@ -303,13 +311,7 @@ public class GroupController {
     @MessageMapping("/stop-editing-group")
     @SendTo("/webSocketGet/group-stop-being-edited")
     public NotificationResponse stopUpdatingArtefact(NotificationMessage message) {
-        int groupId = message.getArtefactId();
-        String username = message.getUsername();
-        String firstName = message.getUserFirstName();
-        String lastName = message.getUserLastName();
-        String artefactType = message.getArtefactType();
-        long dateOfNotification = Date.from(Instant.now()).toInstant().getEpochSecond();
-        return new NotificationResponse(HtmlUtils.htmlEscape(message.getArtefactName()), groupId, username, firstName, lastName, dateOfNotification, artefactType);
+        return createNewNotificationResponse(message);
     }
 
     /**

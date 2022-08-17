@@ -1,11 +1,10 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
-import nz.ac.canterbury.seng302.portfolio.service.ElementService;
-import nz.ac.canterbury.seng302.portfolio.service.PhotoService;
-import nz.ac.canterbury.seng302.portfolio.service.RegisterClientService;
-import nz.ac.canterbury.seng302.portfolio.service.UserAccountClientService;
+import nz.ac.canterbury.seng302.portfolio.service.*;
 import nz.ac.canterbury.seng302.portfolio.utility.DateUtility;
 import nz.ac.canterbury.seng302.shared.identityprovider.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
@@ -35,6 +34,10 @@ public class EditPasswordController {
 
     @Autowired
     private PhotoService photoService;
+
+    private static final String UPDATE_MESSAGE_ID = "isUpdateSuccess";
+
+    private static final Logger logger = LoggerFactory.getLogger(EditPasswordController.class);
 
     /***
      * GET Method
@@ -91,15 +94,15 @@ public class EditPasswordController {
             ChangePasswordResponse changeUserPassword = registerClientService.changePassword(userId, currentPassword, newPassword);
             rm.addFlashAttribute("failureMessage", changeUserPassword.getMessage());
             if (changeUserPassword.getIsSuccess()) {
-                rm.addFlashAttribute("isUpdateSuccess", true);
+                rm.addFlashAttribute(UPDATE_MESSAGE_ID, true);
                 rm.addFlashAttribute("successMessage", changeUserPassword.getMessage());
                 return "redirect:editAccount";
             } else {
-                rm.addFlashAttribute("isUpdateSuccess", false);
+                rm.addFlashAttribute(UPDATE_MESSAGE_ID, false);
             }
         } catch (Exception e) {
-            rm.addFlashAttribute("isUpdateSuccess", false);
-            System.err.println("Something went wrong retrieving the data to save");
+            rm.addFlashAttribute(UPDATE_MESSAGE_ID, false);
+            logger.error("Something went wrong retrieving the data to save");
         }
 
         return "redirect:editPassword";

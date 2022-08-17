@@ -39,6 +39,8 @@ public class ViewUsersController {
     @Autowired
     private UserSortingService userSortingService;
 
+    public static final String REDIRECT_TO_VIEW_USERS = "redirect:viewUsers";
+
 
     /***
      * HTTP GET method request handler when url is "/viewUsers"
@@ -114,16 +116,16 @@ public class ViewUsersController {
         // Check if current user's operation is valid, if invalid, access denied error is displayed to user
         if (permissionService.isValidToModifyRole(role, id)) {
             if (role.equals("student")) {
-                UserRoleChangeResponse roleChangeResponse = userAccountClientService.addRoleToUser(userId, UserRole.STUDENT);
+                userAccountClientService.addRoleToUser(userId, UserRole.STUDENT);
             } else if (role.equals("teacher")) {
-                UserRoleChangeResponse roleChangeResponse = userAccountClientService.addRoleToUser(userId, UserRole.TEACHER);
+                userAccountClientService.addRoleToUser(userId, UserRole.TEACHER);
             } else {
-                UserRoleChangeResponse roleChangeResponse = userAccountClientService.addRoleToUser(userId, UserRole.COURSE_ADMINISTRATOR);
+                userAccountClientService.addRoleToUser(userId, UserRole.COURSE_ADMINISTRATOR);
             }
-            return "redirect:viewUsers";
+        } else {
+            rm.addFlashAttribute("isAccessDenied", true);
         }
-        rm.addFlashAttribute("isAccessDenied", true);
-        return "redirect:viewUsers";
+        return REDIRECT_TO_VIEW_USERS;
     }
 
 
@@ -155,14 +157,13 @@ public class ViewUsersController {
                 roleChangeResponse = userAccountClientService.deleteRoleFromUser(userId, UserRole.COURSE_ADMINISTRATOR);
             }
             if (roleChangeResponse.getIsSuccess()) {
-                return "redirect:viewUsers";
+                return REDIRECT_TO_VIEW_USERS;
             } else {
                 model.addAttribute("errorMessage", "Error deleting user");
                 return "redirect:error";
             }
         }
-//        rm.addFlashAttribute("isAccessDenied", true);
-        return "redirect:viewUsers";
+        return REDIRECT_TO_VIEW_USERS;
     }
 
     /**
