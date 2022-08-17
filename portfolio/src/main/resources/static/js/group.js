@@ -291,4 +291,13 @@ function nameValidateCheck() {
     ShortNameText.addEventListener( "paste", event => {
         ShortNameText.value = ShortNameText.value.replace( /[^a-zA-Z0-9~!@#$%^&*()_+|}{:"?><,./;' ]/gm, '');
     }, false);
+
+    const longNameText = document.getElementById('longGroupName');
+    longNameText.addEventListener( "input", event => {
+        longNameText.value = longNameText.value.replace( /[^a-zA-Z0-9~!@#$%^&*()_+|}{:"?><,./;' ]/gm, '');
+    }, false);
+
+    longNameText.addEventListener( "paste", event => {
+        longNameText.value = longNameText.value.replace( /[^a-zA-Z0-9~!@#$%^&*()_+|}{:"?><,./;' ]/gm, '');
+    }, false);
 }
