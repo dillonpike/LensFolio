@@ -45,13 +45,13 @@ public class DeadlineService {
      * @return deadline with the id that is the input
      * @throws Exception If event can't be found
      */
-    public Deadline getDeadlineById(Integer id) throws Exception {
+    public Deadline getDeadlineById(Integer id) throws IllegalArgumentException {
         Optional<Deadline> deadline = repository.findById(id);
         if (deadline.isPresent()) {
             return deadline.get();
         } else {
 
-            throw new Exception("Event not found");
+            throw new IllegalArgumentException("Event not found");
         }
     }
 
@@ -116,7 +116,6 @@ public class DeadlineService {
     /**
      * Validate if particular deadline date is in sprint date range
      * @param deadline The update deadline
-     * @param sprint The sprint to compare with
      * @return True if deadline end date is in sprint date range
      */
     public boolean validateDeadlineDateInDateRange(Deadline deadline, Date startDate, Date endDate) {

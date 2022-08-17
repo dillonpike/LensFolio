@@ -36,7 +36,7 @@ import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 @ExtendWith(SpringExtension.class)
-public class UserModelServiceTests {
+class UserModelServiceTests {
 
     /**
      * Mocked UserModelService object
@@ -81,7 +81,7 @@ public class UserModelServiceTests {
      * then save to mocked repository, test all attributes
      */
     @Test
-    public void testWhenAddNewUser_ThenReturnAllAttribute() {
+    void testWhenAddNewUser_ThenReturnAllAttribute() {
         UserModel user = new UserModel();
         user.setUsername("username");
         user.setPassword("password");
@@ -113,7 +113,7 @@ public class UserModelServiceTests {
      * be saved and return the same email and userId
      */
     @Test
-    public void testAddNewUser_givenTestEmail_returnSameEmailAndUserId() {
+    void testAddNewUser_givenTestEmail_returnSameEmailAndUserId() {
         UserModel user = new UserModel();
         user.setEmail("123@gmail.com");
         when(userModelRepository.save(any(UserModel.class))).thenReturn(user);
@@ -127,7 +127,7 @@ public class UserModelServiceTests {
      * Tests that when a user is saved to the repository, the student role is assigned to them by default.
      */
     @Test
-    public void testWhenAddUser_ThenReturnDefaultStudentRole() {
+    void testWhenAddUser_ThenReturnDefaultStudentRole() {
         UserModel user = new UserModel();
         Roles studentRole = new Roles(0, "STUDENT");
         when(rolesRepository.findByRoleName("STUDENT")).thenReturn(studentRole);
@@ -139,7 +139,7 @@ public class UserModelServiceTests {
     }
 
     @Test
-    public void testSaveEditedUser_givenUserExist_returnSuccess() {
+    void testSaveEditedUser_givenUserExist_returnSuccess() {
         UserModel user = new UserModel();
         user.setUsername("username");
         user.setPassword("password");
@@ -156,7 +156,7 @@ public class UserModelServiceTests {
     }
 
     @Test
-    public void testGetUserByUsername_givenUserExist_returnSameUserAttributes() {
+    void testGetUserByUsername_givenUserExist_returnSameUserAttributes() {
         UserModel user = new UserModel();
         user.setUsername("username");
         user.setPassword("password");
@@ -183,7 +183,7 @@ public class UserModelServiceTests {
     }
 
     @Test
-    public void testGetUserInformationByList_givenListOfUserIds_returnListOfUserResponse() {
+    void testGetUserInformationByList_givenListOfUserIds_returnListOfUserResponse() {
         UserModel userModel1 = new UserModel("test1", "password", "test", "test", "test", "test", "test", "test", "test");
         UserModel userModel2 = new UserModel("test2", "password", "test2", "test2", "test2", "test", "test", "test", "test");
         UserModel userModel3 = new UserModel("test3", "password", "test3", "test3", "test2", "test", "test", "test", "test");
