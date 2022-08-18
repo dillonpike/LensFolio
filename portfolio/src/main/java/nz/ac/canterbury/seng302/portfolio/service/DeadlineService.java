@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import nz.ac.canterbury.seng302.portfolio.model.Deadline;
 import nz.ac.canterbury.seng302.portfolio.model.Sprint;
 import nz.ac.canterbury.seng302.portfolio.repository.DeadlinesRepository;
+import org.hibernate.ObjectNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -43,15 +44,14 @@ public class DeadlineService {
      * Get deadline by Id
      * @param id id of event
      * @return deadline with the id that is the input
-     * @throws Exception If event can't be found
+     * @throws ObjectNotFoundException If event can't be found
      */
-    public Deadline getDeadlineById(Integer id) throws IllegalArgumentException {
+    public Deadline getDeadlineById(Integer id) throws ObjectNotFoundException {
         Optional<Deadline> deadline = repository.findById(id);
         if (deadline.isPresent()) {
             return deadline.get();
         } else {
-
-            throw new IllegalArgumentException("Event not found");
+            throw new ObjectNotFoundException(id, "Unknown deadline");
         }
     }
 

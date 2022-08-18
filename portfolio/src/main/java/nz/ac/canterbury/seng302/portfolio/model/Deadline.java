@@ -2,7 +2,6 @@ package nz.ac.canterbury.seng302.portfolio.model;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sun.istack.NotNull;
 import nz.ac.canterbury.seng302.portfolio.utility.DateUtility;
 
 import javax.persistence.Entity;
@@ -183,7 +182,7 @@ public class Deadline {
      * @param time Time in string 24-hour format, formatted as: "kk:mm" (e.g. 15:37).
      * @throws ParseException Thrown if time parameter is given in the wrong format.
      */
-    public void setDeadlineTimeString(@NotNull String time) throws ParseException {
+    public void setDeadlineTimeString(String time) throws ParseException {
         SimpleDateFormat timeFormat = new SimpleDateFormat("kk:mm");
         Date dateWithTime = timeFormat.parse(time);
         Calendar cal = Calendar.getInstance();
