@@ -49,7 +49,7 @@ public class SprintService {
      * Get sprint by Id
      * @param id id of sprint
      * @return Sprint with the id that is the input
-     * @throws Exception If sprint can't be found
+     * @throws ObjectNotFoundException If sprint can't be found
      */
     public Sprint getSprintById(Integer id) throws ObjectNotFoundException {
 

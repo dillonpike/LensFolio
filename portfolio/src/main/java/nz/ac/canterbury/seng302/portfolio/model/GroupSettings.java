@@ -1,5 +1,7 @@
 package nz.ac.canterbury.seng302.portfolio.model;
 
+import org.gitlab4j.api.GitLabApi;
+
 import javax.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
@@ -22,7 +24,7 @@ public class GroupSettings {
      * Repository Id of the group.
      */
     @Column(name="repo_id")
-    private int repoId;
+    private long repoId;
 
     /**
      * Repository name of the group.
@@ -50,6 +52,9 @@ public class GroupSettings {
     @Column(name="user_id")
     private Set<Integer> memberIds = new HashSet<>();
 
+    @Transient
+    private GitLabApi gitLabApi;
+
     /**
      * Empty constructor for JPA.
      */
@@ -67,6 +72,7 @@ public class GroupSettings {
         this.repoName = repoName;
         this.repoApiKey = repoApiKey;
         this.groupId = groupId;
+        this.gitLabApi = new GitLabApi("https://eng-git.canterbury.ac.nz", repoApiKey);
     }
 
     /**
@@ -89,7 +95,7 @@ public class GroupSettings {
      * Returns the repo id.
      * @return repo id
      */
-    public int getRepoId() {
+    public long getRepoId() {
         return repoId;
     }
 
@@ -97,7 +103,7 @@ public class GroupSettings {
      * Sets the repo id.
      * @param repoId repo id
      */
-    public void setRepoId(int repoId) {
+    public void setRepoId(long repoId) {
         this.repoId = repoId;
     }
 
@@ -147,6 +153,13 @@ public class GroupSettings {
      */
     public void setGroupId(int groupId) {
         this.groupId = groupId;
+    }
+
+    public GitLabApi getGitLabApi() {
+        if (gitLabApi == null) {
+            gitLabApi = new GitLabApi("https://eng-git.canterbury.ac.nz", repoApiKey);
+        }
+        return gitLabApi;
     }
 
 }
