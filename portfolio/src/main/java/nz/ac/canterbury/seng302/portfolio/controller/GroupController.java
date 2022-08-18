@@ -45,8 +45,6 @@ public class GroupController {
     @Autowired
     public RegisterClientService registerClientService;
 
-    private final String updateMessageId = "isUpdateSuccess";
-
     private static final Integer MEMBERS_WITHOUT_GROUP_ID = 1;
 
     /**
