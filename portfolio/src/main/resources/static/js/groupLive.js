@@ -30,7 +30,7 @@ function connect() {
         })
         stompClient.subscribe('/webSocketGet/group-save-edit', function (eventResponseArg) {
             const eventResponse = JSON.parse(eventResponseArg.body);
-            updateGroupList();
+            updateGroupList(eventResponse.artefactId);
             showToastSave(eventResponse.artefactName, eventResponse.artefactId, eventResponse.username, eventResponse.userFirstName, eventResponse.userLastName, eventResponse.artefactType);
         });
 
