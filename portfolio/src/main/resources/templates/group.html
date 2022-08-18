@@ -92,7 +92,7 @@
                 <div class="container">
                     <h1 class="mt-3" th:text="${groupShortName}"></h1>
                     <h4 th:text="${groupLongName}"></h4>
-                    <div class="hstack gap-3 pb-2" th:if="${currentUserRole != 'student'}">
+                    <div class="hstack gap-3 pb-2" th:if="${currentUserRole != 'student'}" id="groupOption" hidden>
                         <span>Copy Users To </span>
                         <select class="form-select input-sm" aria-label="Default select example" id="groupDropdownList">
                             <option th:each="copyToGroup : ${groupList}" th:if="${group?.getGroupId() != copyToGroup.getGroupId()}" th:value="${copyToGroup.getGroupId()}" th:text="${copyToGroup.getShortName()}"></option>
@@ -114,7 +114,7 @@
                         </tr>
                         </thead>
                         <tbody>
-                        <tr id="rows" th:each="member : ${members}" th:id="${member.Id}">
+                        <tr id="rows"  th:each="member : ${members}" th:id="${member.Id}">
                             <td th:text="${member.FirstName}"></td>
                             <td th:text="${member.LastName}"></td>
                             <td th:text="${member.username}"></td>
@@ -311,15 +311,15 @@
         }
     }
 
-
     /**
      * Check if the group table has any rows been selected,
      * if so, show the group options(copy/remove users).
      */
     $(document).on("click", "#table tr", function(e) {
-         var rows = userTable.rows('.selected').data();
+        var rows = userTable.rows('.selected').data();
         document.getElementById("groupOption").hidden = rows.length<=0;
     });
+
 </script>
 
 
