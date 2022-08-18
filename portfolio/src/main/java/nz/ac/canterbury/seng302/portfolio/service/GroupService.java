@@ -3,6 +3,7 @@ package nz.ac.canterbury.seng302.portfolio.service;
 import net.devh.boot.grpc.client.inject.GrpcClient;
 import nz.ac.canterbury.seng302.portfolio.model.NotificationResponse;
 import nz.ac.canterbury.seng302.portfolio.utility.Toast;
+import nz.ac.canterbury.seng302.portfolio.utility.ToastUtility;
 import nz.ac.canterbury.seng302.shared.identityprovider.*;
 import nz.ac.canterbury.seng302.shared.util.ValidationError;
 import org.springframework.stereotype.Service;
@@ -182,35 +183,7 @@ public class GroupService {
      * @param numOfToasts the number of toasts that will be displayed
      */
     public void addToastsToModel(Model model, Integer numOfToasts) {
-        List<Toast> toastsToGenerate = new ArrayList<>();
-        for (int i = 0; i < numOfToasts; i++) {
-            Toast toast = new Toast();
-            toastsToGenerate.add(toast);
-        }
-
-        // Runs if the reload was triggered by saving an event. Checks the notifications' creation time to see if 2 seconds has passed yet.
-        int count = 0;
-        ArrayList<NotificationResponse> groupsToDelete = new ArrayList<>();
-        for (NotificationResponse event : groupsToDisplay) {
-            long timeDifference = Date.from(Instant.now()).toInstant().getEpochSecond() - event.getDateOfCreation();
-            if (timeDifference <= 2) {
-                toastsToGenerate.get(count).setArtefactInformation(event.getArtefactType());
-                toastsToGenerate.get(count).setArtefactName(event.getArtefactName());
-                toastsToGenerate.get(count).setArtefactId(event.getArtefactId());
-                toastsToGenerate.get(count).setUsername(event.getUsername());
-                toastsToGenerate.get(count).setUserFirstName(event.getUserFirstName());
-                toastsToGenerate.get(count).setUserLastName(event.getUserLastName());
-            } else {
-                groupsToDelete.add(event);
-                toastsToGenerate.get(count).setArtefactInformation("");
-            }
-            count++;
-        }
-        for (NotificationResponse event : groupsToDelete) {
-            groupsToDisplay.remove(event);
-        }
-
-        model.addAttribute("toastsToGenerate", toastsToGenerate);
+        ToastUtility.addToastsToModel(model, groupsToDisplay, numOfToasts);
     }
 
     /**

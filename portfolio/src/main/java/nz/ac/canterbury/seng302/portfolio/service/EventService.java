@@ -34,13 +34,13 @@ public class EventService {
      * @return event with the id that is the input
      * @throws Exception If event can't be found
      */
-    public Event getEventById(Integer id) throws Exception {
+    public Event getEventById(Integer id) throws IllegalArgumentException {
 
         Optional<Event> event = eventRepository.findById(id);
         if (event.isPresent()) {
             return event.get();
         } else {
-            throw new Exception("Event not found");
+            throw new IllegalArgumentException("Event not found");
         }
     }
 
@@ -61,7 +61,7 @@ public class EventService {
             eventUpdate = eventRepository.save(eventUpdate);
             return eventUpdate;
         } else {
-            event = eventRepository.save(event);
+            event = eventRepository.save(event); //check if the PO wants this(Chris and Rachel)
             return event;
         }
     }

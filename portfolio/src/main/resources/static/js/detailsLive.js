@@ -33,11 +33,21 @@ function connect() {
         stompClient.subscribe('/webSocketGet/stop-being-edited', function (eventResponseArg) {
             const eventResponse = JSON.parse(eventResponseArg.body);
             showToast(eventResponse.artefactName, eventResponse.artefactId, eventResponse.username, eventResponse.userFirstName, eventResponse.userLastName, true, eventResponse.artefactType);
-        })
-        stompClient.subscribe('/webSocketGet/save-edit', function (eventResponseArg) {
+        });
+        stompClient.subscribe('/webSocketGet/artefact-save', function (eventResponseArg) {
             const eventResponse = JSON.parse(eventResponseArg.body);
             refreshEvents();
-            showToastSave(eventResponse.artefactName, eventResponse.artefactId, eventResponse.username, eventResponse.userFirstName, eventResponse.userLastName, eventResponse.artefactType);
+            showToastSave(eventResponse.artefactName, eventResponse.artefactId, eventResponse.username, eventResponse.userFirstName, eventResponse.userLastName, eventResponse.artefactType, SAVEACTION);
+        });
+        stompClient.subscribe('/webSocketGet/artefact-add', function (eventResponseArg) {
+            const eventResponse = JSON.parse(eventResponseArg.body);
+            refreshEvents();
+            showToastSave(eventResponse.artefactName, eventResponse.artefactId, eventResponse.username, eventResponse.userFirstName, eventResponse.userLastName, eventResponse.artefactType, ADDACTION);
+        });
+        stompClient.subscribe('/webSocketGet/artefact-delete', function (eventResponseArg) {
+            const eventResponse = JSON.parse(eventResponseArg.body);
+            refreshEvents();
+            showToastSave(eventResponse.artefactName, eventResponse.artefactId, eventResponse.username, eventResponse.userFirstName, eventResponse.userLastName, eventResponse.artefactType, DELETEACTION);
         });
 
     });
@@ -56,7 +66,7 @@ function connect() {
  * @param type they type of the artefact it is either Milestone, Deadline, or event
  */
 function showToast(eventName, eventId, username, firstName, lastName, hide, type) {
-    let newNotification = new Notification(type, eventName, eventId, username, firstName, lastName, false);
+    let newNotification = new Notification(type, eventName, eventId, username, firstName, lastName, EDITACTION);
     newNotification = addNotification(newNotification);
     if (!hide) {
         newNotification.show();
@@ -74,9 +84,10 @@ function showToast(eventName, eventId, username, firstName, lastName, hide, type
  * @param firstName First name of the user
  * @param lastName Last name of the user
  * @param type type of artefact
+ * @param action Action that the artefact has done. Can be 'save', 'add', or 'delete'.
  */
-function showToastSave(eventName, eventId, username, firstName, lastName, type) {
-    let newNotification = new Notification(type, eventName, eventId, username, firstName, lastName, true);
+function showToastSave(eventName, eventId, username, firstName, lastName, type, action) {
+    let newNotification = new Notification(type, eventName, eventId, username, firstName, lastName, action);
     newNotification = addNotification(newNotification);
     newNotification.show();
     newNotification.hideTimed(SECONDS_TILL_HIDE);
@@ -131,9 +142,10 @@ $(function () {
         let toastUsernameString = "#toastUsername" + (i+1);
         let toastFirstNameString = "#toastFirstName" + (i+1);
         let toastLastNameString = "#toastLastName" + (i+1);
+        let toastAction = "#toastAction" + (i+1);
         let artefactInformation = $(toastInformationString);
         if (artefactInformation.text() !== "") {
-            showToastSave($(toastArtefactNameString).text(), $(toastArtefactIdString).text(), $(toastUsernameString).text(), $(toastFirstNameString).text(), $(toastLastNameString).text(), artefactInformation.text());
+            showToastSave($(toastArtefactNameString).text(), $(toastArtefactIdString).text(), $(toastUsernameString).text(), $(toastFirstNameString).text(), $(toastLastNameString).text(), artefactInformation.text(), $(toastAction).text());
         }
     }
 });
