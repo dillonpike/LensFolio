@@ -23,27 +23,23 @@
                         <button type="button" class="btn-close" onclick="document.getElementById('sprintDateAlertBanner').hidden = true" aria-label="Close"></button>
                     </div>
                     <div class="mb-3">
-                        <div class="horizontal-group-element" >
-                            <label for="sprintStartDate">Sprint Start Date</label> <br/>
-                            <div class="input-group date" id="sprintStart">
-                                <input onkeydown="return checkDateKeys(event)" type="text" class="form-control" id="sprintStartDate" data-test-id="sprintStartDate" th:name="startDateString">
-                                <span class="input-group-append">
-                                    <span class="input-group-text bg-white">
-                                        <em class="bi bi-calendar"></em>
-                                    </span>
-                                </span>
-                            </div>
+                        <label for="sprintStartDate" class="col-form-label">Sprint Start Date:</label>
+                        <div class="input-group" id="sprintStartDateInput" data-td-target-input="nearest" data-td-target-toggle="nearest" >
+                            <input id="sprintStartDate" type="text" class="form-control" data-td-target="#sprintStartDateInput"
+                                   onkeydown="return false" th:name="startDateString" data-test-id="sprintStartDate"/>
+                            <span class="input-group-text bg-white" data-td-target="#sprintStartDateInput" data-td-toggle="datetimepicker">
+                                <span class="bi bi-calendar"></span>
+                            </span>
                         </div>
-                        <div class="mb-3" >
-                            <label for="sprintEndDate">Sprint End Date</label> <br/>
-                            <div class="input-group date" id="sprintEnd">
-                                <input onkeydown="return checkDateKeys(event)" type="text" class="form-control" id="sprintEndDate" data-test-id="sprintEndDate" th:name="endDateString">
-                                <span class="input-group-append">
-                                    <span class="input-group-text bg-white">
-                                        <em class="bi bi-calendar"></em>
-                                    </span>
-                                </span>
-                            </div>
+                    </div>
+                    <div class="mb-3" >
+                        <label for="sprintEndDate" class="col-form-label">Sprint End Date:</label>
+                        <div class="input-group" id="sprintEndDateInput" data-td-target-input="nearest" data-td-target-toggle="nearest" >
+                            <input id="sprintEndDate" type="text" class="form-control" data-td-target="#sprintEndDateInput"
+                                   onkeydown="return false" th:name="endDateString" data-test-id="sprintEndDate"/>
+                            <span class="input-group-text bg-white" data-td-target="#sprintEndDateInput" data-td-toggle="datetimepicker">
+                                <span class="bi bi-calendar"></span>
+                            </span>
                         </div>
                     </div>
                     <div>
@@ -61,6 +57,7 @@
         </div>
     </div>
     <script src="js/project.js"></script>
+    <script src="js/datepicker.js"></script>
     <script>
 
         /**
@@ -116,22 +113,7 @@
             }
         }
 
-        // Fills in the date pickers
-        $(function() {
-            $('#sprintStart').datepicker({
-                format: 'dd/M/yyyy',
-                todayHighlight: true,
-                todayBtn: true,
-                clearBtn: true,
-                orientation: 'bottom'
-            });
-            $('#sprintEnd').datepicker({
-                format: 'dd/M/yyyy',
-                todayHighlight: true,
-                todayBtn: true,
-                clearBtn: true,
-                orientation: 'bottom'
-            });
-        });
+        sprintStartDatePicker = configureDateTimePicker('sprintStartDateInput');
+        sprintEndDatePicker = configureDateTimePicker('sprintEndDateInput');
     </script>
 </div>
