@@ -30,17 +30,17 @@ function connect() {
         })
         stompClient.subscribe('/webSocketGet/group-save-edit', function (eventResponseArg) {
             const eventResponse = JSON.parse(eventResponseArg.body);
-            updateGroupList(eventResponse.artefactId);
+            updateGroupList(eventResponse.artefactId, "save");
             showToastSave(eventResponse.artefactName, eventResponse.artefactId, eventResponse.username, eventResponse.userFirstName, eventResponse.userLastName, eventResponse.artefactType, eventResponse.action);
         });
         stompClient.subscribe('/webSocketGet/group-delete', function (eventResponseArg) {
             const eventResponse = JSON.parse(eventResponseArg.body);
-            updateGroupList(eventResponse.artefactId);
+            updateGroupList(eventResponse.artefactId, "delete");
             showToastSave(eventResponse.artefactName, eventResponse.artefactId, eventResponse.username, eventResponse.userFirstName, eventResponse.userLastName, eventResponse.artefactType, eventResponse.action);
         });
         stompClient.subscribe('/webSocketGet/group-add', function (eventResponseArg) {
             const eventResponse = JSON.parse(eventResponseArg.body);
-            updateGroupList(eventResponse.artefactId);
+            updateGroupList(eventResponse.artefactId, "add");
             showToastSave(eventResponse.artefactName, eventResponse.artefactId, eventResponse.username, eventResponse.userFirstName, eventResponse.userLastName, eventResponse.artefactType, eventResponse.action);
         });
 

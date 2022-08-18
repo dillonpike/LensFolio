@@ -225,14 +225,18 @@ function updateMembersWithoutAGroupCard() {
 /**
  * Requests an up-to-date version of the group card list and updates the current list with it.
  */
-function updateGroupList(groupId) {
+function updateGroupList(groupId, action) {
     $.get('group-list').done((result) => {
         $(`#groupList`).replaceWith(result)
         groupButtonSetup() // Allow group cards to be highlighted when selected
     })
     if (groupId === parseInt($("#table_refresh").attr("data-groupid"), 10)) {
+        let chosenGroupId = groupId;
+        if (action === "delete") {
+            chosenGroupId = 1;
+        }
         let url = "groups/local?";
-        $('#tableRefreshContainer').load(url, "groupId=" + groupId)
+        $('#tableRefreshContainer').load(url, "groupId=" + chosenGroupId)
     }
 }
 
