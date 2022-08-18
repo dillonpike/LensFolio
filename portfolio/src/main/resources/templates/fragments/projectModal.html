@@ -23,26 +23,22 @@
                         <button type="button" class="btn-close" onclick="document.getElementById('projectDateAlertBanner').hidden = true" aria-label="Close"></button>
                     </div>
                     <div class="mb-3">
-                        <div class="horizontal-group-element" >
-                            <label for="projectStartDate">Project Start Date</label> <br/>
-                            <div class="input-group date" id="projectStart">
-                                <input onkeydown="return checkDateKeys(event)" type="text" class="form-control" id="projectStartDate" data-test-id="projectStartDate" th:name="startDateString">
-                                <span class="input-group-append">
-                                    <span class="input-group-text bg-white">
-                                        <em class="bi bi-calendar"></em>
-                                    </span>
-                                </span>
-                            </div>
+                        <label for="projectStartDate" class="col-form-label">Project Start Date:</label>
+                        <div class="input-group" id="projectStartDateInput" data-td-target-input="nearest" data-td-target-toggle="nearest" >
+                            <input id="projectStartDate" type="text" class="form-control" data-td-target="#projectStartDateInput"
+                                   onkeydown="return false" th:name="startDateString" data-test-id="projectStartDate"/>
+                            <span class="input-group-text bg-white" data-td-target="#projectStartDateInput" data-td-toggle="datetimepicker">
+                                <span class="bi bi-calendar"></span>
+                            </span>
                         </div>
                         <div class="mb-3" >
-                            <label for="projectEndDate">Project End Date</label> <br/>
-                            <div class="input-group date" id="projectEnd">
-                                <input onkeydown="return checkDateKeys(event)" type="text" class="form-control" id="projectEndDate" data-test-id="projectEndDate" th:name="endDateString">
-                                <span class="input-group-append">
-                                    <span class="input-group-text bg-white">
-                                        <em class="bi bi-calendar"></em>
-                                    </span>
-                                </span>
+                            <label for="projectEndDate" class="col-form-label">Project End Date:</label>
+                            <div class="input-group" id="projectEndDateInput" data-td-target-input="nearest" data-td-target-toggle="nearest" >
+                                <input id="projectEndDate" type="text" class="form-control" data-td-target="#projectEndDateInput"
+                                       onkeydown="return false" th:name="endDateString" data-test-id="projectEndDate"/>
+                                <span class="input-group-text bg-white" data-td-target="#projectEndDateInput" data-td-toggle="datetimepicker">
+                                <span class="bi bi-calendar"></span>
+                            </span>
                             </div>
                         </div>
                     </div>
@@ -61,6 +57,7 @@
         </div>
     </div>
     <script src="js/project.js"></script>
+    <script src="js/datepicker.js"></script>
     <script>
 
         /**
@@ -112,22 +109,7 @@
             }
         }
 
-        // Fills in the date pickers
-        $(function() {
-            $('#projectStart').datepicker({
-                format: 'dd/M/yyyy',
-                todayHighlight: true,
-                todayBtn: true,
-                clearBtn: true,
-                orientation: 'bottom'
-            });
-            $('#projectEnd').datepicker({
-                format: 'dd/M/yyyy',
-                todayHighlight: true,
-                todayBtn: true,
-                clearBtn: true,
-                orientation: 'bottom'
-            });
-        });
+        projectStartDatePicker = configureDateTimePicker('projectStartDateInput');
+        projectEndDatePicker = configureDateTimePicker('projectEndDateInput');
     </script>
 </div>
