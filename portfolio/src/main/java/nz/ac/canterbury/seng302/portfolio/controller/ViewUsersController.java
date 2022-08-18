@@ -1,9 +1,13 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
+import nz.ac.canterbury.seng302.portfolio.model.NotificationMessage;
+import nz.ac.canterbury.seng302.portfolio.model.NotificationResponse;
 import nz.ac.canterbury.seng302.portfolio.model.UserSorting;
-import nz.ac.canterbury.seng302.portfolio.service.*;;
+import nz.ac.canterbury.seng302.portfolio.service.*;
 import nz.ac.canterbury.seng302.shared.identityprovider.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -35,7 +39,8 @@ public class ViewUsersController {
     @Autowired
     private UserSortingService userSortingService;
 
-    private List<UserResponse> userResponseList;
+    public static final String REDIRECT_TO_VIEW_USERS = "redirect:viewUsers";
+
 
     /***
      * HTTP GET method request handler when url is "/viewUsers"
@@ -62,7 +67,7 @@ public class ViewUsersController {
         model.addAttribute("teacherRole", UserRole.TEACHER);
         model.addAttribute("adminRole", UserRole.COURSE_ADMINISTRATOR);
         PaginatedUsersResponse response = userAccountClientService.getAllUsers();
-        userResponseList = response.getUsersList();
+        List<UserResponse> userResponseList = response.getUsersList();
         model.addAttribute("users", userResponseList);
         UserSorting userSorting;
         try {
@@ -111,16 +116,16 @@ public class ViewUsersController {
         // Check if current user's operation is valid, if invalid, access denied error is displayed to user
         if (permissionService.isValidToModifyRole(role, id)) {
             if (role.equals("student")) {
-                UserRoleChangeResponse roleChangeResponse = userAccountClientService.addRoleToUser(userId, UserRole.STUDENT);
+                userAccountClientService.addRoleToUser(userId, UserRole.STUDENT);
             } else if (role.equals("teacher")) {
-                UserRoleChangeResponse roleChangeResponse = userAccountClientService.addRoleToUser(userId, UserRole.TEACHER);
+                userAccountClientService.addRoleToUser(userId, UserRole.TEACHER);
             } else {
-                UserRoleChangeResponse roleChangeResponse = userAccountClientService.addRoleToUser(userId, UserRole.COURSE_ADMINISTRATOR);
+                userAccountClientService.addRoleToUser(userId, UserRole.COURSE_ADMINISTRATOR);
             }
-            return "redirect:viewUsers";
+        } else {
+            rm.addFlashAttribute("isAccessDenied", true);
         }
-        rm.addFlashAttribute("isAccessDenied", true);
-        return "redirect:viewUsers";
+        return REDIRECT_TO_VIEW_USERS;
     }
 
 
@@ -152,14 +157,23 @@ public class ViewUsersController {
                 roleChangeResponse = userAccountClientService.deleteRoleFromUser(userId, UserRole.COURSE_ADMINISTRATOR);
             }
             if (roleChangeResponse.getIsSuccess()) {
-                return "redirect:viewUsers";
+                return REDIRECT_TO_VIEW_USERS;
             } else {
                 model.addAttribute("errorMessage", "Error deleting user");
                 return "redirect:error";
             }
         }
-//        rm.addFlashAttribute("isAccessDenied", true);
-        return "redirect:viewUsers";
+        return REDIRECT_TO_VIEW_USERS;
+    }
+
+    /**
+     * This method used to mainly reload the calendar page when an artefact is being edited or deleted on the project details
+     * @param message this parameter, even though it is not used, is necessary to exist in order to send the request to websocket
+     */
+    @MessageMapping("/add-roles")
+    @SendTo("/webSocketGet/add-roles")
+    public NotificationResponse addRoles(NotificationMessage message) {
+        return new NotificationResponse(message.getUsername());
     }
 
 

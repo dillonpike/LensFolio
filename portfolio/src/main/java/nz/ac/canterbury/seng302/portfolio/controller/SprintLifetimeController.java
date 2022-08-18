@@ -72,12 +72,11 @@ public class SprintLifetimeController {
     /**
      * Tries to delete a sprint with given id.
      * @param id Id of sprint being deleted
-     * @throws Exception If deleting sprint does not work
      */
     @GetMapping("/delete-sprint/{id}")
     public String sprintRemove(@PathVariable("id") Integer id,
                                @AuthenticationPrincipal AuthState principal,
-                               Model model) throws Exception {
+                               Model model) {
         Integer userID = userAccountClientService.getUserIDFromAuthState(principal);
         elementService.addHeaderAttributes(model, userID);
         if (permissionService.isValidToModifyProjectPage(userID)) {

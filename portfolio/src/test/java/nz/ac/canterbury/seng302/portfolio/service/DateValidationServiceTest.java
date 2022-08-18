@@ -111,8 +111,8 @@ class DateValidationServiceTest {
         Sprint testSprint2 = new Sprint(testProject.getId(), "Test Sprint", "2", "", monthsFromNow.get(3), monthsFromNow.get(4));
         testSprints = List.of(testSprint1, testSprint2);
 
-        Event testEvent1 = new Event(0, testProject.getId(), "Test Event", monthsFromNow.get(1), monthsFromNow.get(2), LocalTime.of(0, 0), LocalTime.of(0, 0));
-        Event testEvent2 = new Event(1, testProject.getId(), "Test Event", monthsFromNow.get(3), monthsFromNow.get(4), LocalTime.of(0, 0), LocalTime.of(0, 0));
+        Event testEvent1 = new Event(0, testProject.getId(), "Test Event", monthsFromNow.get(1), monthsFromNow.get(2));
+        Event testEvent2 = new Event(1, testProject.getId(), "Test Event", monthsFromNow.get(3), monthsFromNow.get(4));
         testEvents = List.of(testEvent1, testEvent2);
 
         Milestone testMilestone1 = new Milestone(testProject.getId(), "Test Milestone", monthsFromNow.get(1));

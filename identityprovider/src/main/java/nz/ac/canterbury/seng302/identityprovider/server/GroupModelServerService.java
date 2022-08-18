@@ -1,5 +1,6 @@
 package nz.ac.canterbury.seng302.identityprovider.server;
 
+import com.fasterxml.jackson.databind.util.ArrayIterator;
 import com.google.protobuf.Empty;
 import io.grpc.stub.StreamObserver;
 import net.devh.boot.grpc.server.service.GrpcService;
@@ -10,12 +11,14 @@ import nz.ac.canterbury.seng302.identityprovider.service.GroupModelService;
 import nz.ac.canterbury.seng302.identityprovider.service.UserModelService;
 import nz.ac.canterbury.seng302.shared.identityprovider.*;
 import nz.ac.canterbury.seng302.shared.util.ValidationError;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.naming.directory.InvalidAttributesException;
+import java.text.MessageFormat;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -24,6 +27,8 @@ import java.util.Set;
  */
 @GrpcService
 public class GroupModelServerService extends GroupsServiceGrpc.GroupsServiceImplBase {
+
+    private static final Logger logger = LoggerFactory.getLogger(GroupModelServerService.class);
 
     @Autowired
     private GroupModelService groupModelService;
@@ -34,7 +39,11 @@ public class GroupModelServerService extends GroupsServiceGrpc.GroupsServiceImpl
     @Autowired
     private UserModelService userModelService;
 
-    private final Integer memberWithoutGroupID = 1;
+    public static final Integer MEMBERS_WITHOUT_GROUP_ID = 1;
+
+    public static final Integer TEACHERS_GROUP_ID = 2;
+
+    private static boolean first_time_load_users = true;
 
     /**
      * Attempts to delete a group with the id in the request. Sends a response with an isSuccess value and message.
@@ -45,9 +54,26 @@ public class GroupModelServerService extends GroupsServiceGrpc.GroupsServiceImpl
     public void deleteGroup(DeleteGroupRequest request, StreamObserver<DeleteGroupResponse> responseObserver) {
         DeleteGroupResponse.Builder reply = DeleteGroupResponse.newBuilder();
 
-        if (groupModelService.removeGroup(request.getGroupId())) {
-            responseObserver.onNext(reply.setIsSuccess(true).setMessage("Successful").build());
-        } else {
+        Integer groupId = null;
+        try {
+            groupId = request.getGroupId();
+            GroupModel group = groupModelService.getGroupById(request.getGroupId());
+            Set<UserModel> users = group.getMembers();
+
+            if (groupModelService.removeGroup(request.getGroupId())) {
+                groupId = MEMBERS_WITHOUT_GROUP_ID;
+                for (UserModel user : users) {
+                    user.getGroups().remove(group);
+                    if (user.getGroups().isEmpty()) {
+                        groupModelService.addUsersToGroup(new ArrayIterator<>(new UserModel[]{user}) , MEMBERS_WITHOUT_GROUP_ID);
+                    }
+                }
+                responseObserver.onNext(reply.setIsSuccess(true).setMessage("Successful").build());
+            } else {
+                responseObserver.onNext(reply.setIsSuccess(false).setMessage("Unsuccessful").build());
+            }
+        } catch (InvalidAttributesException e) {
+            logger.error(MessageFormat.format("Group {0} does not exist, so cannot be retrieved. ", groupId));
             responseObserver.onNext(reply.setIsSuccess(false).setMessage("Unsuccessful").build());
         }
         responseObserver.onCompleted();
@@ -60,12 +86,12 @@ public class GroupModelServerService extends GroupsServiceGrpc.GroupsServiceImpl
     @Override
     public void getMembersWithoutAGroup(Empty ignore, StreamObserver<GroupDetailsResponse> responseStreamObserver) {
         GroupDetailsResponse.Builder reply = GroupDetailsResponse.newBuilder();
-        reply.setGroupId(memberWithoutGroupID);
+        reply.setGroupId(MEMBERS_WITHOUT_GROUP_ID);
         Set<Integer> userIDs = new HashSet<>();
         GroupModel groupModel;
         try {
-            userIDs = groupModelService.getMembersOfGroup(memberWithoutGroupID);
-            groupModel = groupModelService.getGroupById(memberWithoutGroupID);
+            userIDs = groupModelService.getMembersOfGroup(MEMBERS_WITHOUT_GROUP_ID);
+            groupModel = groupModelService.getGroupById(MEMBERS_WITHOUT_GROUP_ID);
             reply.setLongName(groupModel.getLongName());
             reply.setShortName(groupModel.getShortName());
         } catch (InvalidAttributesException e) {
@@ -160,6 +186,11 @@ public class GroupModelServerService extends GroupsServiceGrpc.GroupsServiceImpl
         for (GroupModel groupModel : allGroups) {
             reply.addGroups(groupModelService.getGroupInfo(groupModel));
         }
+        if (first_time_load_users) {
+            userModelService.usersAddedToUsersWithoutGroup(groupModelService.getMembersWithoutAGroup());
+            first_time_load_users = false;
+        }
+
         responseObserver.onNext(reply.build());
         responseObserver.onCompleted();
     }
@@ -179,13 +210,59 @@ public class GroupModelServerService extends GroupsServiceGrpc.GroupsServiceImpl
             reply.setLongName(groupModel.getLongName());
             reply.setShortName(groupModel.getShortName());
 
-            List<UserModel> userModelList = groupModel.getUsers();
+            Set<UserModel> userModelList = groupModel.getMembers();
             for (UserModel userModel : userModelList) {
                 reply.addMembers(userModelService.getUserInfo(userModel));
             }
         }
         responseObserver.onNext(reply.build());
         responseObserver.onCompleted();
+    }
+
+    /**
+     * Adds the users in the request to the group in the request.
+     * @param request contains group and id and user ids
+     * @param responseObserver used to send the response to portfolio
+     */
+    @Override
+    public void addGroupMembers(AddGroupMembersRequest request, StreamObserver<AddGroupMembersResponse> responseObserver) {
+        AddGroupMembersResponse.Builder reply = AddGroupMembersResponse.newBuilder();
+        Iterable<UserModel> users = userModelService.getUsersByIds(request.getUserIdsList());
+        boolean isSuccess;
+        if (request.getGroupId() == (TEACHERS_GROUP_ID)) {
+            checkUsersInTeachersGroup(users);
+            groupModelService.removeFromMembersWithoutAGroup(users);
+            // This is done as it assumes there's no returned issues with adding the user to the teachers group.
+            // If roles are not being added or users not being added to the group correctly, check logs.
+            isSuccess = true;
+        } else {
+            isSuccess = groupModelService.addUsersToGroup(users, request.getGroupId());
+        }
+        if (request.getGroupId() == MEMBERS_WITHOUT_GROUP_ID && isSuccess) {
+            checkUsersNotInTeachersGroup(users);
+            userModelService.setOnlyGroup(users, groupModelService.getMembersWithoutAGroup());
+        }
+        reply.setIsSuccess(isSuccess);
+        responseObserver.onNext(reply.build());
+        responseObserver.onCompleted();
+    }
+
+    /**
+     * Checks to see if a list of users are part of the teachers group. If not, it adds them to it.
+     * Also adds the teacher role to the user, if they don't have it already.
+     * @param users users to check if they are in the teachers group and have the teacher role.
+     */
+    public void checkUsersInTeachersGroup(Iterable<UserModel> users) {
+        for (UserModel user : users) {
+            boolean addedToGroup = groupModelService.addUsersToGroup(new ArrayIterator<>(new UserModel[]{user}), GroupModelServerService.TEACHERS_GROUP_ID);
+            if (!addedToGroup) {
+                logger.error("Something went wrong with the teachers group");
+            }
+            boolean roleWasAdded = userModelService.checkUserHasTeacherRole(user);
+            if (!roleWasAdded) {
+                logger.warn(MessageFormat.format("User {0} was not given teacher role. ", user.getUserId()));
+            }
+        }
     }
 
     /**
@@ -215,6 +292,60 @@ public class GroupModelServerService extends GroupsServiceGrpc.GroupsServiceImpl
             error.setFieldName("longName");
             reply.addValidationErrors(error.build());
             reply.setIsSuccess(false).setMessage("Name was not unique");
+        }
+    }
+
+    /**
+     * Adds the users in the request to the group in the request.
+     * @param request contains group and id and user ids
+     * @param responseObserver used to send the response to portfolio
+     */
+    @Override
+    public void removeGroupMembers(RemoveGroupMembersRequest request, StreamObserver<RemoveGroupMembersResponse> responseObserver) {
+        RemoveGroupMembersResponse.Builder reply = RemoveGroupMembersResponse.newBuilder();
+        Iterable<UserModel> users = userModelService.getUsersByIds(request.getUserIdsList());
+        boolean isSuccess = false;
+        if (request.getGroupId() == (TEACHERS_GROUP_ID)) {
+            checkUsersNotInTeachersGroup(users);
+            // This is done as it assumes there's no returned issues with removing the user from the teachers group.
+            // If roles are not being removed or users not being removed to the group correctly, check logs.
+            isSuccess = true;
+        } else {
+            try {
+                isSuccess = groupModelService.removeUsersFromGroup(users, request.getGroupId());
+            } catch (InvalidAttributesException e) {
+                isSuccess = false;
+            }
+        }
+        if (request.getGroupId() == MEMBERS_WITHOUT_GROUP_ID && isSuccess) {
+            userModelService.setOnlyGroup(users, groupModelService.getMembersWithoutAGroup());
+        }
+        reply.setIsSuccess(isSuccess);
+        responseObserver.onNext(reply.build());
+        responseObserver.onCompleted();
+    }
+
+    /**
+     * Checks to see if a list of users are part of the teachers group. If so, it removes them from it.
+     * Also removes the teacher role from the user, if they have it.
+     * @param users users to check if they are in the teachers group and have the teacher role.
+     */
+    public void checkUsersNotInTeachersGroup(Iterable<UserModel> users) {
+
+        for (UserModel user : users) {
+            try {
+                boolean removedFromGroup = groupModelService.removeUsersFromGroup(new ArrayIterator<>(new UserModel[]{user}), GroupModelServerService.TEACHERS_GROUP_ID);
+                if (!removedFromGroup) {
+                    logger.error("Something went wrong with the teachers group");
+                }
+            } catch (InvalidAttributesException e) {
+                logger.error("Teachers group does not exist");
+            }
+
+            boolean roleWasRemoved = userModelService.checkUserDoesNotHaveTeacherRole(user);
+            if (!roleWasRemoved) {
+                logger.warn(MessageFormat.format("User {0} was not given teacher role. ", user.getUserId()));
+            }
         }
     }
 }

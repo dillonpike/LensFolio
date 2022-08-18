@@ -1,12 +1,17 @@
 package nz.ac.canterbury.seng302.portfolio.service;
 
 import net.devh.boot.grpc.client.inject.GrpcClient;
+import nz.ac.canterbury.seng302.portfolio.model.NotificationResponse;
+import nz.ac.canterbury.seng302.portfolio.utility.Toast;
+import nz.ac.canterbury.seng302.portfolio.utility.ToastUtility;
 import nz.ac.canterbury.seng302.shared.identityprovider.*;
 import nz.ac.canterbury.seng302.shared.util.ValidationError;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 
+import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 
@@ -26,6 +31,8 @@ public class GroupService {
     private List<GroupDetailsResponse> groupDetailsResponseList;
 
     private List<UserResponse> userResponseList;
+
+    private List<NotificationResponse> groupsToDisplay = new ArrayList<>();
 
     /***
      * Method to create group by sending request using GRPC to the idp
@@ -135,10 +142,6 @@ public class GroupService {
         PaginatedGroupsResponse groupList = getPaginatedGroups(1, 1, "null", false);
         groupDetailsResponseList = groupList.getGroupsList();
         model.addAttribute("groupList", groupDetailsResponseList);
-
-        model.addAttribute("groupLongName", "No select group");
-        model.addAttribute("groupShortName", "Please select one group");
-
     }
 
     /**
@@ -152,8 +155,6 @@ public class GroupService {
         userResponseList = groupDetailsResponse.getMembersList();
         model.addAttribute("groupLongName", groupDetailsResponse.getLongName());
         model.addAttribute("groupShortName", groupDetailsResponse.getShortName());
-        model.addAttribute("groupId", groupDetailsResponse.getGroupId());
-        model.addAttribute("groupDetails", groupDetailsResponse);
 
         model.addAttribute("group", groupDetailsResponse);
         model.addAttribute("members", userResponseList);
@@ -175,6 +176,27 @@ public class GroupService {
             }
         }
     }
+    /**
+     * This method makes it so that toasts are displayed when editing/adding something in the modal
+     * @param model model attribute to add variables into html
+     * @param numOfToasts the number of toasts that will be displayed
+     */
+    public void addToastsToModel(Model model, Integer numOfToasts) {
+        ToastUtility.addToastsToModel(model, groupsToDisplay, numOfToasts);
+    }
+
+    /**
+     * Adds the notification so that the toast can be displayed
+     * @param response sends the message that something is being edited
+     * @param numOfToasts the number of toasts that will be displayed
+     */
+    public void addNotification(NotificationResponse response, Integer numOfToasts) {
+        groupsToDisplay.add(response);
+        while (groupsToDisplay.size() > numOfToasts) {
+            groupsToDisplay.remove(0);
+        }
+    }
+
 
 
 }

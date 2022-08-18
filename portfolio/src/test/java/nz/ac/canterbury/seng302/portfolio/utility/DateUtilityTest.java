@@ -32,4 +32,17 @@ class DateUtilityTest {
         String dateTime = "12/Dece/2021 4:32 pm";
         assertNull(DateUtility.stringToDateTime(dateTime));
     }
+
+    @Test
+    void testSetToEndOfDay() {
+        Calendar cal = Calendar.getInstance();
+
+        cal.set(2021, Calendar.DECEMBER, 12, 16, 32, 0);
+        Date date = cal.getTime();
+
+        cal.set(2021, Calendar.DECEMBER, 12, 23, 59, 59);
+        Date expectedDate = cal.getTime();
+
+        assertEquals(DateUtility.setToEndOfDay(date).toString(), expectedDate.toString());
+    }
 }

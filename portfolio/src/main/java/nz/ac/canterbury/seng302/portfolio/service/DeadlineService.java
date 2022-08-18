@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import nz.ac.canterbury.seng302.portfolio.model.Deadline;
 import nz.ac.canterbury.seng302.portfolio.model.Sprint;
 import nz.ac.canterbury.seng302.portfolio.repository.DeadlinesRepository;
+import org.hibernate.ObjectNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -43,15 +44,14 @@ public class DeadlineService {
      * Get deadline by Id
      * @param id id of event
      * @return deadline with the id that is the input
-     * @throws Exception If event can't be found
+     * @throws ObjectNotFoundException If event can't be found
      */
-    public Deadline getDeadlineById(Integer id) throws Exception {
+    public Deadline getDeadlineById(Integer id) throws ObjectNotFoundException {
         Optional<Deadline> deadline = repository.findById(id);
         if (deadline.isPresent()) {
             return deadline.get();
         } else {
-
-            throw new Exception("Event not found");
+            throw new ObjectNotFoundException(id, "Unknown deadline");
         }
     }
 
@@ -106,7 +106,7 @@ public class DeadlineService {
         ArrayList<Deadline> deadlinesOverlapped = new ArrayList<>();
 
         for (Deadline currentDeadline : deadlineList) {
-            if (validateDeadlineDateInSprintDateRange(currentDeadline, sprint)) {
+            if (validateDeadlineDateInDateRange(currentDeadline, sprint.getStartDate(), sprint.getEndDate())) {
                 deadlinesOverlapped.add(currentDeadline);
             }
         }
@@ -116,13 +116,10 @@ public class DeadlineService {
     /**
      * Validate if particular deadline date is in sprint date range
      * @param deadline The update deadline
-     * @param sprint The sprint to compare with
      * @return True if deadline end date is in sprint date range
      */
-    public boolean validateDeadlineDateInSprintDateRange(Deadline deadline, Sprint sprint) {
+    public boolean validateDeadlineDateInDateRange(Deadline deadline, Date startDate, Date endDate) {
         Date deadlineDate = deadline.getDeadlineDate();
-        Date sprintStartDate = sprint.getStartDate();
-        Date sprintEndDate = sprint.getEndDate();
 
         // Convert deadlineDate to Calendar object
         Calendar calendar1 = Calendar.getInstance();
@@ -130,11 +127,11 @@ public class DeadlineService {
 
         // Convert sprint Start Date to Calendar object
         Calendar calendar2 = Calendar.getInstance();
-        calendar2.setTime(sprintStartDate);
+        calendar2.setTime(startDate);
 
         // Convert sprint End Date to Calendar object
         Calendar calendar3 = Calendar.getInstance();
-        calendar3.setTime(sprintEndDate);
+        calendar3.setTime(endDate);
 
         // Check if deadline is the sprint start day
         boolean isStartDay = calendar1.get(Calendar.YEAR) == calendar2.get(Calendar.YEAR)
@@ -146,7 +143,7 @@ public class DeadlineService {
                 && calendar1.get(Calendar.MONTH) == calendar3.get(Calendar.MONTH)
                 && calendar1.get(Calendar.DAY_OF_MONTH) == calendar3.get(Calendar.DAY_OF_MONTH);
 
-        return (deadlineDate.compareTo(sprintStartDate) >= 0 && deadlineDate.compareTo(sprintEndDate) <= 0)
+        return (deadlineDate.compareTo(startDate) >= 0 && deadlineDate.compareTo(endDate) <= 0)
                 || isStartDay || isEndDay;
     }
 

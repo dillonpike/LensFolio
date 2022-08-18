@@ -1,9 +1,7 @@
 package nz.ac.canterbury.seng302.identityprovider.model;
 
 import javax.persistence.*;
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -51,6 +49,13 @@ public class GroupModel {
     @Column(name="User_Id")
     private Set<Integer> memberIds = new HashSet<>();
 
+
+    /**
+     * Set of repositories that this group has.
+     */
+    @OneToMany(mappedBy = "groupModel")
+    private Set<GroupRepositoryModel> groupRepositoryModels;
+
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
     @JoinTable(name = "user_to_group",
             joinColumns =
@@ -58,7 +63,7 @@ public class GroupModel {
             inverseJoinColumns =
             @JoinColumn(name = "User_Id")
     )
-    private final List<UserModel> users = new ArrayList<>();
+    private Set<UserModel> users = new HashSet<>();
 
 
 
@@ -154,27 +159,15 @@ public class GroupModel {
      * @return ids of the users a part of the group
      */
     public Set<Integer> getMemberIds() {
-        return memberIds;
+        return users.stream().map(UserModel::getUserId).collect(HashSet::new, HashSet::add, HashSet::addAll);
     }
 
     /**
-     * Adds the user represented by the given user id to the group.
-     * @param userId id of user to add to the group
+     * Returns the users a part of the group.
+     * @return users a part of the group
      */
-    public void addMember(int userId) {
-        memberIds.add(userId);
-    }
-
-    /**
-     * Removes the user represented by the given user id from the group.
-     * @param userId id of user to remove from the group
-     */
-    public void removeMember(int userId) {
-        memberIds.remove(userId);
-    }
-
-    public List<UserModel> getUsers() {
-        return users;
+    public Set<UserModel> getMembers() {
+        return this.users;
     }
 
     /**
@@ -190,5 +183,30 @@ public class GroupModel {
      */
     public void setGroupRepositoryModels(Set<GroupRepositoryModel> groupRepositoryModels) {
         this.groupRepositoryModels = groupRepositoryModels;
+    }
+
+    /**
+     * Adds the given user to the group.
+     * @param user user to add to the group
+     */
+    public void addMember(UserModel user) {
+        users.add(user);
+    }
+
+    /**
+    /**
+     * Sets the members of the group. Overwrites the old members, so be careful using this method.
+     * @param members set of users to add
+     */
+    public void setMembers(Set<UserModel> members) {
+        this.users = members;
+    }
+
+    /**
+     * Removes the user from the group.
+     * @param user user to remove from the group
+     */
+    public void removeMember(UserModel user) {
+        users.removeIf(userInGroup -> userInGroup.getUserId() == user.getUserId());
     }
 }

@@ -6,33 +6,32 @@ import nz.ac.canterbury.seng302.identityprovider.repository.GroupRepository;
 import nz.ac.canterbury.seng302.identityprovider.repository.RolesRepository;
 import nz.ac.canterbury.seng302.identityprovider.model.UserModel;
 import nz.ac.canterbury.seng302.identityprovider.repository.UserModelRepository;
+import nz.ac.canterbury.seng302.identityprovider.server.GroupModelServerService;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.text.MessageFormat;
 import java.util.*;
 
 @Service
 public class UserModelService {
 
-    @Autowired
-    UserModelRepository repository;
+    private static final Logger logger = LoggerFactory.getLogger(UserModelService.class);
 
     @Autowired
-    RolesRepository rolesRepository;
+    private UserModelRepository repository;
 
     @Autowired
-    UserModelRepository userModelRepository;
-
-    @Autowired
-    GroupRepository groupRepository;
+    private RolesRepository rolesRepository;
 
     private static int userIdCount = 1;
 
-    public UserModelService(UserModelRepository userModelRepository, RolesRepository rolesRepository) {
+    public UserModelService(UserModelRepository userModelRepository, RolesRepository rolesRepository, GroupRepository groupRepository) {
         this.repository = userModelRepository;
         this.rolesRepository = rolesRepository;
-        this.userModelRepository = userModelRepository;
     }
 
     /**
@@ -42,6 +41,15 @@ public class UserModelService {
      */
     public UserModel getUserById(int userId) {
         return repository.findByUserId(userId);
+    }
+
+    /**
+     * Returns all users from a list of user ids.
+     * @param userIds List of user ids to get.
+     * @return Iterable list of UserModels with ids of given list.
+     */
+    public Iterable<UserModel> getUsersByIds(List<Integer> userIds) {
+        return repository.findAllById(userIds);
     }
 
     /**
@@ -68,7 +76,8 @@ public class UserModelService {
     }
 
     /**
-     * Add new user to the database
+     * Add new user to the database. Makes sure they have the default student role
+     * and are added to the 'members without a group' group.
      * @param user contains all data of the user that will be persisted in database
      * @return UserModel object which is the saved entity
      */
@@ -77,11 +86,6 @@ public class UserModelService {
         user.setUserId(userIdCount);
         userIdCount++;
         Roles studentRole = rolesRepository.findByRoleName("STUDENT");
-        Optional<GroupModel> groupOptional = groupRepository.findByLongName("Members without a group");
-        if (groupOptional.isPresent()) {
-            GroupModel memberWithoutAGroupModel = groupOptional.get();
-            user.addGroup(memberWithoutAGroupModel);
-        }
         user.addRoles(studentRole);
         return repository.save(user);
     }
@@ -99,7 +103,7 @@ public class UserModelService {
             status = true;
         } catch(Exception e) {
             status = false;
-            System.err.println("Edited user not saved");
+            logger.error("Edited user not saved");
         }
         return status;
     }
@@ -172,10 +176,70 @@ public class UserModelService {
         Set<Roles> roles = user.getRoles();
         Roles[] rolesArray = roles.toArray(new Roles[roles.size()]);
 
-        for (int i = 0; i < rolesArray.length; i++) {
-            response.addRolesValue(rolesArray[i].getId());
+        for (Roles value : rolesArray) {
+            response.addRolesValue(value.getId());
         }
         return response.build();
+    }
+
+    /**
+     * Checks to see if the user has the teacher role. If not, it adds the role to the user.
+     * @param user user to check if they are in the teachers group.
+     */
+    public boolean checkUserHasTeacherRole(UserModel user) {
+        Roles teacherRole = rolesRepository.findByRoleName("TEACHER");
+
+        boolean addedRole = false;
+        if (!user.getRoles().contains(teacherRole)) {
+            user.addRoles(teacherRole);
+            addedRole = saveEditedUser(user);
+        }
+        return addedRole;
+    }
+
+    /**
+     * Checks to see if the user has the teacher role. If so, it removes the role from the user.
+     * @param user user to check if they are in the teachers group.
+     * @return Whether it was removed.
+     */
+    public boolean checkUserDoesNotHaveTeacherRole(UserModel user) {
+        Roles teacherRole = rolesRepository.findByRoleName("TEACHER");
+
+        boolean addedRole = false;
+        for (Roles role : user.getRoles()) {
+            if (role.getRoleName().equals(teacherRole.getRoleName())) {
+                user.getRoles().remove(role);
+                addedRole = saveEditedUser(user);
+            }
+        }
+        return addedRole;
+    }
+
+    public void setOnlyGroup(Iterable<UserModel> users, GroupModel group) {
+        for (UserModel user: users) {
+            user.setGroups(Set.of(group));
+            if (group.getGroupId() == GroupModelServerService.MEMBERS_WITHOUT_GROUP_ID) {
+                user.getRoles().add(rolesRepository.findByRoleName("STUDENT"));
+                user.getRoles().remove(rolesRepository.findByRoleName("TEACHER"));
+            }
+        }
+        repository.saveAll(users);
+    }
+
+    /**
+     * Adds user to 'users without a group' group if they are not in any other groups.
+     * @param usersWithoutGroupGroup 'users without a group' group
+     */
+    public void usersAddedToUsersWithoutGroup(GroupModel usersWithoutGroupGroup) {
+        Iterable<UserModel> users = repository.findAll();
+        for (UserModel user : users) {
+            Set<GroupModel> usersGroups = user.getGroups();
+            if (usersGroups.isEmpty()) {
+                user.addGroup(usersWithoutGroupGroup);
+                repository.save(user);
+                logger.info(MessageFormat.format("New user id:{0} found without group, added them to 'users without a group' group", user.getUserId()));
+            }
+        }
     }
 
 }

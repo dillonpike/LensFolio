@@ -108,6 +108,16 @@ test {
     testLogging {
         events TestLogEvent.FAILED, TestLogEvent.PASSED, TestLogEvent.SKIPPED
     }
+    filter{
+        includeTestsMatching "nz.ac.canterbury.seng302.portfolio.controller.*"
+
+        includeTestsMatching "nz.ac.canterbury.seng302.portfolio.model.*"
+
+        includeTestsMatching "nz.ac.canterbury.seng302.portfolio.service.*"
+
+        includeTestsMatching "nz.ac.canterbury.seng302.portfolio.utility.*"
+
+    }
 
     systemProperties(project.gradle.startParameter.systemPropertiesArgs)
 }
@@ -133,7 +143,8 @@ sonarqube {
         property "sonar.projectKey", "team-100-portfolio"
         property "sonar.projectName", "team 100-portfolio"
         property "sonar.sourceEncoding", "UTF-8"
-        property "sonar.host.url", "http://sonarqube.csse.canterbury.ac.nz:9000"
-        property "sonar.login", System.getenv("SONARQUBE_API_KEY")
+        property "sonar.test", "src/test"
+        property "sonar.host.url", "https://sonarqube.csse.canterbury.ac.nz"
+        property "sonar.login", "$System.env.SONARQUBE_API_KEY"
     }
 }

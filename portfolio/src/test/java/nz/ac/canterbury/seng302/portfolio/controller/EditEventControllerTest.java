@@ -1,9 +1,7 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
 import nz.ac.canterbury.seng302.portfolio.model.Event;
-import nz.ac.canterbury.seng302.portfolio.service.DateValidationService;
-import nz.ac.canterbury.seng302.portfolio.service.EventService;
-import nz.ac.canterbury.seng302.portfolio.service.UserAccountClientService;
+import nz.ac.canterbury.seng302.portfolio.service.*;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import nz.ac.canterbury.seng302.shared.identityprovider.ClaimDTO;
 import org.junit.Before;
@@ -62,9 +60,7 @@ class EditEventControllerTest {
      */
     private Date startEvent = new Date();
     private Date endEvent = getUpdatedDate(startEvent, 5, 0);
-    private LocalTime startTime = LocalTime.now();
-    private LocalTime endTime = LocalTime.now();
-    private Event mockEvent = new Event(1,0,"test event", startEvent, endEvent,startTime, endTime);
+    private Event mockEvent = new Event(1,0,"test event", startEvent, endEvent);
 
     @Autowired
     private MockMvc mockMvc;
@@ -76,32 +72,20 @@ class EditEventControllerTest {
     private UserAccountClientService userAccountClientService;
 
     @MockBean
+    private RegisterClientService registerClientService;
+
+    @MockBean
     private DateValidationService dateValidationService;
+
+    @MockBean
+    private PermissionService permissionService;
+
+    @MockBean
+    private ElementService elementService;
 
     @Before
     public void setup() {
         mockMvc = MockMvcBuilders.standaloneSetup(AccountController.class).build();
-    }
-
-    /**
-     * unit testing to test the get method when calling "/edit-event/{id}"
-     * Expect to return 200 status code and edit event page with some event's information in the model
-     */
-    @Test
-    void whenBrowseToEditEventPage_showEditEventPage_andReturn200StatusCode() throws Exception {
-        SecurityContext mockedSecurityContext = Mockito.mock(SecurityContext.class);
-        when(mockedSecurityContext.getAuthentication()).thenReturn(new PreAuthenticatedAuthenticationToken(validAuthState, ""));
-
-        SecurityContextHolder.setContext(mockedSecurityContext);
-
-        when(eventService.getEventById(any(Integer.class))).thenReturn(mockEvent);
-
-        mockMvc.perform(get("/edit-event/1"))
-                .andExpect(status().isOk()) // Whether to return the status "200 OK"
-                .andExpect(view().name("editEvent")) // Whether to return the template "account"
-                .andExpect(model().attribute("event", mockEvent))
-                .andExpect(model().attribute("EventDateError", ""))
-                .andExpect(model().attribute("eventId", 1));
     }
 
     /**
@@ -119,7 +103,7 @@ class EditEventControllerTest {
         when(eventService.getEventById(any(Integer.class))).thenReturn(mockEvent);
         ArgumentCaptor<Event> eventArgumentCaptor = ArgumentCaptor.forClass(Event.class);
         when(eventService.updateEvent(any(Event.class))).thenReturn(mockEvent);
-
+        when(permissionService.isValidToModifyProjectPage(any(Integer.class))).thenReturn(true);
 
         mockMvc.perform(post("/edit-event/1").flashAttr("event",mockEvent))
                 .andExpect(status().is3xxRedirection())

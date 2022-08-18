@@ -2,6 +2,8 @@ package nz.ac.canterbury.seng302.portfolio.controller;
 
 import nz.ac.canterbury.seng302.portfolio.model.Deadline;
 import nz.ac.canterbury.seng302.portfolio.service.DeadlineService;
+import nz.ac.canterbury.seng302.portfolio.service.ElementService;
+import nz.ac.canterbury.seng302.portfolio.service.PermissionService;
 import nz.ac.canterbury.seng302.portfolio.service.UserAccountClientService;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import nz.ac.canterbury.seng302.shared.identityprovider.ClaimDTO;
@@ -57,6 +59,12 @@ class DeadlineLifetimeControllerTest {
     @MockBean
     private UserAccountClientService userAccountClientService; // needed to load application
 
+    @MockBean
+    private PermissionService permissionService;
+
+    @MockBean
+    private ElementService elementService;
+
     /**
      * Tests that the deadlineSave controller method can be called with the "/add-deadline" URL and saves the given
      * deadline to the database.
@@ -70,6 +78,7 @@ class DeadlineLifetimeControllerTest {
 
         Deadline expectedDeadline = new Deadline(0,"Test Deadline", new Date());
         when(deadlineService.addDeadline(any(Deadline.class))).then(returnsFirstArg());
+        when(permissionService.isValidToModifyProjectPage(any(Integer.class))).thenReturn(true);
 
         mockMvc.perform(post("/add-deadline").flashAttr("deadline", expectedDeadline))
                 .andExpect(status().is3xxRedirection())

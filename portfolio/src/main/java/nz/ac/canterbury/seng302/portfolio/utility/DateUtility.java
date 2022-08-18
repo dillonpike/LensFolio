@@ -2,14 +2,14 @@ package nz.ac.canterbury.seng302.portfolio.utility;
 
 import com.google.protobuf.Timestamp;
 
+import java.util.Calendar;
 import java.util.Date;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.Period;
 
 /**
- * Helper functions for conversion between date objects and strings,
- * and getting the years, months, or days since a specific date.
+ * Helper functions related to dates.
  */
 public class DateUtility {
     public DateUtility() {}
@@ -109,6 +109,20 @@ public class DateUtility {
             System.err.println("Error parsing date: " + e.getMessage());
         }
         return date;
+    }
+
+    /**
+     * Returns the given date but with the time set to 23:59:59.
+     * @param date date to be converted
+     * @return date with time set to 23:59:59
+     */
+    public static Date setToEndOfDay(Date date) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        calendar.set(Calendar.HOUR_OF_DAY, 23);
+        calendar.set(Calendar.MINUTE, 59);
+        calendar.set(Calendar.SECOND, 59);
+        return calendar.getTime();
     }
 
 }

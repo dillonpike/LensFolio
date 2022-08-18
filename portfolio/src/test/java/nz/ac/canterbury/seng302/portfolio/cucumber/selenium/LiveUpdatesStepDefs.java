@@ -42,10 +42,8 @@ public class LiveUpdatesStepDefs {
      */
     private final Date startEvent = new Date();
     private final Date endEvent = getUpdatedDate(startEvent, 5, 0);
-    private final LocalTime startTime = LocalTime.now();
-    private final LocalTime endTime = LocalTime.now().plusHours(10L);
     private final String mockEventName = "Test Event";
-    private Event mockEvent = new Event(1,0,mockEventName, startEvent, endEvent,startTime, endTime);
+    private Event mockEvent = new Event(1,0,mockEventName, startEvent, endEvent);
     private int eventIdToUse = 1;
 
     /**
@@ -90,12 +88,6 @@ public class LiveUpdatesStepDefs {
         }
     }
 
-    @When("I browse to the edit edit page for an event")
-    public void i_browse_to_the_edit_edit_page_for_an_event() {
-        webDriver.get("http://localhost:9000/edit-event/" + eventIdToUse);
-        wait.until(ExpectedConditions.elementToBeClickable(By.id("eventName")));
-    }
-
     @And("I have the details page open on another tab")
     public void iHaveTheDetailsPageOpenOnAnotherTab() {
         ((JavascriptExecutor) webDriver).executeScript("window.open('http://localhost:9000/details')");
@@ -108,6 +100,16 @@ public class LiveUpdatesStepDefs {
         webDriver.switchTo().window(tabs.get(0));
     }
 
+    @Given("I open edit event modal")
+    public void i_open_edit_event_modal() {
+        webDriver.findElement(By.id("event-tab")).click();
+        wait.until(ExpectedConditions.elementToBeClickable(By.id("eventActions")));
+        webDriver.findElement(By.id("eventActions")).click();
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("editEventButton")));
+        webDriver.findElement(By.id("editEventButton")).click();
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//h5[contains(., 'Edit Event')]")));
+    }
+
     @When("I edit an event")
     public void i_edit_an_event() {
         wait.until(ExpectedConditions.elementToBeClickable(By.id("eventName")));
@@ -115,27 +117,12 @@ public class LiveUpdatesStepDefs {
         try {
             wait.until(ExpectedConditions.elementToBeClickable(By.id("nonExistent")));
         } catch (TimeoutException ignored) {}
-
     }
 
     @When("I save an event")
     public void i_save_an_event() {
-        webDriver.findElement(By.id("saveButton")).click();
+        webDriver.findElement(By.id("eventModalButton")).click();
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.className("title-name")));
-    }
-
-    @And("I switch tabs back to the details page")
-    public void i_switch_tabs_back_to_the_details_page() {
-        webDriver.switchTo().window(tabs.get(1));
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.className("title-name")));
-        assertTrue(true);
-    }
-
-    @And("I switch tabs back to the event page")
-    public void i_switch_tabs_back_to_the_event_page() {
-        webDriver.switchTo().window(tabs.get(0));
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.className("title-name")));
-        assertTrue(true);
     }
 
     @Then("a live notification appears on the details page with correct message {string}")
@@ -158,35 +145,29 @@ public class LiveUpdatesStepDefs {
         String popupText3 = webDriver.findElement(By.id("popupText3")).getText();
         if (!popupText1.equals("")) {
             wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("popupText1")));
-            System.out.println(webDriver.findElement(By.id("popupText1")).getText() + "< This");
             assertTrue(webDriver.findElement(By.id("popupText1")).getText().matches(pattern));
             assertTrue(webDriver.findElement(By.id("liveToast1")).isDisplayed());
-        }
-        if (!popupText2.equals("")) {
+        } else if (!popupText2.equals("")) {
             wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("popupText2")));
-            System.out.println(webDriver.findElement(By.id("popupText2")).getText() + "< This");
             assertTrue(webDriver.findElement(By.id("popupText2")).getText().matches(pattern));
             assertTrue(webDriver.findElement(By.id("liveToast2")).isDisplayed());
-        }
-        if (!popupText3.equals("")) {
+        } else if (!popupText3.equals("")) {
             wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("popupText3")));
-            System.out.println(webDriver.findElement(By.id("popupText3")).getText() + "< This");
             assertTrue(webDriver.findElement(By.id("popupText3")).getText().matches(pattern));
             assertTrue(webDriver.findElement(By.id("liveToast3")).isDisplayed());
+        } else {
+            fail("Did not show toast");
         }
     }
 
     @When("I stop editing an event")
     public void i_stop_editing_an_event() {
-        webDriver.switchTo().window(tabs.get(0));
-        wait.until(ExpectedConditions.elementToBeClickable(By.id("title")));
-        webDriver.findElement(By.id("title")).click();
+        wait.until(ExpectedConditions.elementToBeClickable(By.id("closeEventModalButton")));
+        webDriver.findElement(By.id("closeEventModalButton")).click();
     }
 
     @Then("a live notification disappears from the details page after {int} seconds")
     public void a_live_notification_disappears_from_the_details_page_after_seconds(Integer timeInSeconds) {
-//        webDriver.switchTo().window(tabs.get(1));
-//        wait.until(ExpectedConditions.visibilityOfElementLocated(By.className("title-name")));
         WebDriverWait customWait = new WebDriverWait(webDriver, timeInSeconds); // 'timeInSeconds' wait time
         String popupText1 = webDriver.findElement(By.id("popupText1")).getText();
         String popupText2 = webDriver.findElement(By.id("popupText2")).getText();
@@ -194,14 +175,14 @@ public class LiveUpdatesStepDefs {
         if (!popupText1.equals("")) {
             customWait.until(ExpectedConditions.invisibilityOfElementLocated(By.id("liveToast1")));
             assertFalse(webDriver.findElement(By.id("liveToast1")).isDisplayed());
-        }
-        else if (!popupText2.equals("")) {
+        } else if (!popupText2.equals("")) {
             customWait.until(ExpectedConditions.invisibilityOfElementLocated(By.id("liveToast2")));
             assertFalse(webDriver.findElement(By.id("liveToast2")).isDisplayed());
-        }
-        else if (!popupText3.equals("")) {
+        } else if (!popupText3.equals("")) {
             customWait.until(ExpectedConditions.invisibilityOfElementLocated(By.id("liveToast3")));
             assertFalse(webDriver.findElement(By.id("liveToast3")).isDisplayed());
+        } else {
+            fail();
         }
     }
 
@@ -232,6 +213,6 @@ public class LiveUpdatesStepDefs {
 
     @And("I stop editing an milestone")
     public void iStopEditingAnMilestone() {
-        webDriver.findElement(By.id("exampleModalLongTitle")).click();
+        webDriver.findElement(By.id("milestoneModalTitle")).click();
     }
 }

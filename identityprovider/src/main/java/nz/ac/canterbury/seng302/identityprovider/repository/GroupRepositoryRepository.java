@@ -10,7 +10,7 @@ import java.util.Optional;
  */
 @Repository
 public interface GroupRepositoryRepository extends CrudRepository<GroupRepositoryModel, Integer> {
-//    Optional<GroupRepositoryModel> findByGroupSettingId (Integer id);
+    Optional<GroupRepositoryModel> findByGroupRepositoryId (Integer id);
 
 
 }

@@ -3,6 +3,7 @@ package nz.ac.canterbury.seng302.portfolio.service;
 import nz.ac.canterbury.seng302.portfolio.model.Milestone;
 import nz.ac.canterbury.seng302.portfolio.model.Sprint;
 import nz.ac.canterbury.seng302.portfolio.repository.MilestoneRepository;
+import org.hibernate.ObjectNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -66,13 +67,13 @@ public class MilestoneService {
      * @return Milestone object from repository.
      * @throws Exception Thrown if no milestone exists.
      */
-    public Milestone getMilestoneById(Integer id) throws Exception {
+    public Milestone getMilestoneById(Integer id) throws ObjectNotFoundException {
         Optional<Milestone> milestone = repository.findById(id);
 
         if (milestone.isPresent()) {
             return milestone.get();
         } else {
-            throw new Exception("Milestone not found");
+            throw new ObjectNotFoundException(id, "Unknown Milestone");
         }
     }
 
@@ -88,9 +89,11 @@ public class MilestoneService {
             Milestone milestoneUpdate = mOptional.get();
             milestoneUpdate.setMilestoneName(milestone.getMilestoneName());
             milestoneUpdate.setMilestoneDate(milestone.getMilestoneDate());
+
             milestoneUpdate = repository.save(milestoneUpdate);
             return milestoneUpdate;
         } else {
+            milestone = repository.save(milestone);
             return milestone;
         }
     }

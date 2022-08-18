@@ -1,36 +1,37 @@
 package nz.ac.canterbury.seng302.identityprovider.service;
 
 
+import nz.ac.canterbury.seng302.identityprovider.model.GroupModel;
 import nz.ac.canterbury.seng302.identityprovider.model.Roles;
+import nz.ac.canterbury.seng302.identityprovider.repository.GroupRepository;
 import nz.ac.canterbury.seng302.identityprovider.repository.RolesRepository;
 import nz.ac.canterbury.seng302.identityprovider.model.UserModel;
 import nz.ac.canterbury.seng302.identityprovider.repository.UserModelRepository;
+import nz.ac.canterbury.seng302.identityprovider.server.UserAccountServerService;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import static org.mockito.Mockito.when; //should normally use this one
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import static org.junit.jupiter.api.Assertions.*;
+
+import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.AdditionalAnswers.returnsFirstArg;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 @ExtendWith(SpringExtension.class)
-public class UserModelServiceTests {
+class UserModelServiceTests {
 
     /**
      * Mocked UserModelService object
@@ -50,12 +51,33 @@ public class UserModelServiceTests {
     @Mock
     private RolesRepository rolesRepository;
 
-    @Before
+    @Mock
+    private GroupRepository groupRepository;
+
+    private static final Logger logger = LoggerFactory.getLogger(UserAccountServerService.class);
+
+    private final GroupModel testGroup = new GroupModel("Test", "Test Group", 1);
+
+    private final GroupModel membersGroup = new GroupModel("Short Name", "Long Name", 2);
+
+    private final GroupModel teachersGroup = new GroupModel("Short Name", "Long Name", 1);
+
+    private final Roles studentRole = new Roles(0, "STUDENT");
+
+    private final Roles teacherRole = new Roles(1, "TEACHER");
+
+    private final UserModel testUser1 = new UserModel();
+    private final UserModel testUser2 = new UserModel();
+
+    @BeforeEach
     public void setUp() {
         MockitoAnnotations.openMocks(this);
 
-        userModelService = new UserModelService(userModelRepository, rolesRepository);
+        userModelService = new UserModelService(userModelRepository, rolesRepository, groupRepository);
 
+        testUser1.setUserId(1);
+        membersGroup.setGroupId(1);
+        teachersGroup.setGroupId(2);
     }
 
     /**
@@ -63,7 +85,7 @@ public class UserModelServiceTests {
      * then save to mocked repository, test all attributes
      */
     @Test
-    public void testWhenAddNewUser_ThenReturnAllAttribute() {
+    void testWhenAddNewUser_ThenReturnAllAttribute() {
         UserModel user = new UserModel();
         user.setUsername("username");
         user.setPassword("password");
@@ -95,7 +117,7 @@ public class UserModelServiceTests {
      * be saved and return the same email and userId
      */
     @Test
-    public void testAddNewUser_givenTestEmail_returnSameEmailAndUserId() {
+    void testAddNewUser_givenTestEmail_returnSameEmailAndUserId() {
         UserModel user = new UserModel();
         user.setEmail("123@gmail.com");
         when(userModelRepository.save(any(UserModel.class))).thenReturn(user);
@@ -109,7 +131,7 @@ public class UserModelServiceTests {
      * Tests that when a user is saved to the repository, the student role is assigned to them by default.
      */
     @Test
-    public void testWhenAddUser_ThenReturnDefaultStudentRole() {
+    void testWhenAddUser_ThenReturnDefaultStudentRole() {
         UserModel user = new UserModel();
         Roles studentRole = new Roles(0, "STUDENT");
         when(rolesRepository.findByRoleName("STUDENT")).thenReturn(studentRole);
@@ -121,7 +143,7 @@ public class UserModelServiceTests {
     }
 
     @Test
-    public void testSaveEditedUser_givenUserExist_returnSuccess() {
+    void testSaveEditedUser_givenUserExist_returnSuccess() {
         UserModel user = new UserModel();
         user.setUsername("username");
         user.setPassword("password");
@@ -138,7 +160,7 @@ public class UserModelServiceTests {
     }
 
     @Test
-    public void testGetUserByUsername_givenUserExist_returnSameUserAttributes() {
+    void testGetUserByUsername_givenUserExist_returnSameUserAttributes() {
         UserModel user = new UserModel();
         user.setUsername("username");
         user.setPassword("password");
@@ -165,7 +187,7 @@ public class UserModelServiceTests {
     }
 
     @Test
-    public void testGetUserInformationByList_givenListOfUserIds_returnListOfUserResponse() {
+    void testGetUserInformationByList_givenListOfUserIds_returnListOfUserResponse() {
         UserModel userModel1 = new UserModel("test1", "password", "test", "test", "test", "test", "test", "test", "test");
         UserModel userModel2 = new UserModel("test2", "password", "test2", "test2", "test2", "test", "test", "test", "test");
         UserModel userModel3 = new UserModel("test3", "password", "test3", "test3", "test2", "test", "test", "test", "test");
@@ -190,14 +212,67 @@ public class UserModelServiceTests {
         when(userModelRepository.findByUserId(userModel1.getUserId())).thenReturn(userModel1);
         when(userModelRepository.findByUserId(userModel2.getUserId())).thenReturn(userModel2);
         when(userModelRepository.findByUserId(userModel3.getUserId())).thenReturn(userModel3);
-        when(userModelService.getUserInfo(userModel1)).thenReturn(userResponse1);
-        when(userModelService.getUserInfo(userModel2)).thenReturn(userResponse2);
-        when(userModelService.getUserInfo(userModel3)).thenReturn(userResponse3);
 
 
         List<UserResponse> userResponseList = userModelService.getUserInformationByList(userIds);
         assertThat(userResponseList.size()).isSameAs(userResponseExpectedList.size());
 
+    }
+
+    /**
+     * Tests that the teacher role is added to the user when calling the checkUserHasTeacherRole method.
+     */
+    @Test
+    void testCheckUserHasTeacherRole() {
+        testUser1.setRoles(new HashSet<>());
+        when(rolesRepository.findByRoleName("TEACHER")).thenReturn(teacherRole);
+        userModelService.checkUserHasTeacherRole(testUser1);
+        assertTrue(testUser1.getRoles().contains(teacherRole));
+    }
+
+    /**
+     * Tests that the teacher role is removed from the user when calling the checkUserDoesNotHaveTeacherRole method.
+     */
+    @Test
+    void testCheckUserDoesNotHaveTeacherRole() {
+        testUser1.setRoles(new HashSet<>(Set.of(teacherRole)));
+        when(rolesRepository.findByRoleName("TEACHER")).thenReturn(teacherRole);
+        userModelService.checkUserDoesNotHaveTeacherRole(testUser1);
+        assertFalse(testUser1.getRoles().contains(teacherRole));
+    }
+
+    /**
+     * Tests that the setOnlyGroup sets a user's group to only the given group.
+     */
+    @Test
+    void testSetOnlyGroup() {
+        testUser1.setRoles(new HashSet<>(Set.of(teacherRole)));
+        testUser1.setGroups(new HashSet<>(Set.of(testGroup, teachersGroup)));
+
+        when(rolesRepository.findByRoleName("STUDENT")).thenReturn(studentRole);
+        when(rolesRepository.findByRoleName("TEACHER")).thenReturn(teacherRole);
+
+        userModelService.setOnlyGroup(List.of(testUser1), membersGroup);
+
+        assertEquals(testUser1.getGroups(), Set.of(membersGroup));
+    }
+
+    /**
+     * Tests that the usersAddedToUsersWithoutGroup sets a user's group to the special non-members group if they are not
+     * in a group, but does nothing if the user is in a group.
+     */
+    @Test
+    void testUsersAddedToUsersWithoutGroup() {
+        testUser1.setGroups(new HashSet<>());
+        Set<GroupModel> expectedTestUser2Groups = new HashSet<>(Set.of(testGroup, teachersGroup));
+        testUser2.setGroups(expectedTestUser2Groups);
+
+        when(userModelRepository.findAll()).thenReturn(List.of(testUser1, testUser2));
+
+        userModelService.usersAddedToUsersWithoutGroup(membersGroup);
+
+        assertEquals(testUser1.getGroups(), Set.of(membersGroup));
+        assertEquals(testUser2.getGroups(), expectedTestUser2Groups);
     }
 
 }

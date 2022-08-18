@@ -266,13 +266,12 @@
         let socket = new SockJS('mywebsockets');
         stompClient = Stomp.over(socket);
         stompClient.connect({}, function (frame) {
-            console.log('Connected: ' + frame);
 
             stompClient.subscribe('/webSocketGet/save-edit', function (ignore) {
                 refreshEvents();
 
             });
-            stompClient.subscribe('/webSocketGet/delete-artefact', function (ignore) {
+            stompClient.subscribe('/webSocketGet/artefact-delete', function (ignore) {
                 refreshEvents();
             });
         });

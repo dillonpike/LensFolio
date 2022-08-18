@@ -1,254 +1,22 @@
-let stompClient = null;
-let toast1 = null;
-let toast2 = null;
-let toast3 = null;
+/* Make sure to import Notification.js before this file in your HTML. */
+/** ************ Notification.js REQUIRED TO RUN THIS FILE ************ */
 
 /**
- * Constants used for identifying what kind of notification the toast should be.
- */
-const EVENTTYPE = "Event";
-const DEADLINETYPE = "Deadline";
-const MILESTONETYPE = "Milestone";
-
-/**
- * The amount of time in seconds the toast will take before hiding on a timed hide function.
+ * Number of toasts generated and can be created at one time. Must be more or equal to NUM_OF_TOASTS in DetailsController.java.
  * @type {number}
  */
-const SECONDS_TILL_HIDE = 5;
+const NUM_OF_TOASTS = 3;
 
 /**
- * Notification object that holds its title and the users' username, first and last name for an item notification.
- * This object also holds its HTML Bootstrap toast information and can display on this notification object.
+ * Number of milliseconds to wait for artefacts to save to the database.
+ * @type {number}
  */
-class Notification {
-    toast;
-    toastBodyTextVar;
-    toastTitleTextVar;
-    titleName = "";
-    bodyText = "";
-    hasBeenSaved = false;
-    selectedDate = (new Date(Date.now())).valueOf();
-    isHidden = true;
-    type = "";
-    isWaitingToBeHidden = false;
-
-    id = "";
-    id_number = -1;
-    name = "";
-    username = "";
-    firstName = "";
-    lastName = "";
-
-    /**
-     * Default constructor.
-     * @param type Type of item notification. Can be "Event", "Deadline" or "Milestone".
-     * @param name Name of item being updated. E.g. "Event 1" or "Homework Deadline".
-     * @param id Integer id of the item being updated.
-     * @param username Username of the user updating the item.
-     * @param firstName Users first name.
-     * @param lastName Users last name.
-     * @param hasBeenSaved Whether the item has just been saved, rather than just being edited.
-     */
-    constructor(type, name, id, username, firstName, lastName, hasBeenSaved) {
-        this.hasBeenSaved = hasBeenSaved;
-        this.name = name;
-        this.username = username;
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.type = type;
-        if (type === EVENTTYPE) {
-            this.titleName = "Event Activity";
-        } else if (type === DEADLINETYPE) {
-            this.titleName = "Deadline Activity";
-        } else if (type === MILESTONETYPE) {
-            this.titleName = "Milestone Activity";
-        } else {
-            this.titleName = "Activity";
-        }
-        this.id = type.toLowerCase() + "_" + username + "_" + id;
-        this.id_number = id;
-    }
-
-    get username() {
-        return this.username
-    }
-    get firstName() {
-        return this.firstName;
-    }
-    get lastName() {
-        return this.lastName;
-    }
-    get titleName() {
-        return this.titleName;
-    }
-    get hasBeenSaved() {
-        return this.hasBeenSaved;
-    }
-    get id() {
-        return this.id;
-    }
-    get id_number() {
-        return this.id_number;
-    }
-    get type() {
-        return this.type;
-    }
-
-    set username(username) {
-        this.username = username;
-    }
-    set firstName(firstName) {
-        this.firstName = firstName;
-    }
-    set lastName(lastName) {
-        this.lastName = lastName;
-    }
-    set name(name) {
-        this.name = name;
-    }
-
-    /**
-     * Shows the notification with the assigned toast with the correct message and title.
-     */
-    show() {
-        this.isHidden = false;
-        this.isWaitingToBeHidden = false;
-        this.selectedDate = (new Date(Date.now())).valueOf();
-        if (!this.hasBeenSaved) {
-            this.bodyText = "'" + this.name + "' is being edited by " +
-                this.firstName + " " + this.lastName + " (" + this.username + ").";
-        } else {
-            this.bodyText = "'" + this.name + "' has been updated by " +
-                this.firstName + " " + this.lastName + " (" + this.username + ").";
-        }
-        this.toastBodyTextVar.text(this.bodyText);
-        this.toastTitleTextVar.text(this.titleName);
-        this.toast.show();
-    }
-
-    hide() {
-        this.isHidden = true;
-        this.isWaitingToBeHidden = false;
-        this.toast.hide();
-    }
-
-    /**
-     * Hides the notification after a timer.
-     * @param timeInSeconds Time in seconds for the notification to hide after. Should be equal to 1 or above
-     */
-    hideTimed(timeInSeconds) {
-        if (timeInSeconds <= 0) {
-            timeInSeconds = 1;
-        }
-        this.selectedDate = (new Date(Date.now())).valueOf();
-        this.isWaitingToBeHidden = true;
-        setTimeout((function (notification) {
-            let currentTime = (new Date(Date.now())).valueOf();
-            if (currentTime >= notification.selectedDate + ((timeInSeconds * 1000) - 500) && notification.isWaitingToBeHidden) {
-                notification.hide();
-            }
-        }), timeInSeconds * 1000, this);
-    }
-
-    /**
-     * Sets the objects html toast object, as well as a body text variable and the title text variable to assign relevant text to.
-     * @param toast HTML toast object.
-     * @param textVar Text variable for body.
-     * @param titleVar Text variable for title.
-     */
-    setToast(toast, textVar, titleVar) {
-        this.toast = toast;
-        this.toastBodyTextVar = textVar;
-        this.toastTitleTextVar = titleVar;
-        if (this.isHidden) {
-            this.toast.hide();
-        } else {
-            this.toast.show();
-        }
-    }
-
-    /**
-     * Updates itself with the given Notification object that may hold new information.
-     * @param newNotification New notification that holds updated information about the toast.
-     * @returns {Notification} Returns its updated self.
-     */
-    updateNotification(newNotification) {
-        this.name = newNotification.name
-        this.hasBeenSaved = newNotification.hasBeenSaved;
-
-        return this;
-    }
-}
+const SAVE_TIME = 1000;
 
 /**
- * toSting method for use with debugging.
- * @returns {string}
+ * Stores the stomp client to connect to and send to for WebSockets/SockJS.
  */
-Notification.prototype.toString = function () {
-    return this.id + ": " + this.name;
-}
-
-/**
- * Holds a list of Notification objects that are, or have been active. Can only be as long as listOfHTMLToasts.
- * @type {[Notification]}
- */
-let listOfNotifications = [];
-/**
- * List of html toast object pairs that hold a Bootstrap toast object, a body text variable and a title text variable.
- * These can be assigned to Notification objects to display them.
- * @type {[{'toast', 'text', 'title'}]}
- */
-let listOfHTMLToasts = [];
-
-/**
- * Adds Notification objects to the listOfNotifications list if it is new, otherwise updates the existing notification.
- * Then reassigns the toast html objects to the new list.
- * @param newNotification New toast object to add/update to the list.
- * @returns {Notification} updated toast if it already existed, otherwise, returns the parameter 'newToast'.
- */
-function addNotification(newNotification) {
-    let returnedNotification = newNotification;
-
-    let notificationExists = false;
-    let notificationIndex = -1;
-    let count = 0;
-    for (let item in listOfNotifications) {
-        if (listOfNotifications[count].id === newNotification.id) {
-            notificationExists = true;
-            notificationIndex = count;
-            break;
-        }
-        count += 1;
-    }
-    if (notificationExists) {
-        returnedNotification = listOfNotifications[notificationIndex].updateNotification(newNotification);
-    } else {
-        listOfNotifications.push(newNotification)
-        while (listOfNotifications.length > listOfHTMLToasts.length) {
-            listOfNotifications.shift();
-        }
-    }
-    reorderNotifications();
-    return returnedNotification;
-}
-
-/**
- * Reassigns toast html objects to the toast objects that are active at the moment (in the list 'listOfToasts')
- */
-function reorderNotifications() {
-    let count = 0;
-    for (let item in listOfHTMLToasts) {
-        listOfHTMLToasts[count].toast.hide();
-        count += 1;
-    }
-    count = 0;
-    for (let item in listOfNotifications) {
-        let toastItems = listOfHTMLToasts[count];
-        let notification = listOfNotifications[count];
-        notification.setToast(toastItems.toast, toastItems.text, toastItems.title);
-        count += 1;
-    }
-}
+let stompClient = null;
 
 /**
  * Connects the stomp client to the setup websocket endpoint.
@@ -257,8 +25,7 @@ function reorderNotifications() {
 function connect() {
     let socket = new SockJS('mywebsockets');
     stompClient = Stomp.over(socket);
-    stompClient.connect({}, function (frame) {
-        console.log('Connected: ' + frame);
+    stompClient.connect({}, function () {
         stompClient.subscribe('/webSocketGet/being-edited', function (eventResponseArg) {
             const eventResponse = JSON.parse(eventResponseArg.body);
             showToast(eventResponse.artefactName, eventResponse.artefactId, eventResponse.username, eventResponse.userFirstName, eventResponse.userLastName, false, eventResponse.artefactType);
@@ -266,13 +33,21 @@ function connect() {
         stompClient.subscribe('/webSocketGet/stop-being-edited', function (eventResponseArg) {
             const eventResponse = JSON.parse(eventResponseArg.body);
             showToast(eventResponse.artefactName, eventResponse.artefactId, eventResponse.username, eventResponse.userFirstName, eventResponse.userLastName, true, eventResponse.artefactType);
-        })
-        stompClient.subscribe('/webSocketGet/save-edit', function (eventResponseArg) {
+        });
+        stompClient.subscribe('/webSocketGet/artefact-save', function (eventResponseArg) {
             const eventResponse = JSON.parse(eventResponseArg.body);
             refreshEvents();
-
-            showToastSave(eventResponse.artefactName, eventResponse.artefactId, eventResponse.username, eventResponse.userFirstName, eventResponse.userLastName, eventResponse.artefactType);
-
+            showToastSave(eventResponse.artefactName, eventResponse.artefactId, eventResponse.username, eventResponse.userFirstName, eventResponse.userLastName, eventResponse.artefactType, SAVEACTION);
+        });
+        stompClient.subscribe('/webSocketGet/artefact-add', function (eventResponseArg) {
+            const eventResponse = JSON.parse(eventResponseArg.body);
+            refreshEvents();
+            showToastSave(eventResponse.artefactName, eventResponse.artefactId, eventResponse.username, eventResponse.userFirstName, eventResponse.userLastName, eventResponse.artefactType, ADDACTION);
+        });
+        stompClient.subscribe('/webSocketGet/artefact-delete', function (eventResponseArg) {
+            const eventResponse = JSON.parse(eventResponseArg.body);
+            refreshEvents();
+            showToastSave(eventResponse.artefactName, eventResponse.artefactId, eventResponse.username, eventResponse.userFirstName, eventResponse.userLastName, eventResponse.artefactType, DELETEACTION);
         });
 
     });
@@ -291,7 +66,7 @@ function connect() {
  * @param type they type of the artefact it is either Milestone, Deadline, or event
  */
 function showToast(eventName, eventId, username, firstName, lastName, hide, type) {
-    let newNotification = new Notification(type, eventName, eventId, username, firstName, lastName, false);
+    let newNotification = new Notification(type, eventName, eventId, username, firstName, lastName, EDITACTION);
     newNotification = addNotification(newNotification);
     if (!hide) {
         newNotification.show();
@@ -309,43 +84,68 @@ function showToast(eventName, eventId, username, firstName, lastName, hide, type
  * @param firstName First name of the user
  * @param lastName Last name of the user
  * @param type type of artefact
+ * @param action Action that the artefact has done. Can be 'save', 'add', or 'delete'.
  */
-function showToastSave(eventName, eventId, username, firstName, lastName, type) {
-    let newNotification = new Notification(type, eventName, eventId, username, firstName, lastName, true);
+function showToastSave(eventName, eventId, username, firstName, lastName, type, action) {
+    let newNotification = new Notification(type, eventName, eventId, username, firstName, lastName, action);
     newNotification = addNotification(newNotification);
     newNotification.show();
     newNotification.hideTimed(SECONDS_TILL_HIDE);
 }
 
 /**
- * Refresh the DOM after some delay, to account for the saving function completing.
+ * Refresh the DOM after some delay if all modals are closed. Otherwise, set DOM to refresh when this modal is closed,
+ * a minimum of SAVE_TIME milliseconds after this function is called.
  */
 function refreshEvents() {
+    if (isModalOpen()) {
+        const modal = getOpenModal();
+        modal.addEventListener('hide.bs.modal', reloadAfterDelay);
+        setTimeout(() => {
+            modal.addEventListener('hide.bs.modal', () => {document.location.reload();})
+            modal.removeEventListener('hide.bs.modal', reloadAfterDelay);
+        }, SAVE_TIME)
+    } else {
+        reloadAfterDelay();
+    }
+}
+
+/**
+ * Refresh the DOM after some delay, to account for the saving function completing.
+ */
+function reloadAfterDelay() {
     setTimeout(() => {
         document.location.reload();
-    }, 100);
+    }, SAVE_TIME);
 }
 
 /**
  * Initialises functions/injections
  */
 $(function () {
-    toast1 = new bootstrap.Toast($("#liveToast1"));
-    toast2 = new bootstrap.Toast($("#liveToast2"));
-    toast3 = new bootstrap.Toast($("#liveToast3"));
-    listOfHTMLToasts = [{'toast':toast1, 'text':$("#popupText1"), 'title':$("#toastTitle1")}, {'toast':toast2, 'text':$("#popupText2"), 'title':$("#toastTitle2")}, {'toast':toast3, 'text':$("#popupText3"), 'title':$("#toastTitle3")}];
+
+    // Generate list of HTML toasts.
+    for (let i = 0; i < NUM_OF_TOASTS; i++) {
+        let toastString = "#liveToast" + (i+1);
+        let popupTextString = "#popupText" + (i+1);
+        let toastTitleString = "#toastTitle" + (i+1);
+        listOfHTMLToasts.push({'toast':new bootstrap.Toast($(toastString)), 'text':$(popupTextString), 'title':$(toastTitleString)})
+    }
+
     connect();
+
     // Checks if there should be a live update, and shows a toast if needed.
-    let eventInformation1 = $("#toastInformation1");
-    if (eventInformation1.text() !== "") {
-        showToastSave($("#toastEventName1").text(), $("#toastEventId1").text(), $("#toastUsername1").text(), $("#toastFirstName1").text(), $("#toastLastName1").text(), eventInformation1.text());
-    }
-    let eventInformation2 = $("#toastInformation2");
-    if (eventInformation2.text() !== "") {
-        showToastSave($("#toastEventName2").text(), $("#toastEventId2").text(), $("#toastUsername2").text(), $("#toastFirstName2").text(), $("#toastLastName2").text(), eventInformation1.text());
-    }
-    let eventInformation3 = $("#toastInformation3");
-    if (eventInformation3.text() !== "") {
-        showToastSave($("#toastEventName3").text(), $("#toastEventId3").text(), $("#toastUsername3").text(), $("#toastFirstName3").text(), $("#toastLastName3").text(), eventInformation1.text());
+    for (let i = 0; i < NUM_OF_TOASTS; i++) {
+        let toastInformationString = "#toastInformation" + (i+1);
+        let toastArtefactNameString = "#toastArtefactName" + (i+1);
+        let toastArtefactIdString = "#toastArtefactId" + (i+1);
+        let toastUsernameString = "#toastUsername" + (i+1);
+        let toastFirstNameString = "#toastFirstName" + (i+1);
+        let toastLastNameString = "#toastLastName" + (i+1);
+        let toastAction = "#toastAction" + (i+1);
+        let artefactInformation = $(toastInformationString);
+        if (artefactInformation.text() !== "") {
+            showToastSave($(toastArtefactNameString).text(), $(toastArtefactIdString).text(), $(toastUsernameString).text(), $(toastFirstNameString).text(), $(toastLastNameString).text(), artefactInformation.text(), $(toastAction).text());
+        }
     }
 });

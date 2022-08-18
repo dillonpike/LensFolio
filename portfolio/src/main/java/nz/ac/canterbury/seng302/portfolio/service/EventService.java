@@ -4,6 +4,7 @@ package nz.ac.canterbury.seng302.portfolio.service;
 import nz.ac.canterbury.seng302.portfolio.model.Event;
 import nz.ac.canterbury.seng302.portfolio.model.Sprint;
 import nz.ac.canterbury.seng302.portfolio.repository.EventRepository;
+import org.hibernate.ObjectNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -34,13 +35,13 @@ public class EventService {
      * @return event with the id that is the input
      * @throws Exception If event can't be found
      */
-    public Event getEventById(Integer id) throws Exception {
+    public Event getEventById(Integer id) throws ObjectNotFoundException {
 
         Optional<Event> event = eventRepository.findById(id);
         if (event.isPresent()) {
             return event.get();
         } else {
-            throw new Exception("Event not found");
+            throw new ObjectNotFoundException(id, "Unknown Event");
         }
     }
 
@@ -57,8 +58,6 @@ public class EventService {
             eventUpdate.setEventStartDate(event.getEventStartDate());
             eventUpdate.setEventEndDate(event.getEventEndDate());
             eventUpdate.setEventName(event.getEventName());
-            eventUpdate.setEventStartTime(event.getEventStartTime());
-            eventUpdate.setEventEndTime(event.getEventEndTime());
 
             eventUpdate = eventRepository.save(eventUpdate);
             return eventUpdate;

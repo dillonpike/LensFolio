@@ -1,5 +1,6 @@
 package nz.ac.canterbury.seng302.identityprovider.server;
 
+import com.fasterxml.jackson.databind.util.ArrayIterator;
 import com.google.common.annotations.VisibleForTesting;
 import io.grpc.stub.StreamObserver;
 import net.devh.boot.grpc.server.service.GrpcService;
@@ -7,6 +8,7 @@ import nz.ac.canterbury.seng302.identityprovider.IdentityProviderApplication;
 import nz.ac.canterbury.seng302.identityprovider.model.Roles;
 import nz.ac.canterbury.seng302.identityprovider.model.UserModel;
 import nz.ac.canterbury.seng302.identityprovider.repository.RolesRepository;
+import nz.ac.canterbury.seng302.identityprovider.service.GroupModelService;
 import nz.ac.canterbury.seng302.identityprovider.service.UserModelService;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserAccountServiceGrpc;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserRegisterRequest;
@@ -21,6 +23,7 @@ import nz.ac.canterbury.seng302.shared.identityprovider.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.Pbkdf2PasswordEncoder;
 
+import javax.naming.directory.InvalidAttributesException;
 import java.text.MessageFormat;
 import java.util.Set;
 
@@ -44,6 +47,9 @@ public class UserAccountServerService extends UserAccountServiceGrpc.UserAccount
 
     @Autowired
     private RolesRepository rolesRepository;
+
+    @Autowired
+    private GroupModelService groupModelService;
 
     @Value("${spring.datasource.url}")
     private String dataSource;
@@ -75,12 +81,16 @@ public class UserAccountServerService extends UserAccountServiceGrpc.UserAccount
                     request.getFirstName(),
                     request.getMiddleName(), //request.getMiddleName(),
                     request.getLastName(), //request.getLastName(),
-                    "", //request.getNickname(),
+                    request.getNickname(),
                     request.getEmail(),
-                    "Default Bio", //request.getBio(),
-                    "Unknown Pronouns" //request.getPersonalPronouns()
+                    request.getBio(),
+                    request.getPersonalPronouns()
             );
             createdUser = userModelService.addUser(newUser);
+            boolean wasAddedToNonGroup = groupModelService.addUsersToGroup(new ArrayIterator<>(new UserModel[]{createdUser}), GroupModelServerService.MEMBERS_WITHOUT_GROUP_ID);
+            if (!wasAddedToNonGroup) {
+                logger.error("Something went wrong with the 'members without a group' group. User not added to the group. ");
+            }
             wasAdded = true;
         } catch (Exception e) {
             logger.error(MessageFormat.format(
@@ -107,6 +117,14 @@ public class UserAccountServerService extends UserAccountServiceGrpc.UserAccount
                 reply.setEmail("");
             } else {
                 UserModel user = userModelService.getUserById(request.getId());
+
+                // Make sure the user is in the 'members without a group' group if they are in no groups.
+                if (user.getGroups().isEmpty()) {
+                    boolean wasAddedToNonGroup = groupModelService.addUsersToGroup(new ArrayIterator<>(new UserModel[]{user}), GroupModelServerService.MEMBERS_WITHOUT_GROUP_ID);
+                    if (!wasAddedToNonGroup) {
+                        logger.error("Something went wrong with the 'members without a group' group. User not added to the group. ");
+                    }
+                }
 
                 // If there isn't a user image it returns an empty string which is then identified by the portfolio.
                 // It will then display the default user image.
@@ -394,6 +412,7 @@ public class UserAccountServerService extends UserAccountServiceGrpc.UserAccount
     @Override
     public void getPaginatedUsers(GetPaginatedUsersRequest request, StreamObserver<PaginatedUsersResponse> responseObserver) {
         PaginatedUsersResponse.Builder reply = PaginatedUsersResponse.newBuilder();
+
         List<UserModel> allUsers = userModelService.findAllUser();
         for (UserModel allUser : allUsers) {
             reply.addUsers(userModelService.getUserInfo(allUser));
@@ -422,6 +441,10 @@ public class UserAccountServerService extends UserAccountServiceGrpc.UserAccount
                     Roles studentRole = rolesRepository.findByRoleName("TEACHER");
                     user.addRoles(studentRole);
                     userModelService.saveEditedUser(user);
+                    boolean wasAddedToGroup = groupModelService.addUsersToGroup(new ArrayIterator<>(new UserModel[]{user}), GroupModelServerService.TEACHERS_GROUP_ID);
+                    if (!wasAddedToGroup) {
+                        throw new InvalidAttributesException("Teacher Group did not exist. ");
+                    }
                 } else if (role.getNumber() == 2) {
                     Roles studentRole = rolesRepository.findByRoleName("COURSE ADMINISTRATOR");
                     user.addRoles(studentRole);
@@ -487,6 +510,10 @@ public class UserAccountServerService extends UserAccountServiceGrpc.UserAccount
                     Roles teacherRole = rolesRepository.findByRoleName("TEACHER");
                     user.deleteRole(teacherRole);
                     userModelService.saveEditedUser(user);
+                    boolean wasRemovedFromGroup = groupModelService.removeUsersFromGroup(new ArrayIterator<>(new UserModel[]{user}), GroupModelServerService.TEACHERS_GROUP_ID);
+                    if (!wasRemovedFromGroup) {
+                        throw new InvalidAttributesException("Teacher Group did not exist. ");
+                    }
                     reply.setIsSuccess(true);
                 } else {
                     Roles adminRole = rolesRepository.findByRoleName("COURSE ADMINISTRATOR");

@@ -2,6 +2,7 @@ package nz.ac.canterbury.seng302.portfolio.model;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.Transient;
 import java.util.Calendar;
 import java.util.Date;
 import java.text.SimpleDateFormat;
@@ -9,6 +10,8 @@ import java.util.Objects;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Entity // this is an entity, assumed to be in a table called Project
 public class Project {
@@ -19,6 +22,9 @@ public class Project {
     private Date projectStartDate;
     private Date projectEndDate;
 
+    @Transient
+    private static final Logger logger = LoggerFactory.getLogger(Project.class);
+
 
     protected Project() {}
 
@@ -27,7 +33,6 @@ public class Project {
         this.projectDescription = projectDescription;
         this.projectStartDate = projectStartDate;
         this.projectEndDate = projectEndDate;
-        adjustEndDateTime();
     }
 
     public Project(String projectName, String projectDescription, String projectStartDate, String projectEndDate) {
@@ -35,19 +40,18 @@ public class Project {
         this.projectDescription = projectDescription;
         this.projectStartDate = Project.stringToDate(projectStartDate);
         this.projectEndDate = Project.stringToDate(projectEndDate);
-        adjustEndDateTime();
     }
 
     /**
      * Adjusts the end date, so it's at 11:59pm (end of the day) rather than midnight (start of the day).
      */
-    private void adjustEndDateTime() {
+    private Date adjustEndDateTime(Date endDate) {
         Calendar calendar = Calendar.getInstance();
-        calendar.setTime(projectEndDate);
+        calendar.setTime(endDate);
         calendar.set(Calendar.HOUR_OF_DAY, 23);
         calendar.set(Calendar.MINUTE, 59);
         calendar.set(Calendar.SECOND, 59);
-        this.projectEndDate = calendar.getTime();
+        return calendar.getTime();
     }
 
     @Override
@@ -68,7 +72,7 @@ public class Project {
         try {
             date = new SimpleDateFormat("dd/MMM/yyyy").parse(dateString);
         } catch (Exception e) {
-            System.err.println("Error parsing date: " + e.getMessage());
+            logger.error(String.format("Error parsing date: %s" , e.getMessage()));
         }
         return date;
     }
@@ -129,7 +133,7 @@ public class Project {
     }
 
     public Date getEndDate() {
-        return projectEndDate;
+        return adjustEndDateTime(projectEndDate);
     }
 
     public String getEndDateString() {

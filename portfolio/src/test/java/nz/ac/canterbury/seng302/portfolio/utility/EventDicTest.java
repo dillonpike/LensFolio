@@ -3,7 +3,6 @@ package nz.ac.canterbury.seng302.portfolio.utility;
 import nz.ac.canterbury.seng302.portfolio.model.Deadline;
 import nz.ac.canterbury.seng302.portfolio.model.Event;
 import nz.ac.canterbury.seng302.portfolio.model.Milestone;
-import nz.ac.canterbury.seng302.portfolio.utility.EventDic;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -43,6 +42,11 @@ class EventDicTest {
         testDate = Date.from(Instant.now());
         Calendar calStart = Calendar.getInstance();
         calStart.setTime(testDate);
+        calStart.setTime(testDate);
+        calStart.set(Calendar.HOUR_OF_DAY, 0);
+        calStart.set(Calendar.MINUTE,0);
+        calStart.set(Calendar.SECOND,0);
+        calStart.set(Calendar.MILLISECOND, 0);
         Calendar calEnd = Calendar.getInstance();
         calEnd.setTime(testDate);
         calEnd.add(Calendar.DAY_OF_MONTH, 5);
@@ -50,7 +54,7 @@ class EventDicTest {
         calEnd.set(Calendar.MINUTE, 59);
         calEnd.set(Calendar.SECOND, 59);
 
-        Event event = new Event(-1, "Test-Event & <br>", testDate, calEnd.getTime(), LocalTime.now(), LocalTime.now());
+        Event event = new Event(-1, "Test-Event & <br>", testDate, calEnd.getTime());
         dictionary.add(event);
 
         String JSON = dictionary.makeJSON();
@@ -97,7 +101,7 @@ class EventDicTest {
     @Test
     void testEventDicAddOneOfEachEventType() {
         testDate = Date.from(Instant.now());
-        Event event = new Event(-1, "Test-Event & <br>", testDate, testDate, LocalTime.now(), LocalTime.now());
+        Event event = new Event(-1, "Test-Event & <br>", testDate, testDate);
         dictionary.add(event);
         Milestone milestone = new Milestone(-1, "Test-Milestone & <br>", testDate);
         dictionary.add(milestone);
@@ -111,10 +115,18 @@ class EventDicTest {
         events.add("{title: '1', start: '"+deadlineDateString+"', type: 'Deadline', description: '<strong>Deadlines:</strong><br>- Test-Deadline &amp; &lt;br&gt;'},");
         String milestoneDateString = updateDateString(milestone.getMilestoneDate());
         events.add("{title: '1', start: '"+milestoneDateString+"', type: 'Milestone', description: '<strong>Milestones:</strong><br>- Test-Milestone &amp; &lt;br&gt;'},");
-        Instant eventDate = event.getEventStartDate().toInstant();
+
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(event.getEventStartDate());
+        cal.set(Calendar.HOUR_OF_DAY, 0);
+        cal.set(Calendar.MINUTE,0);
+        cal.set(Calendar.SECOND,0);
+        cal.set(Calendar.MILLISECOND, 0);
+        Instant eventDate = cal.toInstant();
         events.add("{title: '1', start: '"+eventDate+"', type: 'Event', description: '<strong>Events:</strong><br>- Test-Event &amp; &lt;br&gt;'},");
 
         String JSON = dictionary.makeJSON();
+
         for (String eventString : events) {
             Assertions.assertTrue(JSON.contains(eventString));
         }
