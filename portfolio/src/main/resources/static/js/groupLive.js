@@ -43,6 +43,11 @@ function connect() {
             updateGroupList(eventResponse.artefactId, "add");
             showToastSave(eventResponse.artefactName, eventResponse.artefactId, eventResponse.username, eventResponse.userFirstName, eventResponse.userLastName, eventResponse.artefactType, eventResponse.action);
         });
+        stompClient.subscribe('/webSocketGet/group-change-users', function (twoGroupResponseArg) {
+            const twoGroupResponse = JSON.parse(twoGroupResponseArg.body);
+            updateGroupList(twoGroupResponse.sendingGroupId, "change-users-send");
+            updateGroupList(twoGroupResponse.receivingGroupId, "change-users-receive");
+        });
 
     });
 }

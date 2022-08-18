@@ -3,6 +3,7 @@ package nz.ac.canterbury.seng302.portfolio.controller;
 import nz.ac.canterbury.seng302.portfolio.model.Group;
 import nz.ac.canterbury.seng302.portfolio.model.NotificationMessage;
 import nz.ac.canterbury.seng302.portfolio.model.NotificationResponse;
+import nz.ac.canterbury.seng302.portfolio.model.TwoGroup;
 import nz.ac.canterbury.seng302.portfolio.service.*;
 import nz.ac.canterbury.seng302.shared.identityprovider.*;
 import nz.ac.canterbury.seng302.shared.util.ValidationError;
@@ -303,7 +304,7 @@ public class GroupController {
     @SendTo("/webSocketGet/group-save-edit")
     public NotificationResponse savingUpdatedGroupWebsocket(NotificationMessage message) {
         NotificationResponse response = NotificationResponse.fromMessage(message, "save");
-        // Trigger reload and save the last event's information
+        // Trigger reload and save the last group's information
         groupService.addNotification(response, 3);
         return response;
     }
@@ -317,7 +318,6 @@ public class GroupController {
     @SendTo("/webSocketGet/group-add")
     public NotificationResponse addingGroupWebsocket(NotificationMessage message) {
         NotificationResponse response = NotificationResponse.fromMessage(message, "add");
-        // Trigger reload and save the last event's information
         groupService.addNotification(response, 3);
         return response;
     }
@@ -331,9 +331,14 @@ public class GroupController {
     @SendTo("/webSocketGet/group-delete")
     public NotificationResponse deletingGroupWebsocket(NotificationMessage message) {
         NotificationResponse response = NotificationResponse.fromMessage(message, "delete");
-        // Trigger reload and save the last event's information
         groupService.addNotification(response, 3);
         return response;
+    }
+
+    @MessageMapping("/changed-members-group")
+    @SendTo("/webSocketGet/group-change-users")
+    public TwoGroup changeGroupMembersWebsocket(TwoGroup message) {
+        return message;
     }
 
 }

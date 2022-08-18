@@ -218,6 +218,13 @@
         }));
     }
 
+    function changeMembersReload(sendingGroupId, receivingGroupId) {
+        stompClient.send("/webSocketPost/changed-members-group", {}, JSON.stringify({
+            'sendingGroupId': sendingGroupId,
+            'receivingGroupId' : receivingGroupId
+        }));
+    }
+
     /**
      * Initialises functions/injections. When these are no longer being updated (edited) they will disappear after a certain period.
      */
