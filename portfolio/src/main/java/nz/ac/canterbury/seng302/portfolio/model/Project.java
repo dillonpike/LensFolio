@@ -2,6 +2,7 @@ package nz.ac.canterbury.seng302.portfolio.model;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.Transient;
 import java.util.Calendar;
 import java.util.Date;
 import java.text.SimpleDateFormat;
@@ -9,6 +10,8 @@ import java.util.Objects;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Entity // this is an entity, assumed to be in a table called Project
 public class Project {
@@ -18,6 +21,9 @@ public class Project {
     private String projectDescription;
     private Date projectStartDate;
     private Date projectEndDate;
+
+    @Transient
+    private static final Logger logger = LoggerFactory.getLogger(Project.class);
 
 
     protected Project() {}
@@ -66,7 +72,7 @@ public class Project {
         try {
             date = new SimpleDateFormat("dd/MMM/yyyy").parse(dateString);
         } catch (Exception e) {
-            System.err.println("Error parsing date: " + e.getMessage());
+            logger.error(String.format("Error parsing date: %s" , e.getMessage()));
         }
         return date;
     }

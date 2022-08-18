@@ -125,7 +125,7 @@
                 </ul>
         </div>
     </div>
-    <div class="detail-block" style="margin: 20px">
+    <div class="detail-block" style="margin:20px;width: 98%">
         <div style="margin: 5px">
             <span class="badge rounded-pill bg-custom-desc">Project Description</span>
             <p class="project-desc" th:text="${project.getDescription}"></p>
@@ -420,7 +420,7 @@
                                                         </li>
                                                         <li>
                                                             <a class="button-link" data-bs-toggle="modal" data-bs-target="#deleteModal" th:data-bs-id="${deadline.id}" th:data-bs-name="${deadline.deadlineName}" data-bs-type="deadline">
-                                                                <button class="dropdown-item delete-artefact-button" type="button">
+                                                                <button class="dropdown-item delete-artefact-button" type="button" th:attr="onclick='editArtefact(\'' + ${deadline.getDeadlineName()} + '\',\'' + ${deadline.getId()}+  '\');'">
                                                                     <span class='bi bi-trash' style='color: red'></span> <i style='color: red'>Delete</i>
                                                                 </button>
                                                             </a>
@@ -664,6 +664,7 @@
     sendEditingLiveNotificationRequest("#deadlineTime", "deadlineModal", 'edit-deadline', "Deadline");
 
     sendSavedLiveNotificationRequest("#deadlineModalButton", 'deadlineModal', 'edit-deadline', "Deadline");
+    sendSavedLiveNotificationRequest("#deadlineModalButton", 'deadlineModal', 'add-deadline', "Deadline");
 
     sendStopEditingLiveNotificationRequest("#closeDeadlineModalButton", 'deadlineModal', 'edit-deadline', "Deadline");
 
