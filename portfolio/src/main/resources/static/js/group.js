@@ -15,7 +15,16 @@ function groupButtonSetup() {
  */
 function updateTable(groupId) {
     const url = "groups/local?";
-    $('#table_refresh').load(url, "groupId=" + groupId)
+    $('#tableRefreshContainer').load(url, "groupId=" + groupId)
+}
+
+
+/**
+ * Returns the id of the currently selected group.
+ * @returns {*} id of the currently selected group
+ */
+function getCurrentGroupId() {
+    return $('#table_refresh').attr('data-groupid')
 }
 
 /**
@@ -96,11 +105,7 @@ function addGroup() {
         $('#groupModal').modal('toggle')
         document.getElementById("groupList").innerHTML += result
         groupButtonSetup() // Allow group cards to be highlighted when selected
-    }).fail((result) => {
-        $("#groupModalBody").replaceWith(result.responseText)
-        updateCharsLeft('shortGroupName', 'shortGroupNameLength', 10)
-        updateCharsLeft('longGroupName', 'longGroupNameLength', 30)
-    })
+    }).fail(replaceModalBody)
 }
 
 /**
@@ -120,11 +125,17 @@ function editGroup() {
         $(`#groupCard${id}`).replaceWith(result)
         groupButtonSetup() // Allow group cards to be highlighted when selected
         $(`#groupCard${id} button`).click() // Select edited group
-    }).fail((result) => {
-        $("#groupModalBody").replaceWith(result.responseText)
-        updateCharsLeft('shortGroupName', 'shortGroupNameLength', 10)
-        updateCharsLeft('longGroupName', 'longGroupNameLength', 30)
-    })
+    }).fail(replaceModalBody)
+}
+
+/**
+ * Replaces the body of the modal with the given modalBody response from the backend.
+ * @param modalBodyResponse response with new modalBody to display (groupModalBody fragment)
+ */
+function replaceModalBody(modalBodyResponse) {
+    $("#groupModalBody").replaceWith(modalBodyResponse.responseText)
+    updateCharsLeft('shortGroupName', 'shortGroupNameLength', 10)
+    updateCharsLeft('longGroupName', 'longGroupNameLength', 30)
 }
 
 /**
@@ -156,7 +167,7 @@ function groupDeleteModalSetup() {
  */
 function deleteGroupModalButtonFunction(type, id) {
     const buttonFunction = document.getElementById('deleteModalButton').onclick;
-    document.getElementById('deleteModalButton').onclick = () => {}
+    document.getElementById('deleteModalButton').onclick = () => {return false}
     $.ajax({
         url: `delete-${type}/${id}`,
         type: 'DELETE',
@@ -171,9 +182,14 @@ function deleteGroupModalButtonFunction(type, id) {
     })
 }
 
+/**
+ * Copies the users currently selected in the table to the group currently selected in the group dropdown.
+ * After this action is completed the relevant groups and tables displayed to the user are updated.
+ * A toast indicating success or failure is also displayed.
+ */
 function copyUsers() {
-    const originGroupId = document.getElementsByClassName("active")[0].parentElement.id.substring('groupCard'.length);
-    const groupName = $( "#groupDropdownList option:selected" ).text();
+    const originGroupId = getCurrentGroupId()
+    const groupName = $( "#groupDropdownList option:selected" ).text()
     const data = {
         groupId: document.getElementById('groupDropdownList').value,
         userIds: userTable.rows('.selected').data().toArray().map(row => row.DT_RowId)
@@ -190,12 +206,15 @@ function copyUsers() {
             }
         }
         groupButtonSetup() // Allow group cards to be highlighted when selected
-        showAlertToast("Group " + groupName + " Updated");
-    }).fail((result) => {
-        showAlertErrorToast("Group " + groupName + " failed to be updated");
+        showAlertToast("Group " + groupName + " Updated")
+    }).fail(() => {
+        showAlertErrorToast("Group " + groupName + " failed to be updated")
     })
 }
 
+/**
+ * Requests an up-to-date version of the members without a group card and replaces the current card with it.
+ */
 function updateMembersWithoutAGroupCard() {
     $.get('members-without-a-group').done((result) => {
         $(`#groupCard1`).replaceWith(result)
@@ -203,11 +222,18 @@ function updateMembersWithoutAGroupCard() {
     })
 }
 
-function updateGroupList() {
+/**
+ * Requests an up-to-date version of the group card list and updates the current list with it.
+ */
+function updateGroupList(groupId) {
     $.get('group-list').done((result) => {
         $(`#groupList`).replaceWith(result)
         groupButtonSetup() // Allow group cards to be highlighted when selected
     })
+    if (groupId === parseInt($("#table_refresh").attr("data-groupid"), 10)) {
+        let url = "groups/local?";
+        $('#tableRefreshContainer').load(url, "groupId=" + groupId)
+    }
 }
 
 /**
@@ -215,10 +241,7 @@ function updateGroupList() {
  */
 function removeUserModalSetup() {
     const removeUserModal = document.getElementById('removeUserModal')
-    removeUserModal.addEventListener('show.bs.modal', function (event) {
-        // Button that triggered the modal
-        const button = event.relatedTarget
-
+    removeUserModal.addEventListener('show.bs.modal', function () {
         const modalButton = removeUserModal.querySelector('.modal-footer button')
         const modalLink = removeUserModal.querySelector('.modal-footer a')
 
@@ -230,17 +253,15 @@ function removeUserModalSetup() {
 /**
  * Runs when the remove user modal button is pressed. Calls the endpoint for removing the user. Disables the remove
  * button after being clicked. Removes the selected user upon success, and re-enables the remove button upon failure.
- * @param type the string 'group'
- * @param id id of the group
  */
 function removeUserModalButtonFunction() {
-    const modal = document.getElementById('removeUserModal');
+    const buttonFunction = document.getElementById('removeUserModalButton').onclick
+    document.getElementById('removeUserModalButton').onclick = () => {return false}
 
-    const table = document.getElementById('table');
-    const selected = userTable.rows('.selected').data().toArray().map(row => row.DT_RowId);
-    const groupId = document.getElementsByClassName("active")[0].parentElement.id.substring('groupCard'.length)
+    const selected = userTable.rows('.selected').data().toArray().map(row => row.DT_RowId)
+    const groupId = getCurrentGroupId()
     const data = {groupId: groupId, userIds: selected}
-
+    const groupName = document.getElementById('shortGroupName').innerText
     $.post('remove-users' + "?" + new URLSearchParams(data)).done((result) => {
             if (data.groupId === '1') {
                 $(`#groupList`).replaceWith(result)
@@ -256,6 +277,33 @@ function removeUserModalButtonFunction() {
             updateMembersWithoutAGroupCard()
             $('#removeUserModal').modal('toggle')
             groupButtonSetup() // Allow group cards to be highlighted when selected
-            showAlertToast("Group " + data.groupId + " Updated");
-        })
+            showAlertToast("Group " + groupName + " Updated")
+        }).fail(() => {
+        document.getElementById('removeUserModalButton').onclick = buttonFunction;
+        showAlertErrorToast("Group " + groupName + " failed to be updated")
+    })
+}
+
+/**
+ * Each time a character is typed/pasted will be checked uses a regex validator that are not part of a valid set,
+ * replace invalid character with a blank character
+ */
+function nameValidateCheck() {
+    const ShortNameText = document.getElementById('shortGroupName');
+    ShortNameText.addEventListener( "input", event => {
+        ShortNameText.value = ShortNameText.value.replace( /[^a-zA-Z0-9~!@#$%^&*()_+|}{:"?><,./;' ]/gm, '');
+    }, false);
+
+    ShortNameText.addEventListener( "paste", event => {
+        ShortNameText.value = ShortNameText.value.replace( /[^a-zA-Z0-9~!@#$%^&*()_+|}{:"?><,./;' ]/gm, '');
+    }, false);
+
+    const longNameText = document.getElementById('longGroupName');
+    longNameText.addEventListener( "input", event => {
+        longNameText.value = longNameText.value.replace( /[^a-zA-Z0-9~!@#$%^&*()_+|}{:"?><,./;' ]/gm, '');
+    }, false);
+
+    longNameText.addEventListener( "paste", event => {
+        longNameText.value = longNameText.value.replace( /[^a-zA-Z0-9~!@#$%^&*()_+|}{:"?><,./;' ]/gm, '');
+    }, false);
 }

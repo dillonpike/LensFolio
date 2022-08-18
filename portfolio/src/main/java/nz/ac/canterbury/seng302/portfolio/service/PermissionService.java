@@ -55,7 +55,6 @@ public class PermissionService {
      * @return false if user's role has been changed to student
      */
     public boolean isValidToModifyProjectPage(Integer userID) {
-//        Integer id = userAccountClientService.getUserIDFromAuthState(principal);
         UserResponse getUserByIdReply = registerClientService.getUserData(userID);
 
         //Get the current user's highest role
