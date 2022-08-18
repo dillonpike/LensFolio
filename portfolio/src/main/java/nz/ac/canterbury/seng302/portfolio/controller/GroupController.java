@@ -16,15 +16,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-
-import java.time.Instant;
-import java.util.Date;
 import java.util.List;
 import java.util.Objects;
-
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.util.HtmlUtils;
-
 import javax.servlet.http.HttpServletResponse;
 
 /**
@@ -272,22 +266,6 @@ public class GroupController {
 
         groupService.addGroupListToModel(model);
         return GROUP_LIST_FRAGMENT;
-    }
-
-
-    /**
-     * This function get the information needed from message which is a NotificationMessage object and then create a response object
-     * @param message NotificationMessage that holds information about the artefact being updated
-     * @return returns an NotificationResponse that holds information about the artefact being updated.
-     */
-    public NotificationResponse createNewNotificationResponse(NotificationMessage message){
-        int groupId = message.getArtefactId();
-        String username = message.getUsername();
-        String firstName = message.getUserFirstName();
-        String lastName = message.getUserLastName();
-        String artefactType = message.getArtefactType();
-        long dateOfNotification = Date.from(Instant.now()).toInstant().getEpochSecond();
-        return new NotificationResponse(HtmlUtils.htmlEscape(message.getArtefactName()), groupId, username, firstName, lastName, dateOfNotification, artefactType);
     }
 
     /**
