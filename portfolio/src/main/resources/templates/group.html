@@ -314,8 +314,7 @@
      * if so, show the group options(copy/remove users).
      */
     $(document).on("click", "#table tr", function(e) {
-         const table = $("table").DataTable();
-         var rows = table.rows('.selected').data();
+         var rows = userTable.rows('.selected').data();
         document.getElementById("groupOption").hidden = rows.length<=0;
     });
 </script>
