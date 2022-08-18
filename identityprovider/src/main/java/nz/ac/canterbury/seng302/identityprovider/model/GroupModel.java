@@ -65,14 +65,6 @@ public class GroupModel {
     )
     private Set<UserModel> users = new HashSet<>();
 
-
-
-    /**
-     * Set of repositories that this group has.
-     */
-    @OneToMany(mappedBy = "groupModel")
-    private Set<GroupRepositoryModel> groupRepositoryModels;
-
     /**
      * Empty constructor for JPA.
      */
