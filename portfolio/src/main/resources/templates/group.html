@@ -114,7 +114,7 @@
                         </tr>
                         </thead>
                         <tbody>
-                        <tr th:each="member : ${members}" th:id="${member.Id}">
+                        <tr id="rows" th:each="member : ${members}" th:id="${member.Id}">
                             <td th:text="${member.FirstName}"></td>
                             <td th:text="${member.LastName}"></td>
                             <td th:text="${member.username}"></td>
@@ -311,6 +311,15 @@
         }
     }
 
+
+    /**
+     * Check if the group table has any rows been selected,
+     * if so, show the group options(copy/remove users).
+     */
+    $(document).on("click", "#table tr", function(e) {
+         var rows = userTable.rows('.selected').data();
+        document.getElementById("groupOption").hidden = rows.length<=0;
+    });
 </script>
 
 
