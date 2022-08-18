@@ -4,6 +4,7 @@ import com.google.protobuf.Timestamp;
 import nz.ac.canterbury.seng302.portfolio.model.*;
 import nz.ac.canterbury.seng302.portfolio.service.*;
 import nz.ac.canterbury.seng302.portfolio.utility.Toast;
+import nz.ac.canterbury.seng302.portfolio.utility.ToastUtility;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -121,35 +122,7 @@ public class DetailsController {
         List<List<Milestone>> milestonesForSprints = getAllMilestonesForAllSprints(sprintList);
         model.addAttribute("milestonesForSprints", milestonesForSprints);
 
-        List<Toast> toastsToGenerate = new ArrayList<>();
-        for (int i = 0; i < NUM_OF_TOASTS; i++) {
-            Toast toast = new Toast();
-            toastsToGenerate.add(toast);
-        }
-
-        // Runs if the reload was triggered by saving an event. Checks the notifications' creation time to see if 2 seconds has passed yet.
-        int count = 0;
-        ArrayList<NotificationResponse> eventsToDelete = new ArrayList<>();
-        for (NotificationResponse event : eventsToDisplay) {
-            long timeDifference = Date.from(Instant.now()).toInstant().getEpochSecond() - event.getDateOfCreation();
-            if (timeDifference <= 2) {
-                toastsToGenerate.get(count).setArtefactInformation(event.getArtefactType());
-                toastsToGenerate.get(count).setArtefactName(event.getArtefactName());
-                toastsToGenerate.get(count).setArtefactId(event.getArtefactId());
-                toastsToGenerate.get(count).setUsername(event.getUsername());
-                toastsToGenerate.get(count).setUserFirstName(event.getUserFirstName());
-                toastsToGenerate.get(count).setUserLastName(event.getUserLastName());
-            } else {
-                eventsToDelete.add(event);
-                toastsToGenerate.get(count).setArtefactInformation("");
-            }
-            count++;
-        }
-        for (NotificationResponse event : eventsToDelete) {
-            eventsToDisplay.remove(event);
-        }
-
-        model.addAttribute("toastsToGenerate", toastsToGenerate);
+        ToastUtility.addToastsToModel(model, eventsToDisplay, NUM_OF_TOASTS);
 
         List<Milestone> milestoneList = milestoneService.getAllEventsOrderedWithColour(sprintList);
         model.addAttribute("milestones", milestoneList);
@@ -190,19 +163,13 @@ public class DetailsController {
     /**
      * This method maps @MessageMapping endpoint to the @SendTo endpoint. Called when something is sent to
      * the MessageMapping endpoint.
-     * @param message NotificationMessage that holds information about the event being updated
+     * @param message NotificationMessage that holds information about the artefact being updated
      * @return returns an NotificationResponse that holds information about the event being updated.
      */
     @MessageMapping("/editing-artefact")
     @SendTo("/webSocketGet/being-edited")
     public NotificationResponse updatingArtefact(NotificationMessage message) {
-        int artefactId = message.getArtefactId();
-        String username = message.getUsername();
-        String firstName = message.getUserFirstName();
-        String lastName = message.getUserLastName();
-        String artefactType = message.getArtefactType();
-        long dateOfNotification = Date.from(Instant.now()).toInstant().getEpochSecond();
-        return new NotificationResponse(HtmlUtils.htmlEscape(message.getArtefactName()), artefactId, username, firstName, lastName, dateOfNotification, artefactType);
+        return NotificationResponse.fromMessage(message, "edit");
     }
 
     /**
@@ -214,31 +181,53 @@ public class DetailsController {
     @MessageMapping("/stop-editing-artefact")
     @SendTo("/webSocketGet/stop-being-edited")
     public NotificationResponse stopUpdatingArtefact(NotificationMessage message) {
-        int artefactId = message.getArtefactId();
-        String username = message.getUsername();
-        String firstName = message.getUserFirstName();
-        String lastName = message.getUserLastName();
-        String artefactType = message.getArtefactType();
-        long dateOfNotification = Date.from(Instant.now()).toInstant().getEpochSecond();
-        return new NotificationResponse(HtmlUtils.htmlEscape(message.getArtefactName()), artefactId, username, firstName, lastName, dateOfNotification, artefactType);
+        return NotificationResponse.fromMessage(message, "edit");
     }
 
     /**
      * This method maps @MessageMapping endpoint to the @SendTo endpoint. Called when something is sent to
      * the MessageMapping endpoint. This method also triggers some sort of re-render of the events.
-     * @param message NotificationMessage that holds information about the event being updated
+     * @param message NotificationMessage that holds information about the artefact being updated
      * @return returns an NotificationResponse that holds information about the event being updated.
      */
     @MessageMapping("/saved-edited-artefact")
-    @SendTo("/webSocketGet/save-edit")
+    @SendTo("/webSocketGet/artefact-save")
     public NotificationResponse savingUpdatedArtefact(NotificationMessage message) {
-        int artefactId = message.getArtefactId();
-        String username = message.getUsername();
-        String firstName = message.getUserFirstName();
-        String lastName = message.getUserLastName();
-        long dateOfNotification = Date.from(Instant.now()).toInstant().getEpochSecond();
-        String artefactType = message.getArtefactType();
-        NotificationResponse response = new NotificationResponse(HtmlUtils.htmlEscape(message.getArtefactName()), artefactId, username, firstName, lastName, dateOfNotification, artefactType);
+        NotificationResponse response = NotificationResponse.fromMessage(message, "save");
+        // Trigger reload and save the last event's information
+        eventsToDisplay.add(response);
+        while (eventsToDisplay.size() > NUM_OF_TOASTS) {
+            eventsToDisplay.remove(0);
+        }
+        return response;
+    }
+
+    /**
+     * This method maps @MessageMapping endpoint to the @SendTo endpoint. Called when an artefact is added.
+     * @param message NotificationMessage that holds information about the artefact being added
+     * @return returns an NotificationResponse that holds information about the artefact being added.
+     */
+    @MessageMapping("/added-artefact")
+    @SendTo("/webSocketGet/artefact-add")
+    public NotificationResponse addingArtefact(NotificationMessage message) {
+        NotificationResponse response = NotificationResponse.fromMessage(message, "add");
+        // Trigger reload and save the last event's information
+        eventsToDisplay.add(response);
+        while (eventsToDisplay.size() > NUM_OF_TOASTS) {
+            eventsToDisplay.remove(0);
+        }
+        return response;
+    }
+
+    /**
+     * This method maps @MessageMapping endpoint to the @SendTo endpoint. Called when an artefact is deleted.
+     * @param message NotificationMessage that holds information about the artefact being deleted
+     * @return returns an NotificationResponse that holds information about the artefact being deleted.
+     */
+    @MessageMapping("/deleted-artefact")
+    @SendTo("/webSocketGet/artefact-delete")
+    public NotificationResponse deletingArtefact(NotificationMessage message) {
+        NotificationResponse response = NotificationResponse.fromMessage(message, "delete");
         // Trigger reload and save the last event's information
         eventsToDisplay.add(response);
         while (eventsToDisplay.size() > NUM_OF_TOASTS) {
@@ -261,16 +250,6 @@ public class DetailsController {
         }
 
         return allEventsList;
-    }
-
-    /**
-     * This method used to mainly reload the calendar page when an artefact is being edited or deleted on the project details
-     * @param ignore this parameter, even though it is not used, is necessary to exist in order to send the request to websocket
-     */
-    @MessageMapping("/delete-artefact")
-    @SendTo("/webSocketGet/delete-artefact")
-    public NotificationResponse deleteArtefact(NotificationMessage ignore) {
-        return new NotificationResponse();
     }
 
     /**

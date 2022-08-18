@@ -186,7 +186,7 @@ public class GroupController {
      * Tries to save new data to group with given groupId to the database.
      * @param id id of event edited
      * @param group Group data to be updated
-     * @param model model to add attributes to for Thyemeleaf to inject into the HTML
+     * @param model model to add attributes to for Thymeleaf to inject into the HTML
      * @param httpServletResponse for adding status codes to
      * @throws IllegalArgumentException if sprint cannot be found from the given ID or if it cannot be saved.
      */
@@ -299,7 +299,7 @@ public class GroupController {
     @MessageMapping("/editing-group")
     @SendTo("/webSocketGet/group-being-edited")
     public NotificationResponse updatingArtefact(NotificationMessage message) {
-        return createNewNotificationResponse(message);
+        return NotificationResponse.fromMessage(message, "edit");
     }
 
     /**
@@ -311,7 +311,7 @@ public class GroupController {
     @MessageMapping("/stop-editing-group")
     @SendTo("/webSocketGet/group-stop-being-edited")
     public NotificationResponse stopUpdatingArtefact(NotificationMessage message) {
-        return createNewNotificationResponse(message);
+        return NotificationResponse.fromMessage(message, "edit");
     }
 
     /**
@@ -323,13 +323,7 @@ public class GroupController {
     @MessageMapping("/saved-edited-group")
     @SendTo("/webSocketGet/group-save-edit")
     public NotificationResponse savingUpdatedArtefact(NotificationMessage message) {
-        int groupId = message.getArtefactId();
-        String username = message.getUsername();
-        String firstName = message.getUserFirstName();
-        String lastName = message.getUserLastName();
-        long dateOfNotification = Date.from(Instant.now()).toInstant().getEpochSecond();
-        String artefactType = message.getArtefactType();
-        NotificationResponse response = new NotificationResponse(HtmlUtils.htmlEscape(message.getArtefactName()), groupId, username, firstName, lastName, dateOfNotification, artefactType);
+        NotificationResponse response = NotificationResponse.fromMessage(message, "save");
         // Trigger reload and save the last event's information
         groupService.addNotification(response, 3);
         return response;
