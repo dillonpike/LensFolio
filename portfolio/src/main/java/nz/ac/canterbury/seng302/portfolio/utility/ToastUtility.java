@@ -8,10 +8,21 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+/**
+ * Contains method for adding/creating toasts.
+ */
 public class ToastUtility {
 
     private ToastUtility() {}
 
+    /**
+     * Adds the toasts to the model upon a reload triggered by saving an event,
+     * milestone or deadline.
+     *
+     * @param model  Model parameter.
+     * @param artefactsToDisplay List of messages to display.
+     * @param numberOfToasts Integer representing the number of toasts.
+     */
     public static void addToastsToModel(Model model, List<NotificationResponse> artefactsToDisplay, Integer numberOfToasts) {
         List<Toast> toastsToGenerate = new ArrayList<>();
         for (int i = 0; i < numberOfToasts; i++) {

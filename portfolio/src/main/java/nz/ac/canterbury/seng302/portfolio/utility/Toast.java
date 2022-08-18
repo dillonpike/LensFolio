@@ -1,5 +1,8 @@
 package nz.ac.canterbury.seng302.portfolio.utility;
 
+/**
+ * Contains getters and setters for Toast object.
+ */
 public class Toast {
 
     private String artefactInformation;
@@ -12,6 +15,9 @@ public class Toast {
 
     public Toast() {}
 
+    /**
+     * Toast constructor.
+     */
     public Toast(String artefactInformation, String artefactName, Integer artefactId, String username, String userFirstName, String userLastName, String action) {
         this.artefactInformation = artefactInformation;
         this.artefactName = artefactName;
