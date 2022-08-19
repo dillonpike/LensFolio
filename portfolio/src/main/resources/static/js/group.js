@@ -18,6 +18,14 @@ function updateTable(groupId) {
     $('#tableRefreshContainer').load(url, "groupId=" + groupId)
 }
 
+/**
+ * Redirect user to the group settings page.
+ * @param groupId group to fetch information of.
+ */
+function redirectToSettingPage(groupId) {
+    const url = '/groupSetting?groupId=' + groupId
+    document.location.href = url
+}
 
 /**
  * Returns the id of the currently selected group.
