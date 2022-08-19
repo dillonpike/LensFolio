@@ -25,6 +25,10 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
+/**
+ * Unit tests for the {@link GitLabApiService} class.
+ * Mocks the GroupSettingsService class and the GitLabAPI.
+ */
 @ExtendWith(MockitoExtension.class)
 class GitLabApiServiceTest {
 
