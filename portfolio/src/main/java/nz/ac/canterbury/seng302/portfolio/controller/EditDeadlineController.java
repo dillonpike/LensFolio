@@ -6,6 +6,7 @@ import nz.ac.canterbury.seng302.portfolio.service.ElementService;
 import nz.ac.canterbury.seng302.portfolio.service.PermissionService;
 import nz.ac.canterbury.seng302.portfolio.service.UserAccountClientService;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
+import org.hibernate.ObjectNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
@@ -37,7 +38,7 @@ public class EditDeadlineController {
      * Tries to save new data to deadline with given deadlineId to the database.
      * @param id Id of deadline edited
      * @param deadline Deadline data to be updated
-     * @throws Exception if sprint cannot be found from the given ID or if it cannot be saved.
+     * @throws ObjectNotFoundException if deadline cannot be found from the given ID or if it cannot be saved.
      */
     @PostMapping("/edit-deadline/{id}")
     public String deadlineEditSave(
@@ -46,7 +47,7 @@ public class EditDeadlineController {
             @ModelAttribute("deadline") Deadline deadline,
             @AuthenticationPrincipal AuthState principal,
             Model model
-    ) throws Exception {
+    ) throws ObjectNotFoundException {
         Integer userID = userAccountClientService.getUserIDFromAuthState(principal);
         elementService.addHeaderAttributes(model, userID);
 

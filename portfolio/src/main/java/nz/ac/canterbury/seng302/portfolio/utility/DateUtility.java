@@ -7,12 +7,19 @@ import java.util.Date;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.Period;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Helper functions related to dates.
  */
 public class DateUtility {
-    public DateUtility() {}
+
+    private static final Logger logger = LoggerFactory.getLogger(DateUtility.class);
+
+    private DateUtility() {
+        // Empty initializer
+    }
 
     /**
      * Formats the Timestamp given into a date, formatted: "dd MMMM yyyy"
@@ -106,7 +113,7 @@ public class DateUtility {
         try {
             date = new SimpleDateFormat("dd/MMM/yyyy h:mm a").parse(dateTimeString);
         } catch (Exception e) {
-            System.err.println("Error parsing date: " + e.getMessage());
+            logger.error(String.format("Error parsing date: %s", e.getMessage()));
         }
         return date;
     }

@@ -1,9 +1,13 @@
 package nz.ac.canterbury.seng302.portfolio.service;
 
+import javax.persistence.Transient;
 import nz.ac.canterbury.seng302.portfolio.model.Project;
 import nz.ac.canterbury.seng302.portfolio.repository.ProjectRepository;
+import org.hibernate.ObjectNotFoundException;
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.Optional;
@@ -19,6 +23,10 @@ public class ProjectService {
     @Autowired
     private ProjectRepository repository;
 
+    @Transient
+    private static final Logger logger = LoggerFactory.getLogger(ProjectService.class);
+
+
     /**
      * Get list of all projects.
      * @return List of projects saved in the database
@@ -31,15 +39,15 @@ public class ProjectService {
      * Get project by id
      * @param id The project Id
      * @return The project from the Database
-     * @throws Exception Throws if the project is not found.
+     * @throws ObjectNotFoundException Throws if the project is not found.
      */
-    public Project getProjectById(Integer id) throws Exception {
+    public Project getProjectById(Integer id) throws ObjectNotFoundException {
 
         Optional<Project> project = repository.findById(id);
         if (project.isPresent()) {
             return project.get();
         } else {
-            throw new Exception("Project not found");
+            throw new ObjectNotFoundException(id, "Unknown project");
         }
     }
 
@@ -47,15 +55,15 @@ public class ProjectService {
      * Get project by id
      * @param id Id of project
      * @return Project from the Database
-     * @throws Exception Throws if project is not found.
+     * @throws ObjectNotFoundException Throws if project is not found.
      */
-    public Project UpdateProjectById(Integer id) throws Exception {
+    public Project updateProjectById(Integer id) throws ObjectNotFoundException {
 
         Optional<Project> project = repository.findById(id);
         if (project.isPresent()) {
             return project.get();
         } else {
-            throw new Exception("Project not found");
+            throw new ObjectNotFoundException(id, "Project not found");
         }
     }
 
@@ -94,7 +102,7 @@ public class ProjectService {
             newProject = repository.save(project);
             return newProject;
         } catch (Exception e) {
-            System.err.println("Failed to save new project");
+            logger.error("Failed to save new project");
             return project;
         }
     }

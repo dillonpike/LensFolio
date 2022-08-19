@@ -86,7 +86,7 @@ public class ViewUsersController {
      * @param principal Used to get the user's id
      * @return viewUsers html page
      */
-    @RequestMapping(value="/viewUsers/saveSort", method=RequestMethod.POST)
+    @PostMapping(value="/viewUsers/saveSort")
     public String saveSort(@RequestParam(value="columnIndex") Integer columnIndex,
                            @RequestParam(value="sortOrder") String sortOrder,
                            @AuthenticationPrincipal AuthState principal) {
@@ -102,7 +102,7 @@ public class ViewUsersController {
      * @param userId The current user id of the edited user
      * @return list of users page(html)
      */
-    @RequestMapping(value="/add_role", method=RequestMethod.POST)
+    @PostMapping(value="/add_role")
     public String addRole(Model model,
                               RedirectAttributes rm,
                               @RequestParam(value = "role") String role,
@@ -136,7 +136,7 @@ public class ViewUsersController {
      * @param userId an Integer indicating the user id of a user that a role will be deleted from
      * @return viewUsers html page. If delete role failed create error Message model which contains the error message
      */
-    @RequestMapping(value="/delete_role", method=RequestMethod.POST)
+    @PostMapping(value="/delete_role")
     public String deleteRole(Model model,
                               @RequestParam(value = "deletedRole") String role,
                               @RequestParam(value = "userId") int userId,

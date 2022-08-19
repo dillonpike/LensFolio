@@ -40,6 +40,10 @@ public class CalendarController {
     @Autowired
     private ElementService elementService;
 
+    private static final String MESSAGE_ID = "{id: '";
+    private static final String MESSAGE_TITLE = "', title: '";
+    private static final String MESSAGE_START = "', start: '";
+
     /***
      * Produces a JSON list that fullcalendar can read to display sprints on the calendar
      * @param sprints list of sprints from the database
@@ -52,7 +56,7 @@ public class CalendarController {
         for (Sprint sprint : sprints) {
             sprint.setColour(colours.get(colIndex));
             Date endDate = SprintLifetimeController.getUpdatedDate(sprint.getEndDate(), 1, 0);
-            json.append("{id: '").append(sprint.getId()).append("', title: '").append(sprint.getName()).append("', start: '").append(sprint.getStartDate()).append("', end: '").append(endDate.toInstant()).append("', allDay: true, color: '").append(colours.get(colIndex)).append("', type: 'Sprint").append("'},");
+            json.append(MESSAGE_ID).append(sprint.getId()).append(MESSAGE_TITLE).append(sprint.getName()).append(MESSAGE_START).append(sprint.getStartDate()).append("', end: '").append(endDate.toInstant()).append("', allDay: true, color: '").append(colours.get(colIndex)).append("', type: 'Sprint").append("'},");
 
             if (colIndex == (colours.size() - 1)) { // List max
                 colIndex = 0;
@@ -73,7 +77,7 @@ public class CalendarController {
         StringBuilder json = new StringBuilder();
         for (Event event : events) {
             Date endDate = SprintLifetimeController.getUpdatedDate(event.getEventEndDate(), 1, 0);
-            json.append("{id: '").append(event.getId()).append("', title: '").append(event.getEventName()).append("', start: '").append(event.getEventStartDate()).append("', end: '").append(endDate.toInstant()).append("', type: 'Event").append("'},");
+            json.append(MESSAGE_ID).append(event.getId()).append(MESSAGE_TITLE).append(event.getEventName()).append(MESSAGE_START).append(event.getEventStartDate()).append("', end: '").append(endDate.toInstant()).append("', type: 'Event").append("'},");
         }
         return json.toString();
     }
@@ -86,7 +90,7 @@ public class CalendarController {
     public String deadlineListToJSON(List<Deadline> deadlines) {
         StringBuilder json = new StringBuilder();
         for (Deadline deadline : deadlines) {
-            json.append("{id: '").append(deadline.getId()).append("', title: '").append(deadline.getDeadlineName()).append("', start: '").append(deadline.getDeadlineDate()).append("', type: 'Deadline").append("'},");
+            json.append(MESSAGE_ID).append(deadline.getId()).append(MESSAGE_TITLE).append(deadline.getDeadlineName()).append(MESSAGE_START).append(deadline.getDeadlineDate()).append("', type: 'Deadline").append("'},");
         }
         return json.toString();
     }
@@ -153,7 +157,6 @@ public class CalendarController {
      *
      * @param model Parameters sent to thymeleaf template to be rendered into HTML
      * @return calendar to view project and sprint dates on
-     * @throws Exception
      */
     @GetMapping("/calendar")
     public String calendarPage(

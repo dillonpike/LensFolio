@@ -6,6 +6,7 @@ import nz.ac.canterbury.seng302.portfolio.service.GroupService;
 import nz.ac.canterbury.seng302.portfolio.service.RegisterClientService;
 import nz.ac.canterbury.seng302.portfolio.service.UserAccountClientService;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
+import org.hibernate.ObjectNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.ui.Model;
@@ -32,7 +33,7 @@ public class EditGroupController {
      * Tries to save new data to group with given groupId to the database.
      * @param id Id of event edited
      * @param group Group data to be updated
-     * @throws Exception if sprint cannot be found from the given ID or if it cannot be saved.
+     * @throws ObjectNotFoundException if group cannot be found from the given ID or if it cannot be saved.
      */
     @PostMapping("/edit-group/{id}")
     public String groupEditsave(
@@ -40,7 +41,7 @@ public class EditGroupController {
         @AuthenticationPrincipal AuthState principal,
         @ModelAttribute("group") Group group,
         Model model
-    ) throws IllegalArgumentException {
+    ) throws ObjectNotFoundException {
       groupService.editGroupDetails(group.getGroupId(), group.getShortName(), group.getLongName());
       return "redirect:/groups";
     }

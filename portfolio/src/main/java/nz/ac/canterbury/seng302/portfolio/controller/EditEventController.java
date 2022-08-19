@@ -36,7 +36,7 @@ public class EditEventController {
      * Tries to save new data to event with given eventId to the database.
      * @param id Id of event edited
      * @param event Event data to be updated
-     * @throws Exception if sprint cannot be found from the given ID or if it cannot be saved.
+     * @throws ObjectNotFoundException if event cannot be found from the given ID or if it cannot be saved.
      */
     @PostMapping("/edit-event/{id}")
     public String eventEditSave(

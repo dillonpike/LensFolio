@@ -3,7 +3,6 @@ package nz.ac.canterbury.seng302.portfolio.controller;
 import com.google.protobuf.Timestamp;
 import nz.ac.canterbury.seng302.portfolio.model.*;
 import nz.ac.canterbury.seng302.portfolio.service.*;
-import nz.ac.canterbury.seng302.portfolio.utility.Toast;
 import nz.ac.canterbury.seng302.portfolio.utility.ToastUtility;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +13,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.util.HtmlUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import java.time.Instant;
@@ -58,7 +56,7 @@ public class DetailsController {
     /**
      * Holds list of events information for displaying.
      */
-    private ArrayList<NotificationResponse> eventsToDisplay = new ArrayList<>();
+    private final ArrayList<NotificationResponse> eventsToDisplay = new ArrayList<>();
 
     /**
      * Holds the number of toasts to be generated in the HTML. Must be the same as or greater than NUM_OF_TOASTS in DetailsLive.js and
@@ -73,7 +71,6 @@ public class DetailsController {
      * @param principal For getting the user ID
      * @param model Parameters sent to thymeleaf template to be rendered into HTML
      * @return projectDetails page
-     * @throws Exception
      */
     @GetMapping("/details")
     public String details(@AuthenticationPrincipal AuthState principal,

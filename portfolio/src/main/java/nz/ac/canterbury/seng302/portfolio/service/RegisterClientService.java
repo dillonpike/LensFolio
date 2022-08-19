@@ -153,7 +153,9 @@ public class RegisterClientService {
 
             BufferedImage testImage = ImageIO.read(imageFile);  // DEBUGGING Use imageFile instead
             ByteArrayOutputStream imageArrayOutputStream = new ByteArrayOutputStream();
-            ImageIO.write(testImage, reader.getFormatName(), imageArrayOutputStream);
+            if (reader != null) {
+                ImageIO.write(testImage, reader.getFormatName(), imageArrayOutputStream);
+            }
             imageArray = imageArrayOutputStream.toByteArray();
         } catch (IOException e) {
             logger.error("You didn't find the image correctly:");
@@ -208,8 +210,10 @@ public class RegisterClientService {
 
                 // Start with uploading the metadata
                 UploadUserProfilePhotoRequest.Builder replyMetaData = UploadUserProfilePhotoRequest.newBuilder();
-                ProfilePhotoUploadMetadata.Builder metaData = ProfilePhotoUploadMetadata.newBuilder().setUserId(userId).setFileType(reader.getFormatName());
-                replyMetaData.setMetaData(metaData.build());
+                if (reader != null) {
+                    ProfilePhotoUploadMetadata.Builder metaData = ProfilePhotoUploadMetadata.newBuilder().setUserId(userId).setFileType(reader.getFormatName());
+                    replyMetaData.setMetaData(metaData.build());
+                }
                 requestObserver.onNext(replyMetaData.build());
                 // Loop through the bytes
                 UploadUserProfilePhotoRequest.Builder reply = UploadUserProfilePhotoRequest.newBuilder();
