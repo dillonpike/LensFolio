@@ -30,6 +30,13 @@ public class SearchUsersController {
     @Autowired
     private UserSortingService userSortingService;
 
+    /**
+     * Get mapping for the search users page.
+     * @param model Model of the page.
+     * @param request Request of the page.
+     * @param principal Principal of the user to get user ID.
+     * @return The search users thymeleaf template html.
+     */
     @GetMapping("/viewUsersSearch")
     public String showUserSearchTablePage(
             Model model,
@@ -66,7 +73,7 @@ public class SearchUsersController {
      * @param columnIndex an Integer which column is chosen as the base of the sorting
      * @param sortOrder a String between 'asc' or 'desc'. 'asc' means Ascending and 'desc' means Descending
      * @param principal Used to get the user's id
-     * @return viewUsers html page
+     * @return searchUsers html page
      */
     @PostMapping(value="/viewUsersSearch/saveSort")
     public String saveSort(@RequestParam(value="columnIndex") Integer columnIndex,
