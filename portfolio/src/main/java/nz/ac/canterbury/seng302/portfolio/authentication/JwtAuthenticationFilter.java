@@ -27,7 +27,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         if (authenticateClientService == null) {
             ServletContext servletContext = request.getServletContext();
             WebApplicationContext webApplicationContext = WebApplicationContextUtils.getWebApplicationContext(servletContext);
-            authenticateClientService = webApplicationContext.getBean(AuthenticateClientService.class);
+            if (webApplicationContext == null) {
+                throw new NullPointerException("Web Application Context is null!");
+            } else {
+                authenticateClientService = webApplicationContext.getBean(AuthenticateClientService.class);
+            }
         }
         return authenticateClientService;
     }
