@@ -3,7 +3,7 @@ package nz.ac.canterbury.seng302.portfolio.controller;
 import nz.ac.canterbury.seng302.portfolio.model.Group;
 import nz.ac.canterbury.seng302.portfolio.model.NotificationMessage;
 import nz.ac.canterbury.seng302.portfolio.model.NotificationResponse;
-import nz.ac.canterbury.seng302.portfolio.model.TwoGroup;
+import nz.ac.canterbury.seng302.portfolio.model.NotificationGroup;
 import nz.ac.canterbury.seng302.portfolio.service.*;
 import nz.ac.canterbury.seng302.shared.identityprovider.*;
 import nz.ac.canterbury.seng302.shared.util.ValidationError;
@@ -180,7 +180,7 @@ public class GroupController {
 
     /**
      * Tries to save new data to group with given groupId to the database.
-     * @param id id of event edited
+     * @param id id of groups edited
      * @param group Group data to be updated
      * @param model model to add attributes to for Thymeleaf to inject into the HTML
      * @param httpServletResponse for adding status codes to
@@ -273,8 +273,8 @@ public class GroupController {
     /**
      * This method maps @MessageMapping endpoint to the @SendTo endpoint. Called when something is sent to
      * the MessageMapping endpoint.
-     * @param message NotificationMessage that holds information about the event being updated
-     * @return returns an NotificationResponse that holds information about the event being updated.
+     * @param message NotificationMessage that holds information about the group being updated
+     * @return returns an NotificationResponse that holds information about the group being updated.
      */
     @MessageMapping("/editing-group")
     @SendTo("/webSocketGet/group-being-edited")
@@ -296,9 +296,9 @@ public class GroupController {
 
     /**
      * This method maps @MessageMapping endpoint to the @SendTo endpoint. Called when something is sent to
-     * the MessageMapping endpoint. This method also triggers some sort of re-render of the events.
-     * @param message NotificationMessage that holds information about the event being updated
-     * @return returns an NotificationResponse that holds information about the event being updated.
+     * the MessageMapping endpoint. This method also triggers some sort of re-render of the groups.
+     * @param message NotificationMessage that holds information about the group being updated
+     * @return returns an NotificationResponse that holds information about the group being updated.
      */
     @MessageMapping("/saved-edited-group")
     @SendTo("/webSocketGet/group-save-edit")
@@ -342,7 +342,7 @@ public class GroupController {
      */
     @MessageMapping("/changed-members-group")
     @SendTo("/webSocketGet/group-change-users")
-    public TwoGroup changeGroupMembersWebsocket(TwoGroup message) {
+    public NotificationGroup changeGroupMembersWebsocket(NotificationGroup message) {
         return message;
     }
 
