@@ -5,7 +5,6 @@ import nz.ac.canterbury.seng302.portfolio.service.*;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import nz.ac.canterbury.seng302.shared.identityprovider.PaginatedUsersResponse;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
-import nz.ac.canterbury.seng302.shared.identityprovider.UserRole;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
@@ -52,9 +51,6 @@ public class SearchUsersController {
         model.addAttribute("currentUserRole", role);
         model.addAttribute("currentUsername", getUserByIdReply.getUsername());
         model.addAttribute("userId", id);
-        model.addAttribute("studentRole", UserRole.STUDENT);
-        model.addAttribute("teacherRole", UserRole.TEACHER);
-        model.addAttribute("adminRole", UserRole.COURSE_ADMINISTRATOR);
         PaginatedUsersResponse response = userAccountClientService.getAllUsers();
         List<UserResponse> userResponseList = response.getUsersList();
         model.addAttribute("users", userResponseList);

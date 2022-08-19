@@ -14,7 +14,7 @@
   <link rel="stylesheet" href="https://cdn.datatables.net/1.12.1/css/dataTables.bootstrap5.min.css">
   <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js" integrity="sha512-iKDtgDyTHjAitUDdLljGhenhPwrbBfqTKWO1mkhSFH3A7blITC9MhYon6SjnMhp4o0rADGw9yAC6EW4t5a4K3g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-
+  <link th:href="@{css/searchPage.css}" rel="stylesheet" type="text/css" />
 </head>
 <body>
 
@@ -39,6 +39,7 @@
       <th id="lastNameColumn">Last Name</th>
       <th id="usernameColumn">Username</th>
       <th id="aliasColumn">Alias</th>
+      <th id="emailColumn">Email</th>
     </tr>
     </thead>
     <tbody>
@@ -47,6 +48,7 @@
       <td><span th:text="${user.LastName}"> Last Name </span></td>
       <td><span th:text="${user.username}"> Username </span></td>
       <td><span th:text="${user.nickname}"> Alias </span></td>
+      <td><span th:text="${user.email}"> Email </span></td>
     </tr>
     </tbody>
   </table>
@@ -83,7 +85,15 @@
     stateSave: true,
     "dom": 'rtip',
     order: [userSorting.columnIndex, userSorting.sortOrder],
-    searching: true
+    searching: true,
+    autoWidth: false,
+    columnDefs: [
+      { width: 100, targets: 0 },
+      { width: 100, targets: 1 },
+      { width: 200, targets: 2 },
+      { width: 200, targets: 3 },
+      { width: 300, targets: 4 }
+    ],
   };
 
   table.DataTable().destroy();
