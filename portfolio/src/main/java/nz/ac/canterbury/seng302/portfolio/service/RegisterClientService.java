@@ -150,12 +150,15 @@ public class RegisterClientService {
             while (imageReaders.hasNext()) {
                 reader = imageReaders.next();
             }
+            if (reader == null) {
+                throw new NullPointerException("Reader is empty (null)");
+            }
 
             BufferedImage testImage = ImageIO.read(imageFile);  // DEBUGGING Use imageFile instead
             ByteArrayOutputStream imageArrayOutputStream = new ByteArrayOutputStream();
             ImageIO.write(testImage, reader.getFormatName(), imageArrayOutputStream);
             imageArray = imageArrayOutputStream.toByteArray();
-        } catch (IOException e) {
+        } catch (IOException | NullPointerException e) {
             logger.error("You didn't find the image correctly:");
             logger.error(e.getMessage());
             imageFoundCorrectly = false;
@@ -204,6 +207,10 @@ public class RegisterClientService {
                 ImageReader reader = null;
                 while (imageReaders.hasNext()) {
                     reader = imageReaders.next();
+                }
+
+                if (reader == null) {
+                    throw new NullPointerException("Reader is empty (null)");
                 }
 
                 // Start with uploading the metadata
