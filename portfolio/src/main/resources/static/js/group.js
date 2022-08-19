@@ -19,6 +19,11 @@ function updateTable(groupId) {
 }
 
 
+function redirectToSettingPage(groupId) {
+    const url = '/groupSetting?groupId=' + groupId
+    document.location.href = url
+}
+
 /**
  * Returns the id of the currently selected group.
  * @returns {*} id of the currently selected group
