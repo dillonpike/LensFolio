@@ -229,6 +229,9 @@ function updateMembersWithoutAGroupCard() {
     })
 }
 
+/**
+ * Sends a websocket message to reload users pages when members are removed from groups.
+ */
 function reloadRemovedUsers() {
     const currentGroupId = parseInt($("#table_refresh").attr("data-groupid"), 10);
     changeMembersReload(currentGroupId, NON_MEMBER_GROUP_ID);
@@ -255,14 +258,13 @@ function updateGroupList(groupId, action) {
         } else {
             let url = "groups/local?";
             $('#tableRefreshContainer').load(url, "groupId=" + chosenGroupId, () => {
+                let newPageNumber = sessionStorage.getItem("selected-members-page");
+                let table = $("#table").DataTable();
+                // Makes sure the table is on the same page as before the reload
                 if (action === "change-users-receive") {
-                    let newPageNumber = sessionStorage.getItem("selected-members-page");
-                    let table = $("#table").DataTable();
                     table.page(parseInt(newPageNumber, 10)).draw(false);
                 }
                 if (action === "change-users-send") {
-                    let newPageNumber = sessionStorage.getItem("selected-members-page");
-                    let table = $("#table").DataTable();
                     let maxPages = table.page.info().pages;
                     if (newPageNumber >= maxPages) {
                         newPageNumber = newPageNumber - 1;

@@ -335,6 +335,11 @@ public class GroupController {
         return response;
     }
 
+    /**
+     * This method maps @MessageMapping endpoint to the @SendTo endpoint. Called when a groups members are updated.
+     * @param message NotificationMessage that holds information about the groups being updated.
+     * @return returns an NotificationResponse that holds information about the groups being updated.
+     */
     @MessageMapping("/changed-members-group")
     @SendTo("/webSocketGet/group-change-users")
     public TwoGroup changeGroupMembersWebsocket(TwoGroup message) {

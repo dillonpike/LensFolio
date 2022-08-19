@@ -218,6 +218,10 @@
         }));
     }
 
+    /**
+     * Sends a websocket message to reload users pages when members are changed in groups.
+     * The message contains the two relevant group ids.
+     */
     function changeMembersReload(sendingGroupId, receivingGroupId) {
         stompClient.send("/webSocketPost/changed-members-group", {}, JSON.stringify({
             'sendingGroupId': sendingGroupId,

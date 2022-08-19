@@ -108,6 +108,7 @@ $(function () {
     connect();
 
     // Checks if there should be a live update, and shows a toast if needed.
+    // This is needed in coordination with the relevant controller method for after reloading the page.
     for (let i = 0; i < NUM_OF_TOASTS; i++) {
         let toastInformationString = "#toastInformation" + (i+1);
         let toastArtefactNameString = "#toastArtefactName" + (i+1);
