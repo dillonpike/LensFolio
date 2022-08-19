@@ -54,7 +54,7 @@ class EventDicTest {
         calEnd.set(Calendar.MINUTE, 59);
         calEnd.set(Calendar.SECOND, 59);
 
-        Event event = new Event(-1, "Test-Event & <br>", testDate, calEnd.getTime(), LocalTime.now(), LocalTime.now());
+        Event event = new Event(-1, "Test-Event & <br>", testDate, calEnd.getTime());
         dictionary.add(event);
 
         String JSON = dictionary.makeJSON();
@@ -101,7 +101,7 @@ class EventDicTest {
     @Test
     void testEventDicAddOneOfEachEventType() {
         testDate = Date.from(Instant.now());
-        Event event = new Event(-1, "Test-Event & <br>", testDate, testDate, LocalTime.now(), LocalTime.now());
+        Event event = new Event(-1, "Test-Event & <br>", testDate, testDate);
         dictionary.add(event);
         Milestone milestone = new Milestone(-1, "Test-Milestone & <br>", testDate);
         dictionary.add(milestone);

@@ -6,6 +6,13 @@ const DEADLINETYPE = "Deadline";
 const MILESTONETYPE = "Milestone";
 const GROUPTYPE = "Group";
 
+
+const ADDACTION = "add";
+const SAVEACTION = "save";
+const EDITACTION = "edit";
+const DELETEACTION = "delete";
+
+
 /**
  * The amount of time in seconds the toast will take before hiding on a timed hide function.
  * @type {number}
@@ -22,11 +29,11 @@ class Notification {
     toastTitleTextVar;
     titleName = "";
     bodyText = "";
-    hasBeenSaved = false;
     selectedDate = (new Date(Date.now())).valueOf();
     isHidden = true;
     type = "";
     isWaitingToBeHidden = false;
+    action = "";
 
     id = "";
     id_number = -1;
@@ -43,10 +50,9 @@ class Notification {
      * @param username Username of the user updating the item.
      * @param firstName Users first name.
      * @param lastName Users last name.
-     * @param hasBeenSaved Whether the item has just been saved, rather than just being edited.
+     * @param action
      */
-    constructor(type, name, id, username, firstName, lastName, hasBeenSaved) {
-        this.hasBeenSaved = hasBeenSaved;
+    constructor(type, name, id, username, firstName, lastName, action) {
         this.name = name;
         this.username = username;
         this.firstName = firstName;
@@ -65,6 +71,7 @@ class Notification {
         }
         this.id = type.toLowerCase() + "_" + username + "_" + id;
         this.id_number = id;
+        this.action = action;
     }
 
     get username() {
@@ -79,9 +86,6 @@ class Notification {
     get titleName() {
         return this.titleName;
     }
-    get hasBeenSaved() {
-        return this.hasBeenSaved;
-    }
     get id() {
         return this.id;
     }
@@ -90,6 +94,9 @@ class Notification {
     }
     get type() {
         return this.type;
+    }
+    get action() {
+        return this.action;
     }
 
     set username(username) {
@@ -104,6 +111,9 @@ class Notification {
     set name(name) {
         this.name = name;
     }
+    set action(action) {
+        this.action = action;
+    }
 
     /**
      * Shows the notification with the assigned toast with the correct message and title.
@@ -112,13 +122,26 @@ class Notification {
         this.isHidden = false;
         this.isWaitingToBeHidden = false;
         this.selectedDate = (new Date(Date.now())).valueOf();
-        if (!this.hasBeenSaved) {
-            this.bodyText = "'" + this.name + "' is being edited by " +
-                this.firstName + " " + this.lastName + " (" + this.username + ").";
-        } else {
-            this.bodyText = "'" + this.name + "' has been updated by " +
-                this.firstName + " " + this.lastName + " (" + this.username + ").";
+        switch(this.action){
+          case SAVEACTION:
+              this.bodyText = "'" + this.name + "' has been updated by " + this.firstName + " " + this.lastName + " (" + this.username + ").";
+              break;
+          case EDITACTION:
+              this.bodyText = "'" + this.name + "' is being edited by " + this.firstName + " " + this.lastName + " (" + this.username + ").";
+              break;
+          case ADDACTION:
+              this.bodyText = this.firstName + " " + this.lastName + " (" + this.username + ") has added a new " + this.type.toLowerCase() + "."
+              break;
+          case DELETEACTION:
+              this.bodyText = "'" + this.name + "' has been deleted by " + this.firstName + " " + this.lastName + " (" + this.username + ").";
+              break;
+          default:
+              this.bodyText = "'" + this.name + "' has been changed by " + this.firstName + " " + this.lastName + " (" + this.username + ").";
+
+
         }
+
+
         this.toastBodyTextVar.text(this.bodyText);
         this.toastTitleTextVar.text(this.titleName);
         this.toast.show();
@@ -171,8 +194,8 @@ class Notification {
      * @returns {Notification} Returns its updated self.
      */
     updateNotification(newNotification) {
-        this.name = newNotification.name
-        this.hasBeenSaved = newNotification.hasBeenSaved;
+        this.name = newNotification.name;
+        this.action = newNotification.action;
 
         return this;
     }

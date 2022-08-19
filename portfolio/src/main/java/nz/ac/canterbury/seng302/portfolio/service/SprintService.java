@@ -3,6 +3,9 @@ package nz.ac.canterbury.seng302.portfolio.service;
 import nz.ac.canterbury.seng302.portfolio.model.Project;
 import nz.ac.canterbury.seng302.portfolio.model.Sprint;
 import nz.ac.canterbury.seng302.portfolio.repository.SprintRepository;
+import org.hibernate.ObjectNotFoundException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -32,6 +35,8 @@ public class SprintService {
     @Autowired
     private ProjectService projectService;
 
+    private static final Logger logger = LoggerFactory.getLogger(SprintService.class);
+
     /**
      * Get list of all sprints
      * @return List of sprints
@@ -46,13 +51,13 @@ public class SprintService {
      * @return Sprint with the id that is the input
      * @throws Exception If sprint can't be found
      */
-    public Sprint getSprintById(Integer id) throws Exception {
+    public Sprint getSprintById(Integer id) throws ObjectNotFoundException {
 
         Optional<Sprint> sprint = repository.findById(id);
         if (sprint.isPresent()) {
             return sprint.get();
         } else {
-            throw new Exception("Sprint not found");
+            throw new ObjectNotFoundException(id, "Unknown Sprint");
         }
     }
 
@@ -149,7 +154,7 @@ public class SprintService {
                 date = calendar.getTime();
             }
         } catch (Exception e) {
-            System.err.println("Error parsing date: " + e.getMessage());
+            logger.error(String.format("Error parsing date: %s", e.getMessage()));
         }
         return date;
     }

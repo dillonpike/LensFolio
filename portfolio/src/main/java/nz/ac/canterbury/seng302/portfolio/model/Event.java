@@ -3,12 +3,12 @@ package nz.ac.canterbury.seng302.portfolio.model;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;
-import com.sun.istack.NotNull;
 import nz.ac.canterbury.seng302.portfolio.utility.DateUtility;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 import javax.persistence.*;
 import java.time.format.DateTimeFormatter;
@@ -33,6 +33,9 @@ public class Event {
 
     @Transient
     private final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MMM/yyyy h:mm a");
+
+    @Transient
+    private static final Logger logger = LoggerFactory.getLogger(Event.class);
 
 
     public Event() {}
@@ -70,7 +73,7 @@ public class Event {
         try {
             time = LocalTime.parse(timeString);
         } catch (Exception e) {
-            System.err.println("Error parsing time: " + e.getMessage());
+            logger.error(String.format("Error parsing time: %s", e.getMessage()));
         }
         return time;
     }
@@ -88,7 +91,7 @@ public class Event {
                 DateTimeFormatter myFormatObj = DateTimeFormatter.ofPattern("HH:mm:ss");
                 newTime = time.format(myFormatObj);
             } catch (Exception e) {
-                System.err.println("Error parsing time to string: " + e.getMessage());
+                logger.error(String.format("Error parsing time to string: %s", e.getMessage()));
             }
         }
         return newTime;
@@ -151,7 +154,6 @@ public class Event {
      * @throws ParseException when the given string isn't in the right format
      */
     public void setStartDateDetail(String startDateDetail) throws ParseException {
-//        eventStartDate = simpleDateFormatter.parse(startDateDetail);
         Date dateTime = DateUtility.stringToDateTime(startDateDetail);
         if (dateTime != null) {
             this.eventStartDate = dateTime;
@@ -187,7 +189,6 @@ public class Event {
      * @throws ParseException when the given string isn't in the right format
      */
     public void setEndDateDetail(String endDateDetail) throws ParseException {
-//        eventEndDate = simpleDateFormatter.parse(endDateDetail);
         Date dateTime = DateUtility.stringToDateTime(endDateDetail);
         if (dateTime != null) {
             this.eventEndDate = dateTime;
@@ -249,11 +250,12 @@ public class Event {
 
     /**
      * Takes a time and a date and adds the time to the date object and returns the changed date.
+     * This function is called from the javascript code
      * @param date Date that as no time.
      * @param time LocalTime time.
      * @return Date with time added to it.
      */
-    private Date addTimeToDate(@NotNull Date date, @NotNull LocalTime time){
+    private Date addTimeToDate(Date date,LocalTime time){
         SimpleDateFormat timeFormat = new SimpleDateFormat("kk:mm");
         try {
             Date dateWithTime = timeFormat.parse(String.valueOf(time));

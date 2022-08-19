@@ -20,7 +20,6 @@ function connect() {
     let socket = new SockJS('mywebsockets');
     stompClient = Stomp.over(socket);
     stompClient.connect({}, function (frame) {
-        console.log('Connected: ' + frame);
         stompClient.subscribe('/webSocketGet/group-being-edited', function (eventResponseArg) {
             const eventResponse = JSON.parse(eventResponseArg.body);
             showToast(eventResponse.artefactName, eventResponse.artefactId, eventResponse.username, eventResponse.userFirstName, eventResponse.userLastName, false, eventResponse.artefactType);
@@ -51,7 +50,7 @@ function connect() {
  * @param type they type of the artefact it is either Milestone, Deadline, or event
  */
 function showToast(groupName, groupId, username, firstName, lastName, hide, type) {
-    let newNotification = new Notification(type, groupName, groupId, username, firstName, lastName, false);
+    let newNotification = new Notification(type, groupName, groupId, username, firstName, lastName, "edit");
     newNotification = addNotification(newNotification);
     if (!hide) {
         newNotification.show();
@@ -69,9 +68,10 @@ function showToast(groupName, groupId, username, firstName, lastName, hide, type
  * @param firstName First name of the user
  * @param lastName Last name of the user
  * @param type type of artefact
+ * @param action Action of the notification
  */
-function showToastSave(groupName, groupId, username, firstName, lastName, type) {
-    let newNotification = new Notification(type, groupName, groupId, username, firstName, lastName, true);
+function showToastSave(groupName, groupId, username, firstName, lastName, type, action) {
+    let newNotification = new Notification(type, groupName, groupId, username, firstName, lastName, action);
     newNotification = addNotification(newNotification);
     newNotification.show();
     newNotification.hideTimed(SECONDS_TILL_HIDE);
@@ -100,9 +100,10 @@ $(function () {
         let toastUsernameString = "#toastUsername" + (i+1);
         let toastFirstNameString = "#toastFirstName" + (i+1);
         let toastLastNameString = "#toastLastName" + (i+1);
+        let toastAction = "#toastAction" + (i+1);
         let artefactInformation = $(toastInformationString);
         if (artefactInformation.text() !== "") {
-            showToastSave($(toastArtefactNameString).text(), $(toastArtefactIdString).text(), $(toastUsernameString).text(), $(toastFirstNameString).text(), $(toastLastNameString).text(), artefactInformation.text());
+            showToastSave($(toastArtefactNameString).text(), $(toastArtefactIdString).text(), $(toastUsernameString).text(), $(toastFirstNameString).text(), $(toastLastNameString).text(), artefactInformation.text(), $(toastAction).text());
         }
     }
 });

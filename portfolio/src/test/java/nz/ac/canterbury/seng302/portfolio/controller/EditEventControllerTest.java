@@ -60,9 +60,7 @@ class EditEventControllerTest {
      */
     private Date startEvent = new Date();
     private Date endEvent = getUpdatedDate(startEvent, 5, 0);
-    private LocalTime startTime = LocalTime.now();
-    private LocalTime endTime = LocalTime.now();
-    private Event mockEvent = new Event(1,0,"test event", startEvent, endEvent,startTime, endTime);
+    private Event mockEvent = new Event(1,0,"test event", startEvent, endEvent);
 
     @Autowired
     private MockMvc mockMvc;

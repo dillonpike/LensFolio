@@ -22,6 +22,12 @@ public class ElementService {
     @Autowired
     private PhotoService photoService;
 
+    private static final String UPDATE_STATE_ATTRIBUTE_NAME = "isUpdateSuccess";
+
+    private static final String UPDATE_MESSAGE_ATTRIBUTE_NAME = "updateMessage";
+
+    private static final String FAILURE_MESSAGE_ATTRIBUTE_NAME = "failureMessage";
+
     /**
      * Updates the given model with an updateMessage attribute.
      *
@@ -35,17 +41,17 @@ public class ElementService {
     public void addUpdateMessage(Model model, HttpServletRequest request) {
         Map<String, ?> inputFlashMap = RequestContextUtils.getInputFlashMap(request);
         if (inputFlashMap != null) {
-            boolean isUpdateSuccess = (boolean) inputFlashMap.get("isUpdateSuccess");
+            boolean isUpdateSuccess = (boolean) inputFlashMap.get(UPDATE_STATE_ATTRIBUTE_NAME);
             if (isUpdateSuccess) {
-                model.addAttribute("isUpdateSuccess", true);
+                model.addAttribute(UPDATE_STATE_ATTRIBUTE_NAME, true);
                 String message = inputFlashMap.containsKey("successMessage") ?
-                        (String) inputFlashMap.get("failureMessage") : "Account Information Successfully Updated";
-                model.addAttribute("updateMessage", message);
+                        (String) inputFlashMap.get(FAILURE_MESSAGE_ATTRIBUTE_NAME) : "Account Information Successfully Updated";
+                model.addAttribute(UPDATE_MESSAGE_ATTRIBUTE_NAME, message);
             } else {
-                model.addAttribute("isUpdateSuccess", false);
-                String message = inputFlashMap.containsKey("failureMessage") ?
-                        (String) inputFlashMap.get("failureMessage") : "Update Canceled! Something went wrong!";
-                model.addAttribute("updateMessage", message);
+                model.addAttribute(UPDATE_STATE_ATTRIBUTE_NAME, false);
+                String message = inputFlashMap.containsKey(FAILURE_MESSAGE_ATTRIBUTE_NAME) ?
+                        (String) inputFlashMap.get(FAILURE_MESSAGE_ATTRIBUTE_NAME) : "Update Canceled! Something went wrong!";
+                model.addAttribute(UPDATE_MESSAGE_ATTRIBUTE_NAME, message);
             }
         }
     }
@@ -63,8 +69,8 @@ public class ElementService {
         if (inputFlashMap != null) {
             boolean isUpdateSuccess = (boolean) inputFlashMap.get("isAccessDenied");
             if (isUpdateSuccess) {
-                model.addAttribute("isUpdateSuccess", true);
-                model.addAttribute("updateMessage", "Access Denied, Please log out and try again");
+                model.addAttribute(UPDATE_STATE_ATTRIBUTE_NAME, true);
+                model.addAttribute(UPDATE_MESSAGE_ATTRIBUTE_NAME, "Access Denied, Please log out and try again");
             }
         }
     }
@@ -88,7 +94,7 @@ public class ElementService {
      * @param userData UserResponse object of the currently signed on user
      */
     public void addRoles(Model model, UserResponse userData) {
-        ArrayList<String> rolesList = new ArrayList<String>();
+        ArrayList<String> rolesList = new ArrayList<>();
         for (int i = 0; i< userData.getRolesCount(); i++) {
             String role = userData.getRoles(i).toString();
             rolesList.add(role.replace("_", " "));

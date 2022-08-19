@@ -42,10 +42,8 @@ public class LiveUpdatesStepDefs {
      */
     private final Date startEvent = new Date();
     private final Date endEvent = getUpdatedDate(startEvent, 5, 0);
-    private final LocalTime startTime = LocalTime.now();
-    private final LocalTime endTime = LocalTime.now().plusHours(10L);
     private final String mockEventName = "Test Event";
-    private Event mockEvent = new Event(1,0,mockEventName, startEvent, endEvent,startTime, endTime);
+    private Event mockEvent = new Event(1,0,mockEventName, startEvent, endEvent);
     private int eventIdToUse = 1;
 
     /**
