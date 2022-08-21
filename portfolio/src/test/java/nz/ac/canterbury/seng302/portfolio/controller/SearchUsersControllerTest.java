@@ -21,16 +21,15 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 /**
- * Junit testing to test the View User Controller
+ * Junit testing to test the Search User Controller
  */
 @ExtendWith(SpringExtension.class)
-@WebMvcTest(controllers = ViewUsersController.class)
+@WebMvcTest(controllers = SearchUsersController.class)
 @AutoConfigureMockMvc(addFilters = false)
-class ViewUsersControllerTest {
+class SearchUsersControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -109,11 +108,11 @@ class ViewUsersControllerTest {
             .addUsers(mockUser1).addUsers(mockUser2).build();
 
     /**
-     * Test the GET method when calling "viewUser"
+     * Test the GET method when calling "viewUsersSearch"
      * Except to catch status code 200
      */
     @Test
-    void showViewUserPage_whenLoggedIn_return200StatusCode() throws Exception {
+    void showSearchUsersPage_whenLoggedIn_return200StatusCode() throws Exception {
         SecurityContext mockedSecurityContext = Mockito.mock(SecurityContext.class);
         when(mockedSecurityContext.getAuthentication()).thenReturn(new PreAuthenticatedAuthenticationToken(validAuthState, ""));
 
@@ -125,15 +124,15 @@ class ViewUsersControllerTest {
         when(userAccountClientService.getUserIDFromAuthState(any(AuthState.class))).thenReturn(1);
         when(userAccountClientService.getAllUsers()).thenReturn(mockedUserList);
 
-        mockMvc.perform(get("/viewUsers"))
+        mockMvc.perform(get("/viewUsersSearch"))
                 .andExpect(status().isOk());
     }
 
     /**
-     * Test to check if user model(users) is existed in view users page
+     * Test to check if user model(users) is existed in search users page
      */
     @Test
-    void showViewUserPage_whenLoggedIn_returnUsersAttributeIsExist() throws Exception {
+    void showSearchUsersPage_whenLoggedIn_returnUsersAttributeIsExist() throws Exception {
         SecurityContext mockedSecurityContext = Mockito.mock(SecurityContext.class);
         when(mockedSecurityContext.getAuthentication()).thenReturn(new PreAuthenticatedAuthenticationToken(validAuthState, ""));
 
@@ -144,15 +143,15 @@ class ViewUsersControllerTest {
         SecurityContextHolder.setContext(mockedSecurityContext);
         when(userAccountClientService.getUserIDFromAuthState(any(AuthState.class))).thenReturn(1);
         when(userAccountClientService.getAllUsers()).thenReturn(mockedUserList);
-        mockMvc.perform(get("/viewUsers"))
+        mockMvc.perform(get("/viewUsersSearch"))
                 .andExpect(model().attributeExists("users"));
     }
 
     /**
-     * Test to check if model attribute(users) has been added in view users page
+     * Test to check if model attribute(users) has been added in search users page
      */
     @Test
-    void showViewUserPage_whenLoggedIn_returnUsersList() throws Exception {
+    void showSearchUsersPage_whenLoggedIn_returnUsersList() throws Exception {
         SecurityContext mockedSecurityContext = Mockito.mock(SecurityContext.class);
         when(mockedSecurityContext.getAuthentication()).thenReturn(new PreAuthenticatedAuthenticationToken(validAuthState, ""));
 
@@ -163,15 +162,15 @@ class ViewUsersControllerTest {
         SecurityContextHolder.setContext(mockedSecurityContext);
         when(userAccountClientService.getUserIDFromAuthState(any(AuthState.class))).thenReturn(1);
         when(userAccountClientService.getAllUsers()).thenReturn(mockedUserList);
-        mockMvc.perform(get("/viewUsers"))
+        mockMvc.perform(get("/viewUsersSearch"))
                 .andExpect(model().attribute("users", mockedUserList.getUsersList()));
     }
 
     /**
-     * Test to check when logged In, calling view user page will return viewUsers template
+     * Test to check when logged In, calling view user page will return viewUsersSearch template
      */
     @Test
-    void showViewUserPage_whenLoggedIn_returnViewUserTemplate() throws Exception {
+    void showSearchUsersPage_whenLoggedIn_returnSearchUserTemplate() throws Exception {
         SecurityContext mockedSecurityContext = Mockito.mock(SecurityContext.class);
         when(mockedSecurityContext.getAuthentication()).thenReturn(new PreAuthenticatedAuthenticationToken(validAuthState, ""));
 
@@ -182,56 +181,7 @@ class ViewUsersControllerTest {
         SecurityContextHolder.setContext(mockedSecurityContext);
         when(userAccountClientService.getUserIDFromAuthState(any(AuthState.class))).thenReturn(1);
         when(userAccountClientService.getAllUsers()).thenReturn(mockedUserList);
-        mockMvc.perform(get("/viewUsers"))
-                .andExpect(view().name("viewUsers"));
+        mockMvc.perform(get("/viewUsersSearch"))
+                .andExpect(view().name("searchUsers"));
     }
-
-    /**
-     * Test to check when logged In, calling view user page will return viewUsers template
-     */
-    @Test
-    void callDeleteRoleRequest_whenLoggedInAsCourseAdministrator_returnViewUserTemplate() throws Exception {
-        SecurityContext mockedSecurityContext = Mockito.mock(SecurityContext.class);
-        when(mockedSecurityContext.getAuthentication()).thenReturn(new PreAuthenticatedAuthenticationToken(validAuthState, ""));
-
-        userResponse = UserResponse.newBuilder().setUsername(USERNAME).setId(USER_ID).build();
-        when(userAccountClientService.getUserIDFromAuthState(any(AuthState.class))).thenReturn(USER_ID);
-        when(registerClientService.getUserData(any(Integer.class))).thenReturn(userResponse);
-
-        SecurityContextHolder.setContext(mockedSecurityContext);
-
-        UserRoleChangeResponse response = UserRoleChangeResponse.newBuilder()
-                .setIsSuccess(true)
-                .build();
-
-        when(userAccountClientService.deleteRoleFromUser(any(Integer.class),any(UserRole.class))).thenReturn(response);
-        mockMvc.perform(post("/delete_role").param("userId","1").param("deletedRole","STUDENT"))
-                .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("viewUsers"));
-    }
-
-    /**
-     * Junit test to check if current user log in as a course administrator and request add role request to other user
-     */
-    @Test
-    void callAddRoleRequest_whenLoggedInAsCourseAdministrator_returnViewUserTemplate() throws Exception {
-        SecurityContext mockedSecurityContext = Mockito.mock(SecurityContext.class);
-        when(mockedSecurityContext.getAuthentication()).thenReturn(new PreAuthenticatedAuthenticationToken(validAuthState, ""));
-
-        userResponse = UserResponse.newBuilder().setUsername(USERNAME).setId(USER_ID).build();
-        when(userAccountClientService.getUserIDFromAuthState(any(AuthState.class))).thenReturn(USER_ID);
-        when(registerClientService.getUserData(any(Integer.class))).thenReturn(userResponse);
-
-        SecurityContextHolder.setContext(mockedSecurityContext);
-
-        UserRoleChangeResponse response = UserRoleChangeResponse.newBuilder()
-                .setIsSuccess(true)
-                .build();
-
-        when(userAccountClientService.deleteRoleFromUser(any(Integer.class),any(UserRole.class))).thenReturn(response);
-        mockMvc.perform(post("/add_role").param("userId","1").param("role","STUDENT"))
-                .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("viewUsers"));
-    }
-
 }

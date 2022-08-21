@@ -14,6 +14,9 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
+/**
+ * Controller class for the searching users page for finding evidence of users.
+ */
 @Controller
 public class SearchUsersController {
 
