@@ -1,6 +1,5 @@
 package nz.ac.canterbury.seng302.portfolio.service;
 
-import javax.persistence.Transient;
 import nz.ac.canterbury.seng302.portfolio.model.Project;
 import nz.ac.canterbury.seng302.portfolio.repository.ProjectRepository;
 import org.hibernate.ObjectNotFoundException;
@@ -23,7 +22,6 @@ public class ProjectService {
     @Autowired
     private ProjectRepository repository;
 
-    @Transient
     private static final Logger logger = LoggerFactory.getLogger(ProjectService.class);
 
 

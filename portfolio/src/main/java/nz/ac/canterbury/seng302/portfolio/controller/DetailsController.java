@@ -70,7 +70,8 @@ public class DetailsController {
      *
      * @param principal For getting the user ID
      * @param model Parameters sent to thymeleaf template to be rendered into HTML
-     * @return projectDetails page
+     * @return projectDetails page or throw exception
+     * @throws Exception throw exception if project doesn't exist
      */
     @GetMapping("/details")
     public String details(@AuthenticationPrincipal AuthState principal,

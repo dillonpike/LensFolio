@@ -161,7 +161,7 @@ public class CalendarController {
     @GetMapping("/calendar")
     public String calendarPage(
             Model model,
-            @AuthenticationPrincipal AuthState principal) throws Exception {
+            @AuthenticationPrincipal AuthState principal) {
         List<Sprint> sprints;
         List<Event> events;
         List<Deadline> deadlines;

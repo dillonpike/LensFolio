@@ -11,6 +11,9 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+/**
+ * Controller receive HTTP GET, POST, PUT, DELETE calls for edit event
+ */
 @Controller
 public class EditEventController {
 
