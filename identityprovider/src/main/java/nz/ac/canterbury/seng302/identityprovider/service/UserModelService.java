@@ -2,7 +2,6 @@ package nz.ac.canterbury.seng302.identityprovider.service;
 
 import nz.ac.canterbury.seng302.identityprovider.model.GroupModel;
 import nz.ac.canterbury.seng302.identityprovider.model.Roles;
-import nz.ac.canterbury.seng302.identityprovider.repository.GroupRepository;
 import nz.ac.canterbury.seng302.identityprovider.repository.RolesRepository;
 import nz.ac.canterbury.seng302.identityprovider.model.UserModel;
 import nz.ac.canterbury.seng302.identityprovider.repository.UserModelRepository;
@@ -29,7 +28,7 @@ public class UserModelService {
 
     private static int userIdCount = 1;
 
-    public UserModelService(UserModelRepository userModelRepository, RolesRepository rolesRepository, GroupRepository groupRepository) {
+    public UserModelService(UserModelRepository userModelRepository, RolesRepository rolesRepository) {
         this.repository = userModelRepository;
         this.rolesRepository = rolesRepository;
     }
@@ -172,9 +171,12 @@ public class UserModelService {
                 .setFirstName(user.getFirstName())
                 .setLastName(user.getLastName())
                 .setNickname(user.getNickname())
-                .setId(user.getUserId());
+                .setId(user.getUserId())
+                .setEmail(user.getEmail())
+                .setBio(user.getBio())
+                .setPersonalPronouns(user.getPersonalPronouns());
         Set<Roles> roles = user.getRoles();
-        Roles[] rolesArray = roles.toArray(new Roles[roles.size()]);
+        Roles[] rolesArray = roles.toArray(new Roles[]{});
 
         for (Roles value : rolesArray) {
             response.addRolesValue(value.getId());
