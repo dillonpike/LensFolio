@@ -63,7 +63,7 @@
                 </a>
                 <div id="groupList" th:fragment="groupList" class="list-group list-group-flush border-bottom group-bar">
                     <div th:each="group : ${groupList}">
-                        <div th:fragment="groupCard" th:id="|groupCard${group.getGroupId()}|">
+                        <div th:fragment="groupCard" th:id="|groupCard${group.getGroupId()}|" th:attr="onchange=|highlightCurrentGroup()|">
                             <button  class="list-group-item list-group-item-action py-3 lh-tight" aria-current="true" th:attr="onclick=|updateTable('${group.groupId}')|" id="updateGroupButton">
                                 <div class="d-flex flex-row w-100 align-items-center justify-content-between">
                                     <strong class="mb-1" th:text="${group.shortName}"></strong>
@@ -80,7 +80,7 @@
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-fill" viewBox="0 0 16 16">
                                     <path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H3zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/>
                                 </svg>
-                                <i th:text="${group.getMembersCount()}"></i>
+                                <i th:text="${group.getMembersCount()}" ></i>
                             </button>
                         </div>
                     </div>
@@ -310,6 +310,8 @@
             return true
         }
     }
+
+    $(`#groupCard1 button`).click() // Loads the page with the Non-members group selected
 
     /**
      * Check if the group table has any rows been selected,

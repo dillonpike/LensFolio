@@ -1,6 +1,6 @@
 
 /**
- * Add a 'active' class to the selected group, highlight current selected group for better user experience
+ * Add an 'active' class to the selected group, highlight current selected group for better user experience
  */
 function groupButtonSetup() {
     $('.group-bar button').on('click', function () {
@@ -71,7 +71,7 @@ function groupModalSetup() {
  }
 
 /**
- * Checks that the group modal inputs have text enetered in them, then submits the group adding/editing form and adds
+ * Checks that the group modal inputs have text entered in them, then submits the group adding/editing form and adds
  * the new group to the page or updates the edited group if the action was successful, otherwise updates the modal
  * with error messages.
  * @returns {Promise<void>} null
@@ -197,6 +197,7 @@ function copyUsers() {
     $.post('copy-users' + "?" + new URLSearchParams(data)).done((result) => {
         if (data.groupId === '1') {
             $(`#groupList`).replaceWith(result)
+            highlightCurrentGroup()
             updateTable(originGroupId)
         } else {
             $(`#groupCard${data.groupId}`).replaceWith(result)
@@ -205,6 +206,7 @@ function copyUsers() {
                 updateTable(originGroupId)
             }
         }
+
         groupButtonSetup() // Allow group cards to be highlighted when selected
         showAlertToast("Group " + groupName + " Updated")
     }).fail(() => {
@@ -213,11 +215,21 @@ function copyUsers() {
 }
 
 /**
+ * Highlights the currently selected group. This is needed as sometimes the selected group is not highlighted when the
+ * table is reloaded.
+ */
+function highlightCurrentGroup() {
+    const groupId = getCurrentGroupId()
+    document.getElementById("groupCard" + groupId).firstElementChild.classList.add("active")
+}
+
+/**
  * Requests an up-to-date version of the members without a group card and replaces the current card with it.
  */
 function updateMembersWithoutAGroupCard() {
     $.get('members-without-a-group').done((result) => {
         $(`#groupCard1`).replaceWith(result)
+        highlightCurrentGroup()
         groupButtonSetup() // Allow group cards to be highlighted when selected
     })
 }
