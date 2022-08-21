@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import nz.ac.canterbury.seng302.portfolio.model.*;
+import nz.ac.canterbury.seng302.portfolio.utility.DateUtility;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -194,7 +195,7 @@ public class DateValidationService {
         String message = "";
         if (!projectStartDateString.equals("") && !projectEndDateString.equals("")) {
             Date projectStartDate = Project.stringToDate(projectStartDateString);
-            Date projectEndDate = Project.stringToDate(projectEndDateString);
+            Date projectEndDate = DateUtility.setToEndOfDay(Project.stringToDate(projectEndDateString));
             List<Sprint> ordered = sprintService.getAllSprintsOrdered();
             if (!ordered.isEmpty()) {
                 Sprint first = ordered.get(0);
@@ -220,7 +221,7 @@ public class DateValidationService {
         String message = "";
         if (!projectStartDateString.equals("") && !projectEndDateString.equals("")) {
             Date projectStartDate = Project.stringToDate(projectStartDateString);
-            Date projectEndDate = Project.stringToDate(projectEndDateString);
+            Date projectEndDate = DateUtility.setToEndOfDay(Project.stringToDate(projectEndDateString));
             List<Event> orderedStartDate = eventService.getAllEventsOrderedStartDate();
             List<Event> orderedEndDate = eventService.getAllEventsOrderedEndDate();
             if (!orderedStartDate.isEmpty()) {
@@ -247,7 +248,7 @@ public class DateValidationService {
         String message = "";
         if (!projectStartDateString.equals("") && !projectEndDateString.equals("")) {
             Date projectStartDate = Project.stringToDate(projectStartDateString);
-            Date projectEndDate = Project.stringToDate(projectEndDateString);
+            Date projectEndDate = DateUtility.setToEndOfDay(Project.stringToDate(projectEndDateString));
             List<Milestone> ordered = milestoneService.getAllMilestonesOrdered();
             if (!ordered.isEmpty()) {
                 Milestone first = ordered.get(0);
@@ -273,7 +274,7 @@ public class DateValidationService {
         String message = "";
         if (!projectStartDateString.equals("") && !projectEndDateString.equals("")) {
             Date projectStartDate = Project.stringToDate(projectStartDateString);
-            Date projectEndDate = Project.stringToDate(projectEndDateString);
+            Date projectEndDate = DateUtility.setToEndOfDay(Project.stringToDate(projectEndDateString));
             List<Deadline> ordered = deadlineService.getAllDeadlinesOrdered();
             if (!ordered.isEmpty()) {
                 Deadline first = ordered.get(0);
@@ -287,7 +288,6 @@ public class DateValidationService {
         }
         return message;
     }
-
 
     /**
      * Returns an error message if a given time is empty or null, otherwise returns a blank message.

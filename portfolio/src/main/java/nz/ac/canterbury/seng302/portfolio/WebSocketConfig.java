@@ -23,7 +23,6 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     public void configureMessageBroker(MessageBrokerRegistry config) {
         // Sets up brokers for endpoint
         config.enableSimpleBroker("/webSocketGet");
-//        config.enableSimpleBroker("/webSocketGroupsGet");
         // Sets up endpoint the application back end is listening to (Where the front-end sends to)
         config.setApplicationDestinationPrefixes("/webSocketPost");
     }

@@ -63,7 +63,7 @@
                 </a>
                 <div id="groupList" th:fragment="groupList" class="list-group list-group-flush border-bottom group-bar">
                     <div th:each="group : ${groupList}">
-                        <div th:fragment="groupCard" th:id="|groupCard${group.getGroupId()}|">
+                        <div th:fragment="groupCard" th:id="|groupCard${group.getGroupId()}|" th:attr="onchange=|highlightCurrentGroup()|">
                             <button  class="list-group-item list-group-item-action py-3 lh-tight" aria-current="true" th:attr="onclick=|updateTable('${group.groupId}')|" id="updateGroupButton">
                                 <div class="d-flex flex-row w-100 align-items-center justify-content-between">
                                     <strong class="mb-1" th:text="${group.shortName}"></strong>
@@ -80,53 +80,52 @@
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-fill" viewBox="0 0 16 16">
                                     <path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H3zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/>
                                 </svg>
-                                <i th:text="${group.getMembersCount()}"></i>
+                                <i th:text="${group.getMembersCount()}" ></i>
                             </button>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="col-6 col-md-8 sticky-md-top card shadow">
-            <div id="table_refresh" th:fragment="table_refresh">
-                    <div class="container">
-                        <h1 class="mt-3" th:text="${groupLongName}"></h1>
-                        <h4 th:text="${groupShortName}"></h4>
-                        <div class="hstack gap-3" th:if="${currentUserRole != 'student'}">
-                            <span>Copy Users To </span>
-                            <select class="form-select input-sm" aria-label="Default select example" id="groupDropdownList">
-                                <option th:each="copyToGroup : ${groupList}" th:if="${group?.getGroupId() != copyToGroup.getGroupId()}" th:value="${copyToGroup.getGroupId()}" th:text="${copyToGroup.getShortName()}"></option>
-                            </select>
-                            <button type="button" class="btn btn-success" onclick="copyUsers()">
-                                Confirm
-                            </button>
-                            <button th:if="${groupLongName != 'Members without a group'}" type="button" class="btn btn-danger ms-auto" data-bs-type="remove" data-bs-toggle="modal" data-bs-target="#removeUserModal">
-                                Remove Users
-                            </button>
-                        </div>
-
-                        <table class="table table-striped table-bordered display" id="table" >
-                            <thead class="table-dark" id="headTable">
-                            <tr>
-                                <th id="firstNameColumn">First Name</th>
-                                <th id="lastNameColumn">Last Name</th>
-                                <th id="usernameColumn">Username</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            <tr th:each="member : ${members}" th:id="${member.Id}">
-                                <td th:text="${member.FirstName}"></td>
-                                <td th:text="${member.LastName}"></td>
-                                <td th:text="${member.username}"></td>
-                            </tr>
-                            </tbody>
-                        </table>
+        <div class="col-6 col-md-8 sticky-md-top card shadow pb-3 mb-5" id="tableRefreshContainer">
+            <div id="table_refresh" th:fragment="table_refresh" th:data-groupid="${group?.getGroupId()}">
+                <div class="container">
+                    <h1 class="mt-3" th:text="${groupShortName}"></h1>
+                    <h4 th:text="${groupLongName}"></h4>
+                    <div class="hstack gap-3 pb-2" th:if="${currentUserRole != 'student'}" id="groupOption" hidden>
+                        <span>Copy Users To </span>
+                        <select class="form-select input-sm" aria-label="Default select example" id="groupDropdownList">
+                            <option th:each="copyToGroup : ${groupList}" th:if="${group?.getGroupId() != copyToGroup.getGroupId()}" th:value="${copyToGroup.getGroupId()}" th:text="${copyToGroup.getShortName()}"></option>
+                        </select>
+                        <button type="button" class="btn btn-success" onclick="copyUsers()">
+                            Confirm
+                        </button>
+                        <button th:if="${groupLongName != 'Members without a group'}" type="button" class="btn btn-danger ms-auto" data-bs-type="remove" data-bs-toggle="modal" data-bs-target="#removeUserModal">
+                            Remove Users
+                        </button>
                     </div>
+
+                    <table class="table table-striped table-bordered display" id="table" >
+                        <thead class="table-dark" id="headTable">
+                        <tr>
+                            <th id="firstNameColumn">First Name</th>
+                            <th id="lastNameColumn">Last Name</th>
+                            <th id="usernameColumn">Username</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr id="rows"  th:each="member : ${members}" th:id="${member.Id}">
+                            <td th:text="${member.FirstName}"></td>
+                            <td th:text="${member.LastName}"></td>
+                            <td th:text="${member.username}"></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
                 <!--                Must have in line script here-->
                 <script>
                     userTable = $('table').DataTable({searching: false, paging: true, info: false, select: true});
                 </script>
-
             </div>
          </div>
     </div>
@@ -274,6 +273,7 @@
     deleteModalSetup()
     groupDeleteModalSetup()
     removeUserModalSetup()
+    nameValidateCheck()
 </script>
 
 <script>
@@ -310,6 +310,18 @@
             return true
         }
     }
+
+    $(`#groupCard1 button`).click() // Loads the page with the Non-members group selected
+
+    /**
+     * Check if the group table has any rows been selected,
+     * if so, show the group options(copy/remove users).
+     */
+    $(document).on("click", "#table tr", function(e) {
+        var rows = userTable.rows('.selected').data();
+        document.getElementById("groupOption").hidden = rows.length<=0;
+    });
+
 </script>
 
 

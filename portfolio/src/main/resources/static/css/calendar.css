@@ -4,6 +4,11 @@
     height: 1000px !important;
 }
 
+body {
+    padding-bottom: 100px;
+
+}
+
 .title-date {
     background: #0d6efd;
     color: white;
@@ -13,9 +18,6 @@
     text-align: center;
 }
 
-body {
-    padding-bottom: 100px;
-}
 
 .event-border {
     border-width: medium !important;
@@ -61,10 +63,6 @@ body {
     bottom: -110px;
 }
 
-.fc-daygrid-day-frame {
-    position: relative !important;
-}
-
 .fc-daygrid-event-harness {
     top: 0 !important;
     margin-top: 0 !important;
@@ -73,9 +71,7 @@ body {
 .fc-daygrid-day:not(.fc-day-disabled){
     height: 100px !important;
 }
-/*This value is used to fix an issue that occurs on firefox where the background events dont seem to fill the space.
-Depending on the extent of the issue (manual testing has shown it to be minimal) this may need to be looked into further in the future.*/
-.fc-daygrid-bg-harness{
-    height: 151.5px !important;
-}
 
+.fc-day-disabled {
+    height: 1px !important;
+}

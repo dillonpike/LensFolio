@@ -1,3 +1,5 @@
+const DATE_ONLY_PICKERS = ["milestoneDateInput", "sprintStartDateInput", "sprintEndDateInput", "projectStartDateInput", "projectEndDateInput"];
+
 /**
  * Configures the element with the given id to be a date and time picker. Returns the object of the datetime picker
  * for setting to a variable so changes can be made with code (e.g. setting the date).
@@ -24,12 +26,23 @@ function configureDateTimePicker(elementId) {
                     today: true,
                 },
                 components: {
-                    useTwentyfourHour: false
+                    useTwentyfourHour: false,
+                    decades: true,
+                    year: true,
+                    month: true,
+                    date: true,
+                    hours: !DATE_ONLY_PICKERS.includes(elementId),
+                    minutes: !DATE_ONLY_PICKERS.includes(elementId),
+                    seconds: false
                 },
                 theme: 'light'
             },
         }
     );
-    datepicker.dates.formatInput = function(date) { { return moment(date).format('DD/MMM/yyyy h:mm a') } }
+    if (DATE_ONLY_PICKERS.includes(elementId)){
+        datepicker.dates.formatInput = function(date) { { return moment(date).format('DD/MMM/yyyy') } }
+    } else {
+        datepicker.dates.formatInput = function(date) { { return moment(date).format('DD/MMM/yyyy h:mm a') } }
+    }
     return datepicker
 }

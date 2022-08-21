@@ -2,25 +2,20 @@ package nz.ac.canterbury.seng302.portfolio.service;
 
 import java.util.ArrayList;
 import java.util.List;
-import io.cucumber.java.hu.De;
+
 import nz.ac.canterbury.seng302.portfolio.model.Deadline;
-import nz.ac.canterbury.seng302.portfolio.model.Event;
 import nz.ac.canterbury.seng302.portfolio.model.Sprint;
 import nz.ac.canterbury.seng302.portfolio.repository.DeadlinesRepository;
-import nz.ac.canterbury.seng302.portfolio.repository.EventRepository;
 import nz.ac.canterbury.seng302.portfolio.repository.SprintRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -122,14 +117,14 @@ class DeadlineServiceTest {
      * Expect it throws Exception with message 'Event not found'
      */
     @Test
-    void getEventByIdWhenDeadlineDoesNotExist() {
+    void getDeadlineByIdWhenDeadlineDoesNotExist() {
         Exception exception = assertThrows(Exception.class, () -> {
             Optional<Deadline> sOptional = Optional.empty();
             when(deadlinesRepository.findById(any(Integer.class))).thenReturn(sOptional);
             deadlineService.getDeadlineById(1);
         });
-
-        String expectedMessage = "Event not found";
+        System.out.println(exception.getMessage());
+        String expectedMessage = "Unknown deadline#1";
         String actualMessage = exception.getMessage();
 
         assertTrue(actualMessage.contains(expectedMessage));
@@ -187,7 +182,7 @@ class DeadlineServiceTest {
         deadline.setDeadlineName("Date In Sprint Range");
         deadline.setDeadlineDate(sprintService.calendarDateStringToDate("2001-12-21", false));
 
-        boolean expectResult = deadlineService.validateDeadlineDateInSprintDateRange(deadline, sprint);
+        boolean expectResult = deadlineService.validateDeadlineDateInDateRange(deadline, sprint.getStartDate(), sprint.getEndDate());
 
         assertTrue(expectResult);
     }
@@ -204,7 +199,7 @@ class DeadlineServiceTest {
         deadline.setDeadlineName("Date In Sprint Range");
         deadline.setDeadlineDate(sprintService.calendarDateStringToDate("2001-12-19", false));
 
-        boolean expectResult = deadlineService.validateDeadlineDateInSprintDateRange(deadline, sprint);
+        boolean expectResult = deadlineService.validateDeadlineDateInDateRange(deadline, sprint.getStartDate(), sprint.getEndDate());
 
         assertFalse(expectResult);
     }
@@ -221,7 +216,7 @@ class DeadlineServiceTest {
         deadline.setDeadlineName("Date In Sprint Range");
         deadline.setDeadlineDate(sprintService.calendarDateStringToDate("2001-12-20", false));
 
-        boolean expectResult = deadlineService.validateDeadlineDateInSprintDateRange(deadline, sprint);
+        boolean expectResult = deadlineService.validateDeadlineDateInDateRange(deadline, sprint.getStartDate(), sprint.getEndDate());
 
         assertTrue(expectResult);
     }
@@ -238,7 +233,7 @@ class DeadlineServiceTest {
         deadline.setDeadlineName("Date In Sprint Range");
         deadline.setDeadlineDate(sprintService.calendarDateStringToDate("2001-12-29", true));
 
-        boolean expectResult = deadlineService.validateDeadlineDateInSprintDateRange(deadline, sprint);
+        boolean expectResult = deadlineService.validateDeadlineDateInDateRange(deadline, sprint.getStartDate(), sprint.getEndDate());
 
         assertTrue(expectResult);
     }
