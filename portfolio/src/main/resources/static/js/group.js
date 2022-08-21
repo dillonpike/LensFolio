@@ -1,3 +1,8 @@
+/**
+ * Id of the non members group.
+ * @type {number}
+ */
+const NON_MEMBER_GROUP_ID = 1
 
 /**
  * Add an 'active' class to the selected group, highlight current selected group for better user experience
@@ -206,7 +211,7 @@ function copyUsers() {
                 updateTable(originGroupId)
             }
         }
-
+        changeMembersReload(originGroupId, data.groupId);
         groupButtonSetup() // Allow group cards to be highlighted when selected
         showAlertToast("Group " + groupName + " Updated")
     }).fail(() => {
@@ -235,13 +240,52 @@ function updateMembersWithoutAGroupCard() {
 }
 
 /**
- * Requests an up-to-date version of the group card list and updates the current list with it.
+ * Sends a websocket message to reload users pages when members are removed from groups.
  */
-function updateGroupList() {
+function reloadRemovedUsers() {
+    const currentGroupId = parseInt($("#table_refresh").attr("data-groupid"), 10);
+    changeMembersReload(currentGroupId, NON_MEMBER_GROUP_ID);
+}
+
+/**
+ * Requests an up-to-date version of the group card list and updates the current list with it.
+ * Also updates the members table if the current group selected was changed.
+ */
+function updateGroupList(groupId, action) {
     $.get('group-list').done((result) => {
         $(`#groupList`).replaceWith(result)
         groupButtonSetup() // Allow group cards to be highlighted when selected
     })
+    if (groupId === parseInt($("#table_refresh").attr("data-groupid"), 10)) {
+        const table = $("#table").DataTable();
+        const url = "groups/local?";
+        const pageNumber = table.page.info().page;
+        sessionStorage.setItem("selected-members-page", pageNumber)
+        let chosenGroupId = groupId;
+        if (action === "delete") {
+            chosenGroupId = 1;
+            $('#tableRefreshContainer').load(url, "groupId=" + chosenGroupId)
+        } else {
+            $('#tableRefreshContainer').load(url, "groupId=" + chosenGroupId, () => {
+                let newPageNumber = sessionStorage.getItem("selected-members-page");
+                const table = $("#table").DataTable();
+                // Makes sure the table is on the same page as before the reload
+                if (action === "change-users-receive") {
+                    table.page(parseInt(newPageNumber, 10)).draw(false);
+                }
+                if (action === "change-users-send") {
+                    let maxPages = table.page.info().pages;
+                    if (newPageNumber >= maxPages) {
+                        newPageNumber = newPageNumber - 1;
+                    }
+                    if (maxPages !== 0 && newPageNumber > 0) {
+                        table.page(parseInt(newPageNumber, 10)).draw(false);
+                    }
+                }
+            })
+        }
+
+    }
 }
 
 /**
@@ -286,6 +330,7 @@ function removeUserModalButtonFunction() {
             $('#removeUserModal').modal('toggle')
             groupButtonSetup() // Allow group cards to be highlighted when selected
             showAlertToast("Group " + groupName + " Updated")
+            reloadRemovedUsers()
         }).fail(() => {
         document.getElementById('removeUserModalButton').onclick = buttonFunction;
         showAlertErrorToast("Group " + groupName + " failed to be updated")
