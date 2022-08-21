@@ -3,7 +3,7 @@ package nz.ac.canterbury.seng302.portfolio.controller;
 import com.google.protobuf.Timestamp;
 import nz.ac.canterbury.seng302.portfolio.service.*;
 import nz.ac.canterbury.seng302.shared.identityprovider.*;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.Before;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
@@ -56,7 +56,7 @@ class ViewUsersControllerTest {
     private final int USER_ID = 1;
     private final String USERNAME = "Username";
 
-    @BeforeEach
+    @Before
     public void setup() {
         mockMvc = MockMvcBuilders.standaloneSetup(AccountController.class).build();
     }
