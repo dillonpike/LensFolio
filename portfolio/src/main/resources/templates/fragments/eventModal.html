@@ -64,10 +64,9 @@
               validateModalName('eventName', 'eventAlertBanner', 'eventAlertMessage')) {
         document.getElementById('eventForm').onsubmit = () => { return false };
         document.getElementById('eventForm').submit();
+        sendSavedLiveNotificationRequest('Event');
       }
     }
-
-
 
     eventStartDatePicker = configureDateTimePicker('eventStartDateInput');
     eventEndDatePicker = configureDateTimePicker('eventEndDateInput');

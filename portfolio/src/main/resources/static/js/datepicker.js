@@ -1,4 +1,4 @@
-const DATE_ONLY_PICKERS = ["milestoneDateInput", "sprintStartDateInput", "sprintEndDateInput", "projectStartDateInput", "projectEndDateInput"];
+DATE_ONLY_PICKERS = ["milestoneDateInput", "sprintStartDateInput", "sprintEndDateInput", "projectStartDateInput", "projectEndDateInput"];
 
 /**
  * Configures the element with the given id to be a date and time picker. Returns the object of the datetime picker

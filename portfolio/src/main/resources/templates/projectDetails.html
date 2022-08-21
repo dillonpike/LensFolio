@@ -612,23 +612,15 @@
     }
 
     /**
-     * send request to show the live notification's toast when an update on a milestone is saved by a user
-     * this function is triggered when save button on Modal is clicked
-     * @param inputElementName the id of the input element
-     * @param modal the modal that currently open
-     * @param action what action that the currently open modal does (must be editing-...)
+     * send request to show the live notification's toast for an added/updated artefact
      * @param artefactType either Milestone, Deadline, or Milestone
      */
-    function sendSavedLiveNotificationRequest(inputElementName, modal, action, artefactType){
-        $(inputElementName).click(function() {
-            if (getModalActionType(modal) === action) {
-                if (action.includes("add")) {
-                    addPageReload(selectedArtefactName, selectedArtefactId, userId, userFirstName, userLastName, username, artefactType);
-                } else {
-                    sendNameReload(selectedArtefactName, selectedArtefactId, userId, userFirstName, userLastName, username, artefactType);
-                }
-            }
-        })
+    function sendSavedLiveNotificationRequest(artefactType){
+        if (getModalActionType(`${artefactType.toLowerCase()}Modal`).includes("add")) {
+            addPageReload(selectedArtefactName, selectedArtefactId, userId, userFirstName, userLastName, username, artefactType);
+        } else {
+            sendNameReload(selectedArtefactName, selectedArtefactId, userId, userFirstName, userLastName, username, artefactType);
+        }
     }
 
     /**
@@ -650,9 +642,6 @@
     sendEditingLiveNotificationRequest('#milestoneName', 'milestoneModal', 'edit-milestone', "Milestone");
     sendEditingLiveNotificationRequest("#milestoneDate", 'milestoneModal', 'edit-milestone', "Milestone");
 
-    sendSavedLiveNotificationRequest("#milestoneModalButton", 'milestoneModal', 'edit-milestone', "Milestone")
-    sendSavedLiveNotificationRequest("#milestoneModalButton", 'milestoneModal', 'add-milestone', "Milestone");
-
 
     sendStopEditingLiveNotificationRequest("#closeMilestoneModalButton", 'milestoneModal', 'edit-milestone', "Milestone");
 </script>
@@ -663,9 +652,6 @@
     sendEditingLiveNotificationRequest("#deadlineDate", "deadlineModal", 'edit-deadline', "Deadline");
     sendEditingLiveNotificationRequest("#deadlineTime", "deadlineModal", 'edit-deadline', "Deadline");
 
-    sendSavedLiveNotificationRequest("#deadlineModalButton", 'deadlineModal', 'edit-deadline', "Deadline");
-    sendSavedLiveNotificationRequest("#deadlineModalButton", 'deadlineModal', 'add-deadline', "Deadline");
-
     sendStopEditingLiveNotificationRequest("#closeDeadlineModalButton", 'deadlineModal', 'edit-deadline', "Deadline");
 
 
@@ -674,9 +660,6 @@
     sendEditingLiveNotificationRequest("#eventEndDate", 'eventModal', 'edit-event', "Event");
     sendEditingLiveNotificationRequest("#eventStartTime", 'eventModal', 'edit-event', "Event");
     sendEditingLiveNotificationRequest("#eventEndTime", 'eventModal', 'edit-event', "Event");
-
-    sendSavedLiveNotificationRequest("#eventModalButton", 'eventModal', 'edit-event', "Event");
-    sendSavedLiveNotificationRequest("#eventModalButton", 'eventModal', 'add-event', "Event");
 
 
     sendStopEditingLiveNotificationRequest("#closeEventModalButton", 'eventModal', 'edit-event', "Event");
@@ -689,9 +672,6 @@
         const text = title.split(" ");
         deletePageReload(selectedArtefactName, selectedArtefactId,userId, userFirstName, userLastName, username, text[1]);
     })
-
-
-
 </script>
 
 <script>

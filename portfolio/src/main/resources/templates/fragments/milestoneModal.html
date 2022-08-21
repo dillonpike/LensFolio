@@ -51,6 +51,7 @@
                 validateModalName('milestoneName', 'milestoneAlertBanner', 'milestoneAlertMessage')) {
                 document.getElementById('milestoneForm').onsubmit = () => { return false };
                 document.getElementById('milestoneForm').submit();
+                sendSavedLiveNotificationRequest('Milestone');
             }
         }
 
