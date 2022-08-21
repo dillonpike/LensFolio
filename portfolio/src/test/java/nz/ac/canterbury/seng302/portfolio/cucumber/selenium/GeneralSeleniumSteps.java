@@ -6,9 +6,13 @@ import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.When;
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
+
+import java.util.ArrayList;
 
 /**
  * General Selenium Cucumber step definitions that are relevant for multiple features.
@@ -92,5 +96,42 @@ public class GeneralSeleniumSteps {
         iBrowseToTheAccountPage();
         webDriver.findElement(By.id("editProfileButton")).click();
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//h2[contains(., 'Edit Profile')]")));
+    }
+
+    @Given("I am logged in")
+    public void iAmLoggedIn() {
+        iAmLoggedInAsUsername("admin");
+    }
+
+    @And("The user {string} exists")
+    public void theUserExists(String username) {
+        JavascriptExecutor js = (JavascriptExecutor) webDriver;
+        js.executeScript("window.open()");
+        ArrayList<String> tabs = new ArrayList<> (webDriver.getWindowHandles());
+        webDriver.switchTo().window(tabs.get(1));
+        webDriver.navigate().to("http://localhost:9000/login");
+        wait.until(ExpectedConditions.elementToBeClickable(By.id("usernameLogin")));
+        webDriver.findElement(By.id("usernameLogin")).sendKeys(username);
+        webDriver.findElement(By.id("passwordLogin")).sendKeys("");
+        webDriver.findElement(By.id("signIn")).click();
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("passwordInvalidMessage"))).isDisplayed();
+        tabs = new ArrayList<> (webDriver.getWindowHandles());
+        webDriver.switchTo().window(tabs.get(0));
+    }
+
+    @And("The user {string} does not exist")
+    public void theUserDoesNotExist(String username) {
+        JavascriptExecutor js = (JavascriptExecutor) webDriver;
+        js.executeScript("window.open()");
+        ArrayList<String> tabs = new ArrayList<> (webDriver.getWindowHandles());
+        webDriver.switchTo().window(tabs.get(1));
+        webDriver.navigate().to("http://localhost:9000/login");
+        wait.until(ExpectedConditions.elementToBeClickable(By.id("usernameLogin")));
+        webDriver.findElement(By.id("usernameLogin")).sendKeys(username);
+        webDriver.findElement(By.id("passwordLogin")).sendKeys("");
+        webDriver.findElement(By.id("signIn")).click();
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("usernameInvalidMessage"))).isDisplayed();
+        tabs = new ArrayList<> (webDriver.getWindowHandles());
+        webDriver.switchTo().window(tabs.get(0));
     }
 }
