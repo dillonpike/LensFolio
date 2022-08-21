@@ -257,19 +257,18 @@ function updateGroupList(groupId, action) {
         groupButtonSetup() // Allow group cards to be highlighted when selected
     })
     if (groupId === parseInt($("#table_refresh").attr("data-groupid"), 10)) {
-        let table = $("#table").DataTable();
-        let pageNumber = table.page.info().page;
+        const table = $("#table").DataTable();
+        const url = "groups/local?";
+        const pageNumber = table.page.info().page;
         sessionStorage.setItem("selected-members-page", pageNumber)
         let chosenGroupId = groupId;
         if (action === "delete") {
             chosenGroupId = 1;
-            let url = "groups/local?";
             $('#tableRefreshContainer').load(url, "groupId=" + chosenGroupId)
         } else {
-            let url = "groups/local?";
             $('#tableRefreshContainer').load(url, "groupId=" + chosenGroupId, () => {
                 let newPageNumber = sessionStorage.getItem("selected-members-page");
-                let table = $("#table").DataTable();
+                const table = $("#table").DataTable();
                 // Makes sure the table is on the same page as before the reload
                 if (action === "change-users-receive") {
                     table.page(parseInt(newPageNumber, 10)).draw(false);

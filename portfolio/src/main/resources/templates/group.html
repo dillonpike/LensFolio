@@ -190,7 +190,7 @@
     }
 
     /**
-     * Sends the message that an artefact(milestone, event, deadline) is deleted
+     * Sends the message that a group is deleted
      */
     function deletePageReload(artefactName, artefactId,userId, userFirstName, userLastName, username, artefactType) {
         stompClient.send("/webSocketPost/deleted-group", {}, JSON.stringify({
@@ -206,7 +206,7 @@
     /**
      * Sends the message that a group has been added.
      */
-    function addPageReload(artefactName, artefactId, userId, userFirstName, userLastName, username, artefactType) {
+    function addGroupReload(artefactName, artefactId, userId, userFirstName, userLastName, username, artefactType) {
         stompClient.send("/webSocketPost/added-group", {}, JSON.stringify({
             'artefactName': artefactName,
             'artefactId' : artefactId,
@@ -305,7 +305,7 @@
             if (getModalActionType(modal) === action) {
                 if (action.includes("add")) {
                     console.log("added");
-                    addPageReload(selectedArtefactName, selectedArtefactId, userId, userFirstName, userLastName, username, "Group");
+                    addGroupReload(selectedArtefactName, selectedArtefactId, userId, userFirstName, userLastName, username, "Group");
                 } else {
                     console.log("editing");
                     sendNameReload(selectedArtefactName, selectedArtefactId, userId, userFirstName, userLastName, username, "Group");
