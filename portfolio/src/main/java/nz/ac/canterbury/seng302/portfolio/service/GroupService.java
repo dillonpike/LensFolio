@@ -11,7 +11,6 @@ import org.springframework.ui.Model;
 import java.util.ArrayList;
 import java.util.List;
 
-
 /**
  * Contains methods for performing operations on Group objects, such as adding and removing group members, and storing
  * groups in the database.

@@ -2,6 +2,7 @@ package nz.ac.canterbury.seng302.portfolio.service;
 
 import nz.ac.canterbury.seng302.portfolio.model.UserSorting;
 import nz.ac.canterbury.seng302.portfolio.repository.UserSortingRepository;
+import org.hibernate.ObjectNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -47,13 +48,14 @@ public class UserSortingService {
      * Getting the UserSorting Object based on the given user's id
      * @param id Integer user's Id
      * @return a UserSorting object
+     * @throws ObjectNotFoundException if user sorting can't be found
      */
-    public UserSorting getUserSortingById(Integer id) throws Exception {
+    public UserSorting getUserSortingById(Integer id) throws ObjectNotFoundException {
         Optional<UserSorting> userSorting = repository.findById(id);
         if (userSorting.isPresent()) {
             return userSorting.get();
         } else {
-            throw new Exception("UserSorting not found");
+            throw new ObjectNotFoundException(id, "UserSorting not found");
         }
     }
 }

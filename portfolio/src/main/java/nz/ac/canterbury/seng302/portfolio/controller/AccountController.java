@@ -58,11 +58,7 @@ public class AccountController {
         elementService.addUpdateMessage(model, request);
         try {
             int userId = Integer.parseInt(userIdInput);
-            if (id == userId) {
-                model.addAttribute("isAuthorised", true);
-            } else {
-                model.addAttribute("isAuthorised", false);
-            }
+            model.addAttribute("isAuthorised", (id==userId));
             getUserByIdReply = registerClientService.getUserData(userId);
             if (getUserByIdReply.getEmail().length() == 0) {
                 model.addAttribute(USER_ID_ATTRIBUTE_NAME, id);

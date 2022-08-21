@@ -150,9 +150,8 @@ public class DeadlineService {
     /***
      * Function to get all deadlines in chronological order,
      * add colour for each deadline and save to repository
-     *
+     * @param sprints list of sprints
      * @return deadline in chronological order
-     * @param sprints
      */
     public List<Deadline> getAllDeadlinesOrderedWithColour(List<Sprint> sprints) {
         List<Deadline> deadlinesList = getAllDeadlinesOrdered();
