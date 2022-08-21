@@ -265,12 +265,13 @@
         let socket = new SockJS('mywebsockets');
         stompClient = Stomp.over(socket);
         stompClient.connect({}, function (frame) {
-
-            stompClient.subscribe('/webSocketGet/save-edit', function (ignore) {
+            stompClient.subscribe('/webSocketGet/artefact-save', function (ignore) {
                 refreshEvents();
-
             });
             stompClient.subscribe('/webSocketGet/artefact-delete', function (ignore) {
+                refreshEvents();
+            });
+            stompClient.subscribe('/webSocketGet/artefact-add', function (ignore) {
                 refreshEvents();
             });
         });
@@ -284,7 +285,7 @@
         localStorage.setItem("currentDate", date);
         setTimeout(() => {
             document.location.reload();
-        }, 100);
+        }, 500);
     }
     connect();
 </script>
