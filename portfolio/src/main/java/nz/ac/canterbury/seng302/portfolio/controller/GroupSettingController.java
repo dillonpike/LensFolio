@@ -5,6 +5,7 @@ import nz.ac.canterbury.seng302.portfolio.service.*;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import org.gitlab4j.api.GitLabApiException;
 import org.gitlab4j.api.models.Commit;
+import org.gitlab4j.api.models.Member;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
@@ -42,6 +43,11 @@ public class GroupSettingController {
         elementService.addHeaderAttributes(model, id);
 
         groupService.addGroupDetailToModel(model, groupId);
+        List<Member> repositoryMembers = gitLabApiService.getMembers(groupId);
+        model.addAttribute("repositoryMembers",repositoryMembers);
+
+        List<String> branchesName = gitLabApiService.getBranchNames(groupId);
+        model.addAttribute("branchesName", branchesName);
         return "groupSetting";
     }
 

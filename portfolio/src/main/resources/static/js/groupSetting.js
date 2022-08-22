@@ -1,7 +1,7 @@
 function updateCommitsList() {
 
     const data = {
-        groupId: "116",
+        groupId: "2",
         branchName : "All Branches",
         userEmail: "All Users"
     }
