@@ -22,7 +22,8 @@
                 <div class="text-start mb-1-6">
                     <h2 class="h1 mt-2 fs-1 mx-3" id="groupSettingTitle">Group Setting</h2>
                     <br>
-                    <form th:action="@{saveGroupSetting}" method="post">
+                    <form th:action="@{saveGroupSetting}" method="post" id="groupSettingsForm">
+                        <div th:value="${group.groupId}" id="groupId" style="display: none"></div>
                         <div class="mb-3 mx-3">
                             <label for="longGroupName" class="col-form-label">Long Group Name:</label>
                             <input onkeyup="updateCharsLeft('longGroupName', 'longGroupNameLength', 30)" maxlength="30" type="text"
@@ -99,6 +100,14 @@
     </div>
 
 </div>
+<script src="js/groupSettingsLive.js"></script>
+<script>
+    $("#groupSettingsForm").onsubmit(() => {
+        $.post("saveGroupSettings").done((result) => {
+            sendIdRefresh($("#groupId").val());
+        });
+    })
+</script>
 <script>
     //updates characters left
     function updateCharsLeft(elementId, messageElementId, numChars) {
