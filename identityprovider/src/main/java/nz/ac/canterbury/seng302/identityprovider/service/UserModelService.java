@@ -208,9 +208,10 @@ public class UserModelService {
         Roles teacherRole = rolesRepository.findByRoleName("TEACHER");
 
         boolean addedRole = false;
-        for (Roles role : user.getRoles()) {
+        Set<Roles> roles = new HashSet<>(user.getRoles());
+        for (Roles role : roles) {
             if (role.getRoleName().equals(teacherRole.getRoleName())) {
-                user.getRoles().remove(role);
+                user.deleteRole(role);
                 addedRole = saveEditedUser(user);
             }
         }
