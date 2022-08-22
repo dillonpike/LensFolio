@@ -21,9 +21,9 @@ public class NotificationMessage {
     private String artefactType;
 
     /**
-     * Main constructer of an NotificationMessage
+     * Main constructor of an NotificationMessage
      * @param artefactName Name of the event being changed.
-     * @param userId User Id of the user editing.
+     * @param userId User id of the user editing.
      * @param userFirstName First name of the user editing.
      * @param userLastName Last name of the user editing.
      * @param username Username of the user editing.

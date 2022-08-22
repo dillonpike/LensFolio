@@ -20,6 +20,10 @@ public class EventDic {
     // Because we want to separate the types of events we store the JSON objects as the values rather than just the amounts.
 
     HashMap<EventTypes, String> datesToEvents = new HashMap<>();
+    private static final String MESSAGE_TITLE = "{title: '";
+    private static final String MESSAGE_START = "', start: '";
+    private static final String MESSAGE_DESCRIPTION = "', description: '";
+    private static final String MESSAGE_BR = "<br>- ";
 
     /**
      * Method used to combine the JSON lists together for the events.
@@ -54,16 +58,16 @@ public class EventDic {
         String date = updateDateString(deadline.getDeadlineDate());
 
         if (eventData == null) {
-            eventObject.append("{title: '").append(amount).append("', start: '").append(date).append("', type: 'Deadline").append("', description: '").append(description).append("'},");
+            eventObject.append(MESSAGE_TITLE).append(amount).append(MESSAGE_START).append(date).append("', type: 'Deadline").append(MESSAGE_DESCRIPTION).append(description).append("'},");
         } else {
             try {
                 amount += Integer.parseInt(eventData.split("'")[1]);
-                description = eventData.split("'")[7] + "<br>- " + HtmlUtils.htmlEscape(deadline.getDeadlineName());
+                description = eventData.split("'")[7] + MESSAGE_BR + HtmlUtils.htmlEscape(deadline.getDeadlineName());
             } catch (Exception ignore) {
                 // Current uses -1 to represent error. May want to change this to a thrown error.
                 amount = -1;
             }
-            eventObject.append("{title: '").append(amount).append("', start: '").append(date).append("', type: 'Deadline").append("', description: '").append(description).append("'},");
+            eventObject.append(MESSAGE_TITLE).append(amount).append(MESSAGE_START).append(date).append("', type: 'Deadline").append(MESSAGE_DESCRIPTION).append(description).append("'},");
         }
         datesToEvents.put(new EventTypes("Deadline", deadline.getDeadlineDateString()), eventObject.toString());
     }
@@ -98,16 +102,16 @@ public class EventDic {
             String description = "<strong>Events:</strong><br>- " + HtmlUtils.htmlEscape(event.getEventName());
             StringBuilder eventObject = new StringBuilder();
             if (eventData == null) {
-                eventObject.append("{title: '").append(amount).append("', start: '").append(date).append("', type: 'Event").append("', description: '").append(description).append("'},");
+                eventObject.append(MESSAGE_TITLE).append(amount).append(MESSAGE_START).append(date).append("', type: 'Event").append(MESSAGE_DESCRIPTION).append(description).append("'},");
             } else {
                 try {
                     amount += Integer.parseInt(eventData.split("'")[1]);
-                    description = eventData.split("'")[7] + "<br>- " + HtmlUtils.htmlEscape(event.getEventName());
+                    description = eventData.split("'")[7] + MESSAGE_BR + HtmlUtils.htmlEscape(event.getEventName());
                 } catch (Exception ignore) {
                     // Current uses -1 to represent error. May want to change this to a thrown error.
                     amount = -1;
                 }
-                eventObject.append("{title: '").append(amount).append("', start: '").append(date).append("', type: 'Event").append("', description: '").append(description).append("'},");
+                eventObject.append(MESSAGE_TITLE).append(amount).append(MESSAGE_START).append(date).append("', type: 'Event").append(MESSAGE_DESCRIPTION).append(description).append("'},");
             }
             datesToEvents.put(new EventTypes("Event", Project.dateToString(Date.from(date))), eventObject.toString());
             current.add(Calendar.DATE, 1);
@@ -127,16 +131,16 @@ public class EventDic {
         StringBuilder eventObject = new StringBuilder();
         String date = updateDateString(milestone.getMilestoneDate());
         if (eventData == null) {
-            eventObject.append("{title: '").append(amount).append("', start: '").append(date).append("', type: 'Milestone").append("', description: '").append(description).append("'},");
+            eventObject.append(MESSAGE_TITLE).append(amount).append(MESSAGE_START).append(date).append("', type: 'Milestone").append(MESSAGE_DESCRIPTION).append(description).append("'},");
         } else {
             try {
                 amount += Integer.parseInt(eventData.split("'")[1]);
-                description = eventData.split("'")[7] + "<br>- " + HtmlUtils.htmlEscape(milestone.getMilestoneName());
+                description = eventData.split("'")[7] + MESSAGE_BR + HtmlUtils.htmlEscape(milestone.getMilestoneName());
             } catch (Exception ignore) {
                 // Current uses -1 to represent error. May want to change this to a thrown error.
                 amount = -1;
             }
-            eventObject.append("{title: '").append(amount).append("' , start: '").append(date).append("', type: 'Milestone").append("', description: '").append(description).append("'},");
+            eventObject.append(MESSAGE_TITLE).append(amount).append("' , start: '").append(date).append("', type: 'Milestone").append(MESSAGE_DESCRIPTION).append(description).append("'},");
         }
         datesToEvents.put(new EventTypes("Milestone", milestone.getMilestoneDateString()), eventObject.toString());
     }

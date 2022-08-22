@@ -3,6 +3,7 @@ package nz.ac.canterbury.seng302.portfolio.controller;
 import nz.ac.canterbury.seng302.portfolio.model.Group;
 import nz.ac.canterbury.seng302.portfolio.model.NotificationMessage;
 import nz.ac.canterbury.seng302.portfolio.model.NotificationResponse;
+import nz.ac.canterbury.seng302.portfolio.model.NotificationGroup;
 import nz.ac.canterbury.seng302.portfolio.service.*;
 import nz.ac.canterbury.seng302.shared.identityprovider.*;
 import nz.ac.canterbury.seng302.shared.util.ValidationError;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+
 import java.util.List;
 import java.util.Objects;
 import org.springframework.web.bind.annotation.*;
@@ -178,7 +180,7 @@ public class GroupController {
 
     /**
      * Tries to save new data to group with given groupId to the database.
-     * @param id id of event edited
+     * @param id id of groups edited
      * @param group Group data to be updated
      * @param model model to add attributes to for Thymeleaf to inject into the HTML
      * @param httpServletResponse for adding status codes to
@@ -271,12 +273,12 @@ public class GroupController {
     /**
      * This method maps @MessageMapping endpoint to the @SendTo endpoint. Called when something is sent to
      * the MessageMapping endpoint.
-     * @param message NotificationMessage that holds information about the event being updated
-     * @return returns an NotificationResponse that holds information about the event being updated.
+     * @param message NotificationMessage that holds information about the group being updated
+     * @return returns an NotificationResponse that holds information about the group being updated.
      */
     @MessageMapping("/editing-group")
     @SendTo("/webSocketGet/group-being-edited")
-    public NotificationResponse updatingArtefact(NotificationMessage message) {
+    public NotificationResponse updatingGroupWebsocket(NotificationMessage message) {
         return NotificationResponse.fromMessage(message, "edit");
     }
 
@@ -288,23 +290,60 @@ public class GroupController {
      */
     @MessageMapping("/stop-editing-group")
     @SendTo("/webSocketGet/group-stop-being-edited")
-    public NotificationResponse stopUpdatingArtefact(NotificationMessage message) {
+    public NotificationResponse stopUpdatingGroupWebsocket(NotificationMessage message) {
         return NotificationResponse.fromMessage(message, "edit");
     }
 
     /**
      * This method maps @MessageMapping endpoint to the @SendTo endpoint. Called when something is sent to
-     * the MessageMapping endpoint. This method also triggers some sort of re-render of the events.
-     * @param message NotificationMessage that holds information about the event being updated
-     * @return returns an NotificationResponse that holds information about the event being updated.
+     * the MessageMapping endpoint. This method also triggers some sort of re-render of the groups.
+     * @param message NotificationMessage that holds information about the group being updated
+     * @return returns an NotificationResponse that holds information about the group being updated.
      */
     @MessageMapping("/saved-edited-group")
     @SendTo("/webSocketGet/group-save-edit")
-    public NotificationResponse savingUpdatedArtefact(NotificationMessage message) {
+    public NotificationResponse savingUpdatedGroupWebsocket(NotificationMessage message) {
         NotificationResponse response = NotificationResponse.fromMessage(message, "save");
-        // Trigger reload and save the last event's information
+        // Trigger reload and save the last group's information
         groupService.addNotification(response, 3);
         return response;
+    }
+
+    /**
+     * This method maps @MessageMapping endpoint to the @SendTo endpoint. Called when a group is added.
+     * @param message NotificationMessage that holds information about the group being added
+     * @return returns an NotificationResponse that holds information about the group being added.
+     */
+    @MessageMapping("/added-group")
+    @SendTo("/webSocketGet/group-add")
+    public NotificationResponse addingGroupWebsocket(NotificationMessage message) {
+        NotificationResponse response = NotificationResponse.fromMessage(message, "add");
+        groupService.addNotification(response, 3);
+        return response;
+    }
+
+    /**
+     * This method maps @MessageMapping endpoint to the @SendTo endpoint. Called when a group is deleted.
+     * @param message NotificationMessage that holds information about the group being deleted
+     * @return returns an NotificationResponse that holds information about the group being deleted.
+     */
+    @MessageMapping("/deleted-group")
+    @SendTo("/webSocketGet/group-delete")
+    public NotificationResponse deletingGroupWebsocket(NotificationMessage message) {
+        NotificationResponse response = NotificationResponse.fromMessage(message, "delete");
+        groupService.addNotification(response, 3);
+        return response;
+    }
+
+    /**
+     * This method maps @MessageMapping endpoint to the @SendTo endpoint. Called when a groups members are updated.
+     * @param message NotificationMessage that holds information about the groups being updated.
+     * @return returns an NotificationResponse that holds information about the groups being updated.
+     */
+    @MessageMapping("/changed-members-group")
+    @SendTo("/webSocketGet/group-change-users")
+    public NotificationGroup changeGroupMembersWebsocket(NotificationGroup message) {
+        return message;
     }
 
 }

@@ -51,6 +51,7 @@
               validateModalName('deadlineName', 'deadlineAlertBanner', 'deadlineAlertMessage')) {
         document.getElementById('deadlineForm').onsubmit = () => { return false };
         document.getElementById('deadlineForm').submit();
+        sendSavedLiveNotificationRequest('Deadline');
       }
     }
 

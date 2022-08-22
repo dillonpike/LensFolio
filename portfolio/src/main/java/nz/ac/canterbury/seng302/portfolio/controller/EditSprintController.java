@@ -2,6 +2,7 @@ package nz.ac.canterbury.seng302.portfolio.controller;
 
 import nz.ac.canterbury.seng302.portfolio.model.Sprint;
 import nz.ac.canterbury.seng302.portfolio.service.*;
+import org.hibernate.ObjectNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -35,7 +36,7 @@ public class EditSprintController {
      * Tries to save new data to sprint with given sprintId to the database.
      * @param id Id of sprint edited
      * @param sprint New sprint object
-     * @throws Exception if sprint cannot be found from the given ID or if it cannot be saved.
+     * @throws ObjectNotFoundException if sprint cannot be found from the given ID or if it cannot be saved.
      */
     @PostMapping("/edit-sprint/{id}")
     public String sprintSave(
@@ -43,7 +44,7 @@ public class EditSprintController {
             @AuthenticationPrincipal AuthState principal,
             @ModelAttribute("sprint") Sprint sprint,
             Model model
-    ) throws Exception {
+    ) throws ObjectNotFoundException {
         Integer userID = userAccountClientService.getUserIDFromAuthState(principal);
         elementService.addHeaderAttributes(model, userID);
         if (permissionService.isValidToModifyProjectPage(userID)) {

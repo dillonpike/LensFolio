@@ -5,6 +5,10 @@ package nz.ac.canterbury.seng302.portfolio.utility;
  */
 public class GeneralUtility {
 
+    private GeneralUtility() {
+        // Empty initializer
+    }
+
     /**
      * Gets the location of which branch/vm the program is running on.
      * @param dataSource    This relates to the applications' property file being used.
