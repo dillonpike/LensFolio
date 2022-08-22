@@ -5,6 +5,7 @@ import nz.ac.canterbury.seng302.portfolio.repository.GroupSettingsRepository;
 import org.gitlab4j.api.*;
 import org.gitlab4j.api.models.Branch;
 import org.gitlab4j.api.models.Commit;
+import org.gitlab4j.api.models.Contributor;
 import org.gitlab4j.api.models.Member;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -55,7 +56,7 @@ class GitLabApiServiceTest {
 
     private static final List<Branch> testBranches = new ArrayList<>();
 
-    private static final List<Member> testMembers = new ArrayList<>();
+    private static final List<Contributor> testContributors = new ArrayList<>();
 
     private static final List<Commit> testCommits = new ArrayList<>();
 
@@ -70,9 +71,9 @@ class GitLabApiServiceTest {
             branch.setName("testBranch" + i);
             testBranches.add(branch);
 
-            Member member = new Member();
-            member.setEmail(String.format("testEmail%d@gmail.com", i));
-            testMembers.add(member);
+            Contributor contributor = new Contributor();
+            contributor.setEmail(String.format("testEmail%d@gmail.com", i));
+            testContributors.add(contributor);
 
             Commit commit = new Commit();
             commit.setAuthorEmail(String.format("testEmail%d@gmail.com", i));
@@ -108,16 +109,16 @@ class GitLabApiServiceTest {
 
     /**
      * Test that the getMembers method returns the list of members returned by the GitLab API.
-     * Expect the function return all author that has contributed to the repo, in this case testMembers list
+     * Expect the function return all author that has contributed to the repo, in this case testContributors list
      * @throws GitLabApiException if an error occurs when calling the GitLab API
      */
     @Test
     void testGetMembers() throws GitLabApiException {
         when(gitLabApi.getProjectApi()).thenReturn(projectApi);
-        when(projectApi.getAllMembers(testGroupSettings.getRepoId())).thenReturn(testMembers);
+        when(repositoryApi.getContributors(testGroupSettings.getRepoId())).thenReturn(testContributors);
 
-        List<Member> members = gitLabApiService.getMembers(testGroupSettings.getGroupId());
-        assertEquals(testMembers, members);
+        List<Contributor> members = gitLabApiService.getContributors(testGroupSettings.getGroupId());
+        assertEquals(testContributors, members);
     }
 
     /**
@@ -157,12 +158,12 @@ class GitLabApiServiceTest {
      */
     @Test
     void testGetCommitsNoBranchNameWithAuthor() throws GitLabApiException {
-        Member member = testMembers.get(3);
+        Contributor contributor = testContributors.get(3);
         when(gitLabApi.getCommitsApi()).thenReturn(commitsApi);
         when(gitLabApi.getCommitsApi().getCommits(testGroupSettings.getRepoId())).thenReturn(testCommits);
 
-        List<Commit> commits = gitLabApiService.getCommits(testGroupSettings.getGroupId(), null, member.getEmail());
-        assertEquals(testCommits.stream().filter(commit -> Objects.equals(commit.getAuthorEmail(), member.getEmail())).toList(), commits);
+        List<Commit> commits = gitLabApiService.getCommits(testGroupSettings.getGroupId(), null, contributor.getEmail());
+        assertEquals(testCommits.stream().filter(commit -> Objects.equals(commit.getAuthorEmail(), contributor.getEmail())).toList(), commits);
     }
 
     /**
@@ -172,12 +173,12 @@ class GitLabApiServiceTest {
      */
     @Test
     void testGetCommitsNWithBranchNameAndAuthor() throws GitLabApiException {
-        Member member = testMembers.get(4);
+        Contributor contributor = testContributors.get(4);
         String branchName = testBranches.get(2).getName();
         when(gitLabApi.getCommitsApi()).thenReturn(commitsApi);
         when(gitLabApi.getCommitsApi().getCommits(testGroupSettings.getRepoId(), branchName, null, null)).thenReturn(testCommits);
 
-        List<Commit> commits = gitLabApiService.getCommits(testGroupSettings.getGroupId(), branchName, member.getEmail());
-        assertEquals(testCommits.stream().filter(commit -> Objects.equals(commit.getAuthorEmail(), member.getEmail())).toList(), commits);
+        List<Commit> commits = gitLabApiService.getCommits(testGroupSettings.getGroupId(), branchName, contributor.getEmail());
+        assertEquals(testCommits.stream().filter(commit -> Objects.equals(commit.getAuthorEmail(), contributor.getEmail())).toList(), commits);
     }
 }

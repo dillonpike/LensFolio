@@ -5,6 +5,7 @@ import nz.ac.canterbury.seng302.portfolio.service.*;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import org.gitlab4j.api.GitLabApiException;
 import org.gitlab4j.api.models.Commit;
+import org.gitlab4j.api.models.Contributor;
 import org.gitlab4j.api.models.Member;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -43,9 +44,9 @@ public class GroupSettingController {
         elementService.addHeaderAttributes(model, id);
 
         groupService.addGroupDetailToModel(model, groupId);
-        List<Member> repositoryMembers = gitLabApiService.getMembers(groupId);
-        model.addAttribute("repositoryMembers",repositoryMembers);
-
+        List<Contributor> repositoryContributors = gitLabApiService.getContributors(groupId);
+        model.addAttribute("repositoryContributors",repositoryContributors);
+        System.out.println(repositoryContributors);
         List<String> branchesName = gitLabApiService.getBranchNames(groupId);
         model.addAttribute("branchesName", branchesName);
         return "groupSetting";
@@ -68,6 +69,7 @@ public class GroupSettingController {
             }
             List<Commit> allCommit = gitLabApiService.getCommits(groupId, branchRequestName, userRequestEmail);
             model.addAttribute("commitList", allCommit);
+            System.out.println(allCommit);
             return "groupSetting::commitsListRefresh";
         } catch (GitLabApiException e) {
             return "groupSetting";

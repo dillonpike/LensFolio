@@ -5,6 +5,7 @@ import org.gitlab4j.api.GitLabApi;
 import org.gitlab4j.api.GitLabApiException;
 import org.gitlab4j.api.models.Branch;
 import org.gitlab4j.api.models.Commit;
+import org.gitlab4j.api.models.Contributor;
 import org.gitlab4j.api.models.Member;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -37,10 +38,10 @@ public class GitLabApiService {
      * @return list of users in the repository linked to the group
      * @throws GitLabApiException if any exception occurs communicating with the GitLab API
      */
-    public List<Member> getMembers(Integer groupId) throws GitLabApiException {
+    public List<Contributor> getContributors(Integer groupId) throws GitLabApiException {
         GroupSettings groupSettings = groupSettingsService.getGroupSettingsByGroupId(groupId);
         GitLabApi gitLabApi = groupSettings.getGitLabApi();
-        return gitLabApi.getProjectApi().getAllMembers(groupSettings.getRepoId());
+        return gitLabApi.getRepositoryApi().getContributors(groupSettings.getRepoId());
     }
 
     /**

@@ -121,7 +121,7 @@
                             <label for="nameDropdown">Author Name</label>
                             <select id="nameDropdown" class="my-select selectpicker" data-live-search="true" >
                                 <option value="All Users">All Users</option>
-                                <option th:each="member: ${repositoryMembers}" th:text="${member.getName()}" th:value="${member.getEmail()}"></option>
+                                <option th:each="contributor: ${repositoryContributors}" th:text="${contributor.getName()}" th:value="${contributor.getEmail()}"></option>
                             </select>
                         </div>
 
