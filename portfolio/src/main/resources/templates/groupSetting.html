@@ -12,6 +12,7 @@
     <link rel="stylesheet" href="https://cdn.datatables.net/1.10.22/css/dataTables.bootstrap4.min.css">
     <script src="https://cdn.datatables.net/1.10.22/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/1.10.22/js/dataTables.bootstrap4.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 </head>
 <body>
 <header th:replace="fragments/header"></header>
@@ -84,18 +85,15 @@
                 </div>
                 <div class="card shadow">
                     <div class="hstack gap-3">
-                        <h4 id="RecentActivity" class="mt-3 mx-3">Recent Activity</h4>
-                        <select id="branch" class="form-select my-3 mx-3 ms-auto" style="width: 50%" aria-label="Default select example">
-                            <option selected>Select Branch</option>
-                            <option value="1">master</option>
-                            <option value="2">dev</option>
-                        </select>
+
+                        <h4 id="Recent Commits" class="mt-3 mx-3">Recent Activity</h4>
 
                         <div class="dropdown" style="margin: 20px">
-                            <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdown_coins" data-toggle="dropdown" aria-haspopup="true"
+                            <button class="form-control" type="button" id="dropdown_coins" data-toggle="dropdown" aria-haspopup="true"
                                     aria-expanded="false">
                                 Coin
                             </button>
+
                             <div id="menu" class="dropdown-menu" style="max-height: 20rem; overflow-y: auto" aria-labelledby="dropdown_coins">
                                 <form class="px-4 py-2">
                                     <input type="search" class="form-control" id="searchCoin" placeholder="BTC" autofocus="autofocus">
@@ -131,6 +129,7 @@
     </div>
 
 </div>
+<script src="js/groupSetting.js"></script>
 <script th:inline="javascript">
     //updates characters left
     function updateCharsLeft(elementId, messageElementId, numChars) {
@@ -205,14 +204,7 @@
 
     buildDropDown(names)
 
-    const data = {
-        groupId: "116",
-        branchName : "All Branches",
-        userEmail: "All Users"
-    }
-    $.get('repository-commits?'+new URLSearchParams(data)).done((result) => {
-        $(`#commitsListRefresh`).replaceWith(result)
-    })
+
 </script>
 </body>
 </html>
