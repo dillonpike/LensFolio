@@ -155,6 +155,10 @@ public class GroupSettings {
         this.groupId = groupId;
     }
 
+    /**
+     * Returns the gitLabAPIKey.
+     * @return group id
+     */
     public GitLabApi getGitLabApi() {
         if (gitLabApi == null) {
             gitLabApi = new GitLabApi("https://eng-git.canterbury.ac.nz", repoApiKey);
