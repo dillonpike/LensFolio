@@ -105,7 +105,25 @@
                             </div>
                         </div>
                     </div>
+                </div>
+                <div id = "commitsListRefresh" th:fragment="commitsListRefresh" class="overflow-auto" style="height: 500px; margin-bottom: 50px">
+                    <div class="card mb-1" th:each="commit: ${commitList}" >
+                        <div class="card-body mt-2">
+                            <div class="d-flex flex-row">
+                                <p style="margin-right: 10px">
+                                    Commits
+                                </p>
+                                <a th:href="${commit.getWebUrl()}" th:text="${commit.getId()}"></a>
+                            </div>
 
+                            <h5 class="card-title" th:text="${commit.getTitle()}">Special title treatment</h5>
+                            <div class="d-flex flex-row justify-content-between">
+                                <p th:text="${commit.getAuthorName()}"> </p>
+                                <p th:text="${commit.getCommittedDate()}"></p>
+                            </div>
+
+                        </div>
+                    </div>
                 </div>
             </div>
          </div>
@@ -113,7 +131,7 @@
     </div>
 
 </div>
-<script>
+<script th:inline="javascript">
     //updates characters left
     function updateCharsLeft(elementId, messageElementId, numChars) {
         let chars_left = numChars - document.getElementById(elementId).value.length;
@@ -186,6 +204,15 @@
     })
 
     buildDropDown(names)
+
+    const data = {
+        groupId: "116",
+        branchName : "All Branches",
+        userEmail: "All Users"
+    }
+    $.get('repository-commits?'+new URLSearchParams(data)).done((result) => {
+        $(`#commitsListRefresh`).replaceWith(result)
+    })
 </script>
 </body>
 </html>

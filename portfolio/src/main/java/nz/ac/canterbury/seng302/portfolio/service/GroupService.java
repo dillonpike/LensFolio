@@ -141,6 +141,7 @@ public class GroupService {
     public void addGroupListToModel(Model model) {
         PaginatedGroupsResponse groupList = getPaginatedGroups(1, 1, "null", false);
         groupDetailsResponseList = groupList.getGroupsList();
+        System.out.println(groupDetailsResponseList);
         model.addAttribute("groupList", groupDetailsResponseList);
     }
 

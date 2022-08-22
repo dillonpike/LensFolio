@@ -2,10 +2,12 @@ package nz.ac.canterbury.seng302.portfolio.service;
 
 import nz.ac.canterbury.seng302.portfolio.model.GroupSettings;
 import nz.ac.canterbury.seng302.portfolio.repository.GroupSettingsRepository;
+import nz.ac.canterbury.seng302.shared.identityprovider.GroupDetailsResponse;
 import org.hibernate.ObjectNotFoundException;
 import org.jvnet.hk2.annotations.Service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.ui.Model;
 
 import java.util.Optional;
 
@@ -24,4 +26,5 @@ public class GroupSettingsService {
             throw new ObjectNotFoundException(groupId, "Unknown GroupSettings with group id");
         }
     }
+
 }
