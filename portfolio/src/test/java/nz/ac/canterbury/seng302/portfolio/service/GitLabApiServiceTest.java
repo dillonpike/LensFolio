@@ -59,6 +59,10 @@ class GitLabApiServiceTest {
 
     private static final List<Commit> testCommits = new ArrayList<>();
 
+    /**
+     * Setting up all expected output which then will be used by the test function to compare with the actual result.
+     * This function run before all test cases to reduce code duplication
+     */
     @BeforeAll
     static void setUp() {
         for (int i=0; i<5; i++) {
@@ -74,9 +78,14 @@ class GitLabApiServiceTest {
             commit.setAuthorEmail(String.format("testEmail%d@gmail.com", i));
             testCommits.add(commit);
         }
-
     }
 
+    /**
+     * Mocking some common functions calls to the GroupSetting and Group SettingsService class.
+     * The mocking should be done in a function with @BeforeEach annotation instead od @BeforeAll annotation in order to
+     * prevent the mocked class(in this case GroupSetting and groupSettingService Class) to be static which would cause
+     * a null error when the tests runs
+     */
     @BeforeEach
     void setUpEach() {
         when(groupSettingsService.getGroupSettingsByGroupId(testGroupSettings.getGroupId())).thenReturn(testGroupSettings);
@@ -84,7 +93,8 @@ class GitLabApiServiceTest {
     }
 
     /**
-     * Test that the getMembers method returns the list of branch names returned by the GitLab API.
+     * Test that the getBranches method returns the list of branch names returned by the GitLab API.
+     * Expect the function to return a list of branch's name that exists in a repository
      * @throws GitLabApiException if an error occurs when calling the GitLab API
      */
     @Test
@@ -98,6 +108,7 @@ class GitLabApiServiceTest {
 
     /**
      * Test that the getMembers method returns the list of members returned by the GitLab API.
+     * Expect the function return all author that has contributed to the repo, in this case testMembers list
      * @throws GitLabApiException if an error occurs when calling the GitLab API
      */
     @Test
@@ -112,6 +123,7 @@ class GitLabApiServiceTest {
     /**
      * Test that the getCommits method returns all the commits returned from the GitLab API when not filtering by branch
      * or user.
+     * Expect all commits to be returned regardless of user and branch name, in this test we expect all instances in testCommits to be returned
      * @throws GitLabApiException if an error occurs when calling the GitLab API
      */
     @Test
@@ -124,8 +136,8 @@ class GitLabApiServiceTest {
     }
 
     /**
-     * Test that the getCommits method returns all the commits returned from the GitLab API when not filtering by branch
-     * or user.
+     * Test that the getCommits method returns all the commits returned from the GitLab API when filtering by branch name but not with user.
+     * Expect all commits returned
      * @throws GitLabApiException if an error occurs when calling the GitLab API
      */
     @Test
