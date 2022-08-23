@@ -14,9 +14,11 @@ public class Evidence {
     private static final Logger logger = LoggerFactory.getLogger(Evidence.class);
 
     @Id
-    private Long evidenceId;
+    private int evidenceId;
 
-    private Long userId;
+    private int parentProjectId;
+
+    private int userId;
 
     private String title;
 
@@ -31,35 +33,43 @@ public class Evidence {
             inverseJoinColumns =
             @JoinColumn(name = "tag_id")
     )
-    private Set<Tag> tags;
+    private Set<Tag> tags = new HashSet<>();
 
     /**
      * Empty constructor for JPA.
      */
     public Evidence() {}
 
-    public Evidence(Long userId, String title, String description, Date date) {
+    public Evidence(int parentProjectId, int userId, String title, String description, Date date) {
+        this.parentProjectId = parentProjectId;
         this.userId = userId;
         this.title = title;
         this.description = description;
         this.date = date;
-        this.tags = new HashSet<>();
     }
 
-    public Long getEvidenceId() {
+    public int getEvidenceId() {
         return evidenceId;
     }
 
-    public void setEvidenceId(Long evidenceId) {
+    public void setEvidenceId(int evidenceId) {
         this.evidenceId = evidenceId;
     }
 
-    public Long getUserId() {
+    public int getUserId() {
         return userId;
     }
 
-    public void setUserId(Long userId) {
+    public void setUserId(int userId) {
         this.userId = userId;
+    }
+
+    public int getParentProjectId() {
+        return parentProjectId;
+    }
+
+    public void setParentProjectId(int parentProjectId) {
+        this.parentProjectId = parentProjectId;
     }
 
     public String getTitle() {

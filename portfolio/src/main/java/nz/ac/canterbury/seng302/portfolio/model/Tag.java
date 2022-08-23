@@ -1,12 +1,24 @@
 package nz.ac.canterbury.seng302.portfolio.model;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
+import javax.persistence.*;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 public class Tag {
     @Id
-    private Long tagId;
+    private int tagId;
+
+    private String tagName;
+
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
+    @JoinTable(name = "evidence_to_tag",
+            joinColumns =
+            @JoinColumn(name = "tag_id"),
+            inverseJoinColumns =
+            @JoinColumn(name = "evidence_id")
+    )
+    private Set<Evidence> evidenceWithTag = new HashSet<>();
 
     /**
      * Empty constructor for JPA.
@@ -25,13 +37,19 @@ public class Tag {
         this.tagName = tagName;
     }
 
-    private String tagName;
-
-    public Long getTagId() {
+    public int getTagId() {
         return tagId;
     }
 
-    public void setTagId(Long tagId) {
+    public void setTagId(int tagId) {
         this.tagId = tagId;
+    }
+
+    /**
+     * Returns the evidences with this tag.
+     * @return Set of Evidence objects with this tag.
+    */
+    public Set<Evidence> getEvidence() {
+        return evidenceWithTag;
     }
 }
