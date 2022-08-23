@@ -47,7 +47,7 @@
          * Validates the currently entered information for the milestone and submits the form if it's valid.
          */
         async function validateMilestone() {
-            if (validateModalDate('milestoneDate', 'submitMilestoneButton', 'milestoneDateAlertBanner', 'milestoneDateAlertMessage') &&
+            if (validateModalDate('milestoneDate', 'submitMilestoneButton', 'milestoneDateAlertBanner', 'milestoneDateAlertMessage') && // "submitMilestoneButton" may be the wrong id?
                 validateModalName('milestoneName', 'milestoneAlertBanner', 'milestoneAlertMessage')) {
                 document.getElementById('milestoneForm').onsubmit = () => { return false };
                 document.getElementById('milestoneForm').submit();

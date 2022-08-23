@@ -1,0 +1,65 @@
+<div th:fragment="evidenceModal" class="modal fade" id="evidenceModal" tabindex="-1" role="dialog" aria-labelledby="evidenceModalTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="evidenceModalTitle">Add Evidence</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="closeEvidenceModalButton"></button>
+            </div>
+            <div>
+                <form method="post" id="evidenceForm" onsubmit="validateEvidence(); return false" th:action="@{add-evidence}">
+                    <div class="modal-body" id="evidenceBody" th:fragment="evidenceModalBody">
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert" id="evidenceTitleAlertBanner" th:hidden="${evidenceTitleAlertMessage==null}">
+                            <span id="evidenceTitleAlertMessage" data-test-id="alertMessage" th:text="${evidenceTitleAlertMessage}"></span>
+                            <button type="button" class="btn-close" onclick="document.getElementById('evidenceTitleAlertBanner').hidden = true" aria-label="Close"></button>
+                        </div>
+                        <div class="mb-3">
+                            <label for="evidenceTitle" class="col-form-label">Title:</label>
+                            <input onkeyup="updateCharsLeft('evidenceTitle', 'evidenceTitleLength', 30)" maxlength="30" type="text"
+                                   class="form-control" id="evidenceTitle" name="title" th:value="${evidence?.title}">
+                            <div class="name-length-message">
+                                <span id="evidenceTitleLength"></span>
+                            </div>
+                        </div>
+
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert" id="evidenceDescriptionAlertBanner" th:hidden="${evidenceDescriptionAlertMessage==null}">
+                            <span id="evidenceDescriptionAlertMessage" data-test-id="alertMessage" th:text="${evidenceDescriptionAlertMessage}"></span>
+                            <button type="button" class="btn-close" onclick="document.getElementById('evidenceDescriptionAlertBanner').hidden = true" aria-label="Close"></button>
+                        </div>
+                        <div class="mb-3">
+                            <label for="evidenceDescription" class="col-form-label">Description:</label>
+                            <input onkeyup="updateCharsLeft('evidenceDescription', 'evidenceDescriptionLength', 250)" maxlength="250" type="text"
+                                   class="form-control" id="evidenceDescription" name="description" th:value="${evidence?.description}">
+                            <div class="name-length-message">
+                                <span id="evidenceDescriptionLength"></span>
+                            </div>
+                        </div>
+
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert" id="evidenceDateAlertBanner" hidden>
+                            <span id="evidenceDateAlertMessage" data-test-id="alertMessage"></span>
+                            <button type="button" class="btn-close" onclick="document.getElementById('evidenceDateAlertBanner').hidden = true" aria-label="Close"></button>
+                        </div>
+                        <div class="mb-3">
+                            <label for="evidenceDate" class="col-form-label">Date:</label>
+                            <i class="bi bi-question-circle"></i>
+                            <div class="input-group" id="evidenceDateInput" data-td-target-input="nearest" data-td-target-toggle="nearest">
+                                <input id="evidenceDate" type="text" class="form-control" data-td-target="#evidenceDateInput"
+                                       onkeydown="return false" th:name="evidenceDateString" onchange="validateModalDateTime(
+                                            'evidenceDate', 'evidenceModalButton', 'evidenceDateAlertBanner', 'evidenceDateAlertMessage')"/>
+                                <span class="input-group-text bg-white" data-td-target="#evidenceDateInput" data-td-toggle="datetimepicker">
+                                <span class="bi bi-calendar"></span>
+                            </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-primary" id="evidenceModalButton" type="submit">Add Evidence</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <script src="js/datepicker.js"></script>
+    <script type="text/javascript">
+        evidenceDatePicker = configureDateTimePicker('evidenceDateInput');
+    </script>
+</div>

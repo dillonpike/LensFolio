@@ -110,7 +110,7 @@ function addGroup() {
         $('#groupModal').modal('toggle')
         document.getElementById("groupList").innerHTML += result
         groupButtonSetup() // Allow group cards to be highlighted when selected
-    }).fail(replaceModalBody)
+    }).fail(replaceGroupModalBody)
 }
 
 /**
@@ -130,14 +130,14 @@ function editGroup() {
         $(`#groupCard${id}`).replaceWith(result)
         groupButtonSetup() // Allow group cards to be highlighted when selected
         $(`#groupCard${id} button`).click() // Select edited group
-    }).fail(replaceModalBody)
+    }).fail(replaceGroupModalBody)
 }
 
 /**
- * Replaces the body of the modal with the given modalBody response from the backend.
+ * Replaces the body of the group modal with the given modalBody response from the backend.
  * @param modalBodyResponse response with new modalBody to display (groupModalBody fragment)
  */
-function replaceModalBody(modalBodyResponse) {
+function replaceGroupModalBody(modalBodyResponse) {
     $("#groupModalBody").replaceWith(modalBodyResponse.responseText)
     updateCharsLeft('shortGroupName', 'shortGroupNameLength', 10)
     updateCharsLeft('longGroupName', 'longGroupNameLength', 30)
