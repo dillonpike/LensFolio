@@ -103,7 +103,7 @@
 <script src="js/groupSettingsLive.js"></script>
 <script>
     $("#groupSettingsForm").onsubmit(() => {
-        $.post("saveGroupSettings").done((result) => {
+        $.get("saveGroupSetting").done((ignore) => {
             sendIdRefresh($("#groupId").val());
         });
     })
