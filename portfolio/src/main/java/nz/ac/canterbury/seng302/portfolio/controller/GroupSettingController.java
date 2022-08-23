@@ -12,6 +12,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -34,6 +35,9 @@ public class GroupSettingController {
     private GroupService groupService;
 
     @Autowired
+    private PermissionService permissionService;
+
+    @Autowired
     private GitLabApiService gitLabApiService;
 
     @GetMapping("/groupSetting")
@@ -42,11 +46,9 @@ public class GroupSettingController {
                                Model model) throws GitLabApiException {
         Integer id = userAccountClientService.getUserIDFromAuthState(principal);
         elementService.addHeaderAttributes(model, id);
-
         groupService.addGroupDetailToModel(model, groupId);
         List<Contributor> repositoryContributors = gitLabApiService.getContributors(groupId);
         model.addAttribute("repositoryContributors",repositoryContributors);
-        System.out.println(repositoryContributors);
         List<String> branchesName = gitLabApiService.getBranchNames(groupId);
         model.addAttribute("branchesName", branchesName);
         return "groupSetting";
@@ -69,12 +71,26 @@ public class GroupSettingController {
             }
             List<Commit> allCommit = gitLabApiService.getCommits(groupId, branchRequestName, userRequestEmail);
             model.addAttribute("commitList", allCommit);
-            System.out.println(allCommit);
             return "groupSetting::commitsListRefresh";
         } catch (GitLabApiException e) {
             return "groupSetting";
         }
+    }
 
+    /**
+     * POST method for group setting page to update group long name,
+     * Repository name, Id, and Access Token
+     * @return group setting page
+     */
+    @PostMapping("/saveGroupSetting")
+    public String editGroupSetting(
+            @RequestParam(name = "longName") String longName,
+            @RequestParam(name = "repoName") String repoName,
+            @RequestParam(name = "repoID") int repoId,
+            @RequestParam(name = "repoToken") String repoToken,
+            @RequestParam(name = "groupId") int groupId
+    ) {
+        return "groupSetting";
     }
 }
 
