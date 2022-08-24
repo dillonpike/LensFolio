@@ -7,7 +7,7 @@
             </div>
             <div>
                 <form method="post" id="evidenceForm" onsubmit="validateEvidence(); return false" th:action="@{add-evidence}">
-                    <div class="modal-body" id="evidenceBody" th:fragment="evidenceModalBody">
+                    <div class="modal-body" id="evidenceModalBody" th:fragment="evidenceModalBody">
                         <div class="alert alert-danger alert-dismissible fade show" role="alert" id="evidenceTitleAlertBanner" th:hidden="${evidenceTitleAlertMessage==null}">
                             <span id="evidenceTitleAlertMessage" data-test-id="alertMessage" th:text="${evidenceTitleAlertMessage}"></span>
                             <button type="button" class="btn-close" onclick="document.getElementById('evidenceTitleAlertBanner').hidden = true" aria-label="Close"></button>

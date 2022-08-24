@@ -28,12 +28,14 @@ function addEvidence() {
         shortName: document.getElementById('evidenceTitle').value,
         longName: document.getElementById('evidenceDescription').value
     }
-    $.post(document.getElementById('evidenceForm').action + "?" + new URLSearchParams(data)).done((result) => {
+    $.post(document.getElementById('evidenceForm').action).done((result) => {  //  + "?" + new URLSearchParams(data)
         // TODO update the page with the new evidence using some sort of replacement technique.
         // Below is what the group page does, for help with how to implement such a step.
         $('#evidenceModal').modal('toggle')
         // document.getElementById("groupList").innerHTML += result
-    }).fail(replaceEvidenceModalBody)
+    }).fail((xhr, status, error) => {
+        replaceEvidenceModalBody(xhr);
+    })
 }
 
 /**
@@ -41,6 +43,7 @@ function addEvidence() {
  * @param modalBodyResponse response with new modalBody to display (evidenceModalBody fragment)
  */
 function replaceEvidenceModalBody(modalBodyResponse) {
+    console.log(modalBodyResponse.responseText)
     $("#evidenceModalBody").replaceWith(modalBodyResponse.responseText)
     updateCharsLeft('evidenceTitle', 'evidenceTitleLength', 30)
     updateCharsLeft('evidenceDescription', 'evidenceDescriptionLength', 250)
