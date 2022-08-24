@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
   <title>Search Users</title>
   <meta charset="utf-8">
@@ -56,7 +56,9 @@
 <script th:inline="javascript">
 
   const table = $('#sortTable');
-  // Saves the sorting of the table so that it is persistent
+  /**
+   * Saves the sorting of the table so that it is persistent
+   */
   function saveSort() {
     const data = {
       columnIndex: table.dataTable().fnSettings().aaSorting[0][0],
@@ -100,17 +102,20 @@
   table.DataTable(tableOptions);
   table.DataTable().search("").draw();
 
-  $("#searchBar").bind("propertychange change click keyup input paste", function(event) {
+  $("#searchBar").bind("propertychange change click keyup input paste", function () {
     let searchBar = $("#searchBar");
     if (searchBar.data('oldVal') !== searchBar.val()) {
       // Updated stored value
       searchBar.data('oldVal', searchBar.val());
-      console.log("IT runss")
       // Run the search
       table.DataTable().search(searchBar.val()).draw();
     }
   });
 
+  /**
+   * Redirects to the evidence page of the user with userId.
+   * @param userId id of user whose evidence page to redirect to
+   */
   function redirectToEvidence(userId) {
     window.location.href = "account?userId=" + userId;
   }
