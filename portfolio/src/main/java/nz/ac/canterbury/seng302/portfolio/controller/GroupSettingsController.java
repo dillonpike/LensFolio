@@ -35,10 +35,13 @@ public class GroupSettingsController {
                                Model model) {
         Integer id = userAccountClientService.getUserIDFromAuthState(principal);
         elementService.addHeaderAttributes(model, id);
+
+        // Non-existent group will have a group id of 0 when calling getGroupDetails
         if (0 <= groupService.getGroupDetails(groupId).getGroupId() &&
                 groupService.getGroupDetails(groupId).getGroupId() <= 2) {
             return "redirect:/groups";
         }
+
         groupService.addGroupDetailToModel(model, groupId);
         return "groupSettings";
     }
