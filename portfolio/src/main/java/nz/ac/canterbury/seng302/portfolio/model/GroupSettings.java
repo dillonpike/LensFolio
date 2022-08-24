@@ -53,7 +53,7 @@ public class GroupSettings {
     private Set<Integer> memberIds = new HashSet<>();
 
     /**
-     * GitLabApi object made with the repository id and api key, so it doesn't need to be stored in the database.
+     * GitLabApi object made with the api key, so it doesn't need to be stored in the database.
      * The transient tag stops it from being stored in the database.
      */
     @Transient
