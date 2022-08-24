@@ -52,6 +52,10 @@ public class GroupSettings {
     @Column(name="user_id")
     private Set<Integer> memberIds = new HashSet<>();
 
+    /**
+     * GitLabApi object made with the api key, so it doesn't need to be stored in the database.
+     * The transient tag stops it from being stored in the database.
+     */
     @Transient
     private GitLabApi gitLabApi;
 
@@ -155,6 +159,10 @@ public class GroupSettings {
         this.groupId = groupId;
     }
 
+    /**
+     * Returns the gitLabApi object.
+     * @return gitLabApi object
+     */
     public GitLabApi getGitLabApi() {
         if (gitLabApi == null) {
             gitLabApi = new GitLabApi("https://eng-git.canterbury.ac.nz", repoApiKey);

@@ -11,6 +11,9 @@ import org.springframework.ui.Model;
 
 import java.util.Optional;
 
+/**
+ * Methods for getting, saving, and deleting group settings database entries.
+ */
 @Configuration
 @Service
 public class GroupSettingsService {
@@ -18,6 +21,12 @@ public class GroupSettingsService {
     @Autowired
     private GroupSettingsRepository repository;
 
+    /**
+     * Returns the group settings object in the database with the group id.
+     * @param groupId group id of the group settings object
+     * @return group settings object object in the database with the group id
+     * @throws ObjectNotFoundException thrown if no group settings object was found
+     */
     public GroupSettings getGroupSettingsByGroupId(int groupId) throws ObjectNotFoundException {
         Optional<GroupSettings> groupSettings = repository.findByGroupId(groupId);
         if (groupSettings.isPresent()) {

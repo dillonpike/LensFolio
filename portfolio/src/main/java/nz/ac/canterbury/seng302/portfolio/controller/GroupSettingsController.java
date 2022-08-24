@@ -23,7 +23,7 @@ import java.util.List;
  * Controller for group setting page.
  */
 @Controller
-public class GroupSettingController {
+public class GroupSettingsController {
 
     @Autowired
     private ElementService elementService;
@@ -40,18 +40,25 @@ public class GroupSettingController {
     @Autowired
     private GitLabApiService gitLabApiService;
 
-    @GetMapping("/groupSetting")
-    public String groupSetting(@RequestParam(value = "groupId") int groupId,
+    @GetMapping("/groupSettings")
+    public String groupSettings(@RequestParam(value = "groupId") int groupId,
                                @AuthenticationPrincipal AuthState principal,
                                Model model) throws GitLabApiException {
         Integer id = userAccountClientService.getUserIDFromAuthState(principal);
         elementService.addHeaderAttributes(model, id);
+
+        // Non-existent group will have a group id of 0 when calling getGroupDetails
+        if (0 <= groupService.getGroupDetails(groupId).getGroupId() &&
+                groupService.getGroupDetails(groupId).getGroupId() <= 2) {
+            return "redirect:/groups";
+        }
+
         groupService.addGroupDetailToModel(model, groupId);
         List<Contributor> repositoryContributors = gitLabApiService.getContributors(groupId);
         model.addAttribute("repositoryContributors",repositoryContributors);
         List<String> branchesName = gitLabApiService.getBranchNames(groupId);
         model.addAttribute("branchesName", branchesName);
-        return "groupSetting";
+        return "groupSettings";
     }
 
     @GetMapping("/repository-commits")
@@ -71,9 +78,9 @@ public class GroupSettingController {
             }
             List<Commit> allCommit = gitLabApiService.getCommits(groupId, branchRequestName, userRequestEmail);
             model.addAttribute("commitList", allCommit);
-            return "groupSetting::commitsListRefresh";
+            return "groupSettings::commitsListRefresh";
         } catch (GitLabApiException e) {
-            return "groupSetting";
+            return "groupSettings";
         }
     }
 
@@ -90,7 +97,7 @@ public class GroupSettingController {
             @RequestParam(name = "repoToken") String repoToken,
             @RequestParam(name = "groupId") int groupId
     ) {
-        return "groupSetting";
+        return "groupSettings";
     }
 }
 
