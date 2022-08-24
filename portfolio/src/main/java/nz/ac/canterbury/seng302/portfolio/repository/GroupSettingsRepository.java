@@ -13,6 +13,6 @@ public interface GroupSettingsRepository extends CrudRepository<GroupSettings, I
     Optional<GroupSettings> findByGroupId(int id);
 
     List<GroupSettings> findAllByOrderByGroupSettingsId();
-    void deleteAllByGroupId(int groupId);
+    void deleteById(int id);
 
 }

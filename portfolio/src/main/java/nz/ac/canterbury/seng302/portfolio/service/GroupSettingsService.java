@@ -56,12 +56,12 @@ public class GroupSettingsService {
      * @param groupSettingsId id of the group settings entry to delete
      * @return true if an entry is found and deleted, otherwise false
      */
-    public boolean deleteGroupSettings(Integer groupSettingsId) {
+    public boolean deleteGroupSettings(int groupSettingsId) {
         Optional<GroupSettings> groupSettings = repository.findById(groupSettingsId);
         if (groupSettings.isPresent()) {
             logger.info("Deleting group settings {} ({}) for group {}",
                     groupSettingsId, groupSettings.get().getRepoName(), groupSettings.get().getGroupId());
-            repository.deleteAllByGroupId(groupSettingsId);
+            repository.deleteById(groupSettingsId);
             return true;
         }
         return false;
