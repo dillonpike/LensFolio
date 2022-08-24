@@ -62,7 +62,7 @@
 
             <div class="text-start mb-1-6">
               <h2 class="h1 mb-0 fs-1">Profile</h2>
-              <a class="button-link" data-bs-toggle="modal" data-bs-target="#evidenceModal" data-bs-type="add">
+              <a class="button-link" data-bs-toggle="modal" data-bs-target="#evidenceModal" data-bs-type="add" th:if="${isAuthorised} == true">
                 <button id="addEvidenceButton" class="dropdown-item" type="button">
                   <span class='bi bi-plus'></span> <i>Add Evidence</i>
                 </button>
