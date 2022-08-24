@@ -4,7 +4,7 @@ import nz.ac.canterbury.seng302.portfolio.model.Group;
 import nz.ac.canterbury.seng302.portfolio.service.*;
 import nz.ac.canterbury.seng302.shared.identityprovider.*;
 import org.junit.Before;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
@@ -28,7 +28,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 /**
- * Unit tests for the GroupSettingsController class. Tests application endpoints.
+ * Unit tests for the GroupSettingsController class. Tests application endpoints related to group settings.
  */
 @ExtendWith(SpringExtension.class)
 @WebMvcTest(controllers = GroupSettingsController.class)
@@ -66,29 +66,28 @@ class GroupSettingsControllerTest {
     @MockBean
     private GitLabApiService gitLabApiService; // needed to load application context
 
-    private final Group testGroup = new Group("Test", "Test Group", 1);
+    private static final Group testGroup = new Group("Test", "Test Group", 1);
 
-    private final Group membersGroup = new Group("Short Name", "Long Name", 2);
+    private static final Group membersGroup = new Group("Short Name", "Long Name", 2);
 
-    private final Group teachersGroup = new Group("Short Name", "Long Name", 1);
+    private static final Group teachersGroup = new Group("Short Name", "Long Name", 1);
 
     /**
-     * Build the mockMvc object.
+     * Build the mockMvc object and mock security contexts.
      */
     @Before
-    public void setUp() {
+    public void setUpMocks() {
         mockMvc = MockMvcBuilders.standaloneSetup(GroupSettingsController.class).build();
-    }
-
-    /**
-     * Mock security contexts and set group ids.
-     * Group ids only need to be set once, but weren't being set properly in setUp.
-     */
-    @BeforeEach
-    public void setUpBeforeEach() {
         SecurityContext mockedSecurityContext = Mockito.mock(SecurityContext.class);
         when(mockedSecurityContext.getAuthentication()).thenReturn(new PreAuthenticatedAuthenticationToken(validAuthState, ""));
         SecurityContextHolder.setContext(mockedSecurityContext);
+    }
+
+    /**
+     * Set group ids (did not work with @Before tag).
+     */
+    @BeforeAll
+    static void setUpIds() {
         testGroup.setGroupId(5);
         membersGroup.setGroupId(1);
         teachersGroup.setGroupId(2);
