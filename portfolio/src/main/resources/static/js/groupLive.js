@@ -30,8 +30,23 @@ function connect() {
         })
         stompClient.subscribe('/webSocketGet/group-save-edit', function (eventResponseArg) {
             const eventResponse = JSON.parse(eventResponseArg.body);
-            updateGroupList();
-            showToastSave(eventResponse.artefactName, eventResponse.artefactId, eventResponse.username, eventResponse.userFirstName, eventResponse.userLastName, eventResponse.artefactType);
+            updateGroupList(eventResponse.artefactId, "save");
+            showToastSave(eventResponse.artefactName, eventResponse.artefactId, eventResponse.username, eventResponse.userFirstName, eventResponse.userLastName, eventResponse.artefactType, eventResponse.action);
+        });
+        stompClient.subscribe('/webSocketGet/group-delete', function (eventResponseArg) {
+            const eventResponse = JSON.parse(eventResponseArg.body);
+            updateGroupList(eventResponse.artefactId, "delete");
+            showToastSave(eventResponse.artefactName, eventResponse.artefactId, eventResponse.username, eventResponse.userFirstName, eventResponse.userLastName, eventResponse.artefactType, eventResponse.action);
+        });
+        stompClient.subscribe('/webSocketGet/group-add', function (eventResponseArg) {
+            const eventResponse = JSON.parse(eventResponseArg.body);
+            updateGroupList(eventResponse.artefactId, "add");
+            showToastSave(eventResponse.artefactName, eventResponse.artefactId, eventResponse.username, eventResponse.userFirstName, eventResponse.userLastName, eventResponse.artefactType, eventResponse.action);
+        });
+        stompClient.subscribe('/webSocketGet/group-change-users', function (twoGroupResponseArg) {
+            const twoGroupResponse = JSON.parse(twoGroupResponseArg.body);
+            updateGroupList(twoGroupResponse.sendingGroupId, "change-users-send");
+            updateGroupList(twoGroupResponse.receivingGroupId, "change-users-receive");
         });
 
     });
@@ -93,6 +108,7 @@ $(function () {
     connect();
 
     // Checks if there should be a live update, and shows a toast if needed.
+    // This is needed in coordination with the relevant controller method for after reloading the page.
     for (let i = 0; i < NUM_OF_TOASTS; i++) {
         let toastInformationString = "#toastInformation" + (i+1);
         let toastArtefactNameString = "#toastArtefactName" + (i+1);
