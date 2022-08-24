@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
  * Controller for group setting page.
  */
 @Controller
-public class GroupSettingController {
+public class GroupSettingsController {
 
     @Autowired
     private ElementService elementService;
@@ -29,15 +29,18 @@ public class GroupSettingController {
     @Autowired
     private GitLabApiService gitLabApiService;
 
-    @GetMapping("/groupSetting")
-    public String groupSetting(@RequestParam(value = "groupId") int groupId,
+    @GetMapping("/groupSettings")
+    public String groupSettings(@RequestParam(value = "groupId") int groupId,
                                @AuthenticationPrincipal AuthState principal,
                                Model model) {
         Integer id = userAccountClientService.getUserIDFromAuthState(principal);
         elementService.addHeaderAttributes(model, id);
-
+        if (0 <= groupService.getGroupDetails(groupId).getGroupId() &&
+                groupService.getGroupDetails(groupId).getGroupId() <= 2) {
+            return "redirect:/groups";
+        }
         groupService.addGroupDetailToModel(model, groupId);
-        return "groupSetting";
+        return "groupSettings";
     }
 }
 
