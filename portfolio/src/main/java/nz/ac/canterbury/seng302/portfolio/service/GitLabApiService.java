@@ -12,6 +12,9 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * Methods for getting information from a repository using the GitLab API.
+ */
 @Service
 public class GitLabApiService {
 
@@ -55,8 +58,12 @@ public class GitLabApiService {
     public List<Commit> getCommits(Integer groupId, String branchName, String userEmail) throws GitLabApiException {
         GroupSettings groupSettings = groupSettingsService.getGroupSettingsByGroupId(groupId);
         GitLabApi gitLabApi = groupSettings.getGitLabApi();
+
+        // Gets API to filter by branch if one is given
         List<Commit> commits = branchName == null ? gitLabApi.getCommitsApi().getCommits(groupSettings.getRepoId())
                 : gitLabApi.getCommitsApi().getCommits(groupSettings.getRepoId(), branchName, null, null);
+
+        // Filter results by user email if one is given
         return userEmail == null ? commits :
                 commits.stream().filter(commit -> Objects.equals(commit.getAuthorEmail(), userEmail)).toList();
     }
