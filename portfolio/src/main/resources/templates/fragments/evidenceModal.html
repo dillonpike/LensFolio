@@ -40,7 +40,9 @@
                         </div>
                         <div class="mb-3">
                             <label for="evidenceDate" class="col-form-label">Date:</label>
-                            <i class="bi bi-question-circle"></i>
+                            <button type="button" id="questionToolTip" class="btn" style="margin: 0; padding: 0" data-bs-toggle="tooltip" data-bs-placement="right" title="This date should indicate the day that the evidence took place. ">
+                                <span class="bi bi-question-circle"></span>
+                            </button>
                             <div class="input-group" id="evidenceDateInput" data-td-target-input="nearest" data-td-target-toggle="nearest">
                                 <input id="evidenceDate" type="text" class="form-control" data-td-target="#evidenceDateInput"
                                        onkeydown="return false" th:name="evidenceDateString" onchange="validateModalDateTime(
@@ -61,5 +63,8 @@
     <script src="js/datepicker.js"></script>
     <script type="text/javascript">
         evidenceDatePicker = configureDateTimePicker('evidenceDateInput');
+
+        let tooltip = new bootstrap.Tooltip($("#questionToolTip"))
+
     </script>
 </div>
