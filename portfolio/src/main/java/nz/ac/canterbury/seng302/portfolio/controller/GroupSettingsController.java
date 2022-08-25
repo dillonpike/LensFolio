@@ -35,6 +35,9 @@ public class GroupSettingsController {
     private GroupService groupService;
 
     @Autowired
+    private GroupSettingsService groupSettingsService;
+
+    @Autowired
     private GitLabApiService gitLabApiService;
 
     @GetMapping("/groupSettings")
@@ -51,17 +54,16 @@ public class GroupSettingsController {
         }
 
         groupService.addGroupDetailToModel(model, groupId);
-        try {
+        if(groupSettingsService.doesGroupHaveRepo(groupId)){
             List<Contributor> repositoryContributors = gitLabApiService.getContributors(groupId);
             model.addAttribute("repositoryContributors",repositoryContributors);
             List<String> branchesName = gitLabApiService.getBranchNames(groupId);
             model.addAttribute("branchesName", branchesName);
             model.addAttribute("isRepoExist", true);
             model.addAttribute("groupId", groupId);
-        } catch (ObjectNotFoundException e) {
+        } else {
             model.addAttribute("isRepoExist", false);
         }
-
         return "groupSettings";
     }
 

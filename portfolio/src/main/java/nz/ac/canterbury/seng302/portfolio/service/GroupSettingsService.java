@@ -2,14 +2,12 @@ package nz.ac.canterbury.seng302.portfolio.service;
 
 import nz.ac.canterbury.seng302.portfolio.model.GroupSettings;
 import nz.ac.canterbury.seng302.portfolio.repository.GroupSettingsRepository;
-import nz.ac.canterbury.seng302.shared.identityprovider.GroupDetailsResponse;
 import org.hibernate.ObjectNotFoundException;
 import org.jvnet.hk2.annotations.Service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.ui.Model;
 
 import java.util.Optional;
 
@@ -71,5 +69,16 @@ public class GroupSettingsService {
             return true;
         }
         return false;
+    }
+
+    /**
+     * Check if a repository has been set up or not.
+     * @param groupId the id of the group in interest
+     * @return True if repoId is not 0 and repoApiKey is not null, Otherwise False.
+     */
+    public boolean doesGroupHaveRepo(int groupId) {
+        GroupSettings groupSettings = getGroupSettingsByGroupId(groupId);
+        return groupSettings.getRepoId() != 0 && groupSettings.getRepoApiKey() != null;
+
     }
 }
