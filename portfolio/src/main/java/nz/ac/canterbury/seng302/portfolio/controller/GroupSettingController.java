@@ -33,6 +33,9 @@ public class GroupSettingController {
     private UserAccountClientService userAccountClientService;
 
     @Autowired
+    private GroupSettingsService groupSettingsService;
+
+    @Autowired
     private GroupService groupService;
 
     @Autowired
@@ -93,6 +96,7 @@ public class GroupSettingController {
             @RequestParam(name = "repoToken") String repoToken,
             RedirectAttributes rm
     ) {
+//        groupSettingsService.saveGroupSettings()
         rm.addAttribute("groupId", groupId);
         return "redirect:groupSetting";
     }
