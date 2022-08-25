@@ -1,12 +1,10 @@
 package nz.ac.canterbury.seng302.portfolio.service;
 
 import nz.ac.canterbury.seng302.portfolio.model.GroupSettings;
-import nz.ac.canterbury.seng302.portfolio.repository.GroupSettingsRepository;
 import org.gitlab4j.api.*;
 import org.gitlab4j.api.models.Branch;
 import org.gitlab4j.api.models.Commit;
 import org.gitlab4j.api.models.Contributor;
-import org.gitlab4j.api.models.Member;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -15,13 +13,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.boot.test.mock.mockito.SpyBean;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
+
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
@@ -47,9 +42,6 @@ class GitLabApiServiceTest {
 
     @Mock
     private RepositoryApi repositoryApi;
-
-    @Mock
-    private ProjectApi projectApi;
 
     @Mock
     private CommitsApi commitsApi;
@@ -110,13 +102,13 @@ class GitLabApiServiceTest {
     }
 
     /**
-     * Test that the getMembers method returns the list of members returned by the GitLab API.
-     * The function is expected to return all authors that have contributed to the repo, in this case testMembers list.
+     * Test that the getContributors method returns the list of members returned by the GitLab API.
+     * The function is expected to return all authors that have contributed to the repo, in this case testContributors list.
      * @throws GitLabApiException if an error occurs when calling the GitLab API
      */
     @Test
-    void testGetMembers() throws GitLabApiException {
-        when(gitLabApi.getProjectApi()).thenReturn(projectApi);
+    void testGetContributors() throws GitLabApiException {
+        when(gitLabApi.getRepositoryApi()).thenReturn(repositoryApi);
         when(repositoryApi.getContributors(testGroupSettings.getRepoId())).thenReturn(testContributors);
 
         List<Contributor> members = gitLabApiService.getContributors(testGroupSettings.getGroupId());

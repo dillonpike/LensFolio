@@ -34,9 +34,6 @@ public class GroupSettingsController {
     private GroupService groupService;
 
     @Autowired
-    private PermissionService permissionService;
-
-    @Autowired
     private GitLabApiService gitLabApiService;
 
     @GetMapping("/groupSettings")

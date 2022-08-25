@@ -3,10 +3,13 @@ package nz.ac.canterbury.seng302.portfolio.controller;
 import nz.ac.canterbury.seng302.portfolio.model.Group;
 import nz.ac.canterbury.seng302.portfolio.service.*;
 import nz.ac.canterbury.seng302.shared.identityprovider.*;
+import org.gitlab4j.api.models.Commit;
+import org.hibernate.ObjectNotFoundException;
 import org.junit.Before;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -20,10 +23,13 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.times;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -66,11 +72,14 @@ class GroupSettingsControllerTest {
     @MockBean
     private GitLabApiService gitLabApiService; // needed to load application context
 
+
     private static final Group testGroup = new Group("Test", "Test Group", 1);
 
     private static final Group membersGroup = new Group("Short Name", "Long Name", 2);
 
     private static final Group teachersGroup = new Group("Short Name", "Long Name", 1);
+
+    private static final List<Commit> testCommits = new ArrayList<>();
 
     /**
      * Build the mockMvc object and mock security contexts.
@@ -91,6 +100,12 @@ class GroupSettingsControllerTest {
         testGroup.setGroupId(5);
         membersGroup.setGroupId(1);
         teachersGroup.setGroupId(2);
+
+        for (int i = 0; i < 5; i++) {
+            Commit testCommit = new Commit();
+            testCommit.setTitle(String.format("Test Commit %d", i));
+            testCommits.add(testCommit);
+        }
     }
 
 
@@ -108,7 +123,8 @@ class GroupSettingsControllerTest {
         mockMvc.perform(get("/groupSettings").param("groupId", Integer.toString(testGroup.getGroupId())))
                 .andExpect(status().isOk())
                 .andExpect(model().attribute("groupShortName", testGroup.getShortName()))
-                .andExpect(model().attribute("groupLongName", testGroup.getLongName()));
+                .andExpect(model().attribute("groupLongName", testGroup.getLongName()))
+                .andExpect(model().attribute("isRepoExist", true));
     }
 
     /**
@@ -159,4 +175,49 @@ class GroupSettingsControllerTest {
         mockMvc.perform(get("/groupSettings").param("groupId", Integer.toString(invalidId)))
                 .andExpect(redirectedUrl("/groups"));
     }
+
+    /**
+     * In this test, it is assumed that the groupId is valid but the group has no repository set up yet
+     * Test that endpoint  will return a model indicating the group does not have repository
+     * @throws Exception when an exception is thrown while performing the get request
+     */
+    @Test
+    void groupDoesNotHaveRepo() throws Exception {
+        ObjectNotFoundException exception = new ObjectNotFoundException(testGroup.getGroupId(), "test");
+        doReturn(GroupDetailsResponse.newBuilder()
+                .setGroupId(testGroup.getGroupId()).setShortName(testGroup.getShortName())
+                .setLongName(testGroup.getLongName()).build())
+                .when(groupService).getGroupDetails(testGroup.getGroupId());
+        when(gitLabApiService.getContributors(any(Integer.class))).thenThrow(exception);
+
+        mockMvc.perform(get("/groupSettings").param("groupId", Integer.toString(testGroup.getGroupId())))
+                .andExpect(status().isOk())
+                .andExpect(model().attribute("groupShortName", testGroup.getShortName()))
+                .andExpect(model().attribute("groupLongName", testGroup.getLongName()))
+                .andExpect(model().attribute("isRepoExist", false));
+    }
+
+    /**
+     * Test that the endpoint return a model which contains commits, also check that when
+     * selected Branch Name is All Branches and selected user is All Users, we called getCommits() function
+     * from GitlabApi Service with value of null for branchName parameter and userEmail parameter
+     * @throws Exception when an exception is thrown while performing the get request
+     */
+    @Test
+    void getCommitsInAllBranchesAndAllUsers() throws Exception {
+        ArgumentCaptor<String> branchNameCaptor = ArgumentCaptor.forClass(String.class);
+        ArgumentCaptor<String> userCaptor = ArgumentCaptor.forClass(String.class);
+
+        when(gitLabApiService.getCommits(eq(testGroup.getGroupId()), any(),any())).thenReturn(testCommits);
+
+        mockMvc.perform(get("/repository-commits").param("groupId", Integer.toString(testGroup.getGroupId())).param("branchName", "All Branches").param("userEmail", "All Users"))
+                .andExpect(status().isOk())
+                .andExpect(model().attribute("commitList", testCommits));
+        verify(gitLabApiService, times(1)).getCommits(eq(testGroup.getGroupId()),branchNameCaptor.capture(), userCaptor.capture());
+        assertNull(branchNameCaptor.getValue());
+        assertNull(userCaptor.getValue());
+
+    }
+
+
 }
