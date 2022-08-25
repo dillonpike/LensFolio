@@ -6,7 +6,7 @@ import org.gitlab4j.api.GitLabApiException;
 import org.gitlab4j.api.models.Branch;
 import org.gitlab4j.api.models.Commit;
 import org.gitlab4j.api.models.Contributor;
-import org.gitlab4j.api.models.Member;
+import org.hibernate.ObjectNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -56,7 +56,7 @@ public class GitLabApiService {
      * @return list of commits from the given branch in the repository linked to the group
      * @throws GitLabApiException if any exception occurs communicating with the GitLab API
      */
-    public List<Commit> getCommits(Integer groupId, String branchName, String userEmail) throws GitLabApiException {
+    public List<Commit> getCommits(Integer groupId, String branchName, String userEmail) throws GitLabApiException,ObjectNotFoundException {
         GroupSettings groupSettings = groupSettingsService.getGroupSettingsByGroupId(groupId);
         GitLabApi gitLabApi = groupSettings.getGitLabApi();
 
@@ -67,5 +67,6 @@ public class GitLabApiService {
         // Filter results by user email if one is given
         return userEmail == null ? commits :
                 commits.stream().filter(commit -> Objects.equals(commit.getAuthorEmail(), userEmail)).toList();
+
     }
 }

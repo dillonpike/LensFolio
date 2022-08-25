@@ -90,7 +90,12 @@
                     $('table').dataTable({searching: false, paging: false, info: false, select: true});
                 </script>
             </div>
-            <div class="card shadow" style="padding: 10px">
+
+            <div class="alert alert-danger" role="alert" th:hidden="${isRepoExist}">
+                No Repository Has Been Set Up Yet!
+            </div>
+
+            <div class="card shadow" style="padding: 10px" th:hidden="!${isRepoExist}">
                 <div class="d-flex flex-row justify-content-between">
                     <h4 id="Recent Commits" class="mt-3">Repository Commits</h4>
                     <button class="btn btn-light" data-toggle="collapse" href="#collapseFilter" role="button" aria-expanded="false" aria-controls="collapseFilter">
@@ -104,14 +109,14 @@
                     <div class="d-flex flex-row justify-content-around">
                         <div>
                             <label for="branchNamesDropdown">Branch Name</label>
-                            <select id="branchNamesDropdown" class="my-select selectpicker" data-live-search="true" >
+                            <select id="branchNamesDropdown" class="dropDownSelect selectpicker" data-live-search="true" >
                                 <option value="All Branches">All Branches</option>
                                 <option th:each="branchName: ${branchesName}" th:text="${branchName}" th:value="${branchName}"></option>
                             </select>
                         </div>
                         <div>
                             <label for="nameDropdown">Author Name</label>
-                            <select id="nameDropdown" class="my-select selectpicker" data-live-search="true" >
+                            <select id="nameDropdown" class="dropDownSelect selectpicker" data-live-search="true" >
                                 <option value="All Users">All Users</option>
                                 <option th:each="contributor: ${repositoryContributors}" th:text="${contributor.getName()}" th:value="${contributor.getEmail()}"></option>
                             </select>
@@ -125,8 +130,10 @@
                     </div>
                 </div>
             </div>
+            <div  th:hidden="!${isRepoExist}">
                 <div id = "commitsListRefresh" th:fragment="commitsListRefresh" class="overflow-auto" style="height: 500px; margin-bottom: 50px">
-                    <div class="card mb-1" th:each="commit: ${commitList}" >
+
+                    <div class="card mb-1" th:each="commit: ${commitList}">
                         <div class="card-body mt-2">
                             <div class="d-flex flex-row">
                                 <p style="margin-right: 10px">
@@ -142,7 +149,8 @@
                         </div>
                     </div>
                 </div>
-                </div>
+            </div>
+            </div>
             </div>
          </div>
     </div>
@@ -154,7 +162,12 @@
     /*<![CDATA[*/
     const ID = /*[[${group.getGroupId()}]]*/ "-1";
     /*]]>*/
-    //updates characters left
+    /**
+     * Calculate the number of characters left on input field
+     * @param elementId the input text element
+     * @param messageElementId an element to show how many characters left
+     * @param numChars maximun number of characters allowed
+     */
     function updateCharsLeft(elementId, messageElementId, numChars) {
         let chars_left = numChars - document.getElementById(elementId).value.length;
         if (chars_left === numChars) {
@@ -169,49 +182,66 @@
     }
 
 
-    $('.my-select').selectpicker();
 
+    /**
+     * This function is called when the process of updating commits list is running
+     * This function will disable the filtering input to prevent concurrency and display spinner
+     */
     function updatingCommitsList(){
-        console.log("Hellooo1111")
         document.getElementById("collapseFilter").style.setProperty("pointer-events", 'none', "important");
         document.getElementById("spinnerBox").style.setProperty("visibility", 'visible', "important");
     }
 
+    /**
+     * This function is called when the process of updating commits list is finished
+     * This function will make the filtering usable again and hide the spinner
+     */
     function finishUpdatingCommitsList(){
-        console.log("Hellooo")
         document.getElementById("collapseFilter").style.setProperty("pointer-events", '', "important");
         document.getElementById("spinnerBox").style.setProperty("visibility", 'hidden', "important");
     }
 
-
+    /**
+     * Update the commit list when the selected branch name is updated
+     */
     $("#branchNamesDropdown").on("change", function () {
+        console.log("hello")
         updatingCommitsList()
         const data = {
             groupId: ID,
-            branchName : $(this).val(),
+            branchName: $(this).val(),
             userEmail: $("#nameDropdown").val()
         }
-        $.get('repository-commits?'+new URLSearchParams(data)).done((result) => {
+        $.get('repository-commits?' + new URLSearchParams(data)).done((result) => {
             $(`#commitsListRefresh`).replaceWith(result)
             finishUpdatingCommitsList()
+            $('.dropDownSelect').selectpicker();
         })
 
     });
 
+    /**
+     * Update the commit list when the selected user is updated
+     */
     $("#nameDropdown").on("change", function () {
+        console.log("hellooo")
         updatingCommitsList()
         const data = {
             groupId: ID,
-            branchName : $("#branchNamesDropdown").val(),
+            branchName: $("#branchNamesDropdown").val(),
             userEmail: $(this).val()
         }
-        $.get('repository-commits?'+new URLSearchParams(data)).done((result) => {
+        $.get('repository-commits?' + new URLSearchParams(data)).done((result) => {
             $(`#commitsListRefresh`).replaceWith(result)
             finishUpdatingCommitsList()
+            $('.dropDownSelect').selectpicker();
         })
 
     });
 
+    /**
+     * Initialise the commit list when group settings page is loaded
+     */
     function initialiseCommitsList() {
 
         updatingCommitsList();
@@ -223,11 +253,14 @@
         $.get('repository-commits?'+new URLSearchParams(data)).done((result) => {
             $(`#commitsListRefresh`).replaceWith(result)
             finishUpdatingCommitsList()
+            $('.dropDownSelect').selectpicker();
         })
 
     }
 
     initialiseCommitsList()
+
+
 
 
 </script>

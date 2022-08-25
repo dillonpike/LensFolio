@@ -6,13 +6,12 @@ import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import org.gitlab4j.api.GitLabApiException;
 import org.gitlab4j.api.models.Commit;
 import org.gitlab4j.api.models.Contributor;
-import org.gitlab4j.api.models.Member;
+import org.hibernate.ObjectNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -54,10 +53,16 @@ public class GroupSettingsController {
         }
 
         groupService.addGroupDetailToModel(model, groupId);
-        List<Contributor> repositoryContributors = gitLabApiService.getContributors(groupId);
-        model.addAttribute("repositoryContributors",repositoryContributors);
-        List<String> branchesName = gitLabApiService.getBranchNames(groupId);
-        model.addAttribute("branchesName", branchesName);
+        try {
+            List<Contributor> repositoryContributors = gitLabApiService.getContributors(groupId);
+            model.addAttribute("repositoryContributors",repositoryContributors);
+            List<String> branchesName = gitLabApiService.getBranchNames(groupId);
+            model.addAttribute("branchesName", branchesName);
+            model.addAttribute("isRepoExist", true);
+        } catch (ObjectNotFoundException e) {
+            model.addAttribute("isRepoExist", false);
+        }
+
         return "groupSettings";
     }
 
@@ -79,8 +84,8 @@ public class GroupSettingsController {
             List<Commit> allCommit = gitLabApiService.getCommits(groupId, branchRequestName, userRequestEmail);
             model.addAttribute("commitList", allCommit);
             return "groupSettings::commitsListRefresh";
-        } catch (GitLabApiException e) {
-            return "groupSettings";
+        } catch (GitLabApiException | ObjectNotFoundException e) {
+            return "groupSettings::commitsListRefresh";
         }
     }
 
