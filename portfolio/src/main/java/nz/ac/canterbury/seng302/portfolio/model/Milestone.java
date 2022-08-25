@@ -40,7 +40,7 @@ public class Milestone {
 
 
 
-    private String Colour;
+    private String colour;
 
     /**
      * Gets the id of the milestone
@@ -184,10 +184,10 @@ public class Milestone {
     }
 
     public String getColour() {
-        return Colour;
+        return colour;
     }
 
     public void setColour(String colour) {
-        Colour = colour;
+        this.colour = colour;
     }
 }

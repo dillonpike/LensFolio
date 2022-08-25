@@ -41,7 +41,7 @@ class UserSortingServiceTest {
     /**
      * Message in exception that should be thrown when a UserSorting object can't be found with the given id.
      */
-    private final String expectedFindExceptionMessage = "UserSorting not found";
+    private final String expectedFindExceptionMessage = "No row with the given identifier exists: [UserSorting not found#1]";
 
     /**
      * Given that there are no UserSorting objects stored in the database, then the updateUserSorting method should

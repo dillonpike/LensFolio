@@ -11,6 +11,7 @@ import org.springframework.stereotype.Repository;
 public interface GroupSettingsRepository extends CrudRepository<GroupSettings, Integer> {
 
     Optional<GroupSettings> findById(int id);
+    Optional<GroupSettings> findById(int id);
     Optional<GroupSettings> findByGroupId(int id);
 
     List<GroupSettings> findAllByOrderByGroupSettingsId();

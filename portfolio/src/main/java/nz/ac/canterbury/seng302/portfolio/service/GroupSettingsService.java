@@ -5,6 +5,8 @@ import nz.ac.canterbury.seng302.portfolio.repository.GroupSettingsRepository;
 import nz.ac.canterbury.seng302.shared.identityprovider.GroupDetailsResponse;
 import org.hibernate.ObjectNotFoundException;
 import org.jvnet.hk2.annotations.Service;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.mariadb.jdbc.internal.logging.Logger;
 import org.mariadb.jdbc.internal.logging.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +15,9 @@ import org.springframework.ui.Model;
 
 import java.util.Optional;
 
+/**
+ * Methods for getting, saving, and deleting group settings database entries.
+ */
 @Configuration
 @Service
 public class GroupSettingsService {
@@ -22,6 +27,12 @@ public class GroupSettingsService {
 
     private static final Logger logger = LoggerFactory.getLogger(GroupSettingsService.class);
 
+    /**
+     * Returns the group settings object in the database with the group id.
+     * @param groupId group id of the group settings object
+     * @return group settings object object in the database with the group id
+     * @throws ObjectNotFoundException thrown if no group settings object was found
+     */
     public GroupSettings getGroupSettingsByGroupId(int groupId) throws ObjectNotFoundException {
         Optional<GroupSettings> groupSettings = repository.findByGroupId(groupId);
         if (groupSettings.isPresent()) {
@@ -34,7 +45,6 @@ public class GroupSettingsService {
             return newGroupSetting;
         }
     }
-
 
     /**
      * Saves the group settings object to the database. This will create a new entry in the database if there isn't an
