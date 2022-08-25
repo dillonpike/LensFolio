@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.ui.Model;
 
 import java.util.Optional;
 
@@ -79,5 +80,16 @@ public class GroupSettingsService {
     public boolean doesGroupHaveRepo(int groupId) {
         GroupSettings groupSettings = getGroupSettingsByGroupId(groupId);
         return groupSettings.getRepoId() != 0 && groupSettings.getRepoApiKey() != null;
+    }
+
+    public void addSettingAttributesToModel(int groupId, Model model) {
+        GroupSettings groupSettings = getGroupSettingsByGroupId(groupId);
+        // Check if group setting is default
+        if (groupSettings.getRepoId() != 0) {
+            model.addAttribute("repoId", groupSettings.getRepoId());
+        }
+        model.addAttribute("repoName", groupSettings.getRepoName());
+        model.addAttribute("repoApiKey", groupSettings.getRepoApiKey());
+
     }
 }

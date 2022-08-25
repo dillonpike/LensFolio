@@ -26,12 +26,11 @@
 </head>
 <body>
 <header th:replace="fragments/header"></header>
-<div class="container">
+<div class="container" id="groupSettingContainer" th:fragment="groupSetting">
     <div class="row">
         <div class="col-12 col-md-6 ps-lg-1-6 ps-xl-5">
             <div class="card shadow">
                 <div class="text-start mb-1-6">
-                    <h2 class="h1 mt-2 fs-1 mx-3" id="groupSettingTitle">Group Settings</h2>
                     <div class="hstack gap-3">
                         <h2 class="h1 mt-2 fs-1 mx-3" id="groupSettingTitle">Group Setting</h2>
                         <button class="btn btn-default ms-auto mx-3" type="button" id="groupSettingEdit" onclick="isEditing()">
@@ -41,7 +40,11 @@
                         </button>
                     </div>
                     <br>
-                    <form th:action="@{saveGroupSetting}" method="post">
+                    <form th:action="@{saveGroupSettings}" onsubmit="validateGroupSetting(); return false" id="groupSettingForm" method="post">
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert" id="groupLongNameAlertBanner" th:hidden="${groupLongNameAlertMessage==null}">
+                            <span id="groupLongNameAlertMessage" data-test-id="alertMessage" th:text="${groupLongNameAlertMessage}"></span>
+                            <button type="button" class="btn-close" onclick="document.getElementById('groupLongNameAlertBanner').hidden = true" aria-label="Close"></button>
+                        </div>
                         <div class="mb-3 mx-3">
                             <label for="longGroupName" class="col-form-label">Long Group Name:</label>
                             <input onkeyup="updateCharsLeft('longGroupName', 'longGroupNameLength', 30)" maxlength="30" type="text"
@@ -49,23 +52,30 @@
                             <div class="name-length-message">
                                 <span id="longGroupNameLength"></span>
                             </div>
+                            <input type="hidden" th:value="${groupShortName}" name="groupShortName" id="groupShortName" th:name="shortName">
                         </div>
                         <br>
                         <h4 id="repositorySetting" class="mx-3">Repository Settings</h4>
+                        <div id="errors">
+                            <div th:fragment="longNameError">
+                                <div th:if="${longNameError}" class="alert alert-danger" id="passwordInvalidMessage">
+                                    Invalid password, please try again
+                                </div>
+                            </div>
+                        </div>
                         <div class="mb-3 mx-3">
                             <label for="repoName" class="col-form-label">Repository Name:</label>
-                            <input type="text" class="form-control" id="repoName" th:name="repoName" disabled>
+                            <input type="text" class="form-control" id="repoName" th:name="repoName" th:value="${repoName}" disabled>
                         </div>
                         <div class="mb-3 mx-3">
                             <label for="repoID" class="col-form-label">Repository ID:</label>
-                            <input type="text" class="form-control" id="repoID" th:name="repoID" disabled>
+                            <input type="text" class="form-control" id="repoID" th:name="repoId" th:value="${repoId}" disabled>
                         </div>
                         <div class="mb-3 mx-3">
                             <label for="repoToken" class="col-form-label">Repository Access Token:</label>
-                            <input type="text" class="form-control" id="repoToken" th:name="repoToken" disabled>
+                            <input type="text" class="form-control" id="repoToken" th:name="repoToken" th:value="${repoApiKey}" disabled>
                         </div>
                         <input type="hidden" th:value="${groupId}" name="groupId" id="groupId" th:name="groupId">
-
                         <br>
                         <div class="hstack gap-3">
                             <button type="button" id="cancelButton" class="btn btn-danger ms-auto my-3" onclick="stopEditing()" hidden>Cancel</button>
