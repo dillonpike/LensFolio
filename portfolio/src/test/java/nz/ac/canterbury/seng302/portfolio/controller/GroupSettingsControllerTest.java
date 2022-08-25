@@ -219,5 +219,28 @@ class GroupSettingsControllerTest {
 
     }
 
+    /**
+     * Test that the endpoint return a model which contains commits, also check that when
+     * selected Branch Name is All Branches and selected user is All Users, we called getCommits() function
+     * from GitlabApi Service with value of null for branchName parameter and userEmail parameter
+     * @throws Exception when an exception is thrown while performing the get request
+     */
+    @Test
+    void getCommitsInSpecificBranchAndFromSpecificUsers() throws Exception {
+        ObjectNotFoundException exception = new ObjectNotFoundException(testGroup.getGroupId(), "test");
+        String userEmail = "test@test.com";
+        String branchName = "test Branch";
+        ArgumentCaptor<String> branchNameCaptor = ArgumentCaptor.forClass(String.class);
+        ArgumentCaptor<String> userCaptor = ArgumentCaptor.forClass(String.class);
 
+        when(gitLabApiService.getCommits(eq(testGroup.getGroupId()), any(String.class),any(String.class))).thenThrow(exception);
+
+        mockMvc.perform(get("/repository-commits").param("groupId", Integer.toString(testGroup.getGroupId())).param("branchName", branchName).param("userEmail", userEmail))
+                .andExpect(status().isOk());
+
+        verify(gitLabApiService, times(1)).getCommits(eq(testGroup.getGroupId()),branchNameCaptor.capture(), userCaptor.capture());
+        assertEquals(branchName, branchNameCaptor.getValue());
+        assertEquals(userEmail, userCaptor.getValue());
+
+    }
 }

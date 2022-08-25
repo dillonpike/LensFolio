@@ -45,16 +45,6 @@ class GroupSettingsServiceTest {
     }
 
     /**
-     * Test the getGroupSettingsByGroupId method when passing in an invalid group id.
-     */
-    @Test
-    void testGetGroupSettingsByInvalidGroupId() {
-        when(repository.findByGroupId(testGroupSettings.getGroupId())).thenReturn(Optional.empty());
-        int testGroupId = testGroupSettings.getGroupId();
-        assertThrows(ObjectNotFoundException.class, () -> groupSettingsService.getGroupSettingsByGroupId(testGroupId));
-    }
-
-    /**
      * Tests that the save method is called by the group settings repository with the correct argument when calling
      * the saveGroupSettings method.
      */
