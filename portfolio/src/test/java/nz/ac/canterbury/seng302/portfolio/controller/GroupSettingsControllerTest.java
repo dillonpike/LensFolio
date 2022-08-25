@@ -10,6 +10,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -59,6 +60,9 @@ class GroupSettingsControllerTest {
 
     @SpyBean
     private GroupService groupService;
+
+    @MockBean
+    private GroupSettingsService groupSettingsService;
 
     @MockBean
     private ElementService elementService; // needed to load application context
@@ -123,8 +127,7 @@ class GroupSettingsControllerTest {
         mockMvc.perform(get("/groupSettings").param("groupId", Integer.toString(testGroup.getGroupId())))
                 .andExpect(status().isOk())
                 .andExpect(model().attribute("groupShortName", testGroup.getShortName()))
-                .andExpect(model().attribute("groupLongName", testGroup.getLongName()))
-                .andExpect(model().attribute("isRepoExist", true));
+                .andExpect(model().attribute("groupLongName", testGroup.getLongName()));
     }
 
     /**

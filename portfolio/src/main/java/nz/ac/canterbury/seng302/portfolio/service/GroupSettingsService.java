@@ -79,6 +79,5 @@ public class GroupSettingsService {
     public boolean doesGroupHaveRepo(int groupId) {
         GroupSettings groupSettings = getGroupSettingsByGroupId(groupId);
         return groupSettings.getRepoId() != 0 && groupSettings.getRepoApiKey() != null;
-
     }
 }

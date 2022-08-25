@@ -82,4 +82,13 @@ class GroupSettingsServiceTest {
         assertFalse(success);
         verify(repository, times(0)).deleteById(groupSettingsId);
     }
+
+
+    @Test
+    void checkRepositoryHasBeenSetUpWhenItIsNot() {
+        GroupSettings test = new GroupSettings(0, "test repo", null, 1234);
+        lenient().when(groupSettingsService.getGroupSettingsByGroupId(test.getGroupId())).thenReturn(test);
+        assertFalse(groupSettingsService.doesGroupHaveRepo(test.getGroupId()));
+    }
+
 }
