@@ -108,7 +108,6 @@ async function validateGroupSetting() {
         if (document.getElementById('groupSettingForm').action.includes('add')) {
             addGroup()
         } else {
-            console.log("here")
             editGroupSetting()
         }
         document.getElementById('groupSettingForm').onsubmit = () => {validateGroupSetting(); return false}

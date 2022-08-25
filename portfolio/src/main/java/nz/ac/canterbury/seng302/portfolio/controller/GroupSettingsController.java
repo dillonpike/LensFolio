@@ -100,7 +100,7 @@ public class GroupSettingsController {
     public String editGroupSetting(
             Model model,
             @RequestParam(name = "groupLongName") String longName,
-            @RequestParam(name = "groupLongName") String shortName,
+            @RequestParam(name = "groupShortName") String shortName,
             @RequestParam(value = "groupId") int groupId,
             @RequestParam(name = "repoName", required = false) String repoName,
             @RequestParam(name = "repoId", required = false) String repoId,
@@ -109,6 +109,7 @@ public class GroupSettingsController {
             RedirectAttributes rm
     ) throws GitLabApiException {
         rm.addAttribute("groupId", groupId);
+        model.addAttribute("groupId", groupId);
         ModifyGroupDetailsResponse groupResponse = groupService.editGroupDetails(groupId, shortName, longName);
         if (!groupResponse.getIsSuccess()) {
             model.addAttribute("groupLongNameAlertMessage", "error");
@@ -127,6 +128,7 @@ public class GroupSettingsController {
             } else {
                 model.addAttribute("isRepoExist", false);
             }
+            httpServletResponse.setStatus(HttpServletResponse.SC_OK);
             return "groupSettings::groupSetting";
         }
     }
