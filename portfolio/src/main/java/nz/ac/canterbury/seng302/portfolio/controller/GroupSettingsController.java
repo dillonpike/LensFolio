@@ -109,13 +109,11 @@ public class GroupSettingsController {
             RedirectAttributes rm
     ) throws GitLabApiException {
         rm.addAttribute("groupId", groupId);
-        System.out.println("helo");
         ModifyGroupDetailsResponse groupResponse = groupService.editGroupDetails(groupId, shortName, longName);
         if (!groupResponse.getIsSuccess()) {
-            model.addAttribute("longNameError", true);
+            model.addAttribute("groupLongNameAlertMessage", "error");
             httpServletResponse.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-
-            return "groupSettings::groupSetting";
+            return "groupSettings::groupLongNameAlertBanner";
         } else {
             groupService.addGroupDetailToModel(model, groupId);
             groupSettingsService.addSettingAttributesToModel(groupId, model);

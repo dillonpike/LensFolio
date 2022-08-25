@@ -41,7 +41,8 @@
                     </div>
                     <br>
                     <form th:action="@{saveGroupSettings}" onsubmit="validateGroupSetting(); return false" id="groupSettingForm" method="post">
-                        <div class="alert alert-danger alert-dismissible fade show" role="alert" id="groupLongNameAlertBanner" th:hidden="${groupLongNameAlertMessage==null}">
+
+                        <div th:fragment="groupLongNameAlertBanner" class="alert alert-danger alert-dismissible fade show" role="alert" id="groupLongNameAlertBanner" th:hidden="${groupLongNameAlertMessage==null}">
                             <span id="groupLongNameAlertMessage" data-test-id="alertMessage" th:text="${groupLongNameAlertMessage}"></span>
                             <button type="button" class="btn-close" onclick="document.getElementById('groupLongNameAlertBanner').hidden = true" aria-label="Close"></button>
                         </div>
@@ -56,13 +57,6 @@
                         </div>
                         <br>
                         <h4 id="repositorySetting" class="mx-3">Repository Settings</h4>
-                        <div id="errors">
-                            <div th:fragment="longNameError">
-                                <div th:if="${longNameError}" class="alert alert-danger" id="passwordInvalidMessage">
-                                    Invalid password, please try again
-                                </div>
-                            </div>
-                        </div>
                         <div class="mb-3 mx-3">
                             <label for="repoName" class="col-form-label">Repository Name:</label>
                             <input type="text" class="form-control" id="repoName" th:name="repoName" th:value="${repoName}" disabled>

@@ -29,7 +29,8 @@ function editGroupSetting() {
 }
 
 
-function showError() {
+function showError(modalBodyResponse) {
+    $("#groupLongNameAlertBanner").replaceWith(modalBodyResponse.responseText)
 
 }
 /**
