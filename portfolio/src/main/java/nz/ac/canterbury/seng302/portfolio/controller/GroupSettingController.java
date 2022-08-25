@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
 
@@ -51,6 +52,7 @@ public class GroupSettingController {
         model.addAttribute("repositoryContributors",repositoryContributors);
         List<String> branchesName = gitLabApiService.getBranchNames(groupId);
         model.addAttribute("branchesName", branchesName);
+        model.addAttribute("groupId", groupId);
         return "groupSetting";
     }
 
@@ -85,12 +87,14 @@ public class GroupSettingController {
     @PostMapping("/saveGroupSetting")
     public String editGroupSetting(
             @RequestParam(name = "longName") String longName,
+            @RequestParam(value = "groupId") int groupId,
             @RequestParam(name = "repoName") String repoName,
             @RequestParam(name = "repoID") int repoId,
             @RequestParam(name = "repoToken") String repoToken,
-            @RequestParam(name = "groupId") int groupId
+            RedirectAttributes rm
     ) {
-        return "groupSetting";
+        rm.addAttribute("groupId", groupId);
+        return "redirect:groupSetting";
     }
 }
 

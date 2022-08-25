@@ -63,6 +63,8 @@
                             <label for="repoToken" class="col-form-label">Repository Access Token:</label>
                             <input type="text" class="form-control" id="repoToken" th:name="repoToken" disabled>
                         </div>
+                        <input type="hidden" th:value="${groupId}" name="groupId" id="groupId" th:name="groupId">
+
                         <br>
                         <div class="hstack gap-3">
                             <button type="button" id="cancelButton" class="btn btn-danger ms-auto my-3" onclick="stopEditing()" hidden>Cancel</button>
