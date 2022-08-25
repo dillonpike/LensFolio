@@ -36,7 +36,11 @@ public class GroupSettingsService {
         if (groupSettings.isPresent()) {
             return groupSettings.get();
         } else {
-            throw new ObjectNotFoundException(groupId, "Unknown GroupSettings with group id");
+            // Generate a new group setting model
+            GroupSettings newGroupSetting = new GroupSettings();
+            newGroupSetting.setGroupId(groupId);
+            repository.save(newGroupSetting);
+            return newGroupSetting;
         }
     }
 

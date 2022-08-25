@@ -14,6 +14,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
 
@@ -29,6 +30,9 @@ public class GroupSettingsController {
 
     @Autowired
     private UserAccountClientService userAccountClientService;
+
+    @Autowired
+    private GroupSettingsService groupSettingsService;
 
     @Autowired
     private GroupService groupService;
@@ -56,6 +60,7 @@ public class GroupSettingsController {
             List<String> branchesName = gitLabApiService.getBranchNames(groupId);
             model.addAttribute("branchesName", branchesName);
             model.addAttribute("isRepoExist", true);
+            model.addAttribute("groupId", groupId);
         } catch (ObjectNotFoundException e) {
             model.addAttribute("isRepoExist", false);
         }
@@ -94,12 +99,15 @@ public class GroupSettingsController {
     @PostMapping("/saveGroupSetting")
     public String editGroupSetting(
             @RequestParam(name = "longName") String longName,
+            @RequestParam(value = "groupId") int groupId,
             @RequestParam(name = "repoName") String repoName,
             @RequestParam(name = "repoID") int repoId,
             @RequestParam(name = "repoToken") String repoToken,
-            @RequestParam(name = "groupId") int groupId
+            RedirectAttributes rm
     ) {
-        return "groupSettings";
+//        groupSettingsService.saveGroupSettings()
+        rm.addAttribute("groupId", groupId);
+        return "redirect:groupSetting";
     }
 }
 
