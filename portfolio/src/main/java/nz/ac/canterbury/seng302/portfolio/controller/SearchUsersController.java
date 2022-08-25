@@ -54,16 +54,7 @@ public class SearchUsersController {
         model.addAttribute("currentUserRole", role);
         model.addAttribute("currentUsername", getUserByIdReply.getUsername());
         model.addAttribute("userId", id);
-        PaginatedUsersResponse response = userAccountClientService.getAllUsers();
-        List<UserResponse> userResponseList = response.getUsersList();
-        model.addAttribute("users", userResponseList);
-        UserSorting userSorting;
-        try {
-            userSorting = userSortingService.getUserSortingById(id);
-        } catch (Exception e) {
-            userSorting = new UserSorting(id);
-        }
-        model.addAttribute("userSorting", userSorting);
+        elementService.addUsersToModel(model, id);
         return "searchUsers";
     }
 

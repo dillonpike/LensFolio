@@ -262,7 +262,6 @@ public class EditAccountController {
             )
             {
                 fos.write(multipartFile.getBytes());
-                fos.close();
                 if (registerClientService.uploadUserProfilePhoto(userId, new File(filePath))) { // Saves image on IDP.
                     rm.addFlashAttribute(UPDATE_CHECK_ID, true);
                     rm.addFlashAttribute("reloadImage", true);

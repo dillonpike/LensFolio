@@ -1,5 +1,6 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
+import com.google.api.Http;
 import nz.ac.canterbury.seng302.portfolio.model.Group;
 import nz.ac.canterbury.seng302.portfolio.model.NotificationMessage;
 import nz.ac.canterbury.seng302.portfolio.model.NotificationResponse;
@@ -163,19 +164,7 @@ public class GroupController {
         HttpServletResponse httpServletResponse
     ) {
         RemoveGroupMembersResponse response = groupService.removeMembersFromGroup(groupId, userIds);
-        if (response.getIsSuccess()) {
-            httpServletResponse.setStatus(HttpServletResponse.SC_OK);
-            if (Objects.equals(groupId, MEMBERS_WITHOUT_GROUP_ID)) {
-                groupService.addGroupListToModel(model);
-                return GROUP_LIST_FRAGMENT;
-            } else {
-                groupService.addGroupDetailToModel(model, groupId);
-                return GROUP_CARD_FRAGMENT;
-            }
-        } else {
-            httpServletResponse.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-        }
-        return null;
+        return returnGroupFragment(response.getIsSuccess(), httpServletResponse, groupId, model);
     }
 
     /**
@@ -221,19 +210,7 @@ public class GroupController {
             HttpServletResponse httpServletResponse
     ) {
         AddGroupMembersResponse response = groupService.addMemberToGroup(groupId, userIds);
-        if (response.getIsSuccess()) {
-            httpServletResponse.setStatus(HttpServletResponse.SC_OK);
-            if (Objects.equals(groupId, MEMBERS_WITHOUT_GROUP_ID)) {
-                groupService.addGroupListToModel(model);
-                return GROUP_LIST_FRAGMENT;
-            } else {
-                groupService.addGroupDetailToModel(model, groupId);
-                return GROUP_CARD_FRAGMENT;
-            }
-        } else {
-            httpServletResponse.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-        }
-        return null;
+        return returnGroupFragment(response.getIsSuccess(), httpServletResponse, groupId, model);
     }
 
     /**
@@ -268,6 +245,33 @@ public class GroupController {
 
         groupService.addGroupListToModel(model);
         return GROUP_LIST_FRAGMENT;
+    }
+
+    /**
+     * Returns a fragment of the group list if the response was successful and the group id is for the special
+     * non-members group. If the response was successful and the group id is for another group, a fragment of the group
+     * card is returned. If the response was unsuccessful, null is returned.
+     * @param responseSuccess whether a GRPC request and IDP operation was successful
+     * @param httpServletResponse for adding status codes to
+     * @param groupId id of group modified in GRPC request
+     * @param model model to add attributes to for Thymeleaf to inject into the HTML
+     * @return
+     */
+    private String returnGroupFragment(boolean responseSuccess, HttpServletResponse httpServletResponse, int groupId,
+                                       Model model) {
+        if (responseSuccess) {
+            httpServletResponse.setStatus(HttpServletResponse.SC_OK);
+            if (Objects.equals(groupId, MEMBERS_WITHOUT_GROUP_ID)) {
+                groupService.addGroupListToModel(model);
+                return GROUP_LIST_FRAGMENT;
+            } else {
+                groupService.addGroupDetailToModel(model, groupId);
+                return GROUP_CARD_FRAGMENT;
+            }
+        } else {
+            httpServletResponse.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+        }
+        return null;
     }
 
     /**

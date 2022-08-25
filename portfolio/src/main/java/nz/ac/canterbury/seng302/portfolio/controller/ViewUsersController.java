@@ -66,16 +66,7 @@ public class ViewUsersController {
         model.addAttribute("studentRole", UserRole.STUDENT);
         model.addAttribute("teacherRole", UserRole.TEACHER);
         model.addAttribute("adminRole", UserRole.COURSE_ADMINISTRATOR);
-        PaginatedUsersResponse response = userAccountClientService.getAllUsers();
-        List<UserResponse> userResponseList = response.getUsersList();
-        model.addAttribute("users", userResponseList);
-        UserSorting userSorting;
-        try {
-            userSorting = userSortingService.getUserSortingById(id);
-        } catch (Exception e) {
-            userSorting = new UserSorting(id);
-        }
-        model.addAttribute("userSorting", userSorting);
+        elementService.addUsersToModel(model, id);
         return "viewUsers";
     }
 
