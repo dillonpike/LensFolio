@@ -22,7 +22,7 @@ public class StaticResourceConfig implements WebMvcConfigurer {
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         String pathStart = "/" + GeneralUtility.getApplicationLocation(dataSource);
-        String directory =  PortfolioApplication.IMAGE_DIR + pathStart + "/";
+        String directory =  PortfolioApplication.getImageDir() + pathStart + "/";
         registry.addResourceHandler(pathStart + "/**").addResourceLocations("file:" + directory);
     }
 }

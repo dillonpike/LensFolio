@@ -251,7 +251,7 @@ public class EditAccountController {
         } else {
 
             String directory = MessageFormat.format("{0}/{1}/{2}/",
-                    PortfolioApplication.IMAGE_DIR, getApplicationLocation(dataSource), userId);
+                    PortfolioApplication.getImageDir(), getApplicationLocation(dataSource), userId);
             String filePath = directory + "/UploadedFile";
             File imageFile = new File(filePath); // Saves image locally so the file can be streamed to the IDP.
             if (!new File(directory).mkdirs()) { // Ensures folders are made.

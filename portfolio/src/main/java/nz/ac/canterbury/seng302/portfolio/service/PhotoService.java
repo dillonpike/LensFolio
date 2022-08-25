@@ -65,7 +65,7 @@ public class PhotoService {
     public void savePhotoToPortfolio(String photoPath, int userId) {
         File imageFile;
         String directory = MessageFormat.format("{0}/{1}/{2}/public/",
-                PortfolioApplication.IMAGE_DIR, getApplicationLocation(dataSource), userId);
+                PortfolioApplication.getImageDir(), getApplicationLocation(dataSource), userId);
         try {
             if (!new File(directory).mkdirs()) { // Ensures folders are made.
                 logger.warn("Not all folders may have been created.");
