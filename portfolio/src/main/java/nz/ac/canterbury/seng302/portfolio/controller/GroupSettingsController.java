@@ -56,16 +56,8 @@ public class GroupSettingsController {
 
         groupService.addGroupDetailToModel(model, groupId);
         groupSettingsService.addSettingAttributesToModel(groupId, model);
-        if(groupSettingsService.doesGroupHaveRepo(groupId)){
-            List<Contributor> repositoryContributors = gitLabApiService.getContributors(groupId);
-            model.addAttribute("repositoryContributors",repositoryContributors);
-            List<String> branchesName = gitLabApiService.getBranchNames(groupId);
-            model.addAttribute("branchesName", branchesName);
-            model.addAttribute("isRepoExist", true);
-            model.addAttribute("groupId", groupId);
-        } else {
-            model.addAttribute("isRepoExist", false);
-        }
+        addGroupSettingAttributeToModel(model, groupId);
+
         return "groupSettings";
     }
 
@@ -104,7 +96,7 @@ public class GroupSettingsController {
             @RequestParam(name = "groupShortName") String shortName,
             @RequestParam(value = "groupId") int groupId,
             @RequestParam(name = "repoName", required = false, defaultValue = "") String repoName,
-            @RequestParam(name = "repoId", required = false, defaultValue = "0") String repoId,
+            @RequestParam(name = "repoID", required = false) int repoId,
             @RequestParam(name = "repoToken", required = false, defaultValue = "") String repoToken,
             @RequestParam(name = "groupSettingsId") int groupSettingsId,
             HttpServletResponse httpServletResponse,
@@ -129,19 +121,29 @@ public class GroupSettingsController {
         }
         groupService.addGroupDetailToModel(model, groupId);
         groupSettingsService.addSettingAttributesToModel(groupId, model);
-        if(groupSettingsService.doesGroupHaveRepo(groupId)){
-            List<Contributor> repositoryContributors = gitLabApiService.getContributors(groupId);
-            model.addAttribute("repositoryContributors",repositoryContributors);
-            List<String> branchesName = gitLabApiService.getBranchNames(groupId);
-            model.addAttribute("branchesName", branchesName);
-            model.addAttribute("isRepoExist", true);
-            model.addAttribute("groupId", groupId);
-        } else {
-            model.addAttribute("isRepoExist", false);
-        }
+        addGroupSettingAttributeToModel(model, groupId);
+
         httpServletResponse.setStatus(HttpServletResponse.SC_OK);
         model.addAttribute("successMessage", "Save changed");
         return "groupSettings::groupSetting";
+    }
+
+
+    public void addGroupSettingAttributeToModel(Model model, int groupId) {
+        try {
+            if (groupSettingsService.doesGroupHaveRepo(groupId)){
+                List<Contributor> repositoryContributors = gitLabApiService.getContributors(groupId);
+                model.addAttribute("repositoryContributors",repositoryContributors);
+                List<String> branchesName = gitLabApiService.getBranchNames(groupId);
+                model.addAttribute("branchesName", branchesName);
+                model.addAttribute("isRepoExist", true);
+                model.addAttribute("groupId", groupId);
+            } else {
+                model.addAttribute("isRepoExist", false);
+            }
+        } catch (GitLabApiException exception) {
+            model.addAttribute("isRepoExist", false);
+        }
     }
 }
 

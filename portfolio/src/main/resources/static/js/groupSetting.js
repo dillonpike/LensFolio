@@ -1,31 +1,17 @@
-function updateCommitsList() {
-
-    const data = {
-        groupId: "2",
-        branchName : "All Branches",
-        userEmail: "All Users"
-    }
-    $.get('repository-commits?'+new URLSearchParams(data)).done((result) => {
-        $(`#commitsListRefresh`).replaceWith(result)
-    })
-
-}
-
-updateCommitsList()
-
 
 function editGroupSetting() {
     const data = {
         groupLongName: document.getElementById("longGroupName").value,
         groupShortName: document.getElementById("groupShortName").value,
         repoName: document.getElementById("repoName").value,
-        repoID: document.getElementById("repoID").value,
+        repoID: document.getElementById("repoId").value,
         repoToken: document.getElementById("repoToken").value,
         groupId: document.getElementById("groupId").value,
         groupSettingsId: document.getElementById("groupSettingsId").value
     }
     $.post('saveGroupSettings?'+new URLSearchParams(data)).done((result) => {
-        $(`#groupSettingContainer`).replaceWith(result)
+        $(`#groupSettingContainer`).replaceWith(result);
+        initialiseCommitsList()
     }).fail(showError)
 }
 
@@ -41,7 +27,7 @@ function showError(modalBodyResponse) {
 function inputValidateCheck() {
     const longNameText = document.getElementById('longGroupName');
     const repoName = document.getElementById('repoName');
-    const repoID = document.getElementById('repoID');
+    const repoID = document.getElementById('repoId');
     const repoToken = document.getElementById('repoToken');
 
     longNameText.addEventListener( "input", event => {

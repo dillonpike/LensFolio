@@ -65,8 +65,8 @@
                             <input type="text" class="form-control" id="repoName" th:name="repoName" th:value="${repoName}" disabled>
                         </div>
                         <div class="mb-3 mx-3">
-                            <label for="repoID" class="col-form-label">Repository ID:</label>
-                            <input type="text" class="form-control" id="repoID" th:name="repoId" th:value="${repoId}" disabled>
+                            <label for="repoId" class="col-form-label">Repository ID:</label>
+                            <input type="text" class="form-control" id="repoId" th:name="repoId" th:value="${repoId}" disabled>
                         </div>
                         <div class="mb-3 mx-3">
                             <label for="repoToken" class="col-form-label">Repository Access Token:</label>
@@ -168,6 +168,45 @@
                             </div>
                         </div>
                     </div>
+                    <script th:inline="javascript">
+                        /**
+                         * Update the commit list when the selected branch name is updated
+                         */
+                        $("#branchNamesDropdown").on("change", function () {
+                            console.log("hello")
+                            updatingCommitsList()
+                            const data = {
+                                groupId: ID,
+                                branchName: $(this).val(),
+                                userEmail: $("#nameDropdown").val()
+                            }
+                            $.get('repository-commits?' + new URLSearchParams(data)).done((result) => {
+                                $(`#commitsListRefresh`).replaceWith(result)
+                                finishUpdatingCommitsList()
+                                $('.dropDownSelect').selectpicker();
+                            })
+
+                        });
+
+                        /**
+                         * Update the commit list when the selected user is updated
+                         */
+                        $("#nameDropdown").on("change", function () {
+                            console.log("hellooo")
+                            updatingCommitsList()
+                            const data = {
+                                groupId: ID,
+                                branchName: $("#branchNamesDropdown").val(),
+                                userEmail: $(this).val()
+                            }
+                            $.get('repository-commits?' + new URLSearchParams(data)).done((result) => {
+                                $(`#commitsListRefresh`).replaceWith(result)
+                                finishUpdatingCommitsList()
+                                $('.dropDownSelect').selectpicker();
+                            })
+
+                        });
+                    </script>
                 </div>
             </div>
             </div>
@@ -221,43 +260,6 @@
         document.getElementById("spinnerBox").style.setProperty("visibility", 'hidden', "important");
     }
 
-    /**
-     * Update the commit list when the selected branch name is updated
-     */
-    $("#branchNamesDropdown").on("change", function () {
-        console.log("hello")
-        updatingCommitsList()
-        const data = {
-            groupId: ID,
-            branchName: $(this).val(),
-            userEmail: $("#nameDropdown").val()
-        }
-        $.get('repository-commits?' + new URLSearchParams(data)).done((result) => {
-            $(`#commitsListRefresh`).replaceWith(result)
-            finishUpdatingCommitsList()
-            $('.dropDownSelect').selectpicker();
-        })
-
-    });
-
-    /**
-     * Update the commit list when the selected user is updated
-     */
-    $("#nameDropdown").on("change", function () {
-        console.log("hellooo")
-        updatingCommitsList()
-        const data = {
-            groupId: ID,
-            branchName: $("#branchNamesDropdown").val(),
-            userEmail: $(this).val()
-        }
-        $.get('repository-commits?' + new URLSearchParams(data)).done((result) => {
-            $(`#commitsListRefresh`).replaceWith(result)
-            finishUpdatingCommitsList()
-            $('.dropDownSelect').selectpicker();
-        })
-
-    });
 
     /**
      * Initialise the commit list when group settings page is loaded
@@ -287,7 +289,7 @@
     function isEditing() {
         $("#longGroupName").prop("disabled", false);
         $("#repoName").prop("disabled", false);
-        $("#repoID").prop("disabled", false);
+        $("#repoId").prop("disabled", false);
         $("#repoToken").prop("disabled", false);
         $("#saveButton").prop("hidden", false)
         $("#cancelButton").prop("hidden", false)
@@ -303,7 +305,7 @@
     function stopEditing() {
         $("#longGroupName").prop("disabled", true);
         $("#repoName").prop("disabled", true);
-        $("#repoID").prop("disabled", true);
+        $("#repoId").prop("disabled", true);
         $("#repoToken").prop("disabled", true);
         $("#saveButton").prop("hidden", true)
         $("#cancelButton").prop("hidden", true)

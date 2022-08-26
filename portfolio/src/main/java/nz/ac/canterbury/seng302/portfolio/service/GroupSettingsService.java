@@ -2,6 +2,9 @@ package nz.ac.canterbury.seng302.portfolio.service;
 
 import nz.ac.canterbury.seng302.portfolio.model.GroupSettings;
 import nz.ac.canterbury.seng302.portfolio.repository.GroupSettingsRepository;
+import org.gitlab4j.api.GitLabApi;
+import org.gitlab4j.api.GitLabApiException;
+import org.gitlab4j.api.models.Contributor;
 import org.hibernate.ObjectNotFoundException;
 import org.jvnet.hk2.annotations.Service;
 import org.slf4j.Logger;
@@ -10,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.ui.Model;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -87,14 +91,18 @@ public class GroupSettingsService {
         // Check if group setting is default
         if (groupSettings.getRepoId() != 0) {
             model.addAttribute("repoId", groupSettings.getRepoId());
+        } else {
+            model.addAttribute("repoId", 0);
+
         }
         model.addAttribute("repoName", groupSettings.getRepoName());
         model.addAttribute("repoApiKey", groupSettings.getRepoApiKey());
         model.addAttribute("groupSettingsId", groupSettings.getGroupSettingsId());
     }
 
-    public boolean isGroupSettingSaved(int groupSettingId, String repoId, String repoName, String repoToken, int groupId) {
-        GroupSettings targetGroupSetting = new GroupSettings(Integer.parseInt(repoId), repoName, repoToken, groupId);
+    public boolean isGroupSettingSaved(int groupSettingId, int repoId, String repoName, String repoToken, int groupId) {
+
+        GroupSettings targetGroupSetting = new GroupSettings(repoId, repoName, repoToken, groupId);
         targetGroupSetting.setGroupSettingsId(groupSettingId);
         try {
             saveGroupSettings(targetGroupSetting);
