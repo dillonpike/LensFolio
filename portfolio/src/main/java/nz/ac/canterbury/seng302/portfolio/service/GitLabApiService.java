@@ -10,6 +10,7 @@ import org.hibernate.ObjectNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+
 import java.util.List;
 import java.util.Objects;
 
@@ -66,7 +67,8 @@ public class GitLabApiService {
 
         // Filter results by user email if one is given
         return userEmail == null ? commits :
-                commits.stream().filter(commit -> Objects.equals(commit.getAuthorEmail(), userEmail)).toList();
+                commits.stream().filter(commit -> Objects.equals(commit.getAuthorEmail(), userEmail)).sorted((o1, o2)->o2.getCommittedDate().
+                        compareTo(o1.getCommittedDate())).toList();
 
     }
 }
