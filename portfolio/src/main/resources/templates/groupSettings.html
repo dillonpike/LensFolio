@@ -40,8 +40,11 @@
                         </button>
                     </div>
                     <br>
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert" id="successMessageBanner" th:hidden="${successMessage==null}">
+                        <span id="successMessage" data-test-id="alertMessage" th:text="${successMessage}"></span>
+                        <button type="button" class="btn-close" onclick="document.getElementById('successMessageBanner').hidden = true" aria-label="Close"></button>
+                    </div>
                     <form th:action="@{saveGroupSettings}" onsubmit="validateGroupSetting(); return false" id="groupSettingForm" method="post">
-
                         <div th:fragment="groupLongNameAlertBanner" class="alert alert-danger alert-dismissible fade show" role="alert" id="groupLongNameAlertBanner" th:hidden="${groupLongNameAlertMessage==null}">
                             <span id="groupLongNameAlertMessage" data-test-id="alertMessage" th:text="${groupLongNameAlertMessage}"></span>
                             <button type="button" class="btn-close" onclick="document.getElementById('groupLongNameAlertBanner').hidden = true" aria-label="Close"></button>
@@ -70,6 +73,7 @@
                             <input type="text" class="form-control" id="repoToken" th:name="repoToken" th:value="${repoApiKey}" disabled>
                         </div>
                         <input type="hidden" th:value="${groupId}" name="groupId" id="groupId" th:name="groupId">
+                        <input type="hidden" th:value="${groupSettingsId}" name="groupSettingsId" id="groupSettingsId" th:name="groupSettingsId">
                         <br>
                         <div class="hstack gap-3">
                             <button type="button" id="cancelButton" class="btn btn-danger ms-auto my-3" onclick="stopEditing()" hidden>Cancel</button>

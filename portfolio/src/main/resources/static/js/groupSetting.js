@@ -21,7 +21,8 @@ function editGroupSetting() {
         repoName: document.getElementById("repoName").value,
         repoID: document.getElementById("repoID").value,
         repoToken: document.getElementById("repoToken").value,
-        groupId: document.getElementById("groupId").value
+        groupId: document.getElementById("groupId").value,
+        groupSettingsId: document.getElementById("groupSettingsId").value
     }
     $.post('saveGroupSettings?'+new URLSearchParams(data)).done((result) => {
         $(`#groupSettingContainer`).replaceWith(result)

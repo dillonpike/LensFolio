@@ -1,6 +1,7 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
 
+import nz.ac.canterbury.seng302.portfolio.model.GroupSettings;
 import nz.ac.canterbury.seng302.portfolio.service.*;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import nz.ac.canterbury.seng302.shared.identityprovider.ModifyGroupDetailsResponse;
@@ -102,35 +103,46 @@ public class GroupSettingsController {
             @RequestParam(name = "groupLongName") String longName,
             @RequestParam(name = "groupShortName") String shortName,
             @RequestParam(value = "groupId") int groupId,
-            @RequestParam(name = "repoName", required = false) String repoName,
-            @RequestParam(name = "repoId", required = false) String repoId,
-            @RequestParam(name = "repoToken", required = false) String repoToken,
+            @RequestParam(name = "repoName", required = false, defaultValue = "") String repoName,
+            @RequestParam(name = "repoId", required = false, defaultValue = "0") String repoId,
+            @RequestParam(name = "repoToken", required = false, defaultValue = "") String repoToken,
+            @RequestParam(name = "groupSettingsId") int groupSettingsId,
             HttpServletResponse httpServletResponse,
             RedirectAttributes rm
     ) throws GitLabApiException {
         rm.addAttribute("groupId", groupId);
         model.addAttribute("groupId", groupId);
         ModifyGroupDetailsResponse groupResponse = groupService.editGroupDetails(groupId, shortName, longName);
+
+        // First, we check the response from the server to see if edit the group long name is successful
         if (!groupResponse.getIsSuccess()) {
             model.addAttribute("groupLongNameAlertMessage", "error");
             httpServletResponse.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             return "groupSettings::groupLongNameAlertBanner";
-        } else {
-            groupService.addGroupDetailToModel(model, groupId);
-            groupSettingsService.addSettingAttributesToModel(groupId, model);
-            if(groupSettingsService.doesGroupHaveRepo(groupId)){
-                List<Contributor> repositoryContributors = gitLabApiService.getContributors(groupId);
-                model.addAttribute("repositoryContributors",repositoryContributors);
-                List<String> branchesName = gitLabApiService.getBranchNames(groupId);
-                model.addAttribute("branchesName", branchesName);
-                model.addAttribute("isRepoExist", true);
-                model.addAttribute("groupId", groupId);
-            } else {
-                model.addAttribute("isRepoExist", false);
-            }
-            httpServletResponse.setStatus(HttpServletResponse.SC_OK);
-            return "groupSettings::groupSetting";
         }
+
+        boolean isSaved = groupSettingsService.isGroupSettingSaved(groupSettingsId, repoId, repoName, repoToken, groupId);
+        if(!isSaved) {
+            model.addAttribute("groupSettingsAlertMessage", "error");
+            httpServletResponse.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            return "groupSettings::groupSettingsAlertBanner";
+        }
+        groupService.addGroupDetailToModel(model, groupId);
+        groupSettingsService.addSettingAttributesToModel(groupId, model);
+        if(groupSettingsService.doesGroupHaveRepo(groupId)){
+            List<Contributor> repositoryContributors = gitLabApiService.getContributors(groupId);
+            model.addAttribute("repositoryContributors",repositoryContributors);
+            List<String> branchesName = gitLabApiService.getBranchNames(groupId);
+            model.addAttribute("branchesName", branchesName);
+            model.addAttribute("isRepoExist", true);
+            model.addAttribute("groupId", groupId);
+        } else {
+            model.addAttribute("isRepoExist", false);
+        }
+        httpServletResponse.setStatus(HttpServletResponse.SC_OK);
+        model.addAttribute("successMessage", "Save changed");
+        return "groupSettings::groupSetting";
     }
 }
+
 

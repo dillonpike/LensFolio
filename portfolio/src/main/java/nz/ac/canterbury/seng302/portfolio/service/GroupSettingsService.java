@@ -90,6 +90,17 @@ public class GroupSettingsService {
         }
         model.addAttribute("repoName", groupSettings.getRepoName());
         model.addAttribute("repoApiKey", groupSettings.getRepoApiKey());
+        model.addAttribute("groupSettingsId", groupSettings.getGroupSettingsId());
+    }
 
+    public boolean isGroupSettingSaved(int groupSettingId, String repoId, String repoName, String repoToken, int groupId) {
+        GroupSettings targetGroupSetting = new GroupSettings(Integer.parseInt(repoId), repoName, repoToken, groupId);
+        targetGroupSetting.setGroupSettingsId(groupSettingId);
+        try {
+            saveGroupSettings(targetGroupSetting);
+        } catch (Exception e) {
+            return false;
+        }
+        return true;
     }
 }
