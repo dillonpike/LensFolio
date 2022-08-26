@@ -86,6 +86,12 @@ public class GroupSettingsService {
         return groupSettings.getRepoId() != 0 && groupSettings.getRepoApiKey() != null;
     }
 
+    /**
+     * Method to add group setting modal attribute to the model,
+     * it will set repo id to 0 if current group repository has not been set up.
+     * @param groupId current group id
+     * @param model model to add group setting modal attribute to
+     */
     public void addSettingAttributesToModel(int groupId, Model model) {
         GroupSettings groupSettings = getGroupSettingsByGroupId(groupId);
         // Check if group setting is default
@@ -100,8 +106,16 @@ public class GroupSettingsService {
         model.addAttribute("groupSettingsId", groupSettings.getGroupSettingsId());
     }
 
+    /**
+     * Method to check if current group setting has been sabe to the database successfully.
+     * @param groupSettingId current group setting id
+     * @param repoId current group setting repo id
+     * @param repoName current group setting repo name
+     * @param repoToken current group setting repo token
+     * @param groupId current group id
+     * @return true if current group setting has been saved successfully, otherwise false.
+     */
     public boolean isGroupSettingSaved(int groupSettingId, int repoId, String repoName, String repoToken, int groupId) {
-
         GroupSettings targetGroupSetting = new GroupSettings(repoId, repoName, repoToken, groupId);
         targetGroupSetting.setGroupSettingsId(groupSettingId);
         try {

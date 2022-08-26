@@ -41,6 +41,12 @@ public class GroupSettingsController {
     @Autowired
     private GitLabApiService gitLabApiService;
 
+    /**
+     * Method to handle GetMapping request from frontend, and return the group settings page.
+     * @param groupId current group id
+     * @param model group setting page model
+     * @return group settings page
+     */
     @RequestMapping("/groupSettings")
     public String groupSettings(@RequestParam(value = "groupId") int groupId,
                                @AuthenticationPrincipal AuthState principal,
@@ -61,6 +67,14 @@ public class GroupSettingsController {
         return "groupSettings";
     }
 
+    /**
+     * Method to partial refresh the group repository commits list.
+     * @param groupId current group id
+     * @param branchName Current project's branches
+     * @param userEmail current user's emailal
+     * @param model model for group setting page
+     * @return repository commits fragment
+     */
     @GetMapping("/repository-commits")
     public String getRepositoryCommits(@RequestParam(value = "groupId") int groupId,
                                        @RequestParam(value = "branchName") String branchName,
@@ -128,7 +142,15 @@ public class GroupSettingsController {
         return "groupSettings::groupSetting";
     }
 
-
+    /**
+     * Method to add model attribute for group setting page, depending on different situations.
+     *
+     * Situation 1: if current group has set up group setting, add branches and contributors to model
+     * Situation 2: if current group has not set up group repository, add isRepoExist attribute to model
+     * Situation 3: if current group has set up group setting with connection error, add error message to model
+     * @param model model for group setting page
+     * @param groupId current group id
+     */
     public void addGroupSettingAttributeToModel(Model model, int groupId) {
         try {
             if (groupSettingsService.doesGroupHaveRepo(groupId)){
@@ -142,6 +164,7 @@ public class GroupSettingsController {
                 model.addAttribute("isRepoExist", false);
             }
         } catch (GitLabApiException exception) {
+            //TODO: add error message to model
             model.addAttribute("isRepoExist", false);
         }
     }
