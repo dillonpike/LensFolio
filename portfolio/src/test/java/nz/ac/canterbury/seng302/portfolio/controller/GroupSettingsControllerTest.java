@@ -246,4 +246,17 @@ class GroupSettingsControllerTest {
         assertEquals(userEmail, userCaptor.getValue());
 
     }
+//
+//    @Test
+//    void getEditGroupSettings() throws Exception {
+//        mockMvc.perform(get("/editGroupSettings").param("groupLongName", "testLongName")
+//                        .param("groupShortName", "testShortName")
+//                        .param("groupId", Integer.toString(testGroup.getGroupId()))
+//                        .param("groupSettingsId", "1")
+//                )
+//                .andExpect(status().isOk())
+//                .andExpect(model().attribute("groupShortName", "testLongName"))
+//                .andExpect(model().attribute("groupLongName", "testShortName"));
+//
+//    }
 }

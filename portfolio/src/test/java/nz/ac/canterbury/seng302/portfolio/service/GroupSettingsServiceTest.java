@@ -91,4 +91,10 @@ class GroupSettingsServiceTest {
         assertFalse(groupSettingsService.doesGroupHaveRepo(test.getGroupId()));
     }
 
+    @Test
+    void checkIsGroupSettingSavedWhenItIs() {
+        GroupSettings test = new GroupSettings(1, "test repo", "testKey", 1234);
+        test.setGroupSettingsId(1);
+        assertTrue(groupSettingsService.isGroupSettingSaved(1,1, "test", "test", 1234));
+    }
 }
