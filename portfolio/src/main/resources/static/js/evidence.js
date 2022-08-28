@@ -7,8 +7,8 @@
  * @returns {Promise<void>} null
  */
 async function validateEvidence() {
-    if (validateModalName('evidenceTitle', 'evidenceTitleAlertBanner', 'evidenceTitleAlertMessage') &&
-        validateModalName('evidenceDescription', 'evidenceDescriptionAlertBanner', 'evidenceDescriptionAlertMessage') &&
+    if (validateEvidenceTextInput('evidenceTitle', 'evidenceTitleAlertBanner', 'evidenceTitleAlertMessage',"Title") &&
+        validateEvidenceTextInput('evidenceDescription', 'evidenceDescriptionAlertBanner', 'evidenceDescriptionAlertMessage', "Description") &&
         validateModalDate('evidenceDate', 'milestoneModalButton', 'evidenceDateAlertBanner', 'evidenceDateAlertMessage')
     ) {
         document.getElementById('evidenceForm').onsubmit = () => { return false };
@@ -43,8 +43,42 @@ function addEvidence() {
  * @param modalBodyResponse response with new modalBody to display (evidenceModalBody fragment)
  */
 function replaceEvidenceModalBody(modalBodyResponse) {
-    console.log(modalBodyResponse.responseText)
     $("#evidenceModalBody").replaceWith(modalBodyResponse.responseText)
     updateCharsLeft('evidenceTitle', 'evidenceTitleLength', 30)
     updateCharsLeft('evidenceDescription', 'evidenceDescriptionLength', 250)
+}
+
+/**
+ * Validate that the text inputted in the given field does not only contain numbers, symbols, or punctuation.
+ * @param elementId the id of the element to validate
+ * @param alertBanner the id of the alert banner to display if the input is invalid
+ * @param alertMessage the id of the alert message to display if the input is invalid
+ * @param typeTextInput the type of text input being validated (e.g. "Title")
+ * @returns {boolean} returns true if the input is valid, false otherwise
+ */
+function validateEvidenceTextInput(elementId, alertBanner, alertMessage, typeTextInput) {
+    const nameInput = document.getElementById(elementId).value;
+    const regex = /^[\p{N}\p{P}\p{S}\p{Zs}]{1,}$/u; // this regex use Unicode awareness regex, it matches with any sequence of characters that are number, punctuation, or whitespace. Supposedly it works with all languages
+    if (regex.test(nameInput)) {
+        document.getElementById(alertBanner).hidden = false;
+        document.getElementById(alertMessage).innerText = typeTextInput+" cannot only contains numbers, punctuation, and/or symbols.";
+        return false
+    } else {
+        document.getElementById(alertBanner).hidden = true;
+        return true
+    }
+}
+
+/**
+ * Checks that the Title and Description fields are not empty inside the evidence modal.
+ */
+function isEvidenceInputFieldFilled() {
+    const titleInput = document.getElementById("evidenceTitle").value;
+    const descInput = document.getElementById("evidenceDescription").value;
+    const addButton = document.getElementById("evidenceModalButton");
+    if (titleInput === "" || descInput === "") {
+        addButton.classList.add("disabled");
+    } else {
+        addButton.classList.remove("disabled");
+    }
 }
