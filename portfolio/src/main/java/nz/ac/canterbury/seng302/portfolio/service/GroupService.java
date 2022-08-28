@@ -149,7 +149,6 @@ public class GroupService {
     public void addGroupDetailToModel(Model model, Integer groupId) {
         GroupDetailsResponse groupDetailsResponse = getGroupDetails(groupId);
         userResponseList = groupDetailsResponse.getMembersList();
-
         model.addAttribute("groupLongName", groupDetailsResponse.getLongName());
         model.addAttribute("groupShortName", groupDetailsResponse.getShortName());
 
