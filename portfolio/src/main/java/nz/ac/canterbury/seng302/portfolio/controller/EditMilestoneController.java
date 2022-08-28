@@ -6,6 +6,7 @@ import nz.ac.canterbury.seng302.portfolio.service.MilestoneService;
 import nz.ac.canterbury.seng302.portfolio.service.PermissionService;
 import nz.ac.canterbury.seng302.portfolio.service.UserAccountClientService;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
+import org.hibernate.ObjectNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
@@ -14,6 +15,10 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
+
+/**
+ * Controller receive HTTP GET, POST, PUT, DELETE calls for edit milestone
+ */
 @Controller
 public class EditMilestoneController {
 
@@ -35,7 +40,7 @@ public class EditMilestoneController {
      * @param milestone Milestone with changes being saved
      * @param model DOM model
      * @return redirect link
-     * @throws Exception Thrown if milestone with given ID does not exist.
+     * @throws ObjectNotFoundException Thrown if milestone with given ID does not exist.
      */
     @PostMapping("edit-milestone/{id}")
     public String saveEditedMilestone(
@@ -43,7 +48,7 @@ public class EditMilestoneController {
             @ModelAttribute("milestone") Milestone milestone,
             @AuthenticationPrincipal AuthState principal,
             Model model
-    ) throws Exception {
+    ) throws ObjectNotFoundException {
         Integer userID = userAccountClientService.getUserIDFromAuthState(principal);
         elementService.addHeaderAttributes(model, userID);
         if (permissionService.isValidToModifyProjectPage(userID)) {

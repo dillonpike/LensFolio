@@ -78,11 +78,7 @@ public class EditAccountController {
         elementService.addUpdateMessage(model, request);
         try {
             int userId = Integer.parseInt(userIdInput);
-            if (id == userId) {
-                model.addAttribute("isAuthorised", true);
-            } else {
-                model.addAttribute("isAuthorised", false);
-            }
+            model.addAttribute("isAuthorised", (id==userId));
             getUserByIdReply = registerClientService.getUserData(id);
             elementService.addRoles(model, getUserByIdReply);
             model.addAttribute("firstName", getUserByIdReply.getFirstName());
@@ -174,11 +170,7 @@ public class EditAccountController {
     ) {
         try {
             EditUserResponse saveUserdata = registerClientService.setUserData(userId, firstName, middleName, lastName, email, bio, nickName, personalPronouns);
-            if (saveUserdata.getIsSuccess()) {
-                rm.addFlashAttribute(UPDATE_CHECK_ID, true);
-            } else {
-                rm.addFlashAttribute(UPDATE_CHECK_ID, false);
-            }
+            rm.addFlashAttribute(UPDATE_CHECK_ID, saveUserdata.getIsSuccess());
         } catch (Exception e) {
             logger.error(MessageFormat.format(
                     "Something went wrong retrieving the data to save: {0}", e.getMessage()));

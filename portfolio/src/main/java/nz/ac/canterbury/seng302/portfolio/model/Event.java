@@ -255,7 +255,7 @@ public class Event {
      * @param time LocalTime time.
      * @return Date with time added to it.
      */
-    private Date addTimeToDate(Date date,LocalTime time){
+    public Date addTimeToDate(Date date,LocalTime time){
         SimpleDateFormat timeFormat = new SimpleDateFormat("kk:mm");
         try {
             Date dateWithTime = timeFormat.parse(String.valueOf(time));

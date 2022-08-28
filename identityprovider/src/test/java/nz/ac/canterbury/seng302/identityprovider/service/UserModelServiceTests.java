@@ -73,7 +73,7 @@ class UserModelServiceTests {
     public void setUp() {
         MockitoAnnotations.openMocks(this);
 
-        userModelService = new UserModelService(userModelRepository, rolesRepository, groupRepository);
+        userModelService = new UserModelService(userModelRepository, rolesRepository);
 
         testUser1.setUserId(1);
         membersGroup.setGroupId(1);
