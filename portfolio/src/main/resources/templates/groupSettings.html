@@ -26,6 +26,15 @@
 </head>
 <body>
 <header th:replace="fragments/header"></header>
+<!-- Toast for failure to connect to GitLab API -->
+<div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 2000" th:if="${isConnectionSuccessful} == false">
+    <div class="toast hide text-white" role="alert" aria-live="assertive" aria-atomic="true" id="alertToast" data-bs-animation="true" data-bs-autohide="true" data-bs-delay="7000">
+        <div class="toast-body">
+            <span id="alertToastText">Hidden</span>
+            <button id="toastBtn" type="button" class="btn-close btn-close-white me-2 m-auto float-end" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+    </div>
+</div>
 <div class="container" id="groupSettingContainer" th:fragment="groupSetting">
     <div class="row">
         <div class="col-12 col-md-6 ps-lg-1-6 ps-xl-5">
@@ -43,6 +52,10 @@
                     <div class="alert alert-danger alert-dismissible fade show" role="alert" id="successMessageBanner" th:hidden="${successMessage==null}">
                         <span id="successMessage" data-test-id="alertMessage" th:text="${successMessage}"></span>
                         <button type="button" class="btn-close" onclick="document.getElementById('successMessageBanner').hidden = true" aria-label="Close"></button>
+                    </div>
+                    <div th:fragment="groupSettingsAlertBanner" class="alert alert-danger alert-dismissible fade show" role="alert" id="groupSettingsAlertBanner" th:hidden="${groupSettingsAlertMessage==null}">
+                        <span id="groupSettingsAlertMessage" data-test-id="alertMessage" th:text="${groupSettingsAlertMessage}"></span>
+                        <button type="button" class="btn-close" onclick="document.getElementById('groupSettingsAlertBanner').hidden = true" aria-label="Close"></button>
                     </div>
                     <form th:action="@{saveGroupSettings}" onsubmit="validateGroupSetting(); return false" id="groupSettingForm" method="post">
                         <div th:fragment="groupLongNameAlertBanner" class="alert alert-danger alert-dismissible fade show" role="alert" id="groupLongNameAlertBanner" th:hidden="${groupLongNameAlertMessage==null}">

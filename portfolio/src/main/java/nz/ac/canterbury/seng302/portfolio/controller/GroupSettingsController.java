@@ -128,8 +128,17 @@ public class GroupSettingsController {
         }
 
         boolean isSaved = groupSettingsService.isGroupSettingSaved(groupSettingsId, repoId, repoName, repoToken, groupId);
+        System.out.println(isSaved);
+        boolean isConnected = gitLabApiService.checkGitLabToken(repoId, repoToken);
+        System.out.println(isConnected);
+        if(!isConnected) {
+            model.addAttribute("groupSettingsAlertMessage", "Invalid Repository Information");
+            httpServletResponse.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            return "groupSettings::groupSettingsAlertBanner";
+        }
+
         if(!isSaved) {
-            model.addAttribute("groupSettingsAlertMessage", "error");
+            model.addAttribute("groupSettingsAlertMessage", "Invalid Repository Information");
             httpServletResponse.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             return "groupSettings::groupSettingsAlertBanner";
         }
@@ -160,11 +169,14 @@ public class GroupSettingsController {
                 model.addAttribute("branchesName", branchesName);
                 model.addAttribute("isRepoExist", true);
                 model.addAttribute("groupId", groupId);
+                model.addAttribute("isConnectionSuccessful", true);
             } else {
                 model.addAttribute("isRepoExist", false);
+                model.addAttribute("isConnectionSuccessful", true);
             }
         } catch (GitLabApiException exception) {
             //TODO: add error message to model
+            model.addAttribute("isConnectionSuccessful", false);
             model.addAttribute("isRepoExist", false);
         }
     }

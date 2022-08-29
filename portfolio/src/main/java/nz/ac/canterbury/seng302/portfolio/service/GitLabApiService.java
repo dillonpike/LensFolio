@@ -1,5 +1,6 @@
 package nz.ac.canterbury.seng302.portfolio.service;
 
+import javax.persistence.criteria.CriteriaBuilder.In;
 import nz.ac.canterbury.seng302.portfolio.model.GroupSettings;
 import org.gitlab4j.api.GitLabApi;
 import org.gitlab4j.api.GitLabApiException;
@@ -71,4 +72,21 @@ public class GitLabApiService {
                         compareTo(o1.getCommittedDate())).toList();
 
     }
+
+    /**
+     * Returns a list of commits in the repository linked to the group.
+     * Commits can be filtered by branch and user if provided, otherwise pass in null for either or all of them.
+     * @throws GitLabApiException if any exception occurs communicating with the GitLab API
+     */
+    public boolean checkGitLabToken(int repoId, String repoApiKey) {
+        try {
+            GitLabApi gitLabApi = new GitLabApi("https://eng-git.canterbury.ac.nz", repoApiKey);
+            gitLabApi.getRepositoryApi().getBranches(Integer.toString(repoId));
+        } catch (GitLabApiException e) {
+            System.out.println(e);
+            return false;
+        }
+        return true;
+    }
+
 }

@@ -18,6 +18,7 @@ function editGroupSetting() {
 
 function showError(modalBodyResponse) {
     $("#groupLongNameAlertBanner").replaceWith(modalBodyResponse.responseText)
+    $("#groupRepoAPIKeyAlertBanner").replaceWith(modalBodyResponse.responseText)
 
 }
 /**
@@ -76,7 +77,9 @@ function validateModalName(elementId, alertBanner, alertMessage) {
         document.getElementById(alertMessage).innerText = "Name cannot be empty!";
         return false
     } else {
-        document.getElementById(alertBanner).hidden = true;
+        if (document.getElementById(alertBanner)) {
+          document.getElementById(alertBanner).hidden = true;
+        }
         return true
     }
 }

@@ -116,11 +116,12 @@ public class GroupSettingsService {
      * @return true if current group setting has been saved successfully, otherwise false.
      */
     public boolean isGroupSettingSaved(int groupSettingId, int repoId, String repoName, String repoToken, int groupId) {
-        GroupSettings targetGroupSetting = new GroupSettings(repoId, repoName, repoToken, groupId);
-        targetGroupSetting.setGroupSettingsId(groupSettingId);
         try {
+            GroupSettings targetGroupSetting = new GroupSettings(repoId, repoName, repoToken, groupId);
+            targetGroupSetting.setGroupSettingsId(groupSettingId);
             saveGroupSettings(targetGroupSetting);
         } catch (Exception e) {
+            System.out.println("got here");
             return false;
         }
         return true;
