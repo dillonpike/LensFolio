@@ -43,8 +43,9 @@ function addEvidence() {
  * @param modalBodyResponse response with new modalBody to display (evidenceModalBody fragment)
  */
 function replaceEvidenceModalBody(modalBodyResponse) {
-    console.log(modalBodyResponse.responseText)
     $("#evidenceModalBody").replaceWith(modalBodyResponse.responseText)
     updateCharsLeft('evidenceTitle', 'evidenceTitleLength', 30)
     updateCharsLeft('evidenceDescription', 'evidenceDescriptionLength', 250)
+    configureEvidenceDatePicker();
+    setEvidenceDatePickerValues();
 }

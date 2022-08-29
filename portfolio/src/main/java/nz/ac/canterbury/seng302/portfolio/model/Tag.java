@@ -4,6 +4,9 @@ import javax.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
 
+/**
+ * Tags for evidence pieces.
+ */
 @Entity
 public class Tag {
     @Id
@@ -46,7 +49,7 @@ public class Tag {
     }
 
     /**
-     * Returns the evidences with this tag.
+     * Returns the evidence pieces with this tag.
      * @return Set of Evidence objects with this tag.
     */
     public Set<Evidence> getEvidence() {
