@@ -18,6 +18,7 @@ function editGroupSetting() {
 
 function showError(modalBodyResponse) {
     $("#groupLongNameAlertBanner").replaceWith(modalBodyResponse.responseText)
+    console.log(modalBodyResponse);
     $("#groupRepoAPIKeyAlertBanner").replaceWith(modalBodyResponse.responseText)
 
 }
