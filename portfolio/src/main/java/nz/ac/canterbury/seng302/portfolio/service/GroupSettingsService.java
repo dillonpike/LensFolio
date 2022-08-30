@@ -2,9 +2,6 @@ package nz.ac.canterbury.seng302.portfolio.service;
 
 import nz.ac.canterbury.seng302.portfolio.model.GroupSettings;
 import nz.ac.canterbury.seng302.portfolio.repository.GroupSettingsRepository;
-import org.gitlab4j.api.GitLabApi;
-import org.gitlab4j.api.GitLabApiException;
-import org.gitlab4j.api.models.Contributor;
 import org.hibernate.ObjectNotFoundException;
 import org.jvnet.hk2.annotations.Service;
 import org.slf4j.Logger;
@@ -13,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.ui.Model;
 
-import java.util.List;
 import java.util.Optional;
 
 /**
@@ -121,7 +117,6 @@ public class GroupSettingsService {
             targetGroupSetting.setGroupSettingsId(groupSettingId);
             saveGroupSettings(targetGroupSetting);
         } catch (Exception e) {
-            System.out.println("got here");
             return false;
         }
         return true;

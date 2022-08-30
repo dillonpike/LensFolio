@@ -1,6 +1,5 @@
 package nz.ac.canterbury.seng302.portfolio.service;
 
-import javax.persistence.criteria.CriteriaBuilder.In;
 import nz.ac.canterbury.seng302.portfolio.model.GroupSettings;
 import org.gitlab4j.api.GitLabApi;
 import org.gitlab4j.api.GitLabApiException;
@@ -83,7 +82,6 @@ public class GitLabApiService {
             GitLabApi gitLabApi = new GitLabApi("https://eng-git.canterbury.ac.nz", repoApiKey);
             gitLabApi.getRepositoryApi().getBranches(Integer.toString(repoId));
         } catch (GitLabApiException e) {
-            System.out.println(e);
             return false;
         }
         return true;

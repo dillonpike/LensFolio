@@ -5,7 +5,6 @@ import org.gitlab4j.api.GitLabApi;
 import javax.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
-import org.gitlab4j.api.GitLabApiException;
 
 /**
  * JPA entity that models a group that users can join. A group is made up of a group id, short name, long name, and a

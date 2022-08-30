@@ -1,7 +1,6 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
 
-import nz.ac.canterbury.seng302.portfolio.model.GroupSettings;
 import nz.ac.canterbury.seng302.portfolio.service.*;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import nz.ac.canterbury.seng302.shared.identityprovider.ModifyGroupDetailsResponse;
@@ -128,9 +127,7 @@ public class GroupSettingsController {
         }
 
         boolean isSaved = groupSettingsService.isGroupSettingSaved(groupSettingsId, repoId, repoName, repoToken, groupId);
-        System.out.println(isSaved);
         boolean isConnected = gitLabApiService.checkGitLabToken(repoId, repoToken);
-        System.out.println(isConnected);
         if(!isConnected) {
             model.addAttribute("groupSettingsAlertMessage", "Invalid Repository Information");
             httpServletResponse.setStatus(HttpServletResponse.SC_BAD_REQUEST);
