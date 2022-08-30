@@ -275,4 +275,75 @@ class UserModelServiceTests {
         assertEquals(testUser2.getGroups(), expectedTestUser2Groups);
     }
 
+    /**
+     * Removes the student role from a user and checks the user no longer has the role.
+     */
+    @Test
+    void testRemovingStudentRoleFromUser() {
+        testUser1.addRoles(studentRole);
+        testUser1.addRoles(teacherRole);
+        assertEquals(2, testUser1.getRoles().size());
+
+        when(userModelService.saveEditedUser(any(UserModel.class))).thenReturn(true);
+        when(rolesRepository.findByRoleName("STUDENT")).thenReturn(studentRole);
+
+        userModelService.removeUserRole(testUser1, "STUDENT");
+
+        assertEquals(1, testUser1.getRoles().size());
+        assertTrue(testUser1.getRoles().contains(teacherRole));
+    }
+
+    /**
+     * Removes the teacher role from a user and checks the user no longer has the role.
+     */
+    @Test
+    void testRemovingTeacherRoleFromUser() {
+        testUser1.addRoles(studentRole);
+        testUser1.addRoles(teacherRole);
+        assertEquals(2, testUser1.getRoles().size());
+
+        when(userModelService.saveEditedUser(any(UserModel.class))).thenReturn(true);
+        when(rolesRepository.findByRoleName("TEACHER")).thenReturn(teacherRole);
+
+        userModelService.removeUserRole(testUser1, "TEACHER");
+
+        assertEquals(1, testUser1.getRoles().size());
+        assertTrue(testUser1.getRoles().contains(studentRole));
+    }
+
+    /**
+     * Removes a student role from a user when a user only has one role, and make sure the user still has a student role.
+     */
+    @Test
+    void testRemovingStudentRoleFromUserWhenOnlyOneRole() {
+        testUser1.addRoles(studentRole);
+        assertEquals(1, testUser1.getRoles().size());
+
+        when(userModelService.saveEditedUser(any(UserModel.class))).thenReturn(true);
+        when(rolesRepository.findByRoleName("STUDENT")).thenReturn(studentRole);
+
+        userModelService.removeUserRole(testUser1, "STUDENT");
+
+        assertEquals(1, testUser1.getRoles().size());
+        assertTrue(testUser1.getRoles().contains(studentRole));
+    }
+
+    /**
+     * Removes a teacher role from a user when a user only has one role, and make sure the user still has a student role.
+     */
+    @Test
+    void testRemovingTeacherRoleFromUserWhenOnlyOneRole() {
+        testUser1.addRoles(teacherRole);
+        assertEquals(1, testUser1.getRoles().size());
+
+        when(userModelService.saveEditedUser(any(UserModel.class))).thenReturn(true);
+        when(rolesRepository.findByRoleName("STUDENT")).thenReturn(studentRole);
+        when(rolesRepository.findByRoleName("TEACHER")).thenReturn(teacherRole);
+
+        userModelService.removeUserRole(testUser1, "TEACHER");
+
+        assertEquals(1, testUser1.getRoles().size());
+        assertTrue(testUser1.getRoles().contains(studentRole));
+    }
+
 }
