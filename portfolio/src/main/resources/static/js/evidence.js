@@ -52,6 +52,7 @@ function replaceEvidenceModalBody(modalBodyResponse) {
 
 /**
  * Validate that the text inputted in the given field does not only contain numbers, symbols, or punctuation.
+ * Also validates the input so that it cannot be only 1 character non-space
  * @param elementId the id of the element to validate
  * @param alertBanner the id of the alert banner to display if the input is invalid
  * @param alertMessage the id of the alert message to display if the input is invalid
@@ -64,6 +65,10 @@ function validateEvidenceTextInput(elementId, alertBanner, alertMessage, typeTex
     if (regex.test(input) || input.length < 2) {
         document.getElementById(alertBanner).hidden = false;
         document.getElementById(alertMessage).innerText = typeTextInput+" cannot only contains numbers, punctuation, and/or symbols. and must be at least 2 characters long.";
+        return false
+    } else if (input.trim().length === 1){
+        document.getElementById(alertBanner).hidden = false;
+        document.getElementById(alertMessage).innerText = typeTextInput+" should not have only 1 character non-space";
         return false
     } else {
         document.getElementById(alertBanner).hidden = true;
