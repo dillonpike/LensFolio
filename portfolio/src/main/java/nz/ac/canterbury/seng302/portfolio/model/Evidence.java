@@ -7,6 +7,10 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Evidence is associated with a user and contains a title, description, and a date.
+ * It also will have a set of tags.
+ */
 @Entity
 public class Evidence {
 

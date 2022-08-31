@@ -62,9 +62,17 @@
     </div>
     <script src="js/datepicker.js"></script>
     <script type="text/javascript">
-        evidenceDatePicker = configureDateTimePicker('evidenceDateInput');
+        let tooltip = null;
+        /**
+         * Sets up date picker and tooltip for evidence date input. Runs in the modal html.
+         */
+        function configureEvidenceDatePicker() {
+            evidenceDatePicker = configureDateTimePicker('evidenceDateInput');
 
-        let tooltip = new bootstrap.Tooltip($("#questionToolTip"))
+            tooltip = new bootstrap.Tooltip($("#questionToolTip"))
+        }
+
+        configureEvidenceDatePicker();
 
 
     </script>

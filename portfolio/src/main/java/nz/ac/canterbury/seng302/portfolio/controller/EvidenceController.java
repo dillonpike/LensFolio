@@ -10,6 +10,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 
 import javax.servlet.http.HttpServletResponse;
 
+/**
+ * Controller for evidence endpoints.
+ */
 @Controller
 public class EvidenceController {
 

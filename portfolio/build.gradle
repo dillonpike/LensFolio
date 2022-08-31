@@ -73,6 +73,8 @@ dependencies {
 
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.3.0-rc1'
 
+    implementation group: 'org.gitlab4j', name: 'gitlab4j-api', version: '5.0.1'
+
 }
 
 configurations {

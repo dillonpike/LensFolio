@@ -137,9 +137,16 @@
   let projectStartDate = /*[[${project.getStartDate()}]]*/ "Error";
   /*]]>*/
 
-  evidenceDatePicker.dates.setValue(tempusDominus.DateTime.convert(new Date()));
-  // Set minimum and maximum dates for greying out in the calendar
-  evidenceDatePicker.updateOptions({restrictions: {minDate: new Date(projectStartDate), maxDate: new Date(projectEndDate)}});
+  /**
+   * Sets up datepicker for the start and end dates of the project.
+   */
+  function setEvidenceDatePickerValues() {
+    evidenceDatePicker.dates.setValue(tempusDominus.DateTime.convert(new Date()));
+    // Set minimum and maximum dates for greying out in the calendar
+    evidenceDatePicker.updateOptions({restrictions: {minDate: new Date(projectStartDate), maxDate: new Date(projectEndDate)}});
+  }
+
+  setEvidenceDatePickerValues();
 
   // Hides the alert banner
   function removeAlertBanner() {

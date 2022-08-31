@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>Group Settings</title>
+    <!-- CSS only -->
+    <link href="css/groupSettings.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" crossorigin="anonymous">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.22/css/dataTables.bootstrap4.min.css">
+    <script src="https://cdn.datatables.net/1.10.22/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.22/js/dataTables.bootstrap4.min.js"></script>
+</head>
+<body>
+<header th:replace="fragments/header"></header>
+<div class="container">
+    <div class="row">
+        <div class="col-12 col-md-6 ps-lg-1-6 ps-xl-5">
+            <div class="card shadow">
+                <div class="text-start mb-1-6">
+                    <h2 class="h1 mt-2 fs-1 mx-3" id="groupSettingTitle">Group Settings</h2>
+                    <br>
+                    <form th:action="@{saveGroupSetting}" method="post">
+                        <div class="mb-3 mx-3">
+                            <label for="longGroupName" class="col-form-label">Long Group Name:</label>
+                            <input onkeyup="updateCharsLeft('longGroupName', 'longGroupNameLength', 30)" maxlength="30" type="text"
+                                   class="form-control" id="longGroupName" name="longName" th:value="${groupLongName}">
+                            <div class="name-length-message">
+                                <span id="longGroupNameLength"></span>
+                            </div>
+                        </div>
+                        <br>
+                        <h4 id="repositorySetting" class="mx-3">Repository Settings</h4>
+                        <div class="mb-3 mx-3">
+                            <label for="RepoName" class="col-form-label">Repository Name:</label>
+                            <input type="text" class="form-control" id="RepoName" name="repoName">
+                        </div>
+                        <div class="mb-3 mx-3">
+                            <label for="RepoID" class="col-form-label">Repository ID:</label>
+                            <input type="text" class="form-control" id="RepoID" name="RepoID">
+                        </div>
+                        <div class="mb-3 mx-3">
+                            <label for="RepoToken" class="col-form-label">Repository Access Token:</label>
+                            <input type="text" class="form-control" id="RepoToken" name="RepoToken">
+                        </div>
+                        <br>
+                        <div class="hstack gap-3">
+                            <button type="submit" class="btn btn-success ms-auto mx-3 my-3">Save</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div id="rightSide" class="col-6 col-md-6 sticky-md-top vstack gap-3">
+            <div class="card shadow">
+                    <div class="container">
+                        <h4 id="groupMember" class="mt-3">Group Members</h4>
+                        <table class="table table-striped table-bordered display" id="table" >
+                            <thead class="table-dark" id="headTable">
+                            <tr>
+                                <th id="firstNameColumn">First Name</th>
+                                <th id="lastNameColumn">Last Name</th>
+                                <th id="usernameColumn">Username</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="member : ${members}">
+                                <td><span th:text="${member.FirstName}"> First Name </span></td>
+                                <td><span th:text="${member.LastName}"> Last Name </span></td>
+                                <td><span th:text="${member.username}"> Username </span></td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!--                Must have in line script here-->
+                    <script>
+                        $('table').dataTable({searching: false, paging: false, info: false, select: true});
+                    </script>
+
+                </div>
+                <div class="card shadow">
+                    <div class="hstack gap-3">
+                        <h4 id="RecentActivity" class="mt-3 mx-3">Recent Activity</h4>
+                        <select id="branch" class="form-select my-3 mx-3 ms-auto" style="width: 50%" aria-label="Default select example">
+                            <option selected>Select Branch</option>
+                            <option value="1">master</option>
+                            <option value="2">dev</option>
+                        </select>
+                    </div>
+
+                </div>
+            </div>
+         </div>
+
+    </div>
+
+</div>
+<script>
+    //updates characters left
+    function updateCharsLeft(elementId, messageElementId, numChars) {
+        let chars_left = numChars - document.getElementById(elementId).value.length;
+        if (chars_left === numChars) {
+            document.getElementById(messageElementId).innerText = "";
+        } else if (chars_left === 1) {
+            document.getElementById(messageElementId).innerText = chars_left + " character left";
+        } else if (chars_left === 0) {
+            document.getElementById(messageElementId).innerText = "No characters left";
+        } else {
+            document.getElementById(messageElementId).innerText = chars_left + " characters left";
+        }
+    }
+</script>
+</body>
+</html>
