@@ -34,7 +34,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class SearchUsersControllerTest {
 
     @Autowired
-    private MockMvc mockMvc;
+    private MockMvc mockMvc = MockMvcBuilders.standaloneSetup(AccountController.class).build();
 
     @MockBean
     private UserAccountClientService userAccountClientService;
@@ -56,12 +56,6 @@ class SearchUsersControllerTest {
 
     private final int USER_ID = 1;
     private final String USERNAME = "Username";
-
-    @Before
-    public void setup() {
-        mockMvc = MockMvcBuilders.standaloneSetup(AccountController.class).build();
-    }
-
 
     /**
      * AuthState object to be used when we mock security context

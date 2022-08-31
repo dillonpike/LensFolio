@@ -1,6 +1,5 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
-import com.google.api.Http;
 import nz.ac.canterbury.seng302.portfolio.model.Group;
 import nz.ac.canterbury.seng302.portfolio.model.NotificationMessage;
 import nz.ac.canterbury.seng302.portfolio.model.NotificationResponse;
@@ -255,7 +254,7 @@ public class GroupController {
      * @param httpServletResponse for adding status codes to
      * @param groupId id of group modified in GRPC request
      * @param model model to add attributes to for Thymeleaf to inject into the HTML
-     * @return
+     * @return group list/card fragment if successful, otherwise null
      */
     private String returnGroupFragment(boolean responseSuccess, HttpServletResponse httpServletResponse, int groupId,
                                        Model model) {
