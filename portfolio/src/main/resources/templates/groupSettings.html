@@ -66,6 +66,7 @@
                             <div class="name-length-message">
                                 <span id="longGroupNameLength"></span>
                             </div>
+                            <input type="hidden" th:value="${groupShortName}" name="groupShortName" id="groupShortName" th:name="shortName">
                         </div>
                         <br>
                         <h4 id="repositorySetting" class="mx-3">Repository Settings</h4>
@@ -78,11 +79,11 @@
                         </div>
                         <div class="mb-3 mx-3">
                             <label for="repoId" class="col-form-label">Repository ID:</label>
-                            <input type="text" class="form-control" id="repoId" th:name="repoId" th:value="${repoId}" disabled>
+                            <input type="text" class="form-control" id="repoId" th:name="repoId" th:style="${isConnectionSuccessful} ? '' : 'border-style: solid; border-color: red;'" th:value="${repoId}" disabled>
                         </div>
                         <div class="mb-3 mx-3">
                             <label for="repoToken" class="col-form-label">Repository Access Token:</label>
-                            <input type="text" class="form-control" id="repoToken" th:name="repoToken" th:value="${repoApiKey}" disabled>
+                            <input type="text" class="form-control" id="repoToken" th:style="${isConnectionSuccessful} ? '' : 'border-style: solid; border-color: red;'" th:name="repoToken" th:value="${repoApiKey}" disabled>
                         </div>
                         <input type="hidden" th:value="${groupId}" name="groupId" id="groupId" th:name="groupId">
                         <input type="hidden" th:value="${groupSettingsId}" name="groupSettingsId" id="groupSettingsId" th:name="groupSettingsId">
