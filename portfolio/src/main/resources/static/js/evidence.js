@@ -46,6 +46,8 @@ function replaceEvidenceModalBody(modalBodyResponse) {
     $("#evidenceModalBody").replaceWith(modalBodyResponse.responseText)
     updateCharsLeft('evidenceTitle', 'evidenceTitleLength', 30)
     updateCharsLeft('evidenceDescription', 'evidenceDescriptionLength', 250)
+    configureEvidenceDatePicker();
+    setEvidenceDatePickerValues();
 }
 
 /**
