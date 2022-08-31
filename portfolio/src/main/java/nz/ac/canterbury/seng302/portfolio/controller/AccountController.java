@@ -1,13 +1,12 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
 import io.grpc.StatusRuntimeException;
-import nz.ac.canterbury.seng302.portfolio.service.ElementService;
-import nz.ac.canterbury.seng302.portfolio.service.PhotoService;
-import nz.ac.canterbury.seng302.portfolio.service.RegisterClientService;
+import nz.ac.canterbury.seng302.portfolio.service.*;
 import nz.ac.canterbury.seng302.portfolio.utility.DateUtility;
-import nz.ac.canterbury.seng302.portfolio.service.UserAccountClientService;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
@@ -37,6 +36,8 @@ public class AccountController {
     private PhotoService photoService;
 
     public static final String USER_ID_ATTRIBUTE_NAME = "userId";
+
+    private static final Logger logger = LoggerFactory.getLogger(AccountController.class);
 
     /***
      * GET method for account controller to generate user's info
@@ -81,7 +82,7 @@ public class AccountController {
             model.addAttribute("userImage", photoService.getPhotoPath(getUserByIdReply.getProfileImagePath(), userId));
         } catch (StatusRuntimeException e) {
             model.addAttribute("loginMessage", "Error connecting to Identity Provider...");
-            e.printStackTrace();
+            logger.error("Error while showing account page {}", e.getMessage());
         } catch (NumberFormatException numberFormatException) {
             model.addAttribute(USER_ID_ATTRIBUTE_NAME, id);
             return "404NotFound";
