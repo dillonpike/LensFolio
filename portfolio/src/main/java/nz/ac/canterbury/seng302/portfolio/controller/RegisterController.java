@@ -31,6 +31,8 @@ public class RegisterController {
     @Autowired
     private AuthenticateClientService authenticateClientService;
 
+    private static final Pattern NAME_PATTERN = Pattern.compile("[A-Za-z]{2,20}");
+
     private static final String PASSWORD_PATTERN =
             "^(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#&()–[{}]:;',.?/*~$^+=<>]).{8,20}$";
 
@@ -130,7 +132,7 @@ public class RegisterController {
             return "redirect:register?passwordError";
         }
 
-        boolean firstNameMatchesPattern = Pattern.compile("[A-Za-z]+.{2,}").matcher(firstName).matches();
+        boolean firstNameMatchesPattern = NAME_PATTERN.matcher(firstName).matches();
         if (!firstNameMatchesPattern) {
             addModelAttribute(rm, username, firstName, middleName, lastName, email);
             rm.addAttribute(defaultNickName, nickName);
@@ -139,7 +141,7 @@ public class RegisterController {
             return "redirect:register?firstNameError";
         }
 
-        boolean lastNameMatchesPattern = Pattern.compile("[A-Za-z]+.{2,}").matcher(lastName).matches();
+        boolean lastNameMatchesPattern = NAME_PATTERN.matcher(lastName).matches();
         if (!lastNameMatchesPattern) {
             addModelAttribute(rm, username, firstName, middleName, lastName, email);
             rm.addAttribute(defaultNickName, nickName);
