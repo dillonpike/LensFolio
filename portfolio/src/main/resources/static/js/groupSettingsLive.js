@@ -7,6 +7,7 @@
 function connect() {
     let socket = new SockJS('mywebsockets');
     stompClient = Stomp.over(socket);
+    stompClient.debug = null;
     stompClient.connect({}, function (frame) {
         stompClient.subscribe('/webSocketGet/group-settings-saved', function (GroupSettingsResponseArg) {
             const GroupNotificationResponse = JSON.parse(GroupSettingsResponseArg.body);
