@@ -8,7 +8,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.boot.test.mock.mockito.SpyBean;
 
 import java.util.Optional;
 
@@ -27,6 +29,9 @@ class GroupSettingsServiceTest {
 
     @InjectMocks
     private GroupSettingsService groupSettingsService;
+
+    @Spy
+    private GroupSettingsService groupSettingsServiceMock;
 
     private static final GroupSettings testGroupSettings = new GroupSettings(12345, "test repo", "kjbfdsouoih321312ewln", 1);
 
@@ -88,7 +93,15 @@ class GroupSettingsServiceTest {
     void checkRepositoryHasBeenSetUpWhenItIsNot() {
         GroupSettings test = new GroupSettings(0, "test repo", null, 1234);
         lenient().when(groupSettingsService.getGroupSettingsByGroupId(test.getGroupId())).thenReturn(test);
+//        doReturn(test).when(groupSettingsService).getGroupSettingsByGroupId(test.getGroupId());
         assertFalse(groupSettingsService.doesGroupHaveRepo(test.getGroupId()));
+    }
+
+    @Test
+    void checkRepositoryHasBeenSetUpWhenItIs() {
+        GroupSettings test = new GroupSettings(123, "test repo", "testKey", 1234);
+        doReturn(test).when(groupSettingsServiceMock).getGroupSettingsByGroupId(test.getGroupId());
+        assertTrue(groupSettingsServiceMock.doesGroupHaveRepo(test.getGroupId()));
     }
 
     @Test
