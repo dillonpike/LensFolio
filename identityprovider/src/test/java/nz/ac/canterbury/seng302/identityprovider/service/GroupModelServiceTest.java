@@ -2,7 +2,6 @@ package nz.ac.canterbury.seng302.identityprovider.service;
 
 import com.fasterxml.jackson.databind.util.ArrayIterator;
 import nz.ac.canterbury.seng302.identityprovider.model.GroupModel;
-import nz.ac.canterbury.seng302.identityprovider.model.Roles;
 import nz.ac.canterbury.seng302.identityprovider.model.UserModel;
 import nz.ac.canterbury.seng302.identityprovider.repository.GroupRepository;
 import nz.ac.canterbury.seng302.identityprovider.repository.RolesRepository;
@@ -16,11 +15,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.naming.directory.InvalidAttributesException;
-import java.util.HashSet;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
