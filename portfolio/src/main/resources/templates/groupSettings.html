@@ -161,8 +161,12 @@
             </div>
             <div  th:hidden="!${isRepoExist}">
                 <div class="card shadow" style="padding: 10px; margin-bottom: 50px" >
-                    <div id = "commitsListRefresh" th:fragment="commitsListRefresh" class="overflow-auto" style="height: 500px;">
-
+                    <div id = "commitsListRefresh" th:fragment="commitsListRefresh" class="overflow-auto" style="max-height: 500px;">
+                        <div th:if="${commitList !=null and commitList.isEmpty()}">
+                            <div class="card-body mt-2">
+                                <h5 class="card-title">No Commits Found</h5>
+                            </div>
+                        </div>
                         <div class="card mb-1" th:each="commit: ${commitList}">
                             <div class="card-body mt-2">
                                 <div class="d-flex flex-row">
