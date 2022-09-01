@@ -5,6 +5,9 @@ import nz.ac.canterbury.seng302.portfolio.repository.EvidenceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+/**
+ * Service class for evidence pieces.
+ */
 @Service
 public class EvidenceService {
 
@@ -21,7 +24,6 @@ public class EvidenceService {
             evidenceRepository.save(newEvidence);
             return true;
         } catch (Exception e) {
-            e.printStackTrace();
             return false;
         }
     }
