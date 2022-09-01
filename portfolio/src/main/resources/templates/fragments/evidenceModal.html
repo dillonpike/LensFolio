@@ -13,9 +13,9 @@
                             <button type="button" class="btn-close" onclick="document.getElementById('evidenceTitleAlertBanner').hidden = true" aria-label="Close"></button>
                         </div>
                         <div class="mb-3">
-                            <label for="evidenceTitle" class="col-form-label">Title:</label>
-                            <input onkeyup="updateCharsLeft('evidenceTitle', 'evidenceTitleLength', 30)" maxlength="30" type="text"
-                                   class="form-control" id="evidenceTitle" name="title" th:value="${evidence?.title}">
+                            <label for="evidenceTitle" class="col-form-label">Title(*):</label>
+                            <input onkeyup="{updateCharsLeft('evidenceTitle', 'evidenceTitleLength', 30);isEvidenceInputFieldFilled()}" maxlength="30" type="text"
+                                   class="form-control" onkeydown="isEvidenceInputFieldFilled()" id="evidenceTitle" name="title" th:value="${evidence?.title}">
                             <div class="name-length-message">
                                 <span id="evidenceTitleLength"></span>
                             </div>
@@ -26,8 +26,8 @@
                             <button type="button" class="btn-close" onclick="document.getElementById('evidenceDescriptionAlertBanner').hidden = true" aria-label="Close"></button>
                         </div>
                         <div class="mb-3">
-                            <label for="evidenceDescription" class="col-form-label">Description:</label>
-                            <input onkeyup="updateCharsLeft('evidenceDescription', 'evidenceDescriptionLength', 250)" maxlength="250" type="text"
+                            <label for="evidenceDescription" class="col-form-label">Description(*):</label>
+                            <input onkeyup="{updateCharsLeft('evidenceDescription', 'evidenceDescriptionLength', 250);isEvidenceInputFieldFilled()}" maxlength="250" type="text"
                                    class="form-control" id="evidenceDescription" name="description" th:value="${evidence?.description}">
                             <div class="name-length-message">
                                 <span id="evidenceDescriptionLength"></span>
@@ -39,7 +39,7 @@
                             <button type="button" class="btn-close" onclick="document.getElementById('evidenceDateAlertBanner').hidden = true" aria-label="Close"></button>
                         </div>
                         <div class="mb-3">
-                            <label for="evidenceDate" class="col-form-label">Date:</label>
+                            <label for="evidenceDate" class="col-form-label">Date(*):</label>
                             <button type="button" id="questionToolTip" class="btn" style="margin: 0; padding: 0" data-bs-toggle="tooltip" data-bs-placement="right" title="This date should indicate the day that the evidence took place. ">
                                 <span class="bi bi-question-circle"></span>
                             </button>
@@ -54,7 +54,7 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button class="btn btn-primary" id="evidenceModalButton" type="submit">Add Evidence</button>
+                        <button class="btn btn-primary disabled" id="evidenceModalButton" type="submit">Add Evidence</button>
                     </div>
                 </form>
             </div>
@@ -73,6 +73,7 @@
         }
 
         configureEvidenceDatePicker();
+
 
     </script>
 </div>
