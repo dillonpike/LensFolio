@@ -13,6 +13,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PostMapping;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Date;
 
@@ -40,6 +41,7 @@ public class EvidenceController {
      */
     @PostMapping("/add-evidence")
     public String addEvidence(
+            HttpServletRequest request,
             Model model,
             HttpServletResponse httpServletResponse,
             @AuthenticationPrincipal AuthState principal
@@ -49,14 +51,10 @@ public class EvidenceController {
 
 
         try {
-            String title = (String) model.getAttribute("evidenceTitle");
-            String description = (String) model.getAttribute("evidenceDescription");
-            Date date = (Date) model.getAttribute("evidenceDate");
-            Project project = (Project) model.getAttribute("project");
+            String title = request.getParameter("evidenceTitle");
+            String description = request.getParameter("evidenceDescription");
+            Date date = Project.stringToDate(request.getParameter("evidenceDate"));
             int projectId = 0;
-            if (project != null) {
-                projectId = project.getId();
-            }
             int userId = userAccountClientService.getUserIDFromAuthState(principal);
             Evidence evidence = new Evidence(projectId, userId, title, description, date);
 
@@ -65,7 +63,7 @@ public class EvidenceController {
                 // * Add the evidence to the model *
                 // * Maybe add something to the model to make sure the evidence tab is shown? *
                 httpServletResponse.setStatus(HttpServletResponse.SC_OK);
-                return null; // * return some sort of evidence fragment? *
+                return "fragments/evidenceModal::evidenceModalBody"; // * return some sort of evidence fragment? *
             }
 
             // else

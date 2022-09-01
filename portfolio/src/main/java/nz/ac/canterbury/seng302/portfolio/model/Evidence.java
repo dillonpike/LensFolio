@@ -18,6 +18,7 @@ public class Evidence {
     private static final Logger logger = LoggerFactory.getLogger(Evidence.class);
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int evidenceId;
 
     private int parentProjectId;

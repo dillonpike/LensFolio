@@ -29,9 +29,14 @@ function addEvidence() {
         evidenceDescription: document.getElementById('evidenceDescription').value,
         evidenceDate: document.getElementById('evidenceDate').value,
     }
-    $.post(document.getElementById('evidenceForm').action + "?" + new URLSearchParams(data)).done((result) => {  //  + "?" + new URLSearchParams(data)
+    $.post(document.getElementById('evidenceForm').action, data, () => {
+        // Successful post function:
+        console.log("Success")
+        $('#evidenceModal').modal('toggle');
+    }, "json").done((result) => {  //  + "?" + new URLSearchParams(data)
         // TODO update the page with the new evidence using some sort of replacement technique.
         // Below is what the group page does, for help with how to implement such a step.
+        console.log("Done");
         $('#evidenceModal').modal('toggle')
         // document.getElementById("groupList").innerHTML += result
     }).fail((xhr, status, error) => {
