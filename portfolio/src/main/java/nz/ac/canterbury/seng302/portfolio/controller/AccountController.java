@@ -112,7 +112,7 @@ public class AccountController {
      * @return Account page with user id
      */
     @PostMapping("/backToAccountPage")
-    public String editAccount(
+    public String moveToAccount(
             HttpServletRequest request,
             HttpServletResponse response,
             @ModelAttribute("userId") int userId,
@@ -121,6 +121,5 @@ public class AccountController {
         rm.addAttribute(USER_ID_ATTRIBUTE_NAME,userId);
         return "redirect:account";
     }
-
 
 }
