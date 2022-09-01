@@ -47,48 +47,46 @@
         </div>
       </div>
 <!--      end left-side profile card-->
+      <div class="col-lg-8">
+        <div class="ps-lg-1-6 ps-xl-5">
+          <div class="mb-5">
 
-      <ul class="nav nav-tabs" id="myTab" role="tablist">
-        <li class="nav-item" role="presentation">
-          <button class="nav-link active" id="profile-tab" data-bs-toggle="tab" data-bs-target="#user-info" type="button" role="tab" aria-controls="profile" aria-selected="true" th:attr="onClick='saveTab(\'profile-tab\')'">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person" viewBox="0 0 16 16">
-              <path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm4 8c0 1-1 1-1 1H3s-1 0-1-1 1-4 6-4 6 3 6 4zm-1-.004c-.001-.246-.154-.986-.832-1.664C11.516 10.68 10.289 10 8 10c-2.29 0-3.516.68-4.168 1.332-.678.678-.83 1.418-.832 1.664h10z"/>
-            </svg>
-            Profile
-          </button>
-        </li>
-        <li class="nav-item" role="presentation">
-          <button class="nav-link" id="evidence-tab" data-bs-toggle="tab" data-bs-target="#evidence" type="button" role="tab" aria-controls="evidence" aria-selected="false" th:attr="onClick='saveTab(\'evidence-tab\')'">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-journal-text" viewBox="0 0 16 16">
-              <path d="M5 10.5a.5.5 0 0 1 .5-.5h2a.5.5 0 0 1 0 1h-2a.5.5 0 0 1-.5-.5zm0-2a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5zm0-2a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5zm0-2a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5z"/>
-              <path d="M3 0h10a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2v-1h1v1a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H3a1 1 0 0 0-1 1v1H1V2a2 2 0 0 1 2-2z"/>
-              <path d="M1 5v-.5a.5.5 0 0 1 1 0V5h.5a.5.5 0 0 1 0 1h-2a.5.5 0 0 1 0-1H1zm0 3v-.5a.5.5 0 0 1 1 0V8h.5a.5.5 0 0 1 0 1h-2a.5.5 0 0 1 0-1H1zm0 3v-.5a.5.5 0 0 1 1 0v.5h.5a.5.5 0 0 1 0 1h-2a.5.5 0 0 1 0-1H1z"/>
-            </svg>
-            Evidence
-          </button>
-        </li>
-      </ul>
-      <div class="tab-content" id="myTabContent">
-        <div class="tab-pane fade show active" id="user-info" role="tabpanel" aria-labelledby="user-info-tab">
-  <!--start the right side profile card-->
-          <div class="col-lg-8">
-            <div class="ps-lg-1-6 ps-xl-5">
-              <div class="mb-5">
-
-                <div class="alert alert-warning alert-dismissible fade show" role="alert" id="alertBanner" th:if="${isUpdateSuccess != null}">
-                  <div style="display: flex; justify-content: space-between;flex-direction: row; align-items: center">
-                    <strong th:text="${updateMessage}"></strong>
-                    <button id="removeUpdateAlert" type="button" class="btn btn-outline-warning" onclick="removeAlertBanner()">X</button>
-                  </div>
-                </div>
-
+            <div class="alert alert-warning alert-dismissible fade show" role="alert" id="alertBanner" th:if="${isUpdateSuccess != null}">
+              <div style="display: flex; justify-content: space-between;flex-direction: row; align-items: center">
+                <strong th:text="${updateMessage}"></strong>
+                <button id="removeUpdateAlert" type="button" class="btn btn-outline-warning" onclick="removeAlertBanner()">X</button>
+              </div>
+            </div>
+            <ul class="nav nav-tabs" id="myTab" role="tablist">
+              <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="profile-tab" data-bs-toggle="tab" data-bs-target="#user-info" type="button" role="tab" aria-controls="profile" aria-selected="true" th:attr="onClick='saveTab(\'profile-tab\')'">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person" viewBox="0 0 16 16">
+                    <path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm4 8c0 1-1 1-1 1H3s-1 0-1-1 1-4 6-4 6 3 6 4zm-1-.004c-.001-.246-.154-.986-.832-1.664C11.516 10.68 10.289 10 8 10c-2.29 0-3.516.68-4.168 1.332-.678.678-.83 1.418-.832 1.664h10z"/>
+                  </svg>
+                  Profile
+                </button>
+              </li>
+              <li class="nav-item" role="presentation">
+                <button class="nav-link" id="evidence-tab" data-bs-toggle="tab" data-bs-target="#evidence" type="button" role="tab" aria-controls="evidence" aria-selected="false" th:attr="onClick='saveTab(\'evidence-tab\')'">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-journal-text" viewBox="0 0 16 16">
+                    <path d="M5 10.5a.5.5 0 0 1 .5-.5h2a.5.5 0 0 1 0 1h-2a.5.5 0 0 1-.5-.5zm0-2a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5zm0-2a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5zm0-2a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5z"/>
+                    <path d="M3 0h10a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2v-1h1v1a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H3a1 1 0 0 0-1 1v1H1V2a2 2 0 0 1 2-2z"/>
+                    <path d="M1 5v-.5a.5.5 0 0 1 1 0V5h.5a.5.5 0 0 1 0 1h-2a.5.5 0 0 1 0-1H1zm0 3v-.5a.5.5 0 0 1 1 0V8h.5a.5.5 0 0 1 0 1h-2a.5.5 0 0 1 0-1H1zm0 3v-.5a.5.5 0 0 1 1 0v.5h.5a.5.5 0 0 1 0 1h-2a.5.5 0 0 1 0-1H1z"/>
+                  </svg>
+                  Evidence
+                </button>
+              </li>
+            </ul>
+            <div class="tab-content" id="myTabContent">
+              <div class="tab-pane fade show active" id="user-info" role="tabpanel" aria-labelledby="user-info-tab">
+        <!--start the right side profile card-->
                 <div class="text-start mb-1-6">
                   <h2 class="h1 mb-0 fs-1">Profile</h2>
                 </div>
 
                 <br>
 
-    <!--            start form-->
+      <!--            start form-->
                 <form action="#">
                   <div class="form-floating mb-3">
                     <input type="text" class="form-control" id="firstName" th:name="firstName" placeholder="First name" disabled th:value="*{firstName}">
@@ -125,7 +123,7 @@
                     <label for="floatingTextarea2">Bio</label>
                   </div>
                 </form>
-    <!--          end form-->
+      <!--          end form-->
                 <form th:action="@{editAccountLoad}" method="post" th:if="${isAuthorised} == true">
                   <div style="display:flex; justify-content: end" class="mt-3">
                     <input type="hidden" th:value="${userId}" name="userId" id="userId">
@@ -133,17 +131,17 @@
                   </div>
                 </form>
               </div>
+              <div class="tab-pane fade show active" id="evidence" role="tabpanel" aria-labelledby="user-evidence-tab">
+                <div class="text-start mb-1-6">
+                  <h2 class="h1 mb-0 fs-1">Evidence</h2>
+                  <a class="button-link" data-bs-toggle="modal" data-bs-target="#evidenceModal" data-bs-type="add" th:if="${isAuthorised} == true">
+                    <button id="addEvidenceButton" class="dropdown-item" type="button">
+                      <span class='bi bi-plus'></span> <i>Add Evidence</i>
+                    </button>
+                  </a>
+                </div>
+              </div>
             </div>
-          </div>
-        </div>
-        <div class="tab-pane fade show active" id="evidence" role="tabpanel" aria-labelledby="user-evidence-tab">
-          <div class="text-start mb-1-6">
-            <h2 class="h1 mb-0 fs-1">Evidence</h2>
-            <a class="button-link" data-bs-toggle="modal" data-bs-target="#evidenceModal" data-bs-type="add" th:if="${isAuthorised} == true">
-              <button id="addEvidenceButton" class="dropdown-item" type="button">
-                <span class='bi bi-plus'></span> <i>Add Evidence</i>
-              </button>
-            </a>
           </div>
         </div>
       </div>
