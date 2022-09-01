@@ -4,6 +4,7 @@ package nz.ac.canterbury.seng302.portfolio.controller;
 import nz.ac.canterbury.seng302.portfolio.service.*;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import nz.ac.canterbury.seng302.shared.identityprovider.ModifyGroupDetailsResponse;
+import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 import org.gitlab4j.api.GitLabApiException;
 import org.gitlab4j.api.models.Commit;
 import org.gitlab4j.api.models.Contributor;
@@ -40,6 +41,12 @@ public class GroupSettingsController {
     @Autowired
     private GitLabApiService gitLabApiService;
 
+    @Autowired
+    private RegisterClientService registerClientService;
+
+    @Autowired
+    private PermissionService permissionService;
+
     private static final String GROUP_SETTING_ALERT_MESSAGE = "groupSettingsAlertMessage";
 
     private static final String GROUP_ID = "groupId";
@@ -47,6 +54,8 @@ public class GroupSettingsController {
     private static final String IS_REPO_EXIST = "isRepoExist";
 
     private static final String IS_CONNECTION_SUCCESSFUL = "isConnectionSuccessful";
+
+    private static final String CURRENT_USER_ROLE = "currentUserRole";
 
     /**
      * Method to handle GetMapping request from frontend, and return the group settings page.
@@ -60,7 +69,12 @@ public class GroupSettingsController {
                                Model model){
         Integer id = userAccountClientService.getUserIDFromAuthState(principal);
         elementService.addHeaderAttributes(model, id);
+        UserResponse user = registerClientService.getUserData(id);
+        String role = elementService.getUserHighestRole(user);
+
         model.addAttribute(GROUP_ID, groupId);
+        model.addAttribute(CURRENT_USER_ROLE, role);
+
         // Non-existent group will have a group id of 0 when calling getGroupDetails
         if (0 <= groupService.getGroupDetails(groupId).getGroupId() &&
                 groupService.getGroupDetails(groupId).getGroupId() <= 2) {
@@ -73,6 +87,8 @@ public class GroupSettingsController {
         if(!isConnected) {
             model.addAttribute(GROUP_SETTING_ALERT_MESSAGE, "Repository Is Unreachable With The Current Settings");
         }
+        boolean isValidToModify = permissionService.isValidToModifyGroupSettingPage(groupId, id);
+        model.addAttribute("isValidToModify", isValidToModify);
 
         groupService.addGroupDetailToModel(model, groupId);
         groupSettingsService.addSettingAttributesToModel(groupId, model);

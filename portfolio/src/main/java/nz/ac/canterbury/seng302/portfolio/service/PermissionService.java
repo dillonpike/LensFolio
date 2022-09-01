@@ -1,9 +1,11 @@
 package nz.ac.canterbury.seng302.portfolio.service;
 
+import nz.ac.canterbury.seng302.shared.identityprovider.GroupDetailsResponse;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -21,6 +23,10 @@ public class PermissionService {
     @Autowired
     private ElementService elementService;
 
+    @Autowired
+    private GroupService groupService;
+
+    private List<UserResponse> userResponseList;
 
     /**
      * Function to validate user's current operation(Delete/add role).
@@ -62,4 +68,22 @@ public class PermissionService {
         // Decline users' request if they are current a student
         return !highestRole.equals("student");
     }
+
+    /**
+     * Method to validate if user have write-permission on particular group setting page
+     * @param groupId current group id
+     * @param userId current user id
+     * @return true if user is in the group, false if not.
+     */
+    public boolean isValidToModifyGroupSettingPage(int groupId, int userId) {
+        GroupDetailsResponse groupDetailsResponse = groupService.getGroupDetails(groupId);
+        userResponseList = groupDetailsResponse.getMembersList();
+        for (UserResponse userResponse : userResponseList) {
+            if (userResponse.getId() == userId) {
+                return true;
+            }
+        }
+        return false;
+    }
+
 }
