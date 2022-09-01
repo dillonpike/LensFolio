@@ -25,10 +25,11 @@ async function validateEvidence() {
  */
 function addEvidence() {
     const data = {
-        shortName: document.getElementById('evidenceTitle').value,
-        longName: document.getElementById('evidenceDescription').value
+        evidenceTitle: document.getElementById('evidenceTitle').value,
+        evidenceDescription: document.getElementById('evidenceDescription').value,
+        evidenceDate: document.getElementById('evidenceDate').value,
     }
-    $.post(document.getElementById('evidenceForm').action).done((result) => {  //  + "?" + new URLSearchParams(data)
+    $.post(document.getElementById('evidenceForm').action + "?" + new URLSearchParams(data)).done((result) => {  //  + "?" + new URLSearchParams(data)
         // TODO update the page with the new evidence using some sort of replacement technique.
         // Below is what the group page does, for help with how to implement such a step.
         $('#evidenceModal').modal('toggle')

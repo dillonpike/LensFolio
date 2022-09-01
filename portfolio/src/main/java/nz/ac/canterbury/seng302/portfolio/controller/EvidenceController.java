@@ -1,14 +1,20 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
 import nz.ac.canterbury.seng302.portfolio.model.Evidence;
+import nz.ac.canterbury.seng302.portfolio.model.Project;
+import nz.ac.canterbury.seng302.portfolio.service.EvidenceService;
+import nz.ac.canterbury.seng302.portfolio.service.UserAccountClientService;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 
 import javax.servlet.http.HttpServletResponse;
+import java.util.Date;
 
 /**
  * Controller for evidence endpoints.
@@ -16,40 +22,68 @@ import javax.servlet.http.HttpServletResponse;
 @Controller
 public class EvidenceController {
 
+    Logger logger = LoggerFactory.getLogger(EvidenceController.class);
+
+    @Autowired
+    private EvidenceService evidenceService;
+
+    @Autowired
+    private UserAccountClientService userAccountClientService;
+
+    private static final String ADD_EVIDENCE_MODAL_FRAGMENT = "fragments/evidenceModal::evidenceModalBody";
+
     /**
      * Method tries to add and sve the new evidence piece to the database
-     * @param evidence Evidence piece with information.
      * @param model Parameters sent to thymeleaf template to be rendered into HTML
      * @param httpServletResponse for adding status codes to
      * @return redirect user to evidence tab, or keep up modal if there are errors.
      */
     @PostMapping("/add-evidence")
     public String addEvidence(
-            @ModelAttribute("evidence") Evidence evidence,
             Model model,
             HttpServletResponse httpServletResponse,
             @AuthenticationPrincipal AuthState principal
     ) {
-        // TODO Implement this method
+        // TODO Finish implementing this method
         // Comments based on how the group controller implements adding groups.
-        // * Add the evidence to the repo and get back a response *
-        if (false) { // * someResponse.isSuccessful() check *
-            // * Add the evidence to the model *
-            // * Maybe add something to the model to make sure the evidence tab is shown? *
-            httpServletResponse.setStatus(HttpServletResponse.SC_OK);
-            return "account"; // * return some sort of evidence fragment? *
+
+
+        try {
+            String title = (String) model.getAttribute("evidenceTitle");
+            String description = (String) model.getAttribute("evidenceDescription");
+            Date date = (Date) model.getAttribute("evidenceDate");
+            Project project = (Project) model.getAttribute("project");
+            int projectId = 0;
+            if (project != null) {
+                projectId = project.getId();
+            }
+            int userId = userAccountClientService.getUserIDFromAuthState(principal);
+            Evidence evidence = new Evidence(projectId, userId, title, description, date);
+
+            boolean wasAdded = evidenceService.addEvidence(evidence);
+            if (wasAdded) {
+                // * Add the evidence to the model *
+                // * Maybe add something to the model to make sure the evidence tab is shown? *
+                httpServletResponse.setStatus(HttpServletResponse.SC_OK);
+                return null; // * return some sort of evidence fragment? *
+            }
+
+            // else
+            String errorMessage = "Evidence Not Added. Saving Error Occurred.";
+            model.addAttribute("evidenceTitleAlertMessage", errorMessage);
+            httpServletResponse.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            return ADD_EVIDENCE_MODAL_FRAGMENT;
+
+        } catch (NullPointerException e) {
+            String errorMessage = "Evidence Not Added. Error Finding Attributes.";
+            model.addAttribute("evidenceTitleAlertMessage", errorMessage);
+            httpServletResponse.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            logger.error("Unable to find attributes of evidence for adding evidence");
+            return ADD_EVIDENCE_MODAL_FRAGMENT;
         }
 
-        // else
-        // * get errors from someResponse *
-        // * Add the errors to the model *
 
-        // Test code for showing the feature is not yet implemented.
-        String errorMessage = "Feature not yet implemented";
-        model.addAttribute("evidenceTitleAlertMessage", errorMessage);
 
-        httpServletResponse.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 
-        return "fragments/evidenceModal::evidenceModalBody";
     }
 }
