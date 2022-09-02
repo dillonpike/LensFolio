@@ -19,6 +19,9 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.ui.Model;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -30,6 +33,7 @@ class PermissionServiceTest {
      */
     private final UserResponse mockUser = UserResponse.newBuilder()
             .setBio("default bio")
+            .setId(1)
             .setCreated(Timestamp.newBuilder().setSeconds(55))
             .setEmail("hello@test.com")
             .setFirstName("firsttestname")
@@ -40,6 +44,18 @@ class PermissionServiceTest {
             .addRoles(UserRole.STUDENT)
             .build();
 
+    private final UserResponse mockUser1 = UserResponse.newBuilder()
+            .setBio("default bio")
+            .setId(2)
+            .setCreated(Timestamp.newBuilder().setSeconds(55))
+            .setEmail("hello@test.com")
+            .setFirstName("firsttestname")
+            .setLastName("lasttestname")
+            .setMiddleName("middlettestname")
+            .setNickname("niktestname")
+            .setPersonalPronouns("He/him")
+            .addRoles(UserRole.STUDENT)
+            .build();
     public Model model;
 
     @InjectMocks
@@ -50,6 +66,9 @@ class PermissionServiceTest {
 
     @Mock
     private RegisterClientService registerClientService;
+
+    @Mock
+    private GroupService groupService;
 
     @Mock
     private UserAccountServiceGrpc.UserAccountServiceBlockingStub userAccountStub;
@@ -130,5 +149,33 @@ class PermissionServiceTest {
         when(elementService.getUserHighestRole(mockUser)).thenReturn("admin");
         boolean isValid = permissionService.isValidToModifyProjectPage(mockUser.getId());
         Assertions.assertTrue(isValid);
+    }
+
+    @Test
+    void testIsValidToModifyGroupSettingPageWhenInTheGroup() {
+        GroupDetailsResponse response = GroupDetailsResponse.newBuilder()
+                .setGroupId(1)
+                .addMembers(mockUser)
+                .addMembers(mockUser1)
+                .build();
+
+        when(groupService.getGroupDetails(1)).thenReturn(response);
+
+        boolean isValid = permissionService.isValidToModifyGroupSettingPage(1, 1);
+        Assertions.assertTrue(isValid);
+    }
+
+    @Test
+    void testIsValidToModifyGroupSettingPageWhenNotInTheGroup() {
+        GroupDetailsResponse response = GroupDetailsResponse.newBuilder()
+                .setGroupId(1)
+                .addMembers(mockUser)
+                .addMembers(mockUser1)
+                .build();
+
+        when(groupService.getGroupDetails(1)).thenReturn(response);
+
+        boolean isValid = permissionService.isValidToModifyGroupSettingPage(1, 3);
+        Assertions.assertFalse(isValid);
     }
 }
