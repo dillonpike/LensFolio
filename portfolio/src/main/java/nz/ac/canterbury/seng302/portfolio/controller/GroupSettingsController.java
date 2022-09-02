@@ -152,7 +152,7 @@ public class GroupSettingsController {
 
         // First, we check the response from the server to see if edit the group long name is successful
         if (!groupResponse.getIsSuccess()) {
-            model.addAttribute("groupLongNameAlertMessage", "Error updating group long name, group long name must be unique");
+            model.addAttribute("groupLongNameAlertMessage", "Error updating group long name");
             httpServletResponse.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             return "groupSettings::groupLongNameAlertBanner";
         }

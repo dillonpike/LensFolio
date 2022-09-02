@@ -89,6 +89,9 @@ class GroupSettingsControllerTest {
     private RegisterClientService registerClientService; // needed to load application context
 
     @MockBean
+    private PermissionService permissionService; // needed to load application context
+
+    @MockBean
     private GitLabApiService gitLabApiService; // needed to load application context
 
 
@@ -150,6 +153,45 @@ class GroupSettingsControllerTest {
                 .andExpect(model().attribute("groupShortName", testGroup.getShortName()))
                 .andExpect(model().attribute("groupLongName", testGroup.getLongName()))
                 .andExpect(model().attribute("groupSettingsAlertMessage", "Repository Is Unreachable With The Current Settings"));
+    }
+
+    /**
+     * Test that the group settings page is loaded with the correct short and long name when given a valid id
+     * Also test if the user has write access to the current page if user is in current group.
+     * @throws Exception when an exception is thrown while performing the get request
+     */
+    @Test
+    void groupSettingValidAndUserIsInGroupCheckWritePermission() throws Exception {
+        doReturn(GroupDetailsResponse.newBuilder()
+                .setGroupId(testGroup.getGroupId()).setShortName(testGroup.getShortName())
+                .setLongName(testGroup.getLongName()).build())
+                .when(groupService).getGroupDetails(testGroup.getGroupId());
+
+        when(groupSettingsService.getGroupSettingsByGroupId(any(Integer.class))).thenReturn(testGroupSettings);
+        when(gitLabApiService.checkGitLabToken(any(Integer.class), any(String.class))).thenReturn(true);
+        when(permissionService.isValidToModifyGroupSettingPage(any(Integer.class), any(Integer.class))).thenReturn(true);
+        mockMvc.perform(get("/groupSettings").param("groupId", Integer.toString(testGroup.getGroupId())))
+                .andExpect(status().isOk())
+                .andExpect(model().attribute("groupShortName", testGroup.getShortName()))
+                .andExpect(model().attribute("groupLongName", testGroup.getLongName()))
+                .andExpect(model().attribute("isValidToModify", true));
+    }
+
+    @Test
+    void groupSettingValidAndUserIsNotInGroupCheckWritePermission() throws Exception {
+        doReturn(GroupDetailsResponse.newBuilder()
+                .setGroupId(testGroup.getGroupId()).setShortName(testGroup.getShortName())
+                .setLongName(testGroup.getLongName()).build())
+                .when(groupService).getGroupDetails(testGroup.getGroupId());
+
+        when(groupSettingsService.getGroupSettingsByGroupId(any(Integer.class))).thenReturn(testGroupSettings);
+        when(gitLabApiService.checkGitLabToken(any(Integer.class), any(String.class))).thenReturn(true);
+        when(permissionService.isValidToModifyGroupSettingPage(any(Integer.class), any(Integer.class))).thenReturn(false);
+        mockMvc.perform(get("/groupSettings").param("groupId", Integer.toString(testGroup.getGroupId())))
+                .andExpect(status().isOk())
+                .andExpect(model().attribute("groupShortName", testGroup.getShortName()))
+                .andExpect(model().attribute("groupLongName", testGroup.getLongName()))
+                .andExpect(model().attribute("isValidToModify", false));
     }
 
     @Test
