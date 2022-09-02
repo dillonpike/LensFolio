@@ -33,6 +33,8 @@ public class EvidenceController {
 
     private static final String ADD_EVIDENCE_MODAL_FRAGMENT = "fragments/evidenceModal::evidenceModalBody";
 
+    private static final String ADD_EVIDENCE_MODAL_FRAGMENT_TITLE_MESSAGE = "evidenceTitleAlertMessage";
+
     /**
      * Method tries to add and sve the new evidence piece to the database
      * @param model Parameters sent to thymeleaf template to be rendered into HTML
@@ -46,10 +48,6 @@ public class EvidenceController {
             HttpServletResponse httpServletResponse,
             @AuthenticationPrincipal AuthState principal
     ) {
-        // TODO Finish implementing this method
-        // Comments based on how the group controller implements adding groups.
-
-
         try {
             String title = request.getParameter("evidenceTitle");
             String description = request.getParameter("evidenceDescription");
@@ -62,25 +60,25 @@ public class EvidenceController {
             if (wasAdded) {
                 // * Add the evidence to the model *
                 // * Maybe add something to the model to make sure the evidence tab is shown? *
+                String successMessage = "Evidence Added. ";
+                model.addAttribute(ADD_EVIDENCE_MODAL_FRAGMENT_TITLE_MESSAGE, successMessage);
                 httpServletResponse.setStatus(HttpServletResponse.SC_OK);
                 return "fragments/evidenceModal::evidenceModalBody"; // * return some sort of evidence fragment? *
             }
 
             // else
             String errorMessage = "Evidence Not Added. Saving Error Occurred.";
-            model.addAttribute("evidenceTitleAlertMessage", errorMessage);
+            model.addAttribute(ADD_EVIDENCE_MODAL_FRAGMENT_TITLE_MESSAGE, errorMessage);
             httpServletResponse.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             return ADD_EVIDENCE_MODAL_FRAGMENT;
 
         } catch (NullPointerException e) {
             String errorMessage = "Evidence Not Added. Error Finding Attributes.";
-            model.addAttribute("evidenceTitleAlertMessage", errorMessage);
+            model.addAttribute(ADD_EVIDENCE_MODAL_FRAGMENT_TITLE_MESSAGE, errorMessage);
             httpServletResponse.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             logger.error("Unable to find attributes of evidence for adding evidence");
             return ADD_EVIDENCE_MODAL_FRAGMENT;
         }
-
-
 
 
     }

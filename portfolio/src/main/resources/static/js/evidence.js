@@ -29,18 +29,17 @@ function addEvidence() {
         evidenceDescription: document.getElementById('evidenceDescription').value,
         evidenceDate: document.getElementById('evidenceDate').value,
     }
-    $.post(document.getElementById('evidenceForm').action, data, () => {
-        // Successful post function:
-        console.log("Success")
-        $('#evidenceModal').modal('toggle');
-    }, "json").done((result) => {  //  + "?" + new URLSearchParams(data)
-        // TODO update the page with the new evidence using some sort of replacement technique.
-        // Below is what the group page does, for help with how to implement such a step.
-        console.log("Done");
-        $('#evidenceModal').modal('toggle')
-        // document.getElementById("groupList").innerHTML += result
+    $.post(document.getElementById('evidenceForm').action, data).done((result) => {
+        replaceEvidenceModalBody(result);
+        let messageAlert = $("evidenceTitleAlertBanner");
+        messageAlert.toggleClass("alert-danger alert-success");
+        setTimeout(() => {
+            $('#evidenceModal').modal('toggle')
+            messageAlert.toggleClass("alert-success alert-danger");
+            clearEvidenceModalFields();
+        }, 1000);
     }).fail((xhr, status, error) => {
-        replaceEvidenceModalBody(xhr);
+        replaceEvidenceModalBody(xhr.responseText);
     })
 }
 
@@ -49,7 +48,7 @@ function addEvidence() {
  * @param modalBodyResponse response with new modalBody to display (evidenceModalBody fragment)
  */
 function replaceEvidenceModalBody(modalBodyResponse) {
-    $("#evidenceModalBody").replaceWith(modalBodyResponse.responseText)
+    $("#evidenceModalBody").replaceWith(modalBodyResponse)
     updateCharsLeft('evidenceTitle', 'evidenceTitleLength', 30)
     updateCharsLeft('evidenceDescription', 'evidenceDescriptionLength', 250)
     configureEvidenceDatePicker();
@@ -94,4 +93,11 @@ function isEvidenceInputFieldFilled() {
     } else {
         addButton.classList.remove("disabled");
     }
+}
+
+function clearEvidenceModalFields() {
+    document.getElementById('evidenceTitle').value = "";
+    document.getElementById('evidenceDescription').value = "";
+    evidenceDatePicker.dates.setValue(tempusDominus.DateTime.convert(new Date()));
+    $("#evidenceTitleAlertBanner").hide();
 }
