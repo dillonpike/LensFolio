@@ -302,13 +302,10 @@
      */
     function sendSavedLiveNotificationRequest(inputElementName, modal, action){
         $(inputElementName).click(function() {
-            console.log(getModalActionType(modal));
             if (getModalActionType(modal) === action) {
                 if (action.includes("add")) {
-                    console.log("added");
                     addGroupReload(selectedArtefactName, selectedArtefactId, userId, userFirstName, userLastName, username, "Group");
                 } else {
-                    console.log("editing");
                     sendNameReload(selectedArtefactName, selectedArtefactId, userId, userFirstName, userLastName, username, "Group");
                 }
             }
