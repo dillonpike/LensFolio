@@ -64,9 +64,10 @@ public class GroupSettingsController {
      * @return group settings page
      */
     @RequestMapping("/groupSettings")
-    public String groupSettings(@RequestParam(value = "groupId") int groupId,
-                               @AuthenticationPrincipal AuthState principal,
-                               Model model){
+    public String groupSettings(
+            @RequestParam(value = "groupId") int groupId,
+            @AuthenticationPrincipal AuthState principal,
+            Model model) {
         Integer id = userAccountClientService.getUserIDFromAuthState(principal);
         elementService.addHeaderAttributes(model, id);
         UserResponse user = registerClientService.getUserData(id);
@@ -84,7 +85,7 @@ public class GroupSettingsController {
         int repoId = (int) groupSettingsService.getGroupSettingsByGroupId(groupId).getRepoId();
         String repoToken = groupSettingsService.getGroupSettingsByGroupId(groupId).getRepoApiKey();
         boolean isConnected = gitLabApiService.checkGitLabToken(repoId, repoToken);
-        if(!isConnected) {
+        if (!isConnected) {
             model.addAttribute(GROUP_SETTING_ALERT_MESSAGE, "Repository Is Unreachable With The Current Settings");
         }
         boolean isValidToModify = permissionService.isValidToModifyGroupSettingPage(groupId, id);
@@ -106,12 +107,13 @@ public class GroupSettingsController {
      * @return repository commits fragment
      */
     @GetMapping("/repository-commits")
-    public String getRepositoryCommits(@RequestParam(value = "groupId") int groupId,
-                                       @RequestParam(value = "branchName") String branchName,
-                                       @RequestParam(value = "userEmail") String userEmail,
-                                       @AuthenticationPrincipal AuthState principal,
-                               Model model) {
-        try{
+    public String getRepositoryCommits(
+            @RequestParam(value = "groupId") int groupId,
+            @RequestParam(value = "branchName") String branchName,
+            @RequestParam(value = "userEmail") String userEmail,
+            @AuthenticationPrincipal AuthState principal,
+            Model model) {
+        try {
             String branchRequestName = null;
             String userRequestEmail = null;
             if(!branchName.equals("All Branches")){
