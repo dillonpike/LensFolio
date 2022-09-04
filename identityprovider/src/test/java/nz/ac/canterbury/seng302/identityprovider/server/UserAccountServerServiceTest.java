@@ -149,15 +149,14 @@ class UserAccountServerServiceTest {
         when(rolesRepository.findByRoleName("STUDENT")).thenReturn(theRole);
         when(userModelService.getUserById(1)).thenReturn(mockUserModel);
         when(userModelService.saveEditedUser(any(UserModel.class))).thenReturn(true);
-        doNothing().when(mockUserModel).deleteRole(any(Roles.class));
+        when(userModelService.removeUserRole(any(UserModel.class), any(String.class))).thenReturn(true);
 
-        ArgumentCaptor<Roles> deletedRole = ArgumentCaptor.forClass(Roles.class);
+        ArgumentCaptor<String> deletedRole = ArgumentCaptor.forClass(String.class);
         ArgumentCaptor<UserModel> deletedRoleModel = ArgumentCaptor.forClass(UserModel.class);
 
         UserRoleChangeResponse reply = userAccountServerService.removeRoleFromUserHelper(request);
         assertTrue(reply.getIsSuccess());
-        verify(mockUserModel).deleteRole(deletedRole.capture());
-        verify(userModelService).saveEditedUser(deletedRoleModel.capture());
+        verify(userModelService).removeUserRole(deletedRoleModel.capture(), deletedRole.capture());
 
     }
 
@@ -178,16 +177,14 @@ class UserAccountServerServiceTest {
         theRole.setId(0);
         when(rolesRepository.findByRoleName("TEACHER")).thenReturn(theRole);
         when(userModelService.getUserById(1)).thenReturn(mockUserModel);
-        when(userModelService.saveEditedUser(any(UserModel.class))).thenReturn(true);
-        doNothing().when(mockUserModel).deleteRole(any(Roles.class));
+        when(userModelService.removeUserRole(any(UserModel.class), any(String.class))).thenReturn(true);
 
-        ArgumentCaptor<Roles> deletedRole = ArgumentCaptor.forClass(Roles.class);
+        ArgumentCaptor<String> deletedRole = ArgumentCaptor.forClass(String.class);
         ArgumentCaptor<UserModel> deletedRoleModel = ArgumentCaptor.forClass(UserModel.class);
 
         UserRoleChangeResponse reply = userAccountServerService.removeRoleFromUserHelper(request);
         assertTrue(reply.getIsSuccess());
-        verify(mockUserModel).deleteRole(deletedRole.capture());
-        verify(userModelService).saveEditedUser(deletedRoleModel.capture());
+        verify(userModelService).removeUserRole(deletedRoleModel.capture(), deletedRole.capture());
 
     }
 
@@ -208,16 +205,14 @@ class UserAccountServerServiceTest {
         theRole.setId(0);
         when(rolesRepository.findByRoleName("COURSE ADMINISTRATOR")).thenReturn(theRole);
         when(userModelService.getUserById(1)).thenReturn(mockUserModel);
-        when(userModelService.saveEditedUser(any(UserModel.class))).thenReturn(true);
-        doNothing().when(mockUserModel).deleteRole(any(Roles.class));
+        when(userModelService.removeUserRole(any(UserModel.class), any(String.class))).thenReturn(true);
 
-        ArgumentCaptor<Roles> deletedRole = ArgumentCaptor.forClass(Roles.class);
+        ArgumentCaptor<String> deletedRole = ArgumentCaptor.forClass(String.class);
         ArgumentCaptor<UserModel> deletedRoleModel = ArgumentCaptor.forClass(UserModel.class);
 
         UserRoleChangeResponse reply = userAccountServerService.removeRoleFromUserHelper(request);
         assertTrue(reply.getIsSuccess());
-        verify(mockUserModel).deleteRole(deletedRole.capture());
-        verify(userModelService).saveEditedUser(deletedRoleModel.capture());
+        verify(userModelService).removeUserRole(deletedRoleModel.capture(), deletedRole.capture());
 
     }
 }

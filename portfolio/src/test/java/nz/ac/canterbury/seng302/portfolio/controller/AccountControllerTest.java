@@ -1,10 +1,8 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
 import com.google.protobuf.Timestamp;
-import nz.ac.canterbury.seng302.portfolio.service.ElementService;
-import nz.ac.canterbury.seng302.portfolio.service.PhotoService;
-import nz.ac.canterbury.seng302.portfolio.service.RegisterClientService;
-import nz.ac.canterbury.seng302.portfolio.service.UserAccountClientService;
+import nz.ac.canterbury.seng302.portfolio.model.Project;
+import nz.ac.canterbury.seng302.portfolio.service.*;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import nz.ac.canterbury.seng302.shared.identityprovider.ClaimDTO;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
@@ -24,6 +22,9 @@ import org.springframework.security.web.authentication.preauth.PreAuthenticatedA
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+
+import java.util.Date;
+
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -64,6 +65,11 @@ class AccountControllerTest {
             .addRoles(UserRole.STUDENT)
             .build();
 
+    /**
+     * Mocked project
+     */
+    private Project mockProject = new Project("test project", "test description", new Date(), new Date());
+
 
     @Autowired
     private MockMvc mockMvc = MockMvcBuilders.standaloneSetup(AccountController.class).build();
@@ -80,6 +86,9 @@ class AccountControllerTest {
     @MockBean
     private PhotoService photoService;
 
+    @MockBean
+    private ProjectService projectService;
+
     /**
      * unit testing to test the get method when calling "/account"
      * Expect to return 200 status code and account page with some user's information in the model
@@ -92,6 +101,7 @@ class AccountControllerTest {
         SecurityContextHolder.setContext(mockedSecurityContext);
         when(userAccountClientService.getUserIDFromAuthState(any(AuthState.class))).thenReturn(1);
         when(registerClientService.getUserData(1)).thenReturn(mockUser);
+        when(projectService.getProjectById(0)).thenReturn(mockProject);
 
         String firstName = mockUser.getFirstName();
         String middleName = mockUser.getMiddleName();
@@ -116,7 +126,8 @@ class AccountControllerTest {
                 .andExpect(model().attribute("username", username))
                 .andExpect(model().attribute("email", email))
                 .andExpect(model().attribute("personalPronouns", personalPronouns))
-                .andExpect(model().attribute("bio", bio));
+                .andExpect(model().attribute("bio", bio))
+                .andExpect(model().attribute("project", mockProject));
     }
 
 }

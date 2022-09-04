@@ -1,6 +1,8 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
 import io.grpc.StatusRuntimeException;
+import nz.ac.canterbury.seng302.portfolio.model.Evidence;
+import nz.ac.canterbury.seng302.portfolio.model.Project;
 import nz.ac.canterbury.seng302.portfolio.service.*;
 import nz.ac.canterbury.seng302.portfolio.utility.DateUtility;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
@@ -34,6 +36,9 @@ public class AccountController {
 
     @Autowired
     private PhotoService photoService;
+
+    @Autowired
+    private ProjectService projectService;
 
     public static final String USER_ID_ATTRIBUTE_NAME = "userId";
 
@@ -80,6 +85,13 @@ public class AccountController {
             model.addAttribute("dateAdded", DateUtility.getDateAddedString(getUserByIdReply.getCreated()));
             model.addAttribute("monthsSinceAdded", DateUtility.getDateSinceAddedString(getUserByIdReply.getCreated()));
             model.addAttribute("userImage", photoService.getPhotoPath(getUserByIdReply.getProfileImagePath(), userId));
+
+            Project project = projectService.getProjectById(0);
+            model.addAttribute("project", project);
+
+            Evidence evidence = new Evidence();
+            model.addAttribute("evidence", evidence);
+
         } catch (StatusRuntimeException e) {
             model.addAttribute("loginMessage", "Error connecting to Identity Provider...");
             logger.error("Error while showing account page {}", e.getMessage());

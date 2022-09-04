@@ -28,6 +28,12 @@ public class UserModelService {
 
     private static int userIdCount = 1;
 
+    private static final String STUDENT_ROLE = "STUDENT";
+
+    private static final String TEACHER_ROLE = "TEACHER";
+
+    private static final String COURSE_ADMINISTRATOR_ROLE = "COURSE ADMINISTRATOR";
+
     public UserModelService(UserModelRepository userModelRepository, RolesRepository rolesRepository) {
         this.repository = userModelRepository;
         this.rolesRepository = rolesRepository;
@@ -84,7 +90,7 @@ public class UserModelService {
         findMaxUserId();
         user.setUserId(userIdCount);
         userIdCount++;
-        Roles studentRole = rolesRepository.findByRoleName("STUDENT");
+        Roles studentRole = rolesRepository.findByRoleName(STUDENT_ROLE);
         user.addRoles(studentRole);
         return repository.save(user);
     }
@@ -134,12 +140,12 @@ public class UserModelService {
     public String getHighestRole(UserModel user) {
         Set<Roles> roles = user.getRoles();
         for (Roles role : roles) {
-            if (Objects.equals(role.getRoleName(), "COURSE ADMINISTRATOR")) {
+            if (Objects.equals(role.getRoleName(), COURSE_ADMINISTRATOR_ROLE)) {
                 return "admin";
             }
         }
         for (Roles role : roles) {
-            if (Objects.equals(role.getRoleName(), "TEACHER")) {
+            if (Objects.equals(role.getRoleName(), TEACHER_ROLE)) {
                 return "teacher";
             }
         }
@@ -189,7 +195,7 @@ public class UserModelService {
      * @param user user to check if they are in the teachers group.
      */
     public boolean checkUserHasTeacherRole(UserModel user) {
-        Roles teacherRole = rolesRepository.findByRoleName("TEACHER");
+        Roles teacherRole = rolesRepository.findByRoleName(TEACHER_ROLE);
 
         boolean addedRole = false;
         if (!user.getRoles().contains(teacherRole)) {
@@ -205,25 +211,20 @@ public class UserModelService {
      * @return Whether it was removed.
      */
     public boolean checkUserDoesNotHaveTeacherRole(UserModel user) {
-        Roles teacherRole = rolesRepository.findByRoleName("TEACHER");
-
-        boolean addedRole = false;
-        Set<Roles> roles = new HashSet<>(user.getRoles());
-        for (Roles role : roles) {
-            if (role.getRoleName().equals(teacherRole.getRoleName())) {
-                user.deleteRole(role);
-                addedRole = saveEditedUser(user);
-            }
-        }
-        return addedRole;
+        return removeUserRole(user, TEACHER_ROLE);
     }
 
+    /**
+     * Sets a list of users only group to the group given.
+     * @param users List of users.
+     * @param group Group to change users to.
+     */
     public void setOnlyGroup(Iterable<UserModel> users, GroupModel group) {
         for (UserModel user: users) {
             user.setGroups(Set.of(group));
             if (group.getGroupId() == GroupModelServerService.MEMBERS_WITHOUT_GROUP_ID) {
-                user.getRoles().add(rolesRepository.findByRoleName("STUDENT"));
-                user.getRoles().remove(rolesRepository.findByRoleName("TEACHER"));
+                user.getRoles().add(rolesRepository.findByRoleName(STUDENT_ROLE));
+                user.getRoles().remove(rolesRepository.findByRoleName(TEACHER_ROLE));
             }
         }
         repository.saveAll(users);
@@ -243,6 +244,25 @@ public class UserModelService {
                 logger.info(MessageFormat.format("New user id:{0} found without group, added them to 'users without a group' group", user.getUserId()));
             }
         }
+    }
+
+    /**
+     * Remove a role from a user. Will add the student role to user if the roles of the changed user are empty.
+     * @param user Given user to remove the role from.
+     * @param roleString Must be "TEACHER", "STUDENT" or "COURSE ADMINISTRATOR".
+     * @return Boolean of whether the user was saved with the new roles.
+     */
+    public boolean removeUserRole(UserModel user, String roleString) {
+        Roles role = rolesRepository.findByRoleName(roleString);
+
+        user.deleteRole(role);
+        Set<Roles> roles = user.getRoles();
+        if (roles.isEmpty()) {
+            Roles studentRole = rolesRepository.findByRoleName(STUDENT_ROLE);
+            roles.add(studentRole);
+        }
+        user.setRoles(roles);
+        return saveEditedUser(user);
     }
 
 }

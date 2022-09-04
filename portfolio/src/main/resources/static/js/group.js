@@ -23,6 +23,14 @@ function updateTable(groupId) {
     $('#tableRefreshContainer').load(url, "groupId=" + groupId)
 }
 
+/**
+ * Redirect user to the group settings page.
+ * @param groupId group to fetch information of.
+ */
+function redirectToSettingsPage(groupId) {
+    const url = '/groupSettings?groupId=' + groupId
+    document.location.href = url
+}
 
 /**
  * Returns the id of the currently selected group.
@@ -110,7 +118,7 @@ function addGroup() {
         $('#groupModal').modal('toggle')
         document.getElementById("groupList").innerHTML += result
         groupButtonSetup() // Allow group cards to be highlighted when selected
-    }).fail(replaceModalBody)
+    }).fail(replaceGroupModalBody)
 }
 
 /**
@@ -130,14 +138,14 @@ function editGroup() {
         $(`#groupCard${id}`).replaceWith(result)
         groupButtonSetup() // Allow group cards to be highlighted when selected
         $(`#groupCard${id} button`).click() // Select edited group
-    }).fail(replaceModalBody)
+    }).fail(replaceGroupModalBody)
 }
 
 /**
- * Replaces the body of the modal with the given modalBody response from the backend.
+ * Replaces the body of the group modal with the given modalBody response from the backend.
  * @param modalBodyResponse response with new modalBody to display (groupModalBody fragment)
  */
-function replaceModalBody(modalBodyResponse) {
+function replaceGroupModalBody(modalBodyResponse) {
     $("#groupModalBody").replaceWith(modalBodyResponse.responseText)
     updateCharsLeft('shortGroupName', 'shortGroupNameLength', 10)
     updateCharsLeft('longGroupName', 'longGroupNameLength', 30)
@@ -234,8 +242,8 @@ function highlightCurrentGroup() {
 function updateMembersWithoutAGroupCard() {
     $.get('members-without-a-group').done((result) => {
         $(`#groupCard1`).replaceWith(result)
-        highlightCurrentGroup()
         groupButtonSetup() // Allow group cards to be highlighted when selected
+        highlightCurrentGroup()
     })
 }
 
@@ -328,7 +336,6 @@ function removeUserModalButtonFunction() {
             updateTable(groupId)
             updateMembersWithoutAGroupCard()
             $('#removeUserModal').modal('toggle')
-            groupButtonSetup() // Allow group cards to be highlighted when selected
             showAlertToast("Group " + groupName + " Updated")
             reloadRemovedUsers()
         }).fail(() => {
