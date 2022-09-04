@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -23,6 +24,8 @@ import java.util.List;
 /**
  * Controller for group setting page.
  */
+@Validated
+//@ValuesAllowed(propName = "orderBy", values = { "OpportunityCount", "OpportunityPublishedCount", "ApplicationCount", "ApplicationsApprovedCount" })
 @Controller
 public class GroupSettingsController {
 
@@ -150,22 +153,31 @@ public class GroupSettingsController {
     )  {
         rm.addAttribute(GROUP_ID, groupId);
         model.addAttribute(GROUP_ID, groupId);
+
+        repoName = repoName.trim();
+        repoToken = repoToken.trim();
+        if (!groupSettingsService.isValidGroupSettings(repoId, repoName, repoToken)) {
+            model.addAttribute(GROUP_SETTING_ALERT_MESSAGE, "Please enter valid repository settings");
+            httpServletResponse.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            return "groupSettings::groupSettingsAlertBanner";
+        }
+
         ModifyGroupDetailsResponse groupResponse = groupService.editGroupDetails(groupId, shortName, longName);
 
         // First, we check the response from the server to see if edit the group long name is successful
         if (!groupResponse.getIsSuccess()) {
-            model.addAttribute("groupLongNameAlertMessage", "Error updating group long name");
+            model.addAttribute("groupLongNameAlertMessage", groupResponse.getMessage());
             httpServletResponse.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             return "groupSettings::groupLongNameAlertBanner";
         }
 
         boolean isSaved = groupSettingsService.isGroupSettingSaved(groupSettingsId, repoId, repoName, repoToken, groupId);
         boolean isConnected = gitLabApiService.checkGitLabToken(repoId, repoToken);
-        if(!isConnected) {
+        if (!isConnected) {
             model.addAttribute(GROUP_SETTING_ALERT_MESSAGE, "Repository Is Unreachable With The Current Settings");
         }
 
-        if(!isSaved) {
+        if (!isSaved) {
             model.addAttribute(GROUP_SETTING_ALERT_MESSAGE, "Invalid Repository Information");
             httpServletResponse.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             return "groupSettings::groupSettingsAlertBanner";
