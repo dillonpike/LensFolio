@@ -350,6 +350,7 @@ class GroupSettingsControllerTest {
         ModifyGroupDetailsResponse response = ModifyGroupDetailsResponse.newBuilder()
                 .setIsSuccess(false).setMessage("Unable to update group long name").build();
         doReturn(response).when(groupService).editGroupDetails(any(Integer.class),any(String.class), any(String.class));
+        when(permissionService.isValidToModifyGroupSettingPage(any(Integer.class), any(Integer.class))).thenReturn(true);
 
         mockMvc.perform(post("/saveGroupSettings")
                         .param("groupLongName", "newLongName")
@@ -381,6 +382,7 @@ class GroupSettingsControllerTest {
         doNothing().when(groupService).addGroupDetailToModel(any(Model.class),any(Integer.class));
         doNothing().when(groupSettingsService).addSettingAttributesToModel(any(Integer.class),any(Model.class));
         doNothing().when(groupSettingsController).addGroupSettingAttributeToModel(any(Model.class),any(Integer.class));
+        when(permissionService.isValidToModifyGroupSettingPage(any(Integer.class), any(Integer.class))).thenReturn(true);
 
 
 
@@ -414,6 +416,7 @@ class GroupSettingsControllerTest {
         doNothing().when(groupService).addGroupDetailToModel(any(Model.class),any(Integer.class));
         doNothing().when(groupSettingsService).addSettingAttributesToModel(any(Integer.class),any(Model.class));
         doNothing().when(groupSettingsController).addGroupSettingAttributeToModel(any(Model.class),any(Integer.class));
+        when(permissionService.isValidToModifyGroupSettingPage(any(Integer.class), any(Integer.class))).thenReturn(true);
 
 
 
