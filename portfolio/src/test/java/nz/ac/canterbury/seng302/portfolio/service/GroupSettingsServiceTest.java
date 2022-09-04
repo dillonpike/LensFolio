@@ -88,15 +88,19 @@ class GroupSettingsServiceTest {
         verify(repository, times(0)).deleteById(groupSettingsId);
     }
 
-
+    /**
+     * Tests that the getGroupSettingsByGroupId method return false if the group settings does not exist.
+     */
     @Test
     void checkRepositoryHasBeenSetUpWhenItIsNot() {
         GroupSettings test = new GroupSettings(0, "test repo", null, 1234);
         lenient().when(groupSettingsService.getGroupSettingsByGroupId(test.getGroupId())).thenReturn(test);
-//        doReturn(test).when(groupSettingsService).getGroupSettingsByGroupId(test.getGroupId());
         assertFalse(groupSettingsService.doesGroupHaveRepo(test.getGroupId()));
     }
 
+    /**
+     * Tests that the getGroupSettingsByGroupId method return true if the group settings does exist.
+     */
     @Test
     void checkRepositoryHasBeenSetUpWhenItIs() {
         GroupSettings test = new GroupSettings(123, "test repo", "testKey", 1234);
@@ -104,6 +108,9 @@ class GroupSettingsServiceTest {
         assertTrue(groupSettingsServiceMock.doesGroupHaveRepo(test.getGroupId()));
     }
 
+    /**
+     * Tests that the isGroupSettingSaved method returns true if given a valid group settings object.
+     */
     @Test
     void checkIsGroupSettingSavedWhenItIs() {
         GroupSettings test = new GroupSettings(1, "test repo", "testKey", 1234);

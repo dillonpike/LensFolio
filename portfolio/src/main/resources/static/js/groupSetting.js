@@ -1,4 +1,8 @@
-
+/**
+ * Function is called when the user clicks the save group settings button.
+ * It will send a POST request (saveGroupSettings) to the server with new attributes.
+ * If the request is successful, the page will partially reload with the new group settings attributes and commits.
+ */
 function editGroupSetting() {
     const data = {
         groupLongName: document.getElementById("longGroupName").value,
@@ -15,7 +19,10 @@ function editGroupSetting() {
     }).fail(showError)
 }
 
-
+/**
+ * Function to generate alert banner for error messages and display it on the group setting page.
+ * @param modalBodyResponse modal body response from the server
+ */
 function showError(modalBodyResponse) {
     $("#groupLongNameAlertBanner").replaceWith(modalBodyResponse.responseText)
     $("#groupRepoAPIKeyAlertBanner").replaceWith(modalBodyResponse.responseText)

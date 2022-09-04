@@ -177,6 +177,11 @@ class GroupSettingsControllerTest {
                 .andExpect(model().attribute("isValidToModify", true));
     }
 
+    /**
+     * Test that the group settings page is loaded with the correct short and long name when given a valid id
+     * Also test if the user has write access to the current page if user is not in current group.
+     * @throws Exception when an exception is thrown while performing the get request
+     */
     @Test
     void groupSettingValidAndUserIsNotInGroupCheckWritePermission() throws Exception {
         doReturn(GroupDetailsResponse.newBuilder()
@@ -194,6 +199,11 @@ class GroupSettingsControllerTest {
                 .andExpect(model().attribute("isValidToModify", false));
     }
 
+    /**
+     * Test that the group settings page is loaded with the correct short and long name when given a valid id
+     * Also test if the group setting page contains the correct information(group attributes and group setting attributes).
+     * @throws Exception when an exception is thrown while performing the get request
+     */
     @Test
     void groupSettingsValidAndGroupSettingExist() throws Exception {
         doReturn(GroupDetailsResponse.newBuilder()

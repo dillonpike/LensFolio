@@ -145,9 +145,18 @@ public class GroupSettingsController {
             @RequestParam(name = "repoID", required = false) int repoId,
             @RequestParam(name = "repoToken", required = false, defaultValue = "") String repoToken,
             @RequestParam(name = "groupSettingsId") int groupSettingsId,
+            @AuthenticationPrincipal AuthState principal,
             HttpServletResponse httpServletResponse,
             RedirectAttributes rm
     )  {
+        Integer id = userAccountClientService.getUserIDFromAuthState(principal);
+        elementService.addHeaderAttributes(model, id);
+        boolean isValidToModify = permissionService.isValidToModifyGroupSettingPage(groupId, id);
+        // Permission check in case the user sends a POST request, but they don't have the correct permissions
+        if (!isValidToModify) {
+            return "redirect:/groups";
+        }
+
         rm.addAttribute(GROUP_ID, groupId);
         model.addAttribute(GROUP_ID, groupId);
         ModifyGroupDetailsResponse groupResponse = groupService.editGroupDetails(groupId, shortName, longName);

@@ -52,7 +52,7 @@ public class EditEventController {
         Integer userID = userAccountClientService.getUserIDFromAuthState(principal);
         elementService.addHeaderAttributes(model, userID);
 
-        if (permissionService.isValidToModifyProjectPage(userID)) {
+        if (permissionService.isValidToModify(userID)) {
             eventService.updateEvent(event);
         } else {
             rm.addFlashAttribute("isAccessDenied", true);

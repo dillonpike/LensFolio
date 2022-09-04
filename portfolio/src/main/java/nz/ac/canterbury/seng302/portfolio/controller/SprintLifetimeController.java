@@ -60,7 +60,7 @@ public class SprintLifetimeController {
     ) {
         Integer userID = userAccountClientService.getUserIDFromAuthState(principal);
         elementService.addHeaderAttributes(model, userID);
-        if (permissionService.isValidToModifyProjectPage(userID)) {
+        if (permissionService.isValidToModify(userID)) {
             sprint.setStartDateString(sprint.getStartDateString());
             sprint.setEndDateString(sprint.getEndDateString());
             sprintService.addSprint(sprint);
@@ -79,7 +79,7 @@ public class SprintLifetimeController {
                                Model model) {
         Integer userID = userAccountClientService.getUserIDFromAuthState(principal);
         elementService.addHeaderAttributes(model, userID);
-        if (permissionService.isValidToModifyProjectPage(userID)) {
+        if (permissionService.isValidToModify(userID)) {
             sprintService.removeSprint(id);
         }
         /* Return the name of the Thymeleaf template */

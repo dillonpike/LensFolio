@@ -51,7 +51,7 @@ public class EditMilestoneController {
     ) throws ObjectNotFoundException {
         Integer userID = userAccountClientService.getUserIDFromAuthState(principal);
         elementService.addHeaderAttributes(model, userID);
-        if (permissionService.isValidToModifyProjectPage(userID)) {
+        if (permissionService.isValidToModify(userID)) {
             Milestone newMilestone = milestoneService.getMilestoneById(id);
             newMilestone.setMilestoneName(milestone.getMilestoneName());
             newMilestone.setMilestoneDate(milestone.getMilestoneDate());
