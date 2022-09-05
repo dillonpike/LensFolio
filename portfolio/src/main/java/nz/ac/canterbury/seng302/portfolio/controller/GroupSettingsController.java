@@ -155,6 +155,8 @@ public class GroupSettingsController {
         // Permission check in case the user sends a POST request, but they don't have the correct permissions
         if (!isValidToModify) {
             return "redirect:/groups";
+        } else {
+            model.addAttribute("isValidToModify", true);
         }
 
         rm.addAttribute(GROUP_ID, groupId);
@@ -170,6 +172,7 @@ public class GroupSettingsController {
 
         boolean isSaved = groupSettingsService.isGroupSettingSaved(groupSettingsId, repoId, repoName, repoToken, groupId);
         boolean isConnected = gitLabApiService.checkGitLabToken(repoId, repoToken);
+
         if(!isConnected) {
             model.addAttribute(GROUP_SETTING_ALERT_MESSAGE, "Repository Is Unreachable With The Current Settings");
         }
