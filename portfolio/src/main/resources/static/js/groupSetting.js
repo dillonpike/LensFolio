@@ -1,4 +1,8 @@
-
+/**
+ * Function is called when the user clicks the save group settings button.
+ * It will send a POST request (saveGroupSettings) to the server with new attributes.
+ * If the request is successful, the page will partially reload with the new group settings attributes and commits.
+ */
 function editGroupSetting() {
     const data = {
         groupLongName: document.getElementById("longGroupName").value,
@@ -9,7 +13,7 @@ function editGroupSetting() {
         groupId: document.getElementById("groupId").value,
         groupSettingsId: document.getElementById("groupSettingsId").value
     }
-    $.post('saveGroupSettings?'+ new URLSearchParams(data)).done((result) => {
+    $.post('saveGroupSettings?' + new URLSearchParams(data)).done((result) => {
         $(`#groupSettingContainer`).replaceWith(result);
         initialiseCommitsList()
     }).fail(showError)

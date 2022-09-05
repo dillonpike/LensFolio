@@ -73,18 +73,21 @@ public class GitLabApiService {
     }
 
     /**
-     * Returns a list of commits in the repository linked to the group.
-     * Commits can be filtered by branch and user if provided, otherwise pass in null for either or all of them.
-     * @throws GitLabApiException if any exception occurs communicating with the GitLab API
+     * Checks if a repository is accessible using the given API key and the repoId.
+     * @param repoId the id of the repository
+     * @param repoApiKey the API key to use
+     * @return true if the repository is accessible, false otherwise
      */
     public boolean checkGitLabToken(int repoId, String repoApiKey) {
-        try {
-            GitLabApi gitLabApi = new GitLabApi("https://eng-git.canterbury.ac.nz", repoApiKey);
+
+        try(GitLabApi gitLabApi = new GitLabApi("https://eng-git.canterbury.ac.nz", repoApiKey)) {
             gitLabApi.getRepositoryApi().getBranches(Integer.toString(repoId));
+            return true;
         } catch (GitLabApiException e) {
             return false;
         }
-        return true;
+
+
     }
 
 }

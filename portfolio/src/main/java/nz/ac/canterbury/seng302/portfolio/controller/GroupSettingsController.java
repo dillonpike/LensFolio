@@ -24,8 +24,6 @@ import java.util.List;
 /**
  * Controller for group setting page.
  */
-@Validated
-//@ValuesAllowed(propName = "orderBy", values = { "OpportunityCount", "OpportunityPublishedCount", "ApplicationCount", "ApplicationsApprovedCount" })
 @Controller
 public class GroupSettingsController {
 
@@ -148,9 +146,20 @@ public class GroupSettingsController {
             @RequestParam(name = "repoID", required = false) int repoId,
             @RequestParam(name = "repoToken", required = false, defaultValue = "") String repoToken,
             @RequestParam(name = "groupSettingsId") int groupSettingsId,
+            @AuthenticationPrincipal AuthState principal,
             HttpServletResponse httpServletResponse,
             RedirectAttributes rm
     )  {
+        Integer id = userAccountClientService.getUserIDFromAuthState(principal);
+        elementService.addHeaderAttributes(model, id);
+        boolean isValidToModify = permissionService.isValidToModifyGroupSettingPage(groupId, id);
+        // Permission check in case the user sends a POST request, but they don't have the correct permissions
+        if (!isValidToModify) {
+            return "redirect:/groups";
+        } else {
+            model.addAttribute("isValidToModify", true);
+        }
+
         rm.addAttribute(GROUP_ID, groupId);
         model.addAttribute(GROUP_ID, groupId);
 
@@ -173,6 +182,7 @@ public class GroupSettingsController {
 
         boolean isSaved = groupSettingsService.isGroupSettingSaved(groupSettingsId, repoId, repoName, repoToken, groupId);
         boolean isConnected = gitLabApiService.checkGitLabToken(repoId, repoToken);
+
         if (!isConnected) {
             model.addAttribute(GROUP_SETTING_ALERT_MESSAGE, "Repository Is Unreachable With The Current Settings");
         }

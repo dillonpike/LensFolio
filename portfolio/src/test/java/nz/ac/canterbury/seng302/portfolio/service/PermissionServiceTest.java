@@ -1,30 +1,18 @@
 package nz.ac.canterbury.seng302.portfolio.service;
 
 import com.google.protobuf.Timestamp;
-import net.devh.boot.grpc.client.inject.GrpcClient;
-import nz.ac.canterbury.seng302.portfolio.repository.EventRepository;
-import nz.ac.canterbury.seng302.portfolio.repository.SprintRepository;
 import nz.ac.canterbury.seng302.shared.identityprovider.*;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.ui.Model;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.times;
 
 class PermissionServiceTest {
 
@@ -82,6 +70,9 @@ class PermissionServiceTest {
     }
 
 
+    /**
+     * Test to check if the user has permission to modify course admin by given current user is a student.
+     */
     @Test
     void UserWithStudentRoleTriesToModifyAdmin() {
         String targetRole = "admin";
@@ -91,6 +82,9 @@ class PermissionServiceTest {
         Assertions.assertFalse(output);
     }
 
+    /**
+     * Test to check if the user has permission to modify course admin by given current user is a teacher.
+     */
     @Test
     void UserWithTeacherRoleTriesToModifyAdmin() {
         String targetRole = "admin";
@@ -100,6 +94,9 @@ class PermissionServiceTest {
         Assertions.assertFalse(output);
     }
 
+    /**
+     * Test to check if the user has permission to modify teacher by given current user is a teacher.
+     */
     @Test
     void UserWithTeacherRoleTriesToModifyTeacher() {
         String targetRole = "teacher";
@@ -109,6 +106,9 @@ class PermissionServiceTest {
         Assertions.assertTrue(output);
     }
 
+    /**
+     * Test to check if the user has permission to modify course admin by given current user is a course admin.
+     */
     @Test
     void UserWithAdminRoleTriesToModifyAdmin() {
         String targetRole = "admin";
@@ -118,6 +118,9 @@ class PermissionServiceTest {
         Assertions.assertTrue(output);
     }
 
+    /**
+     * Test to check if the user has permission to modify student by given current user is a course admin.
+     */
     @Test
     void UserWithAdminRoleTriesToModifyStudent() {
         String targetRole = "student";
@@ -127,30 +130,42 @@ class PermissionServiceTest {
         Assertions.assertTrue(output);
     }
 
+    /**
+     * Test if current user with student role is able to modify on project page.
+     */
     @Test
     void UserWithStudentRoleTriesToModifyProjectPage() {
         when(registerClientService.getUserData(mockUser.getId())).thenReturn(mockUser);
         when(elementService.getUserHighestRole(mockUser)).thenReturn("student");
-        boolean isValid = permissionService.isValidToModifyProjectPage(mockUser.getId());
+        boolean isValid = permissionService.isValidToModify(mockUser.getId());
         Assertions.assertFalse(isValid);
     }
 
+    /**
+     * Test if current user with teacher role is able to modify on project page.
+     */
     @Test
     void UserWithTeacherRoleTriesToModifyProjectPage() {
         when(registerClientService.getUserData(mockUser.getId())).thenReturn(mockUser);
         when(elementService.getUserHighestRole(mockUser)).thenReturn("teacher");
-        boolean isValid = permissionService.isValidToModifyProjectPage(mockUser.getId());
+        boolean isValid = permissionService.isValidToModify(mockUser.getId());
         Assertions.assertTrue(isValid);
     }
 
+    /**
+     * Test if current user with admin role is able to modify on project page.
+     */
     @Test
     void UserWithAdminRoleTriesToModifyProjectPage() {
         when(registerClientService.getUserData(mockUser.getId())).thenReturn(mockUser);
         when(elementService.getUserHighestRole(mockUser)).thenReturn("admin");
-        boolean isValid = permissionService.isValidToModifyProjectPage(mockUser.getId());
+        boolean isValid = permissionService.isValidToModify(mockUser.getId());
         Assertions.assertTrue(isValid);
     }
 
+    /**
+     * Test if current user is a student but in the given group, the user is able to modify the group.
+     */
     @Test
     void testIsValidToModifyGroupSettingPageWhenInTheGroup() {
         GroupDetailsResponse response = GroupDetailsResponse.newBuilder()
@@ -159,12 +174,17 @@ class PermissionServiceTest {
                 .addMembers(mockUser1)
                 .build();
 
+        when(registerClientService.getUserData(mockUser.getId())).thenReturn(mockUser);
+        when(elementService.getUserHighestRole(mockUser)).thenReturn("student");
         when(groupService.getGroupDetails(1)).thenReturn(response);
 
         boolean isValid = permissionService.isValidToModifyGroupSettingPage(1, 1);
         Assertions.assertTrue(isValid);
     }
 
+    /**
+     * Test if current user is a student and not in the given group, the user is not able to modify the group.
+     */
     @Test
     void testIsValidToModifyGroupSettingPageWhenNotInTheGroup() {
         GroupDetailsResponse response = GroupDetailsResponse.newBuilder()
@@ -173,9 +193,81 @@ class PermissionServiceTest {
                 .addMembers(mockUser1)
                 .build();
 
+        when(registerClientService.getUserData(3)).thenReturn(mockUser);
+        when(elementService.getUserHighestRole(mockUser)).thenReturn("student");
         when(groupService.getGroupDetails(1)).thenReturn(response);
 
         boolean isValid = permissionService.isValidToModifyGroupSettingPage(1, 3);
         Assertions.assertFalse(isValid);
     }
+
+    /**
+     * Test if current user is an administrator, the user is able to modify the group.
+     * Also test if getGroupDetails is not called.
+     */
+    @Test
+    void testIsValidToModifyGroupSettingPageWhenUserIsAdmin() {
+        GroupDetailsResponse response = GroupDetailsResponse.newBuilder()
+                .setGroupId(1)
+                .addMembers(mockUser)
+                .addMembers(mockUser1)
+                .build();
+
+        when(registerClientService.getUserData(1)).thenReturn(mockUser);
+        when(elementService.getUserHighestRole(mockUser)).thenReturn("admin");
+        when(groupService.getGroupDetails(1)).thenReturn(response);
+
+        boolean isValid = permissionService.isValidToModifyGroupSettingPage(1, 1);
+
+        verify(groupService, times(0)).getGroupDetails(any(Integer.class));
+
+        Assertions.assertTrue(isValid);
+    }
+
+    /**
+     * Test if current user is a teacher, the user is able to modify the group.
+     * Also test if getGroupDetails is not called.
+     */
+    @Test
+    void testIsValidToModifyGroupSettingPageWhenUserIsTeacher() {
+        GroupDetailsResponse response = GroupDetailsResponse.newBuilder()
+                .setGroupId(1)
+                .addMembers(mockUser)
+                .addMembers(mockUser1)
+                .build();
+
+        when(registerClientService.getUserData(1)).thenReturn(mockUser);
+        when(elementService.getUserHighestRole(mockUser)).thenReturn("teacher");
+        when(groupService.getGroupDetails(1)).thenReturn(response);
+
+        boolean isValid = permissionService.isValidToModifyGroupSettingPage(1, 1);
+
+        verify(groupService, times(0)).getGroupDetails(any(Integer.class));
+
+        Assertions.assertTrue(isValid);
+    }
+
+    /**
+     * Test if current user is a student but in the given group, the user is able to modify the group.
+     * Also test if getGroupDetails is called once.
+     */
+    @Test
+    void testIsValidToModifyGroupSettingPageWhenUserIsStudentButInGroup() {
+        GroupDetailsResponse response = GroupDetailsResponse.newBuilder()
+                .setGroupId(1)
+                .addMembers(mockUser)
+                .addMembers(mockUser1)
+                .build();
+
+        when(registerClientService.getUserData(1)).thenReturn(mockUser);
+        when(elementService.getUserHighestRole(mockUser)).thenReturn("student");
+        when(groupService.getGroupDetails(1)).thenReturn(response);
+
+        boolean isValid = permissionService.isValidToModifyGroupSettingPage(1, 1);
+
+        verify(groupService, times(1)).getGroupDetails(any(Integer.class));
+
+        Assertions.assertTrue(isValid);
+    }
+
 }

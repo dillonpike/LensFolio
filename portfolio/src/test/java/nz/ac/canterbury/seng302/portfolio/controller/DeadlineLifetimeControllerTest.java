@@ -78,7 +78,7 @@ class DeadlineLifetimeControllerTest {
 
         Deadline expectedDeadline = new Deadline(0,"Test Deadline", new Date());
         when(deadlineService.addDeadline(any(Deadline.class))).then(returnsFirstArg());
-        when(permissionService.isValidToModifyProjectPage(any(Integer.class))).thenReturn(true);
+        when(permissionService.isValidToModify(any(Integer.class))).thenReturn(true);
 
         mockMvc.perform(post("/add-deadline").flashAttr("deadline", expectedDeadline))
                 .andExpect(status().is3xxRedirection())

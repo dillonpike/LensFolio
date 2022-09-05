@@ -60,7 +60,7 @@ public class PermissionService {
      *
      * @return false if user's role has been changed to student
      */
-    public boolean isValidToModifyProjectPage(Integer userID) {
+    public boolean isValidToModify(Integer userID) {
         UserResponse getUserByIdReply = registerClientService.getUserData(userID);
 
         //Get the current user's highest role
@@ -76,6 +76,11 @@ public class PermissionService {
      * @return true if user is in the group, false if not.
      */
     public boolean isValidToModifyGroupSettingPage(int groupId, int userId) {
+        // First we check if the user is a teacher or administrators
+        if (isValidToModify(userId)) {
+            return true;
+        }
+        // If the user is a student, we check if the user is in the group
         GroupDetailsResponse groupDetailsResponse = groupService.getGroupDetails(groupId);
         userResponseList = groupDetailsResponse.getMembersList();
         for (UserResponse userResponse : userResponseList) {

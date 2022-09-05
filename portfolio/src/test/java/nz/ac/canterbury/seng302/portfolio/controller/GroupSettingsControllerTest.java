@@ -177,6 +177,11 @@ class GroupSettingsControllerTest {
                 .andExpect(model().attribute("isValidToModify", true));
     }
 
+    /**
+     * Test that the group settings page is loaded with the correct short and long name when given a valid id
+     * Also test if the user has write access to the current page if user is not in current group.
+     * @throws Exception when an exception is thrown while performing the get request
+     */
     @Test
     void groupSettingValidAndUserIsNotInGroupCheckWritePermission() throws Exception {
         doReturn(GroupDetailsResponse.newBuilder()
@@ -194,6 +199,11 @@ class GroupSettingsControllerTest {
                 .andExpect(model().attribute("isValidToModify", false));
     }
 
+    /**
+     * Test that the group settings page is loaded with the correct short and long name when given a valid id
+     * Also test if the group setting page contains the correct information(group attributes and group setting attributes).
+     * @throws Exception when an exception is thrown while performing the get request
+     */
     @Test
     void groupSettingsValidAndGroupSettingExist() throws Exception {
         doReturn(GroupDetailsResponse.newBuilder()
@@ -340,6 +350,7 @@ class GroupSettingsControllerTest {
         ModifyGroupDetailsResponse response = ModifyGroupDetailsResponse.newBuilder()
                 .setIsSuccess(false).setMessage("Unable to update group long name").build();
         doReturn(response).when(groupService).editGroupDetails(any(Integer.class),any(String.class), any(String.class));
+        when(permissionService.isValidToModifyGroupSettingPage(any(Integer.class), any(Integer.class))).thenReturn(true);
         doReturn(true).when(groupSettingsService).isValidGroupSettings((int)testGroupSettings.getRepoId(),
                 testGroupSettings.getRepoName(), testGroupSettings.getRepoApiKey());
 
@@ -373,6 +384,7 @@ class GroupSettingsControllerTest {
         doNothing().when(groupService).addGroupDetailToModel(any(Model.class),any(Integer.class));
         doNothing().when(groupSettingsService).addSettingAttributesToModel(any(Integer.class),any(Model.class));
         doNothing().when(groupSettingsController).addGroupSettingAttributeToModel(any(Model.class),any(Integer.class));
+        when(permissionService.isValidToModifyGroupSettingPage(any(Integer.class), any(Integer.class))).thenReturn(true);
         doReturn(true).when(groupSettingsService).isValidGroupSettings((int)testGroupSettings.getRepoId(),
                 testGroupSettings.getRepoName(), testGroupSettings.getRepoApiKey());
 
@@ -406,6 +418,7 @@ class GroupSettingsControllerTest {
         doNothing().when(groupService).addGroupDetailToModel(any(Model.class),any(Integer.class));
         doNothing().when(groupSettingsService).addSettingAttributesToModel(any(Integer.class),any(Model.class));
         doNothing().when(groupSettingsController).addGroupSettingAttributeToModel(any(Model.class),any(Integer.class));
+        when(permissionService.isValidToModifyGroupSettingPage(any(Integer.class), any(Integer.class))).thenReturn(true);
         doReturn(true).when(groupSettingsService).isValidGroupSettings((int)testGroupSettings.getRepoId(),
                 testGroupSettings.getRepoName(), testGroupSettings.getRepoApiKey());
 
