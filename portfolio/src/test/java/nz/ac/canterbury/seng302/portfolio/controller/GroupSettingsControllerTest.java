@@ -352,7 +352,7 @@ class GroupSettingsControllerTest {
                         .param("repoToken", testGroupSettings.getRepoApiKey())
                         .param("groupSettingsId", Integer.toString(testGroupSettings.getGroupSettingsId())))
                         .andExpect(status().isBadRequest())
-                        .andExpect(model().attribute("groupLongNameAlertMessage", "Error updating group long name"))
+                        .andExpect(model().attribute("groupLongNameAlertMessage", "Unable to update group long name"))
                         .andExpect(view().name("groupSettings::groupLongNameAlertBanner"));
 
         verify(groupService, times(1)).editGroupDetails(testGroup.getGroupId(),testGroup.getShortName(), "newLongName");
