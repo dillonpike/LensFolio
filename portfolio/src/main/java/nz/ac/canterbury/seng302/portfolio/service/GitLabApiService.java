@@ -66,7 +66,8 @@ public class GitLabApiService {
                 : gitLabApi.getCommitsApi().getCommits(groupSettings.getRepoId(), branchName, null, null);
 
         // Filter results by user email if one is given
-        return userEmail == null ? commits :
+        return userEmail == null ? commits.stream().sorted((o1, o2)->o2.getCommittedDate().
+                compareTo(o1.getCommittedDate())).toList() :
                 commits.stream().filter(commit -> Objects.equals(commit.getAuthorEmail(), userEmail)).sorted((o1, o2)->o2.getCommittedDate().
                         compareTo(o1.getCommittedDate())).toList();
 

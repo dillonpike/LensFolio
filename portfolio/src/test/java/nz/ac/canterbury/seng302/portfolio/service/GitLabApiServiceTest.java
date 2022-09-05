@@ -14,6 +14,7 @@ import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
@@ -69,6 +70,7 @@ class GitLabApiServiceTest {
 
             Commit commit = new Commit();
             commit.setAuthorEmail(String.format("testEmail%d@gmail.com", i));
+            commit.setCommittedDate(new Date(i * -1000));
             testCommits.add(commit);
         }
 
