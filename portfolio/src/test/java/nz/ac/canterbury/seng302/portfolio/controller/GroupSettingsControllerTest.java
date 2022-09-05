@@ -444,6 +444,7 @@ class GroupSettingsControllerTest {
      */
     @Test
     void modifyRepositorySettingInvalidGroupSettingsArguments() throws Exception {
+        when(permissionService.isValidToModifyGroupSettingPage(any(Integer.class), any(Integer.class))).thenReturn(true);
         doReturn(false).when(groupSettingsService).isValidGroupSettings((int)testGroupSettings.getRepoId(),
                 testGroupSettings.getRepoName(), testGroupSettings.getRepoApiKey());
 
