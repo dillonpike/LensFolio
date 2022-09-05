@@ -28,6 +28,7 @@ function addEvidence() {
         evidenceTitle: document.getElementById('evidenceTitle').value,
         evidenceDescription: document.getElementById('evidenceDescription').value,
         evidenceDate: document.getElementById('evidenceDate').value,
+
     }
     $.post(document.getElementById('evidenceForm').action, data).done((result) => {
         replaceEvidenceModalBody(result);

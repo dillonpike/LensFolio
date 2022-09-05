@@ -4,6 +4,7 @@ import nz.ac.canterbury.seng302.portfolio.model.Evidence;
 import nz.ac.canterbury.seng302.portfolio.model.Project;
 import nz.ac.canterbury.seng302.portfolio.service.EvidenceService;
 import nz.ac.canterbury.seng302.portfolio.service.UserAccountClientService;
+import nz.ac.canterbury.seng302.portfolio.utility.GeneralUtility;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,10 +13,11 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Date;
+import java.util.HashMap;
 
 /**
  * Controller for evidence endpoints.
@@ -43,17 +45,37 @@ public class EvidenceController {
      */
     @PostMapping("/add-evidence")
     public String addEvidence(
-            HttpServletRequest request,
+            @RequestBody String evidenceInfo,
             Model model,
             HttpServletResponse httpServletResponse,
             @AuthenticationPrincipal AuthState principal
     ) {
         try {
-            String title = request.getParameter("evidenceTitle");
-            String description = request.getParameter("evidenceDescription");
-            Date date = Project.stringToDate(request.getParameter("evidenceDate"));
+            HashMap<String, String> values = (HashMap<String, String>) GeneralUtility.requestBodyToHashMap(evidenceInfo);
+            String title = values.get("evidenceTitle");
+            String description = values.get("evidenceDescription");
+            Date date = Project.stringToDate(values.get("evidenceDate"));
             int projectId = 0;
             int userId = userAccountClientService.getUserIDFromAuthState(principal);
+
+            boolean throwError = false;
+            String nullErrorMessage = "Following fields are required:";
+            if (title == null) {
+                throwError = true;
+                nullErrorMessage += " 'title'";
+            }
+            if (description == null) {
+                throwError = true;
+                nullErrorMessage += " 'description'";
+            }
+            if (date == null) {
+                throwError = true;
+                nullErrorMessage += " 'date'";
+            }
+            if (throwError) {
+                throw new NullPointerException(nullErrorMessage + ". ");
+            }
+
             Evidence evidence = new Evidence(projectId, userId, title, description, date);
 
             boolean wasAdded = evidenceService.addEvidence(evidence);
@@ -69,13 +91,13 @@ public class EvidenceController {
             // else
             String errorMessage = "Evidence Not Added. Saving Error Occurred.";
             model.addAttribute(ADD_EVIDENCE_MODAL_FRAGMENT_TITLE_MESSAGE, errorMessage);
-            httpServletResponse.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            httpServletResponse.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             return ADD_EVIDENCE_MODAL_FRAGMENT;
 
         } catch (NullPointerException e) {
-            String errorMessage = "Evidence Not Added. Error Finding Attributes.";
+            String errorMessage = "Evidence Not Added. " + e.getMessage();
             model.addAttribute(ADD_EVIDENCE_MODAL_FRAGMENT_TITLE_MESSAGE, errorMessage);
-            httpServletResponse.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            httpServletResponse.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             logger.error("Unable to find attributes of evidence for adding evidence");
             return ADD_EVIDENCE_MODAL_FRAGMENT;
         }
