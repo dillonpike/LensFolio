@@ -14,6 +14,8 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -33,6 +35,8 @@ public class ListOfUsersStepDefs {
      * WebDriverWait object that is used to wait until some criteria is met, for example an element to be visible.
      */
     private WebDriverWait wait;
+
+    private static final Logger logger = LoggerFactory.getLogger(ListOfUsersStepDefs.class);
 
     /**
      * Sets up for scenario by getting a web driver and WebDriverWait object.
@@ -116,9 +120,9 @@ public class ListOfUsersStepDefs {
         }
 
         if (button == null) {
-            System.err.println("Cannot find button!");
+            logger.info("Cannot find button!");
         } else {
-            System.out.println("Clicking button now!");
+            logger.info("Clicking button now!");
             button.click();
         }
     }

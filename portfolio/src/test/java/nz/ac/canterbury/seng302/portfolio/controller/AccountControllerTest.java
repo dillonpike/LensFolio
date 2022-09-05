@@ -8,6 +8,7 @@ import nz.ac.canterbury.seng302.shared.identityprovider.ClaimDTO;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserRole;
 import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
@@ -52,7 +53,7 @@ class AccountControllerTest {
     /**
      * Mocked user response which contains the data of the user
      */
-    private UserResponse mockUser = UserResponse.newBuilder()
+    private final UserResponse mockUser = UserResponse.newBuilder()
             .setBio("default bio")
             .setCreated(Timestamp.newBuilder().setSeconds(55))
             .setEmail("hello@test.com")
@@ -71,7 +72,7 @@ class AccountControllerTest {
 
 
     @Autowired
-    private MockMvc mockMvc;
+    private MockMvc mockMvc = MockMvcBuilders.standaloneSetup(AccountController.class).build();
 
     @MockBean
     private RegisterClientService registerClientService;
@@ -87,11 +88,6 @@ class AccountControllerTest {
 
     @MockBean
     private ProjectService projectService;
-
-    @Before
-    public void setup() {
-        mockMvc = MockMvcBuilders.standaloneSetup(AccountController.class).build();
-    }
 
     /**
      * unit testing to test the get method when calling "/account"

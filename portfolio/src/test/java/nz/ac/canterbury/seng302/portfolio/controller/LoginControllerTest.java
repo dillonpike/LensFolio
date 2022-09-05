@@ -23,23 +23,15 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(controllers = LoginController.class)
 @AutoConfigureMockMvc(addFilters = false)
 class LoginControllerTest {
+
     @Autowired
-    private MockMvc mockMvc;
+    private MockMvc mockMvc = MockMvcBuilders.standaloneSetup(LoginController.class).build();
 
     @MockBean
     private AuthenticateClientService authenticateClientService;
 
     @MockBean
     private UserAccountClientService userAccountClientService;
-
-    /**
-     * create mock MVC object which then will be used to perform http request
-     */
-    @Before
-    public void setup() {
-        mockMvc = MockMvcBuilders.standaloneSetup(LoginController.class).build();
-    }
-
 
     /**
      * Test get method of login controller
