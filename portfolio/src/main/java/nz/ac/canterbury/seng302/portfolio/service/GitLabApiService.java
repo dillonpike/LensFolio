@@ -80,15 +80,11 @@ public class GitLabApiService {
      * @return true if the repository is accessible, false otherwise
      */
     public boolean checkGitLabToken(int repoId, String repoApiKey) {
-
-        try(GitLabApi gitLabApi = new GitLabApi("https://eng-git.canterbury.ac.nz", repoApiKey)) {
+        try (GitLabApi gitLabApi = new GitLabApi("https://eng-git.canterbury.ac.nz", repoApiKey)) {
             gitLabApi.getRepositoryApi().getBranches(Integer.toString(repoId));
             return true;
         } catch (GitLabApiException e) {
             return false;
         }
-
-
     }
-
 }
