@@ -66,9 +66,25 @@ public class GitLabApiService {
                 : gitLabApi.getCommitsApi().getCommits(groupSettings.getRepoId(), branchName, null, null);
 
         // Filter results by user email if one is given
-        return userEmail == null ? commits :
+        return userEmail == null ? commits.stream().sorted((o1, o2)->o2.getCommittedDate().
+                compareTo(o1.getCommittedDate())).toList() :
                 commits.stream().filter(commit -> Objects.equals(commit.getAuthorEmail(), userEmail)).sorted((o1, o2)->o2.getCommittedDate().
                         compareTo(o1.getCommittedDate())).toList();
 
+    }
+
+    /**
+     * Checks if a repository is accessible using the given API key and the repoId.
+     * @param repoId the id of the repository
+     * @param repoApiKey the API key to use
+     * @return true if the repository is accessible, false otherwise
+     */
+    public boolean checkGitLabToken(int repoId, String repoApiKey) {
+        try (GitLabApi gitLabApi = new GitLabApi("https://eng-git.canterbury.ac.nz", repoApiKey)) {
+            gitLabApi.getRepositoryApi().getBranches(Integer.toString(repoId));
+            return true;
+        } catch (GitLabApiException e) {
+            return false;
+        }
     }
 }

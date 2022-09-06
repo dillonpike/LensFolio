@@ -43,7 +43,7 @@ public class EventLifetimeController {
     ) {
         Integer userID = userAccountClientService.getUserIDFromAuthState(principal);
         elementService.addHeaderAttributes(model, userID);
-        if (permissionService.isValidToModifyProjectPage(userID)) {
+        if (permissionService.isValidToModify(userID)) {
             eventService.addEvent(event);
         }
         return "redirect:/details";
@@ -62,7 +62,7 @@ public class EventLifetimeController {
                                Model model) {
         Integer userID = userAccountClientService.getUserIDFromAuthState(principal);
         elementService.addHeaderAttributes(model, userID);
-        if (permissionService.isValidToModifyProjectPage(userID)) {
+        if (permissionService.isValidToModify(userID)) {
             eventService.removeEvent(id);
         }
         /* Return the name of the Thymeleaf template */

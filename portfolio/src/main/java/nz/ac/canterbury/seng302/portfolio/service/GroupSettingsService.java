@@ -2,9 +2,6 @@ package nz.ac.canterbury.seng302.portfolio.service;
 
 import nz.ac.canterbury.seng302.portfolio.model.GroupSettings;
 import nz.ac.canterbury.seng302.portfolio.repository.GroupSettingsRepository;
-import org.gitlab4j.api.GitLabApi;
-import org.gitlab4j.api.GitLabApiException;
-import org.gitlab4j.api.models.Contributor;
 import org.hibernate.ObjectNotFoundException;
 import org.jvnet.hk2.annotations.Service;
 import org.slf4j.Logger;
@@ -13,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.ui.Model;
 
-import java.util.List;
 import java.util.Optional;
 
 /**
@@ -116,9 +112,9 @@ public class GroupSettingsService {
      * @return true if current group setting has been saved successfully, otherwise false.
      */
     public boolean isGroupSettingSaved(int groupSettingId, int repoId, String repoName, String repoToken, int groupId) {
-        GroupSettings targetGroupSetting = new GroupSettings(repoId, repoName, repoToken, groupId);
-        targetGroupSetting.setGroupSettingsId(groupSettingId);
         try {
+            GroupSettings targetGroupSetting = new GroupSettings(repoId, repoName, repoToken, groupId);
+            targetGroupSetting.setGroupSettingsId(groupSettingId);
             saveGroupSettings(targetGroupSetting);
         } catch (Exception e) {
             return false;

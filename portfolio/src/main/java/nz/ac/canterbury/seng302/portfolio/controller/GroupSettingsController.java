@@ -1,10 +1,10 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
 
-import nz.ac.canterbury.seng302.portfolio.model.GroupSettings;
 import nz.ac.canterbury.seng302.portfolio.service.*;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import nz.ac.canterbury.seng302.shared.identityprovider.ModifyGroupDetailsResponse;
+import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 import org.gitlab4j.api.GitLabApiException;
 import org.gitlab4j.api.models.Commit;
 import org.gitlab4j.api.models.Contributor;
@@ -41,6 +41,22 @@ public class GroupSettingsController {
     @Autowired
     private GitLabApiService gitLabApiService;
 
+    @Autowired
+    private RegisterClientService registerClientService;
+
+    @Autowired
+    private PermissionService permissionService;
+
+    private static final String GROUP_SETTING_ALERT_MESSAGE = "groupSettingsAlertMessage";
+
+    private static final String GROUP_ID = "groupId";
+
+    private static final String IS_REPO_EXIST = "isRepoExist";
+
+    private static final String IS_CONNECTION_SUCCESSFUL = "isConnectionSuccessful";
+
+    private static final String CURRENT_USER_ROLE = "currentUserRole";
+
     /**
      * Method to handle GetMapping request from frontend, and return the group settings page.
      * @param groupId current group id
@@ -48,17 +64,32 @@ public class GroupSettingsController {
      * @return group settings page
      */
     @RequestMapping("/groupSettings")
-    public String groupSettings(@RequestParam(value = "groupId") int groupId,
-                               @AuthenticationPrincipal AuthState principal,
-                               Model model) throws GitLabApiException {
+    public String groupSettings(
+            @RequestParam(value = "groupId") int groupId,
+            @AuthenticationPrincipal AuthState principal,
+            Model model) {
         Integer id = userAccountClientService.getUserIDFromAuthState(principal);
         elementService.addHeaderAttributes(model, id);
-        model.addAttribute("groupId", groupId);
+        UserResponse user = registerClientService.getUserData(id);
+        String role = elementService.getUserHighestRole(user);
+
+        model.addAttribute(GROUP_ID, groupId);
+        model.addAttribute(CURRENT_USER_ROLE, role);
+
         // Non-existent group will have a group id of 0 when calling getGroupDetails
         if (0 <= groupService.getGroupDetails(groupId).getGroupId() &&
                 groupService.getGroupDetails(groupId).getGroupId() <= 2) {
             return "redirect:/groups";
         }
+
+        int repoId = (int) groupSettingsService.getGroupSettingsByGroupId(groupId).getRepoId();
+        String repoToken = groupSettingsService.getGroupSettingsByGroupId(groupId).getRepoApiKey();
+        boolean isConnected = gitLabApiService.checkGitLabToken(repoId, repoToken);
+        if (!isConnected) {
+            model.addAttribute(GROUP_SETTING_ALERT_MESSAGE, "Repository Is Unreachable With The Current Settings");
+        }
+        boolean isValidToModify = permissionService.isValidToModifyGroupSettingPage(groupId, id);
+        model.addAttribute("isValidToModify", isValidToModify);
 
         groupService.addGroupDetailToModel(model, groupId);
         groupSettingsService.addSettingAttributesToModel(groupId, model);
@@ -76,12 +107,13 @@ public class GroupSettingsController {
      * @return repository commits fragment
      */
     @GetMapping("/repository-commits")
-    public String getRepositoryCommits(@RequestParam(value = "groupId") int groupId,
-                                       @RequestParam(value = "branchName") String branchName,
-                                       @RequestParam(value = "userEmail") String userEmail,
-                                       @AuthenticationPrincipal AuthState principal,
-                               Model model) {
-        try{
+    public String getRepositoryCommits(
+            @RequestParam(value = "groupId") int groupId,
+            @RequestParam(value = "branchName") String branchName,
+            @RequestParam(value = "userEmail") String userEmail,
+            @AuthenticationPrincipal AuthState principal,
+            Model model) {
+        try {
             String branchRequestName = null;
             String userRequestEmail = null;
             if(!branchName.equals("All Branches")){
@@ -113,23 +145,40 @@ public class GroupSettingsController {
             @RequestParam(name = "repoID", required = false) int repoId,
             @RequestParam(name = "repoToken", required = false, defaultValue = "") String repoToken,
             @RequestParam(name = "groupSettingsId") int groupSettingsId,
+            @AuthenticationPrincipal AuthState principal,
             HttpServletResponse httpServletResponse,
             RedirectAttributes rm
-    ) throws GitLabApiException {
-        rm.addAttribute("groupId", groupId);
-        model.addAttribute("groupId", groupId);
+    )  {
+        Integer id = userAccountClientService.getUserIDFromAuthState(principal);
+        elementService.addHeaderAttributes(model, id);
+        boolean isValidToModify = permissionService.isValidToModifyGroupSettingPage(groupId, id);
+        // Permission check in case the user sends a POST request, but they don't have the correct permissions
+        if (!isValidToModify) {
+            return "redirect:/groups";
+        } else {
+            model.addAttribute("isValidToModify", true);
+        }
+
+        rm.addAttribute(GROUP_ID, groupId);
+        model.addAttribute(GROUP_ID, groupId);
         ModifyGroupDetailsResponse groupResponse = groupService.editGroupDetails(groupId, shortName, longName);
 
         // First, we check the response from the server to see if edit the group long name is successful
         if (!groupResponse.getIsSuccess()) {
-            model.addAttribute("groupLongNameAlertMessage", "error");
+            model.addAttribute("groupLongNameAlertMessage", "Error updating group long name");
             httpServletResponse.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             return "groupSettings::groupLongNameAlertBanner";
         }
 
         boolean isSaved = groupSettingsService.isGroupSettingSaved(groupSettingsId, repoId, repoName, repoToken, groupId);
+        boolean isConnected = gitLabApiService.checkGitLabToken(repoId, repoToken);
+
+        if(!isConnected) {
+            model.addAttribute(GROUP_SETTING_ALERT_MESSAGE, "Repository Is Unreachable With The Current Settings");
+        }
+
         if(!isSaved) {
-            model.addAttribute("groupSettingsAlertMessage", "error");
+            model.addAttribute(GROUP_SETTING_ALERT_MESSAGE, "Invalid Repository Information");
             httpServletResponse.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             return "groupSettings::groupSettingsAlertBanner";
         }
@@ -158,14 +207,16 @@ public class GroupSettingsController {
                 model.addAttribute("repositoryContributors",repositoryContributors);
                 List<String> branchesName = gitLabApiService.getBranchNames(groupId);
                 model.addAttribute("branchesName", branchesName);
-                model.addAttribute("isRepoExist", true);
-                model.addAttribute("groupId", groupId);
+                model.addAttribute(IS_REPO_EXIST, true);
+                model.addAttribute(GROUP_ID, groupId);
+                model.addAttribute(IS_CONNECTION_SUCCESSFUL, true);
             } else {
-                model.addAttribute("isRepoExist", false);
+                model.addAttribute(IS_REPO_EXIST, false);
+                model.addAttribute(IS_CONNECTION_SUCCESSFUL, true);
             }
         } catch (GitLabApiException exception) {
-            //TODO: add error message to model
-            model.addAttribute("isRepoExist", false);
+            model.addAttribute(IS_CONNECTION_SUCCESSFUL, false);
+            model.addAttribute(IS_REPO_EXIST, false);
         }
     }
 }
