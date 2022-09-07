@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.NotAcceptableException;
 import java.util.Date;
 import java.util.HashMap;
 
@@ -73,7 +74,7 @@ public class EvidenceController {
                 nullErrorMessage += " 'date'";
             }
             if (throwError) {
-                throw new NullPointerException(nullErrorMessage + ". ");
+                throw new NotAcceptableException(nullErrorMessage + ". ");
             }
 
             Evidence evidence = new Evidence(projectId, userId, title, description, date);
@@ -86,15 +87,14 @@ public class EvidenceController {
                 model.addAttribute(ADD_EVIDENCE_MODAL_FRAGMENT_TITLE_MESSAGE, successMessage);
                 httpServletResponse.setStatus(HttpServletResponse.SC_OK);
                 return "fragments/evidenceModal::evidenceModalBody"; // * return some sort of evidence fragment? *
+            } else {
+                String errorMessage = "Evidence Not Added. Saving Error Occurred.";
+                model.addAttribute(ADD_EVIDENCE_MODAL_FRAGMENT_TITLE_MESSAGE, errorMessage);
+                httpServletResponse.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                return ADD_EVIDENCE_MODAL_FRAGMENT;
             }
 
-            // else
-            String errorMessage = "Evidence Not Added. Saving Error Occurred.";
-            model.addAttribute(ADD_EVIDENCE_MODAL_FRAGMENT_TITLE_MESSAGE, errorMessage);
-            httpServletResponse.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            return ADD_EVIDENCE_MODAL_FRAGMENT;
-
-        } catch (NullPointerException e) {
+        } catch (NotAcceptableException e) {
             String errorMessage = "Evidence Not Added. " + e.getMessage();
             model.addAttribute(ADD_EVIDENCE_MODAL_FRAGMENT_TITLE_MESSAGE, errorMessage);
             httpServletResponse.setStatus(HttpServletResponse.SC_BAD_REQUEST);

@@ -39,8 +39,8 @@ function addEvidence() {
             messageAlert.toggleClass("alert-success alert-danger");
             clearEvidenceModalFields();
         }, 1000);
-    }).fail((xhr, status, error) => {
-        replaceEvidenceModalBody(xhr.responseText);
+    }).fail((response) => {
+        replaceEvidenceModalBody(response.responseText);
     })
 }
 

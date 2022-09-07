@@ -14,6 +14,7 @@ import nz.ac.canterbury.seng302.shared.identityprovider.ClaimDTO;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserRole;
 import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -48,7 +49,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class EvidenceControllerTest {
 
     @Autowired
-    private MockMvc mockMvc;
+    private MockMvc mockMvc = MockMvcBuilders.standaloneSetup(EvidenceController.class).build();
 
     @MockBean
     private EvidenceService evidenceService;
@@ -94,10 +95,8 @@ class EvidenceControllerTest {
 
     private static final String EVIDENCE_HTTP_CONTENT = "evidenceTitle=Test+Evidence&evidenceDescription=Test+Description&evidenceDate=12%2FDec%2F2021";
 
-    @Before
+    @BeforeEach
     public void setup() {
-        mockMvc = MockMvcBuilders.standaloneSetup(EvidenceController.class).build();
-
         // Mock the security context
         SecurityContext mockedSecurityContext = Mockito.mock(SecurityContext.class);
         when(mockedSecurityContext.getAuthentication()).thenReturn(new PreAuthenticatedAuthenticationToken(validAuthState, ""));
