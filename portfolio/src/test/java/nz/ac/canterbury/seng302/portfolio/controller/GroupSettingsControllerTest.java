@@ -7,14 +7,15 @@ import nz.ac.canterbury.seng302.portfolio.service.*;
 import nz.ac.canterbury.seng302.shared.identityprovider.*;
 import org.gitlab4j.api.models.Commit;
 import org.hibernate.ObjectNotFoundException;
-import org.junit.Before;
+
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
-import org.mockito.Mock;
+
 import org.mockito.Mockito;
-import org.mockito.Spy;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -30,7 +31,7 @@ import org.springframework.ui.Model;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
+
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -62,7 +63,7 @@ class GroupSettingsControllerTest {
             .build();
 
     @Autowired
-    private MockMvc mockMvc;
+    private MockMvc mockMvc = MockMvcBuilders.standaloneSetup(GroupSettingsController.class).build();;
 
     @SpyBean
     private GroupSettingsController groupSettingsController;
@@ -107,9 +108,8 @@ class GroupSettingsControllerTest {
     /**
      * Build the mockMvc object and mock security contexts.
      */
-    @Before
+    @BeforeEach
     public void setUpMocks() {
-        mockMvc = MockMvcBuilders.standaloneSetup(GroupSettingsController.class).build();
         SecurityContext mockedSecurityContext = Mockito.mock(SecurityContext.class);
         when(mockedSecurityContext.getAuthentication()).thenReturn(new PreAuthenticatedAuthenticationToken(validAuthState, ""));
         SecurityContextHolder.setContext(mockedSecurityContext);
@@ -433,6 +433,33 @@ class GroupSettingsControllerTest {
                 .andExpect(view().name("groupSettings::groupSettingsAlertBanner"));
 
         verify(groupService, times(1)).editGroupDetails(testGroup.getGroupId(),testGroup.getShortName(), "newLongName");
+    }
+
+    /**
+     * Test that the endpoint return a model which contains commits, also check that when
+     * selected Branch Name is All Branches and selected user is All Users, we called getCommits() function
+     * from GitlabApi Service with value of null for branchName parameter and userEmail parameter
+     * @throws Exception when an exception is thrown while performing the get request
+     */
+    @Test
+    void getGroupMember() throws Exception {
+        List<UserResponse> userResponses = new ArrayList<>();
+        userResponses.add(UserResponse.newBuilder().setUsername("testUser1").build());
+        userResponses.add(UserResponse.newBuilder().setUsername("testUser2").build());
+        userResponses.add(UserResponse.newBuilder().setUsername("testUser3").build());
+        GroupDetailsResponse groupDetailsResponse = GroupDetailsResponse.newBuilder()
+                .setGroupId(testGroup.getGroupId())
+                .setLongName(testGroup.getLongName())
+                .setShortName(testGroup.getShortName())
+                .addAllMembers(userResponses)
+                .build();
+        doReturn(groupDetailsResponse).when(groupService).getGroupDetails(testGroup.getGroupId());
+
+        mockMvc.perform(get("/getGroupMembers").param("groupId", Integer.toString(testGroup.getGroupId())))
+                .andExpect(status().isOk())
+                .andExpect(model().attribute("members", userResponses))
+                .andExpect(view().name("groupSettings::table_refresh"));
+
     }
 
 
