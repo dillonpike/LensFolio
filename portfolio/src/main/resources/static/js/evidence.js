@@ -86,7 +86,6 @@ function validateEvidenceTextInput(elementId, alertBanner, alertMessage, typeTex
         document.getElementById(alertMessage).innerText = typeTextInput+" should not have only 1 character non-space";
         return false
     } else {
-        alertBannerElement.hide();
         document.getElementById(alertBanner).setAttribute("hidden", "hidden");
         return true
     }
