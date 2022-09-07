@@ -346,8 +346,8 @@
         deletePageReload(selectedArtefactName, selectedArtefactId,userId, userFirstName, userLastName, username, text[1]);
     })
 
-    sendEditingLiveNotificationRequest('#shortGroupName', 'groupModal', 'edit-group');
-    sendEditingLiveNotificationRequest("#longGroupName", 'groupModal', 'edit-group');
+    sendEditingLiveNotificationRequest('#shortGroupNameInput', 'groupModal', 'edit-group');
+    sendEditingLiveNotificationRequest("#longGroupNameInput", 'groupModal', 'edit-group');
 
     sendSavedLiveNotificationRequest("#groupModalButton", 'groupModal', 'add-group');
     sendSavedLiveNotificationRequest("#groupModalButton", 'groupModal', 'edit-group');
@@ -369,6 +369,7 @@
 <script>
     //updates characters left
     function updateCharsLeft(elementId, messageElementId, numChars) {
+        console.log(document.getElementById(elementId).value + " " + elementId)
         let chars_left = numChars - document.getElementById(elementId).value.length;
         if (chars_left === numChars) {
             document.getElementById(messageElementId).innerText = "";
