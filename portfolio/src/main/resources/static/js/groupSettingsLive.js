@@ -17,6 +17,14 @@ function connect() {
             const GroupNotificationResponse = JSON.parse(GroupSettingsResponseArg.body);
             updateSettingsDisplayed(GroupNotificationResponse.sendingGroupId);
         });
+        stompClient.subscribe('/webSocketGet/group-delete', function (EventResponseArg) {
+            const eventResponse = JSON.parse(EventResponseArg.body);
+            redirectToGroupPage(eventResponse.artefactId);
+        });
+        stompClient.subscribe('/webSocketGet/group-change-users', function (twoGroupResponseArg) {
+            const twoGroupResponse = JSON.parse(twoGroupResponseArg.body);
+            updateUserTables(twoGroupResponse.sendingGroupId, twoGroupResponse.receivingGroupId)
+        });
     });
 }
 
@@ -26,6 +34,26 @@ function updateSettingsDisplayed(groupId) {
         //TODO this need to be fixed as this currently doesn't work. It is assumed this will be fixed as part of the live_update_inside_settings_page
         $(`html`).replaceWith(result)
     })
+}
+
+
+function redirectToGroupPage(groupId) {
+    if(groupId === ID){
+        const url = "/groups";
+        document.location.href = url;
+    }
+}
+
+//TODO comment
+function updateUserTables(firstGroupId, secondGroupId){
+    if(ID === firstGroupId || ID === secondGroupId){
+        $.get('/groups/local?groupId='+ID).done((result) => {
+            $(`#table_refresh`).replaceWith(result)
+            const temp = document.getElementById('table')
+            $(`#table_refresh`).replaceWith(temp)
+        })
+    }
+
 }
 
 
