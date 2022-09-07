@@ -25,7 +25,7 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 class EvidenceServiceTest {
     @Mock
-    private EvidenceRepository repository;
+    private EvidenceRepository evidenceRepository;
 
     @InjectMocks
     private EvidenceService evidenceService;
@@ -53,7 +53,7 @@ class EvidenceServiceTest {
      */
     @Test
     void getEvidences() {
-        when(repository.findAllByUserId(any(Integer.class))).thenReturn(testEvidences);
+        when(evidenceRepository.findAllByUserId(any(Integer.class))).thenReturn(testEvidences);
 
         List<Evidence> actualEvidences = evidenceService.getEvidences(1);
         boolean isCorrectlySorted = true;
@@ -64,6 +64,24 @@ class EvidenceServiceTest {
             }
         }
         assertTrue(isCorrectlySorted);
-        verify(repository, times(1)).findAllByUserId(1);
+        verify(evidenceRepository, times(1)).findAllByUserId(1);
+    }
+
+    /**
+     * Test that the evidence service can successfully save a new evidence piece to the database.
+     */
+    @Test
+    void testAddEvidence() {
+        when(evidenceRepository.save(any(Evidence.class))).thenReturn(testEvidences.get(0));
+        assertTrue(evidenceService.addEvidence(testEvidences.get(0)));
+    }
+
+    /**
+     * Test that the evidence service returns false when an evidence piece is not saved correctly to the database.
+     */
+    @Test
+    void testFailAddEvidence() {
+        when(evidenceRepository.save(any(Evidence.class))).thenThrow(new MockitoException("Mockito exception"));
+        assertFalse(evidenceService.addEvidence(testEvidences.get(0)));
     }
 }

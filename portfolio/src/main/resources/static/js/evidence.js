@@ -24,17 +24,31 @@ async function validateEvidence() {
  * the modal with error messages.
  */
 function addEvidence() {
-    const data = {
-        shortName: document.getElementById('evidenceTitle').value,
-        longName: document.getElementById('evidenceDescription').value
+
+    let dateValue = new Date(document.getElementById('evidenceDate').value);
+    if (dateValue.toString() === "Invalid Date") {
+        dateValue = new Date("01/01/1970");
     }
-    $.post(document.getElementById('evidenceForm').action).done((result) => {  //  + "?" + new URLSearchParams(data)
-        // TODO update the page with the new evidence using some sort of replacement technique.
-        // Below is what the group page does, for help with how to implement such a step.
-        $('#evidenceModal').modal('toggle')
-        // document.getElementById("groupList").innerHTML += result
-    }).fail((xhr, status, error) => {
-        replaceEvidenceModalBody(xhr);
+
+    const data = {
+        title: document.getElementById('evidenceTitle').value,
+        description: document.getElementById('evidenceDescription').value,
+        date: dateValue,
+        projectId: 0,
+        userId: document.getElementById('userId').value
+    }
+
+    $.post(document.getElementById('evidenceForm').action + "?" + new URLSearchParams(data)).done((result) => {
+        replaceEvidenceModalBody(result);
+        let messageAlert = $("evidenceTitleAlertBanner");
+        messageAlert.toggleClass("alert-danger alert-success");
+        setTimeout(() => {
+            $('#evidenceModal').modal('toggle')
+            messageAlert.toggleClass("alert-success alert-danger");
+            clearEvidenceModalFields();
+        }, 1000);
+    }).fail((response) => {
+        replaceEvidenceModalBody(response.responseText);
     })
 }
 
@@ -43,7 +57,7 @@ function addEvidence() {
  * @param modalBodyResponse response with new modalBody to display (evidenceModalBody fragment)
  */
 function replaceEvidenceModalBody(modalBodyResponse) {
-    $("#evidenceModalBody").replaceWith(modalBodyResponse.responseText)
+    $("#evidenceModalBody").replaceWith(modalBodyResponse)
     updateCharsLeft('evidenceTitle', 'evidenceTitleLength', 30)
     updateCharsLeft('evidenceDescription', 'evidenceDescriptionLength', 250)
     configureEvidenceDatePicker();
@@ -88,4 +102,11 @@ function isEvidenceInputFieldFilled() {
     } else {
         addButton.classList.remove("disabled");
     }
+}
+
+function clearEvidenceModalFields() {
+    document.getElementById('evidenceTitle').value = "";
+    document.getElementById('evidenceDescription').value = "";
+    evidenceDatePicker.dates.setValue(tempusDominus.DateTime.convert(new Date()));
+    $("#evidenceTitleAlertBanner").hide();
 }

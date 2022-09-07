@@ -27,4 +27,19 @@ public class EvidenceService {
         return listEvidences.stream().sorted((o1, o2)->o2.getDate().
                 compareTo(o1.getDate())).toList();
     }
+
+    /**
+     * Save a new evidence piece to the database.
+     * @param newEvidence New evidence piece to be saved.
+     * @return Whether the evidence was successfully saved.
+     */
+    public boolean addEvidence(Evidence newEvidence) {
+        try {
+            evidenceRepository.save(newEvidence);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
 }
