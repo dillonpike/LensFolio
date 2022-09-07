@@ -13,12 +13,18 @@ function connect() {
             const GroupNotificationResponse = JSON.parse(GroupSettingsResponseArg.body);
             updateSettingsDisplayed(GroupNotificationResponse.sendingGroupId);
         });
+        stompClient.subscribe('/webSocketGet/outside-group-settings-saved', function (GroupSettingsResponseArg) {
+            const GroupNotificationResponse = JSON.parse(GroupSettingsResponseArg.body);
+            updateSettingsDisplayed(GroupNotificationResponse.sendingGroupId);
+        });
     });
 }
 
 function updateSettingsDisplayed(groupId) {
-    $.get('groupSetting').done((result) => {
-        $(`#html`).replaceWith(result)
+    console.log("worked!")
+    $.get('groupSettings?groupId='+groupId).done((result) => {
+        //TODO this need to be fixed as this currently doesn't work. It is assumed this will be fixed as part of the live_update_inside_settings_page
+        $(`html`).replaceWith(result)
     })
 }
 
@@ -28,6 +34,10 @@ function updateSettingsDisplayed(groupId) {
  */
 function sendIdRefresh(sendingGroupId) {
     stompClient.send("/webSocketPost/save-group-settings", {}, JSON.stringify({
+        'sendingGroupId': sendingGroupId,
+        'receivingGroupId' : sendingGroupId
+    }));
+    stompClient.send("/webSocketPost/save-group-settings-outside", {}, JSON.stringify({
         'sendingGroupId': sendingGroupId,
         'receivingGroupId' : sendingGroupId
     }));

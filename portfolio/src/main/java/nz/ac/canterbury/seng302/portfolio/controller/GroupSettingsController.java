@@ -1,6 +1,7 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
 
+import nz.ac.canterbury.seng302.portfolio.model.NotificationGroup;
 import nz.ac.canterbury.seng302.portfolio.service.*;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import nz.ac.canterbury.seng302.shared.identityprovider.ModifyGroupDetailsResponse;
@@ -10,6 +11,8 @@ import org.gitlab4j.api.models.Commit;
 import org.gitlab4j.api.models.Contributor;
 import org.hibernate.ObjectNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -63,7 +66,7 @@ public class GroupSettingsController {
      * @param model group setting page model
      * @return group settings page
      */
-    @RequestMapping("/groupSettings")
+    @GetMapping("/groupSettings")
     public String groupSettings(
             @RequestParam(value = "groupId") int groupId,
             @AuthenticationPrincipal AuthState principal,
@@ -218,6 +221,29 @@ public class GroupSettingsController {
             model.addAttribute(IS_CONNECTION_SUCCESSFUL, false);
             model.addAttribute(IS_REPO_EXIST, false);
         }
+    }
+
+    /**
+     * Websocket controller to send notification to users to have their pages refreshed when new settings are saved.
+     * @param notificationGroup Holds the ID of the group being refreshed.
+     * @return The notificationGroup object.
+     */
+    @MessageMapping("/save-group-settings")
+    @SendTo("/webSocketGet/group-settings-saved")
+    public NotificationGroup refreshGroupSettings(NotificationGroup notificationGroup) {
+        return notificationGroup;
+    }
+
+    /**
+     * This method maps @MessageMapping endpoint to the @SendTo endpoint.
+     * Called when a groups long name is updated outside the group settings page so that it can be reloaded.
+     * @param notificationGroup NotificationGroup that holds information about the groups being updated.
+     * @return returns an NotificationResponse that holds information about the groups being updated.
+     */
+    @MessageMapping("/outside-save-group-settings")
+    @SendTo("/webSocketGet/outside-group-settings-saved")
+    public NotificationGroup refreshGroupSettingsOutside(NotificationGroup notificationGroup) {
+        return notificationGroup;
     }
 }
 

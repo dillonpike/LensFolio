@@ -346,4 +346,15 @@ public class GroupController {
         return message;
     }
 
+    /**
+     * This method maps @MessageMapping endpoint to the @SendTo endpoint.
+     * Called when a groups long name is updated within the group settings page.
+     * @param message NotificationMessage that holds information about the groups being updated.
+     * @return returns an NotificationResponse that holds information about the groups being updated.
+     */
+    @MessageMapping("/save-group-settings-outside")
+    @SendTo("/webSocketGet/saved-group-settings-outside")
+    public NotificationGroup changeGroupSettingsWebsocket(NotificationGroup message) {
+        return message; }
+
 }

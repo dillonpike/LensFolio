@@ -48,6 +48,10 @@ function connect() {
             updateGroupList(twoGroupResponse.sendingGroupId, "change-users-send");
             updateGroupList(twoGroupResponse.receivingGroupId, "change-users-receive");
         });
+        stompClient.subscribe('/webSocketGet/saved-group-settings-outside', function (eventResponseArg) {
+            const eventResponse = JSON.parse(eventResponseArg.body);
+            updateGroupList(eventResponse.sendingGroupId, "save");
+        });
 
     });
 }
