@@ -7,14 +7,12 @@
  * @returns {Promise<void>} null
  */
 async function validateEvidence() {
-    if (validateEvidenceTextInput('evidenceTitle', 'evidenceTitleAlertBanner', 'evidenceTitleAlertMessage',"Title") &&
-        validateEvidenceTextInput('evidenceDescription', 'evidenceDescriptionAlertBanner', 'evidenceDescriptionAlertMessage', "Description") &&
-        validateModalDate('evidenceDate', 'milestoneModalButton', 'evidenceDateAlertBanner', 'evidenceDateAlertMessage')
-    ) {
+    const titleValid = validateEvidenceTextInput('evidenceTitle', 'evidenceTitleAlertBanner', 'evidenceTitleAlertMessage', 'Title');
+    const descriptionValid = validateEvidenceTextInput('evidenceDescription', 'evidenceDescriptionAlertBanner', 'evidenceDescriptionAlertMessage', 'Description');
+    const dateValid = validateModalDate('evidenceDate', 'milestoneModalButton', 'evidenceDateAlertBanner', 'evidenceDateAlertMessage')
+    if (titleValid && descriptionValid && dateValid) {
         document.getElementById('evidenceForm').onsubmit = () => { return false };
-
         addEvidence()
-
         document.getElementById('evidenceForm').onsubmit = () => {validateEvidence(); return false}
     }
 }
@@ -75,17 +73,21 @@ function replaceEvidenceModalBody(modalBodyResponse) {
  */
 function validateEvidenceTextInput(elementId, alertBanner, alertMessage, typeTextInput) {
     const input = document.getElementById(elementId).value;
+    const alertBannerElement = $(alertBanner);
     const regex = /^[\p{N}\p{P}\p{S}\p{Zs}]{1,}$/u; // this regex use Unicode awareness regex, it matches with any sequence of characters that are number, punctuation, or whitespace. Supposedly it works with all languages
     if (regex.test(input) || input.length < 2) {
-        document.getElementById(alertBanner).hidden = false;
+        alertBannerElement.show();
+        document.getElementById(alertBanner).removeAttribute("hidden");
         document.getElementById(alertMessage).innerText = typeTextInput+" cannot only contains numbers, punctuation, and/or symbols. and must be at least 2 characters long.";
         return false
     } else if (input.trim().length === 1){
-        document.getElementById(alertBanner).hidden = false;
+        alertBannerElement.show();
+        document.getElementById(alertBanner).removeAttribute("hidden");
         document.getElementById(alertMessage).innerText = typeTextInput+" should not have only 1 character non-space";
         return false
     } else {
-        document.getElementById(alertBanner).hidden = true;
+        alertBannerElement.hide();
+        document.getElementById(alertBanner).setAttribute("hidden", "hidden");
         return true
     }
 }
