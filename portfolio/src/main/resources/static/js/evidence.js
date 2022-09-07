@@ -28,9 +28,16 @@ function addEvidence() {
         evidenceTitle: document.getElementById('evidenceTitle').value,
         evidenceDescription: document.getElementById('evidenceDescription').value,
         evidenceDate: document.getElementById('evidenceDate').value,
-
     }
-    $.post(document.getElementById('evidenceForm').action, data).done((result) => {
+
+    const dataNew = {
+        title: document.getElementById('evidenceTitle').value,
+        description: document.getElementById('evidenceDescription').value,
+        date: new Date(document.getElementById('evidenceDate').value),
+        projectId: 0,
+        userId: document.getElementById('userId').value
+    }
+    $.post(document.getElementById('evidenceForm').action + "?" + new URLSearchParams(dataNew), data).done((result) => {
         replaceEvidenceModalBody(result);
         let messageAlert = $("evidenceTitleAlertBanner");
         messageAlert.toggleClass("alert-danger alert-success");

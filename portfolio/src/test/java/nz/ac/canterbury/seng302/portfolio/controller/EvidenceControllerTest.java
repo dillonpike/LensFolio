@@ -33,6 +33,8 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import java.util.Date;
+
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -93,7 +95,7 @@ class EvidenceControllerTest {
 
     private static final String ADD_EVIDENCE_MODAL_FRAGMENT_TITLE_MESSAGE = "evidenceTitleAlertMessage";
 
-    private static final String EVIDENCE_HTTP_CONTENT = "evidenceTitle=Test+Evidence&evidenceDescription=Test+Description&evidenceDate=12%2FDec%2F2021";
+    private static final Evidence testEvidence = new Evidence(0 ,0, "test evidence", "test description", new Date());
 
     @BeforeEach
     public void setup() {
@@ -114,7 +116,7 @@ class EvidenceControllerTest {
     void testAddEvidence200() throws Exception {
         when(evidenceService.addEvidence(any(Evidence.class))).thenReturn(true);
 
-        mockMvc.perform(post("/add-evidence").contentType(MediaType.APPLICATION_JSON).content(EVIDENCE_HTTP_CONTENT)).andExpect(status().isOk())
+        mockMvc.perform(post("/add-evidence").flashAttr("evidence", testEvidence)).andExpect(status().isOk())
                 .andExpect(model().attribute(ADD_EVIDENCE_MODAL_FRAGMENT_TITLE_MESSAGE, "Evidence Added. "));
 
         verify(evidenceService, times(1)).addEvidence(any(Evidence.class));
@@ -128,7 +130,7 @@ class EvidenceControllerTest {
     void testAddEvidence500() throws Exception {
         when(evidenceService.addEvidence(any(Evidence.class))).thenReturn(false);
 
-        mockMvc.perform(post("/add-evidence").contentType(MediaType.APPLICATION_JSON).content(EVIDENCE_HTTP_CONTENT)).andExpect(status().isInternalServerError())
+        mockMvc.perform(post("/add-evidence").flashAttr("evidence", testEvidence)).andExpect(status().isInternalServerError())
                 .andExpect(model().attribute(ADD_EVIDENCE_MODAL_FRAGMENT_TITLE_MESSAGE, "Evidence Not Added. Saving Error Occurred."));
 
         verify(evidenceService, times(1)).addEvidence(any(Evidence.class));
@@ -140,7 +142,7 @@ class EvidenceControllerTest {
      */
     @Test
     void testAddEvidence400MissingData() throws Exception {
-        mockMvc.perform(post("/add-evidence").contentType(MediaType.APPLICATION_JSON).content("{}")).andExpect(status().isBadRequest())
+        mockMvc.perform(post("/add-evidence")).andExpect(status().isBadRequest())
                 .andExpect(model().attribute(ADD_EVIDENCE_MODAL_FRAGMENT_TITLE_MESSAGE, "Evidence Not Added. Following fields are required: 'title' 'description' 'date'. "));
 
         verify(evidenceService, times(0)).addEvidence(any(Evidence.class));
@@ -153,12 +155,9 @@ class EvidenceControllerTest {
     @Test
     void testAddEvidence400MissingDate() throws Exception {
 
-        String evidenceHttpContentMissingDate = "evidenceTitle=Test+Evidence&evidenceDescription=Test+Description";
+        Evidence testEvidenceWithoutDate = new Evidence(0 ,0, "test evidence", "test description", null);
 
-        mockMvc.perform(post("/add-evidence")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(evidenceHttpContentMissingDate)
-                        .accept(MediaType.APPLICATION_JSON))
+        mockMvc.perform(post("/add-evidence").flashAttr("evidence", testEvidenceWithoutDate))
                 .andExpect(status().isBadRequest())
                 .andExpect(model().attribute(ADD_EVIDENCE_MODAL_FRAGMENT_TITLE_MESSAGE, "Evidence Not Added. Following fields are required: 'date'. "));
 

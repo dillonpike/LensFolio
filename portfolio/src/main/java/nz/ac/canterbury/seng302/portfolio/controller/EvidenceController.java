@@ -1,10 +1,8 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
 import nz.ac.canterbury.seng302.portfolio.model.Evidence;
-import nz.ac.canterbury.seng302.portfolio.model.Project;
 import nz.ac.canterbury.seng302.portfolio.service.EvidenceService;
 import nz.ac.canterbury.seng302.portfolio.service.UserAccountClientService;
-import nz.ac.canterbury.seng302.portfolio.utility.GeneralUtility;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,13 +10,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.NotAcceptableException;
 import java.util.Date;
-import java.util.HashMap;
 
 /**
  * Controller for evidence endpoints.
@@ -46,18 +43,16 @@ public class EvidenceController {
      */
     @PostMapping("/add-evidence")
     public String addEvidence(
-            @RequestBody String evidenceInfo,
+            @ModelAttribute("evidence") Evidence evidence,
             Model model,
             HttpServletResponse httpServletResponse,
             @AuthenticationPrincipal AuthState principal
     ) {
         try {
-            HashMap<String, String> values = (HashMap<String, String>) GeneralUtility.requestBodyToHashMap(evidenceInfo);
-            String title = values.get("evidenceTitle");
-            String description = values.get("evidenceDescription");
-            Date date = Project.stringToDate(values.get("evidenceDate"));
-            int projectId = 0;
-            int userId = userAccountClientService.getUserIDFromAuthState(principal);
+
+            String title = evidence.getTitle();
+            String description = evidence.getDescription();
+            Date date = evidence.getDate();
 
             boolean throwError = false;
             String nullErrorMessage = "Following fields are required:";
@@ -76,8 +71,6 @@ public class EvidenceController {
             if (throwError) {
                 throw new NotAcceptableException(nullErrorMessage + ". ");
             }
-
-            Evidence evidence = new Evidence(projectId, userId, title, description, date);
 
             boolean wasAdded = evidenceService.addEvidence(evidence);
             if (wasAdded) {
