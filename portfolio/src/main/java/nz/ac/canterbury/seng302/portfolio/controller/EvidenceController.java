@@ -64,7 +64,7 @@ public class EvidenceController {
                 throwError = true;
                 nullErrorMessage += " 'description'";
             }
-            if (date == null) {
+            if (date == null || date.before(new Date(0))) {
                 throwError = true;
                 nullErrorMessage += " 'date'";
             }

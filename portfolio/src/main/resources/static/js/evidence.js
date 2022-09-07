@@ -24,20 +24,21 @@ async function validateEvidence() {
  * the modal with error messages.
  */
 function addEvidence() {
-    const data = {
-        evidenceTitle: document.getElementById('evidenceTitle').value,
-        evidenceDescription: document.getElementById('evidenceDescription').value,
-        evidenceDate: document.getElementById('evidenceDate').value,
+
+    let dateValue = new Date(document.getElementById('evidenceDate').value);
+    if (dateValue.toString() === "Invalid Date") {
+        dateValue = new Date("01/01/1970");
     }
 
-    const dataNew = {
+    const data = {
         title: document.getElementById('evidenceTitle').value,
         description: document.getElementById('evidenceDescription').value,
-        date: new Date(document.getElementById('evidenceDate').value),
+        date: dateValue,
         projectId: 0,
         userId: document.getElementById('userId').value
     }
-    $.post(document.getElementById('evidenceForm').action + "?" + new URLSearchParams(dataNew), data).done((result) => {
+
+    $.post(document.getElementById('evidenceForm').action + "?" + new URLSearchParams(data)).done((result) => {
         replaceEvidenceModalBody(result);
         let messageAlert = $("evidenceTitleAlertBanner");
         messageAlert.toggleClass("alert-danger alert-success");
