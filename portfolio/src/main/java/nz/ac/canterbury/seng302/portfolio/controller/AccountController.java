@@ -40,6 +40,9 @@ public class AccountController {
     @Autowired
     private ProjectService projectService;
 
+    @Autowired
+    private EvidenceService evidenceService;
+
     public static final String USER_ID_ATTRIBUTE_NAME = "userId";
 
     private static final Logger logger = LoggerFactory.getLogger(AccountController.class);
