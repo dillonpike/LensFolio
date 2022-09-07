@@ -36,7 +36,10 @@ function updateSettingsDisplayed(groupId) {
     })
 }
 
-
+/**
+ * redirects the user to the group page when a group is deleted.
+ * @param groupId the id of the group that was deleted.
+ */
 function redirectToGroupPage(groupId) {
     if(groupId === ID){
         const url = "/groups";
@@ -44,13 +47,15 @@ function redirectToGroupPage(groupId) {
     }
 }
 
-//TODO comment
+/**
+ * This method updates the user tables on the group settings page whenever a user is added or removed from a group.
+ * @param firstGroupId the id of the group that the user was removed from.
+ * @param secondGroupId the id of the group that the user was added to.
+ */
 function updateUserTables(firstGroupId, secondGroupId){
     if(ID === firstGroupId || ID === secondGroupId){
-        $.get('/groups/local?groupId='+ID).done((result) => {
+        $.get('/getGroupMembers?groupId='+ID).done((result) => {
             $(`#table_refresh`).replaceWith(result)
-            const temp = document.getElementById('table')
-            $(`#table_refresh`).replaceWith(temp)
         })
     }
 

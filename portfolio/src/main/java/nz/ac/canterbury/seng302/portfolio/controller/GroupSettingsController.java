@@ -4,6 +4,7 @@ package nz.ac.canterbury.seng302.portfolio.controller;
 import nz.ac.canterbury.seng302.portfolio.model.NotificationGroup;
 import nz.ac.canterbury.seng302.portfolio.service.*;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
+import nz.ac.canterbury.seng302.shared.identityprovider.GroupDetailsResponse;
 import nz.ac.canterbury.seng302.shared.identityprovider.ModifyGroupDetailsResponse;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 import org.gitlab4j.api.GitLabApiException;
@@ -192,6 +193,26 @@ public class GroupSettingsController {
         httpServletResponse.setStatus(HttpServletResponse.SC_OK);
         model.addAttribute("successMessage", "Save changed");
         return "groupSettings::groupSetting";
+    }
+
+    /**
+     * Method to get group's members
+     * @param model Parameters sent to thymeleaf template to be rendered into HTML
+     * @param groupId id of group to reload
+     * @return Group page
+     */
+    @GetMapping("/getGroupMembers")
+    public String getGroupMembers(
+            Model model,
+            @RequestParam("groupId") int groupId,
+            @AuthenticationPrincipal AuthState principal
+
+    )
+    {
+        GroupDetailsResponse groupDetailsResponse = groupService.getGroupDetails(groupId);
+        List<UserResponse> members = groupDetailsResponse.getMembersList();
+        model.addAttribute("members", members);
+        return "groupSettings::table_refresh";
     }
 
     /**
