@@ -34,8 +34,8 @@
                             </div>
                         </div>
 
-                        <div class="alert alert-danger alert-dismissible fade show" role="alert" id="evidenceDateAlertBanner" hidden>
-                            <span id="evidenceDateAlertMessage" data-test-id="alertMessage"></span>
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert" id="evidenceDateAlertBanner" th:hidden="${evidenceDateAlertMessage==null}">
+                            <span id="evidenceDateAlertMessage" data-test-id="alertMessage" th:text="${evidenceDateAlertMessage}"></span>
                             <button type="button" class="btn-close" onclick="document.getElementById('evidenceDateAlertBanner').hidden = true" aria-label="Close"></button>
                         </div>
                         <div class="mb-3">
