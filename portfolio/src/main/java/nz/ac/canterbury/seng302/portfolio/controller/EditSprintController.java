@@ -47,7 +47,7 @@ public class EditSprintController {
     ) throws ObjectNotFoundException {
         Integer userID = userAccountClientService.getUserIDFromAuthState(principal);
         elementService.addHeaderAttributes(model, userID);
-        if (permissionService.isValidToModifyProjectPage(userID)) {
+        if (permissionService.isValidToModify(userID)) {
             // Gets the project with id 0 to plonk on the page
             Sprint newSprint = sprintService.getSprintById(id);
             newSprint.setName(sprint.getName());

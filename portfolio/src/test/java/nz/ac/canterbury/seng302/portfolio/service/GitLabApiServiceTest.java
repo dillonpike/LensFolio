@@ -1,29 +1,26 @@
 package nz.ac.canterbury.seng302.portfolio.service;
 
 import nz.ac.canterbury.seng302.portfolio.model.GroupSettings;
-import nz.ac.canterbury.seng302.portfolio.repository.GroupSettingsRepository;
 import org.gitlab4j.api.*;
 import org.gitlab4j.api.models.Branch;
 import org.gitlab4j.api.models.Commit;
-import org.gitlab4j.api.models.Member;
+import org.gitlab4j.api.models.Contributor;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.MockedConstruction;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.boot.test.mock.mockito.SpyBean;
-
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
+
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 /**
  * Unit tests for the {@link GitLabApiService} class.
@@ -48,17 +45,18 @@ class GitLabApiServiceTest {
     private RepositoryApi repositoryApi;
 
     @Mock
-    private ProjectApi projectApi;
-
-    @Mock
     private CommitsApi commitsApi;
 
     private static final List<Branch> testBranches = new ArrayList<>();
 
-    private static final List<Member> testMembers = new ArrayList<>();
+    private static final List<Contributor> testContributors = new ArrayList<>();
 
     private static final List<Commit> testCommits = new ArrayList<>();
 
+    /**
+     * Setting up all expected output which then will be used by the test function to compare with the actual result.
+     * Runs before all tests as the information only needs to be set once.
+     */
     @BeforeAll
     static void setUp() {
         for (int i=0; i<5; i++) {
@@ -66,56 +64,61 @@ class GitLabApiServiceTest {
             branch.setName("testBranch" + i);
             testBranches.add(branch);
 
-            Member member = new Member();
-            member.setEmail(String.format("testEmail%d@gmail.com", i));
-            testMembers.add(member);
+            Contributor contributor = new Contributor();
+            contributor.setEmail(String.format("testEmail%d@gmail.com", i));
+            testContributors.add(contributor);
 
             Commit commit = new Commit();
             commit.setAuthorEmail(String.format("testEmail%d@gmail.com", i));
+            commit.setCommittedDate(new Date(i * -1000));
             testCommits.add(commit);
         }
-
-    }
-
-    @BeforeEach
-    void setUpEach() {
-        when(groupSettingsService.getGroupSettingsByGroupId(testGroupSettings.getGroupId())).thenReturn(testGroupSettings);
-        when(testGroupSettings.getGitLabApi()).thenReturn(gitLabApi);
     }
 
     /**
-     * Test that the getMembers method returns the list of branch names returned by the GitLab API.
+     * Test that the getBranches method returns the list of branch names returned by the GitLab API.
+     * The function is expected to return a list of branch names that exists in a repository.
      * @throws GitLabApiException if an error occurs when calling the GitLab API
      */
     @Test
     void testGetBranchNames() throws GitLabApiException {
+        when(groupSettingsService.getGroupSettingsByGroupId(testGroupSettings.getGroupId())).thenReturn(testGroupSettings);
+        when(testGroupSettings.getGitLabApi()).thenReturn(gitLabApi);
         when(gitLabApi.getRepositoryApi()).thenReturn(repositoryApi);
         when(repositoryApi.getBranches(testGroupSettings.getRepoId())).thenReturn(testBranches);
 
-        List<String> branchNames = gitLabApiService.getBranchNames(testGroupSettings.getGroupId());
-        assertEquals(testBranches.stream().map(Branch::getName).toList(), branchNames);
+        List<String> actualBranchNames = gitLabApiService.getBranchNames(testGroupSettings.getGroupId());
+        List<String> expectedBranchNames = testBranches.stream().map(Branch::getName).toList();
+        assertEquals(expectedBranchNames, actualBranchNames);
     }
 
     /**
-     * Test that the getMembers method returns the list of members returned by the GitLab API.
+     * Test that the getContributors method returns the list of members returned by the GitLab API.
+     * The function is expected to return all authors that have contributed to the repo, in this case testContributors list.
      * @throws GitLabApiException if an error occurs when calling the GitLab API
      */
     @Test
-    void testGetMembers() throws GitLabApiException {
-        when(gitLabApi.getProjectApi()).thenReturn(projectApi);
-        when(projectApi.getAllMembers(testGroupSettings.getRepoId())).thenReturn(testMembers);
+    void testGetContributors() throws GitLabApiException {
+        when(groupSettingsService.getGroupSettingsByGroupId(testGroupSettings.getGroupId())).thenReturn(testGroupSettings);
+        when(testGroupSettings.getGitLabApi()).thenReturn(gitLabApi);
+        when(gitLabApi.getRepositoryApi()).thenReturn(repositoryApi);
+        when(repositoryApi.getContributors(testGroupSettings.getRepoId())).thenReturn(testContributors);
 
-        List<Member> members = gitLabApiService.getMembers(testGroupSettings.getGroupId());
-        assertEquals(testMembers, members);
+        List<Contributor> members = gitLabApiService.getContributors(testGroupSettings.getGroupId());
+        assertEquals(testContributors, members);
     }
 
     /**
      * Test that the getCommits method returns all the commits returned from the GitLab API when not filtering by branch
      * or user.
+     * The function is expected to return all commits regardless of user and branch name,
+     * in this test we expect all commits in the testCommits list to be returned.
      * @throws GitLabApiException if an error occurs when calling the GitLab API
      */
     @Test
     void testGetCommitsNoBranchNameNoAuthor() throws GitLabApiException {
+        when(groupSettingsService.getGroupSettingsByGroupId(testGroupSettings.getGroupId())).thenReturn(testGroupSettings);
+        when(testGroupSettings.getGitLabApi()).thenReturn(gitLabApi);
         when(gitLabApi.getCommitsApi()).thenReturn(commitsApi);
         when(gitLabApi.getCommitsApi().getCommits(testGroupSettings.getRepoId())).thenReturn(testCommits);
 
@@ -124,13 +127,17 @@ class GitLabApiServiceTest {
     }
 
     /**
-     * Test that the getCommits method returns all the commits returned from the GitLab API when not filtering by branch
-     * or user.
+     * Test that the getCommits method returns all the commits returned from the GitLab API when filtering by branch
+     * but not by user.
+     * Branch filtering is done by the API, which is being mocked, so the function is expected to return all commits in
+     * the testCommits list.
      * @throws GitLabApiException if an error occurs when calling the GitLab API
      */
     @Test
     void testGetCommitsWithBranchNameNoAuthor() throws GitLabApiException {
         String branchName = testBranches.get(0).getName();
+        when(groupSettingsService.getGroupSettingsByGroupId(testGroupSettings.getGroupId())).thenReturn(testGroupSettings);
+        when(testGroupSettings.getGitLabApi()).thenReturn(gitLabApi);
         when(gitLabApi.getCommitsApi()).thenReturn(commitsApi);
         when(gitLabApi.getCommitsApi().getCommits(testGroupSettings.getRepoId(), branchName, null, null)).thenReturn(testCommits);
 
@@ -139,33 +146,72 @@ class GitLabApiServiceTest {
     }
 
     /**
-     * Test that the getCommits method returns all the commits returned from the GitLab API when not filtering by branch
-     * or user.
+     * Test that the getCommits method returns all the commits returned from the GitLab API when filtering by user but
+     * not by branch.
+     * The function is expected to return all commits in the testCommits list with a matching author.
      * @throws GitLabApiException if an error occurs when calling the GitLab API
      */
     @Test
     void testGetCommitsNoBranchNameWithAuthor() throws GitLabApiException {
-        Member member = testMembers.get(3);
+        Contributor contributor = testContributors.get(3);
+        when(groupSettingsService.getGroupSettingsByGroupId(testGroupSettings.getGroupId())).thenReturn(testGroupSettings);
+        when(testGroupSettings.getGitLabApi()).thenReturn(gitLabApi);
         when(gitLabApi.getCommitsApi()).thenReturn(commitsApi);
         when(gitLabApi.getCommitsApi().getCommits(testGroupSettings.getRepoId())).thenReturn(testCommits);
 
-        List<Commit> commits = gitLabApiService.getCommits(testGroupSettings.getGroupId(), null, member.getEmail());
-        assertEquals(testCommits.stream().filter(commit -> Objects.equals(commit.getAuthorEmail(), member.getEmail())).toList(), commits);
+        List<Commit> commits = gitLabApiService.getCommits(testGroupSettings.getGroupId(), null, contributor.getEmail());
+        assertEquals(testCommits.stream().filter(commit -> Objects.equals(commit.getAuthorEmail(), contributor.getEmail())).toList(), commits);
     }
 
     /**
-     * Test that the getCommits method returns all the commits returned from the GitLab API when not filtering by branch
-     * or user.
+     * Test that the getCommits method returns all the commits returned from the GitLab API when filtering by branch
+     * and user.
+     * The function is expected to return all commits in the testCommits list with a matching author.
+     * Branch filtering is done by the API, which is being mocked, so the branch name doesn't affect the output
      * @throws GitLabApiException if an error occurs when calling the GitLab API
      */
     @Test
-    void testGetCommitsNWithBranchNameAndAuthor() throws GitLabApiException {
-        Member member = testMembers.get(4);
+    void testGetCommitsWithBranchNameAndAuthor() throws GitLabApiException {
+        Contributor contributor = testContributors.get(4);
         String branchName = testBranches.get(2).getName();
+        when(groupSettingsService.getGroupSettingsByGroupId(testGroupSettings.getGroupId())).thenReturn(testGroupSettings);
+        when(testGroupSettings.getGitLabApi()).thenReturn(gitLabApi);
         when(gitLabApi.getCommitsApi()).thenReturn(commitsApi);
         when(gitLabApi.getCommitsApi().getCommits(testGroupSettings.getRepoId(), branchName, null, null)).thenReturn(testCommits);
 
-        List<Commit> commits = gitLabApiService.getCommits(testGroupSettings.getGroupId(), branchName, member.getEmail());
-        assertEquals(testCommits.stream().filter(commit -> Objects.equals(commit.getAuthorEmail(), member.getEmail())).toList(), commits);
+        List<Commit> commits = gitLabApiService.getCommits(testGroupSettings.getGroupId(), branchName, contributor.getEmail());
+        assertEquals(testCommits.stream().filter(commit -> Objects.equals(commit.getAuthorEmail(), contributor.getEmail())).toList(), commits);
+    }
+
+    /**
+     * Checks that the checkGitLabToken method returns true when the repo id and token can be used to get information
+     * from the GitLab API.
+     * @throws GitLabApiException if an error occurs when calling the GitLab API
+     */
+    @Test
+    void testCheckGitLabTokenValid() throws GitLabApiException {
+        int repoId = 12345;
+        MockedConstruction<GitLabApi> mockedConstruction = mockConstruction(GitLabApi.class, (mock, context) ->
+            when(mock.getRepositoryApi()).thenReturn(repositoryApi));
+        when(repositoryApi.getBranches(Integer.toString(repoId))).thenReturn(null);
+
+        assertTrue(gitLabApiService.checkGitLabToken(repoId, "testToken"));
+        mockedConstruction.close();
+    }
+
+    /**
+     * Checks that the checkGitLabToken method returns false when the repo id and token cannot be used to get
+     * information from the GitLab API.
+     * @throws GitLabApiException if an error occurs when calling the GitLab API
+     */
+    @Test
+    void testCheckGitLabTokenInvalid() throws GitLabApiException {
+        int repoId = 12345;
+        MockedConstruction<GitLabApi> mockedConstruction = mockConstruction(GitLabApi.class, (mock, context) ->
+            when(mock.getRepositoryApi()).thenReturn(repositoryApi));
+        when(repositoryApi.getBranches(Integer.toString(repoId))).thenThrow(GitLabApiException.class);
+
+        assertFalse(gitLabApiService.checkGitLabToken(repoId, "testToken"));
+        mockedConstruction.close();
     }
 }

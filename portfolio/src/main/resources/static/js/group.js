@@ -27,8 +27,8 @@ function updateTable(groupId) {
  * Redirect user to the group settings page.
  * @param groupId group to fetch information of.
  */
-function redirectToSettingPage(groupId) {
-    const url = '/groupSetting?groupId=' + groupId
+function redirectToSettingsPage(groupId) {
+    const url = '/groupSettings?groupId=' + groupId
     document.location.href = url
 }
 

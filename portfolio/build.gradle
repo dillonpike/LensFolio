@@ -117,6 +117,7 @@ test {
 
         includeTestsMatching "nz.ac.canterbury.seng302.portfolio.utility.*"
 
+        testLogging.showStandardStreams = true
     }
 
     systemProperties(project.gradle.startParameter.systemPropertiesArgs)
