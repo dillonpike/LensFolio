@@ -43,7 +43,7 @@ public class MilestoneLifetimeController {
         Integer userID = userAccountClientService.getUserIDFromAuthState(principal);
         elementService.addHeaderAttributes(model, userID);
 
-        if (permissionService.isValidToModifyProjectPage(userID)) {
+        if (permissionService.isValidToModify(userID)) {
             milestoneService.addMilestone(milestone);
         }
         return "redirect:/details";
@@ -59,7 +59,7 @@ public class MilestoneLifetimeController {
                                   Model model) {
         Integer userID = userAccountClientService.getUserIDFromAuthState(principal);
         elementService.addHeaderAttributes(model, userID);
-        if (permissionService.isValidToModifyProjectPage(userID)) {
+        if (permissionService.isValidToModify(userID)) {
             milestoneService.removeMilestone(id);
         }
         return "redirect:/details";

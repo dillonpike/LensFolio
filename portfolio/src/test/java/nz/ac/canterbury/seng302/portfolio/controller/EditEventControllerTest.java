@@ -21,7 +21,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 
-import java.time.LocalTime;
 import java.util.Date;
 
 import static nz.ac.canterbury.seng302.portfolio.controller.SprintLifetimeController.getUpdatedDate;
@@ -32,7 +31,6 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
 
 /**
  * Junit testing to test the Edit Event Controller
@@ -98,7 +96,7 @@ class EditEventControllerTest {
         when(eventService.getEventById(any(Integer.class))).thenReturn(mockEvent);
         ArgumentCaptor<Event> eventArgumentCaptor = ArgumentCaptor.forClass(Event.class);
         when(eventService.updateEvent(any(Event.class))).thenReturn(mockEvent);
-        when(permissionService.isValidToModifyProjectPage(any(Integer.class))).thenReturn(true);
+        when(permissionService.isValidToModify(any(Integer.class))).thenReturn(true);
 
         mockMvc.perform(post("/edit-event/1").flashAttr("event",mockEvent))
                 .andExpect(status().is3xxRedirection())
