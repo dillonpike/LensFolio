@@ -390,10 +390,14 @@
      * @returns {boolean} true if the input is not empty string, otherwise false
      */
     function validateModalName(elementId, alertBanner, alertMessage) {
-        const nameInput = document.getElementById(elementId).value;
+        const nameInput = document.getElementById(elementId).value.trim();
         if (nameInput === "") {
             document.getElementById(alertBanner).hidden = false;
             document.getElementById(alertMessage).innerText = "Name cannot be empty!";
+            return false
+        } else if (nameInput.length > 30) {
+            document.getElementById(alertBanner).hidden = false;
+            document.getElementById(alertMessage).innerText = "Name cannot be more than 30 characters!";
             return false
         } else {
             document.getElementById(alertBanner).hidden = true;
