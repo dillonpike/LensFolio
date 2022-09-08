@@ -40,11 +40,14 @@ public class MilestoneService {
     }
 
     /**
-     * Saves the given milestone to the database and returns it.
+     * Saves the given milestone to the database after removing whitespace from name
+     * and returns it.
      * @param milestone milestone to be saved
      * @return saved milestone
      */
     public Milestone addMilestone(Milestone milestone) {
+        String milestoneName = milestone.getMilestoneName().trim();
+        milestone.setMilestoneName(milestoneName);
         return repository.save(milestone);
     }
 
@@ -87,7 +90,7 @@ public class MilestoneService {
 
         if (mOptional.isPresent()) {
             Milestone milestoneUpdate = mOptional.get();
-            milestoneUpdate.setMilestoneName(milestone.getMilestoneName());
+            milestoneUpdate.setMilestoneName(milestone.getMilestoneName().trim());
             milestoneUpdate.setMilestoneDate(milestone.getMilestoneDate());
 
             milestoneUpdate = repository.save(milestoneUpdate);

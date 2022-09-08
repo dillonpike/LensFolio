@@ -57,8 +57,7 @@ class SprintServiceTest {
         when(sprintRepository.findAll()).thenReturn(sprintList);
 
         List<Sprint> fetchedSprints = sprintService.getAllSprints();
-        assertThat(fetchedSprints.size()).isGreaterThan(0);
-        assertThat(fetchedSprints).isSameAs(sprintList);
+        assertThat(fetchedSprints).isNotEmpty().isSameAs(sprintList);
     }
 
     @Test

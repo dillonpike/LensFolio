@@ -31,7 +31,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class SprintLifetimeRestControllerTest {
 
     @Autowired
-    private MockMvc mockMvc;
+    private MockMvc mockMvc = MockMvcBuilders.standaloneSetup(SprintLifetimeRestController.class).build();
 
     @MockBean
     private DateValidationService dateValidationService;
@@ -41,11 +41,6 @@ class SprintLifetimeRestControllerTest {
      */
     @MockBean
     private UserAccountClientService userAccountClientService;
-
-    @Before
-    public void setup() {
-        mockMvc = MockMvcBuilders.standaloneSetup(SprintLifetimeRestController.class).build();
-    }
 
     /**
      * Checks that the rest controller returns a response of the concatenation of the date validation methods it calls.
