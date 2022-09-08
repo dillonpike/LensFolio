@@ -40,7 +40,7 @@
                         </div>
                         <div class="mb-3">
                             <label for="evidenceDate" class="col-form-label">Date(*):</label>
-                            <button type="button" id="questionToolTip" class="btn mytooltip" style="margin: 0; padding: 0" data-toggle="tooltip" data-bs-placement="right" title="This date should indicate the day that the evidence took place. ">
+                            <button type="button" id="questionToolTip" class="btn" style="margin: 0; padding: 0" data-toggle="tooltip" data-bs-placement="right" title="This date should indicate the day that the evidence took place. ">
                                 <span class="bi bi-question-circle"></span>
                             </button>
                             <div class="input-group" id="evidenceDateInput" data-td-target-input="nearest" data-td-target-toggle="nearest">
@@ -54,9 +54,9 @@
                         </div>
 
 <!--                        weblinks-->
-                        <div class="alert alert-danger alert-dismissible fade show" role="alert" id="evidenceWebLinksAlertBanner" th:hidden="${evidenceDescriptionAlertMessage==null}">
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert" id="evidenceWebLinksAlertBanner" th:hidden="${evidenceWebLinksAlertMessage==null}">
                             <span id="evidenceWebLinksAlertMessage" data-test-id="alertMessage" th:text="${evidenceWebLinksAlertMessage}"></span>
-                            <button type="button" class="btn-close" onclick="document.getElementById('addWeblinksAlertBanner').hidden = true" aria-label="Close"></button>
+                            <button type="button" class="btn-close" onclick="document.getElementById('evidenceWebLinksAlertBanner').hidden = true" aria-label="Close"></button>
                         </div>
                         <div class="mb-3">
                             <label for="evidenceWeblink" class="col-form-label">Web Links:</label>
@@ -84,6 +84,7 @@
     </div>
     <script src="js/datepicker.js"></script>
     <script type="text/javascript">
+        const MAX_NUM_WEBLINKS = 10;
         let tooltip = null;
         /**
          * Sets up date picker and tooltip for evidence date input. Runs in the modal html.
@@ -103,40 +104,53 @@
             const urlString = document.getElementById("evidenceWeblink").value;
             //validate
 
-            let displayUrlString = "";
-            let splitIndex = urlString.indexOf("://");
-            if (splitIndex !== -1) {
-                displayUrlString = urlString.substring(splitIndex + 3);
-            } else {
-                displayUrlString = urlString;
-            }
-            if (displayUrlString.length > 30) {
-                displayUrlString = displayUrlString.substring(0, 29) + "...";
-            }
+            if (webLinksList.length < MAX_NUM_WEBLINKS) {
+                let displayUrlString = "";
+                let splitIndex = urlString.indexOf("://");
+                if (splitIndex !== -1) {
+                    displayUrlString = urlString.substring(splitIndex + 3);
+                } else {
+                    displayUrlString = urlString;
+                }
+                if (displayUrlString.length > 30) {
+                    displayUrlString = displayUrlString.substring(0, 29) + "...";
+                }
 
 
-            $("#webLinkList").append(`<div class="chip mytooltip" id='weblinkurl${weblinkId}' style="display: inline-block;padding: 0 12px 0 15px;height: fit-content;font-size: 16px;line-height: 30px;border-radius: 25px;background-color: #f1f1f1f1;margin: 0 10px 10px 0;" data-toggle="tooltip" data-bs-placement="right" title="${urlString}">
+                $("#webLinkList").append(`<div class="chip" id='weblinkurl${weblinkId}' style="display: inline-block;padding: 0 12px 0 15px;height: fit-content;font-size: 16px;line-height: 30px;border-radius: 25px;background-color: #f1f1f1f1;margin: 0 10px 10px 0;" data-toggle="tooltip" data-bs-placement="right" title="${urlString}">
                                 <div class="d-flex justify-content-between flex-row align-items-center">
                                     <span style="margin-right: 10px">${displayUrlString}</span>
                                     <button onclick="removeWebLink('weblinkurl${weblinkId}')" type="button" class="btn-close" aria-label="Close"></button>
                                 </div>
                             </div>`);
-            weblinkId += 1;
+                weblinkId += 1;
 
-            $('[data-toggle="tooltip"]').tooltip();
+                $('[data-toggle="tooltip"]').tooltip();
 
-            // new bootstrap.tooltip($('[data-bs-toggle="tooltip"]'));
+                $("#evidenceWeblink").val("");
+                updateCharsLeft('evidenceWeblink', 'evidenceWebLinkLength', 250);
+                //add to list
+                webLinksList.push(urlString);
+            } else {
+                $("#evidenceWebLinksAlertMessage").text("You can only add up to " + MAX_NUM_WEBLINKS + " web links.");
+                document.getElementById("evidenceWebLinksAlertBanner").removeAttribute("hidden");
+            }
 
-            $("#evidenceWeblink").val("");
-            updateCharsLeft('evidenceWeblink', 'evidenceWebLinkLength', 250);
-            //add to list
-            webLinksList.push(urlString);
+
         }
 
         function removeWebLink(id) {
             let urlHTML = $("#" + id);
-            let urlString = urlHTML.attr("title");
-            webLinksList.remove(urlString);
+            let urlString = urlHTML.attr("data-bs-original-title");
+            for (let i = 0; i < webLinksList.length; i++) {
+                console.log(webLinksList[i]);
+                console.log(urlString);
+                if (webLinksList[i] === urlString) {
+                    webLinksList.splice(i, 1);
+                    break;
+                }
+            }
+            urlHTML.tooltip('dispose');
             urlHTML.remove();
         }
 
