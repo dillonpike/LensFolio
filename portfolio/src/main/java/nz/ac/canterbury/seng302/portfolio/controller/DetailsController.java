@@ -5,6 +5,7 @@ import nz.ac.canterbury.seng302.portfolio.model.*;
 import nz.ac.canterbury.seng302.portfolio.service.*;
 import nz.ac.canterbury.seng302.portfolio.utility.ToastUtility;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
+import org.hibernate.ObjectNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
@@ -71,19 +72,18 @@ public class DetailsController {
      * @param principal For getting the user ID
      * @param model Parameters sent to thymeleaf template to be rendered into HTML
      * @return projectDetails page or throw exception
-     * @throws Exception throw exception if project doesn't exist
      */
     @GetMapping("/details")
     public String details(@AuthenticationPrincipal AuthState principal,
                           Model model,
                           HttpServletRequest request
-                          ) throws Exception {
+                          ) {
         /* Add project details to the model */
         // Gets the project with id 0 to plonk on the page
         Project project;
         try {
             project = projectService.getProjectById(0);
-        } catch (Exception e) {
+        } catch (ObjectNotFoundException e) {
             int currentYear = Calendar.getInstance().get(Calendar.YEAR);
             Instant time = Instant.now();
             Timestamp dateAdded = Timestamp.newBuilder().setSeconds(time.getEpochSecond()).build();

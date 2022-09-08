@@ -123,7 +123,6 @@ class DeadlineServiceTest {
             when(deadlinesRepository.findById(any(Integer.class))).thenReturn(sOptional);
             deadlineService.getDeadlineById(1);
         });
-        System.out.println(exception.getMessage());
         String expectedMessage = "Unknown deadline#1";
         String actualMessage = exception.getMessage();
 

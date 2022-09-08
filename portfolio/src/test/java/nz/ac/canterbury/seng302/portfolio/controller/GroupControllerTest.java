@@ -37,7 +37,7 @@ class GroupControllerTest {
     /**
      * Mocked user response which contains the data of the user
      */
-    private UserResponse mockUser = UserResponse.newBuilder()
+    private final UserResponse mockUser = UserResponse.newBuilder()
             .setBio("default bio")
             .setCreated(Timestamp.newBuilder().setSeconds(55))
             .setEmail("hello@test.com")
@@ -64,7 +64,7 @@ class GroupControllerTest {
             .build();
 
     @Autowired
-    private MockMvc mockMvc;
+    private MockMvc mockMvc = MockMvcBuilders.standaloneSetup(GroupController.class).build();
 
     @SpyBean
     private GroupService groupService;
@@ -83,11 +83,6 @@ class GroupControllerTest {
 
     @MockBean
     private PermissionService permissionService;
-
-    @Before
-    public void setup() {
-        mockMvc = MockMvcBuilders.standaloneSetup(GroupController.class).build();
-    }
 
     private final Group testGroup = new Group("Test", "Test Group", 1);
 

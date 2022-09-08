@@ -11,6 +11,13 @@ import javax.servlet.http.HttpServletResponse;
  */
 public class CookieUtil {
 
+    /**
+     * Private constructor so Java doesn't add an implicit public constructor to this class.
+     */
+    private CookieUtil() {
+        throw new IllegalStateException("Utility class");
+    }
+
     public static void create(HttpServletResponse httpServletResponse, String name, String value, Boolean secure, Integer maxAge, String domain) {
         Cookie cookie = new Cookie(name, value);
         cookie.setSecure(secure);

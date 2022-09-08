@@ -58,12 +58,12 @@ class EditEventControllerTest {
     /**
      * Create mockEvent to be returned when a function return an Event object
      */
-    private Date startEvent = new Date();
-    private Date endEvent = getUpdatedDate(startEvent, 5, 0);
-    private Event mockEvent = new Event(1,0,"test event", startEvent, endEvent);
+    private final Date startEvent = new Date();
+    private final Date endEvent = getUpdatedDate(startEvent, 5, 0);
+    private final Event mockEvent = new Event(1,0,"test event", startEvent, endEvent);
 
     @Autowired
-    private MockMvc mockMvc;
+    private MockMvc mockMvc = MockMvcBuilders.standaloneSetup(AccountController.class).build();
 
     @MockBean
     private EventService eventService;
@@ -82,11 +82,6 @@ class EditEventControllerTest {
 
     @MockBean
     private ElementService elementService;
-
-    @Before
-    public void setup() {
-        mockMvc = MockMvcBuilders.standaloneSetup(AccountController.class).build();
-    }
 
     /**
      * unit testing to test the get method when calling "/edit-event/{id}"

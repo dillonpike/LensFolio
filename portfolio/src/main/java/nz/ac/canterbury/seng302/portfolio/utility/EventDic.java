@@ -31,15 +31,15 @@ public class EventDic {
      * @return  Combine JSON list.
      */
     public String makeJSON() {
-        StringBuilder JSONList = new StringBuilder();
+        StringBuilder jsonList = new StringBuilder();
         Collection<String> values = datesToEvents.values();
 
         // Iterate the values
         for (String val : values) {
-            JSONList.append(val);
+            jsonList.append(val);
         }
 
-        return JSONList.toString();
+        return jsonList.toString();
     }
 
     /**
