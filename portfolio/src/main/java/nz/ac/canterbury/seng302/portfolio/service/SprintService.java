@@ -74,7 +74,7 @@ public class SprintService {
             sprintUpdate.setDescription(sprint.getDescription());
             sprintUpdate.setStartDate(sprint.getStartDate());
             sprintUpdate.setEndDate(sprint.getEndDate());
-            sprintUpdate.setName(sprint.getName());
+            sprintUpdate.setName(sprint.getName().trim());
 
             sprintUpdate = repository.save(sprintUpdate);
             return sprintUpdate;

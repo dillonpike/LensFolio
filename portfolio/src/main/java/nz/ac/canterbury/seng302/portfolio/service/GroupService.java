@@ -34,8 +34,8 @@ public class GroupService {
      */
     public CreateGroupResponse createNewGroup(String shortName, String longName){
         CreateGroupRequest request = CreateGroupRequest.newBuilder()
-                .setShortName(shortName)
-                .setLongName(longName)
+                .setShortName(shortName.trim())
+                .setLongName(longName.trim())
                 .build();
         return groupsServiceBlockingStub.createGroup(request);
     }
