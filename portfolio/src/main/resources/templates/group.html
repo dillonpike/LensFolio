@@ -369,7 +369,6 @@
 <script>
     //updates characters left
     function updateCharsLeft(elementId, messageElementId, numChars) {
-        console.log(document.getElementById(elementId).value + " " + elementId)
         let chars_left = numChars - document.getElementById(elementId).value.length;
         if (chars_left === numChars) {
             document.getElementById(messageElementId).innerText = "";
