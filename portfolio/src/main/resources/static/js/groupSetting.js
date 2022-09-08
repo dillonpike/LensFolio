@@ -96,14 +96,35 @@ function validateModalName(elementId, alertBanner, alertMessage) {
 }
 
 /**
+ * Check if the repo Id of the item that the user inputted is less than 10 characters.
+ * @param elementId the ID of the text input HTML element for item's repo Id
+ * @param alertBanner the ID of the alert banner HTML element
+ * @param alertMessage the ID of the alert banner message HTML element
+ * @returns {boolean} true if the input is less than 10 characters, otherwise false
+ */
+function validateRepoSetting(elementId, alertBanner, alertMessage) {
+    const repoId = document.getElementById('repoId').value;
+    if (repoId.toString().length > 10) {
+        document.getElementById(alertBanner).hidden = false;
+        document.getElementById(alertMessage).innerText = "Invalid Repository ID!";
+        return false
+    } else {
+        if (document.getElementById(alertBanner)) {
+            document.getElementById(alertBanner).hidden = true;
+        }
+        return true
+    }
+}
+
+/**
  * Checks that the group modal inputs have text entered in them, then submits the group adding/editing form and adds
  * the new group to the page or updates the edited group if the action was successful, otherwise updates the modal
  * with error messages.
  * @returns {Promise<void>} null
  */
 async function validateGroupSetting() {
-    if (validateModalName('longGroupName', 'groupLongNameAlertBanner', 'groupLongNameAlertMessage')
-    ) {
+    if (validateModalName('longGroupName', 'groupLongNameAlertBanner', 'groupLongNameAlertMessage') &&
+        validateRepoSetting('repoId', 'groupRepoAlertBanner', 'groupRepoAlertMessage')) {
         document.getElementById('groupSettingForm').onsubmit = () => { return false };
 
         if (document.getElementById('groupSettingForm').action.includes('add')) {

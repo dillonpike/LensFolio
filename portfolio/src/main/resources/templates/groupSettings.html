@@ -54,7 +54,7 @@
                         <button type="button" class="btn-close" onclick="document.getElementById('successMessageBanner').hidden = true" aria-label="Close"></button>
                     </div>
                     <form th:action="@{saveGroupSettings}" onsubmit="validateGroupSetting(); return false" id="groupSettingForm" method="post">
-                        <div th:fragment="groupLongNameAlertBanner" class="alert alert-danger alert-dismissible fade show" role="alert" id="groupLongNameAlertBanner" th:hidden="${groupLongNameAlertMessage==null}">
+                        <div th:fragment="groupLongNameAlertBanner" class="alert alert-danger alert-dismissible fade show mx-3" role="alert" id="groupLongNameAlertBanner" th:hidden="${groupLongNameAlertMessage==null}">
                             <span id="groupLongNameAlertMessage" data-test-id="alertMessage" th:text="${groupLongNameAlertMessage}"></span>
                             <button type="button" class="btn-close" onclick="document.getElementById('groupLongNameAlertBanner').hidden = true" aria-label="Close"></button>
                         </div>
@@ -69,22 +69,38 @@
                         </div>
                         <br>
                         <h4 id="repositorySetting" class="mx-3">Repository Settings</h4>
+                        <div th:fragment="groupRepoAlertBanner" class="alert alert-danger alert-dismissible fade show mx-3" role="alert" id="groupRepoAlertBanner" th:hidden="${groupRepoAlertMessage==null}">
+                            <span id="groupRepoAlertMessage" data-test-id="alertMessage" th:text="${groupRepoAlertMessage}"></span>
+                            <button type="button" class="btn-close" onclick="document.getElementById('groupRepoAlertBanner').hidden = true" aria-label="Close"></button>
+                        </div>
                         <div class="alert alert-danger alert-dismissible fade show mx-3" role="alert" id="groupSettingsAlertBanner" th:if="${isValidToModify}" th:hidden="${groupSettingsAlertMessage==null}">
                             <span id="groupSettingsAlertMessage" data-test-id="alertMessage" th:text="${groupSettingsAlertMessage}"></span>
                         </div>
                         <div class="mb-3 mx-3">
                             <label for="repoName" class="col-form-label">Repository Name:</label>
-                            <input type="text" class="form-control" id="repoName" th:name="repoName" th:value="${repoName}" disabled>
+                            <input onkeyup="updateCharsLeft('repoName', 'repoNameLength', 30)" maxlength="30" type="text"
+                                   class="form-control" id="repoName" th:name="repoName" th:value="${repoName}" disabled>
+                            <div class="name-length-message">
+                                <span id="repoNameLength"></span>
+                            </div>
                         </div>
                         <div class="mb-3 mx-3">
                             <label for="repoId" class="col-form-label">Repository ID:</label>
-                            <input type="text" class="form-control" id="repoId" th:name="repoId" th:value="${repoId}" disabled>
+                            <input onkeyup="updateCharsLeft('repoId', 'repoIdLength', 10)" maxlength="10" type="text"
+                                   class="form-control" id="repoId" th:name="repoId" th:value="${repoId}" disabled>
+                            <div class="name-length-message">
+                                <span id="repoIdLength"></span>
+                            </div>
                         </div>
                         <div class="mb-3 mx-3">
                             <label for="repoToken" class="col-form-label">Repository Access Token:</label>
-                            <input type="text" class="form-control" id="repoToken" th:name="repoToken" th:value="${repoApiKey}" disabled>
+                            <input onkeyup="updateCharsLeft('repoToken', 'repoTokenLength', 50)" maxlength="50" type="text"
+                                   class="form-control" id="repoToken" th:name="repoToken" th:value="${repoApiKey}" disabled>
+                            <div class="name-length-message">
+                                <span id="repoTokenLength"></span>
+                            </div>
                         </div>
-                        <input type="hidden" th:value="${groupId}" name="groupId" id="groupId" th:name="groupId">
+                        <input type="hidden" th:value="${groupId}" name="groupId" id="groupId" th:name="groupId" maxlength="10">
                         <input type="hidden" th:value="${groupSettingsId}" name="groupSettingsId" id="groupSettingsId" th:name="groupSettingsId">
                         <br>
                         <div class="hstack gap-3">
@@ -94,6 +110,9 @@
                     </form>
                 </div>
             </div>
+            <script>
+                inputValidateCheck();
+            </script>
         </div>
 
         <div id="rightSide" class="col-6 col-md-6 sticky-md-top vstack gap-3">
@@ -295,7 +314,6 @@
         })
 
     }
-    inputValidateCheck()
     initialiseCommitsList()
 
     /**
