@@ -4,6 +4,10 @@
  * If the request is successful, the page will partially reload with the new group settings attributes and commits.
  */
 function editGroupSetting() {
+    const repoId = document.getElementById('repoId').value;
+    if (repoId === "") {
+        document.getElementById('repoId').value = 0;
+    }
     const data = {
         groupLongName: document.getElementById("longGroupName").value,
         groupShortName: document.getElementById("groupShortName").value,
@@ -54,10 +58,10 @@ function inputValidateCheck() {
 
     // Only allow numbers
     repoID.addEventListener( "input", event => {
-        repoID.value = repoID.value.replace( /[^0-9]/gm, '');
+        repoID.value = repoID.value.replace(/[^0-9]/g, '');
     }, false);
     repoID.addEventListener( "paste", event => {
-        repoID.value = repoID.value.replace( /[^0-9]/gm, '');
+        repoID.value = repoID.value.replace(/[^0-9]/g, '');
     }, false);
 
     repoToken.addEventListener( "input", event => {
