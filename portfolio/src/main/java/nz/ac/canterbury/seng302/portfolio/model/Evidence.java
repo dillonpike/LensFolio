@@ -53,7 +53,7 @@ public class Evidence {
             inverseJoinColumns =
             @JoinColumn(name = "weblink_id")
     )
-    private Set<WebLink> weblinks = new HashSet<>();
+    private Set<WebLink> webLinks = new HashSet<>();
 
     /**
      * Empty constructor for JPA.
@@ -141,26 +141,35 @@ public class Evidence {
     }
 
     /**
+     * FOR JAVASCRIPT USE ONLY. Please use addWebLinks() and removeWebLinks() instead.
+     * Sets the weblinks associated with this evidence.
+     * @param webLinks new set of weblinks.
+     */
+    public void setWebLinks(Set<WebLink> webLinks) {
+        this.webLinks = webLinks;
+    }
+
+    /**
      * Gets a set of weblinks corresponding to the evidence.
      * @return HashSet of WebLinks.
      */
     public Set<WebLink> getWebLinks() {
-        return weblinks;
+        return webLinks;
     }
 
     /**
      * Adds a weblink to the evidence.
-     * @param weblink New weblink to add.
+     * @param webLink New weblink to add.
      */
-    public void addWebLink(WebLink weblink) {
-        this.weblinks.add(weblink);
+    public void addWebLink(WebLink webLink) {
+        this.webLinks.add(webLink);
     }
 
     /**
      * Remove a weblink from the evidence. Does nothing if the weblink is not in the evidence.
-     * @param weblink Weblink to remove.
+     * @param webLink Weblink to remove.
      */
-    public void removeWebLink(WebLink weblink) {
-        this.weblinks.remove(weblink);
+    public void removeWebLink(WebLink webLink) {
+        this.webLinks.remove(webLink);
     }
 }

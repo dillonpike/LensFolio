@@ -4,6 +4,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.Date;
+import java.util.HashSet;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -80,5 +81,19 @@ class EvidenceTest {
         assertEquals(1, testEvidence.getWebLinks().size());
         testEvidence.removeWebLink(testWebLink);
         assertTrue(testEvidence.getWebLinks().isEmpty());
+    }
+
+    /**
+     * Tests setting web links of evidence using a full set.
+     */
+    @Test
+    void setWebLinkSetTest() {
+        WebLink testWebLink1 = new WebLink("testWebLink");
+        WebLink testWebLink2 = new WebLink("testWebLink");
+        HashSet<WebLink> newWebLinkSet = new HashSet<>();
+        newWebLinkSet.add(testWebLink1);
+        newWebLinkSet.add(testWebLink2);
+        testEvidence.setWebLinks(newWebLinkSet);
+        assertEquals(2, testEvidence.getWebLinks().size());
     }
 }
