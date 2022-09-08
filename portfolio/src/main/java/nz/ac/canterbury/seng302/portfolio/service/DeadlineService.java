@@ -31,8 +31,6 @@ public class DeadlineService {
             Deadline deadlineUpdate = sOptional.get();
             deadlineUpdate.setDeadlineName(deadline.getDeadlineName().trim());
             deadlineUpdate.setDeadlineDate(deadline.getDeadlineDate());
-
-
             deadlineUpdate = repository.save(deadlineUpdate);
             return deadlineUpdate;
         } else {

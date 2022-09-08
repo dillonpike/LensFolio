@@ -8,7 +8,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.boot.test.mock.mockito.SpyBean;
 
 import java.util.Optional;
 
@@ -28,6 +30,9 @@ class GroupSettingsServiceTest {
     @InjectMocks
     private GroupSettingsService groupSettingsService;
 
+    @Spy
+    private GroupSettingsService groupSettingsServiceMock;
+
     private static final GroupSettings testGroupSettings = new GroupSettings(12345, "test repo", "kjbfdsouoih321312ewln", 1);
 
     @BeforeAll
@@ -42,16 +47,6 @@ class GroupSettingsServiceTest {
     void testGetGroupSettingsByValidGroupId() {
         when(repository.findByGroupId(testGroupSettings.getGroupId())).thenReturn(Optional.of(testGroupSettings));
         assertEquals(testGroupSettings, groupSettingsService.getGroupSettingsByGroupId(testGroupSettings.getGroupId()));
-    }
-
-    /**
-     * Test the getGroupSettingsByGroupId method when passing in an invalid group id.
-     */
-    @Test
-    void testGetGroupSettingsByInvalidGroupId() {
-        when(repository.findByGroupId(testGroupSettings.getGroupId())).thenReturn(Optional.empty());
-        int testGroupId = testGroupSettings.getGroupId();
-        assertThrows(ObjectNotFoundException.class, () -> groupSettingsService.getGroupSettingsByGroupId(testGroupId));
     }
 
     /**
@@ -91,5 +86,35 @@ class GroupSettingsServiceTest {
         boolean success = groupSettingsService.deleteGroupSettings(groupSettingsId);
         assertFalse(success);
         verify(repository, times(0)).deleteById(groupSettingsId);
+    }
+
+    /**
+     * Tests that the getGroupSettingsByGroupId method return false if the group settings does not exist.
+     */
+    @Test
+    void checkRepositoryHasBeenSetUpWhenItIsNot() {
+        GroupSettings test = new GroupSettings(0, "test repo", null, 1234);
+        lenient().when(groupSettingsService.getGroupSettingsByGroupId(test.getGroupId())).thenReturn(test);
+        assertFalse(groupSettingsService.doesGroupHaveRepo(test.getGroupId()));
+    }
+
+    /**
+     * Tests that the getGroupSettingsByGroupId method return true if the group settings does exist.
+     */
+    @Test
+    void checkRepositoryHasBeenSetUpWhenItIs() {
+        GroupSettings test = new GroupSettings(123, "test repo", "testKey", 1234);
+        doReturn(test).when(groupSettingsServiceMock).getGroupSettingsByGroupId(test.getGroupId());
+        assertTrue(groupSettingsServiceMock.doesGroupHaveRepo(test.getGroupId()));
+    }
+
+    /**
+     * Tests that the isGroupSettingSaved method returns true if given a valid group settings object.
+     */
+    @Test
+    void checkIsGroupSettingSavedWhenItIs() {
+        GroupSettings test = new GroupSettings(1, "test repo", "testKey", 1234);
+        test.setGroupSettingsId(1);
+        assertTrue(groupSettingsService.isGroupSettingSaved(1,1, "test", "test", 1234));
     }
 }

@@ -51,7 +51,7 @@ public class EditDeadlineController {
         Integer userID = userAccountClientService.getUserIDFromAuthState(principal);
         elementService.addHeaderAttributes(model, userID);
 
-        if (permissionService.isValidToModifyProjectPage(userID)) {
+        if (permissionService.isValidToModify(userID)) {
             Deadline newDeadline = deadlineService.getDeadlineById(id);
             newDeadline.setDeadlineName(deadline.getDeadlineName());
             newDeadline.setDeadlineDate(deadline.getDeadlineDate());

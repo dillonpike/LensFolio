@@ -85,7 +85,7 @@ class EditDeadlineControllerTest {
         Date expectedDeadlineDate = new Date();
 
         Deadline newDeadline = new Deadline(0, expectedDeadlineName, expectedDeadlineDate);
-        when(permissionService.isValidToModifyProjectPage(any(Integer.class))).thenReturn(true);
+        when(permissionService.isValidToModify(any(Integer.class))).thenReturn(true);
         when(deadlineService.getDeadlineById(any(Integer.class))).thenReturn(newDeadline);
         when(deadlineService.updateDeadline(any(Deadline.class))).then(returnsFirstArg());
 
