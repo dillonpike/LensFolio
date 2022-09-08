@@ -55,7 +55,7 @@
                         <button type="button" class="btn-close" onclick="document.getElementById('successMessageBanner').hidden = true" aria-label="Close"></button>
                     </div>
                     <form th:action="@{saveGroupSettings}" onsubmit="validateGroupSetting(); return false" id="groupSettingForm" method="post">
-                        <div th:fragment="groupLongNameAlertBanner" class="alert alert-danger alert-dismissible fade show" role="alert" id="groupLongNameAlertBanner" th:hidden="${groupLongNameAlertMessage==null}">
+                        <div th:fragment="groupLongNameAlertBanner" class="alert alert-danger alert-dismissible fade show  mx-3" role="alert" id="groupLongNameAlertBanner" th:hidden="${groupLongNameAlertMessage==null}">
                             <span id="groupLongNameAlertMessage" data-test-id="alertMessage" th:text="${groupLongNameAlertMessage}"></span>
                             <button type="button" class="btn-close" onclick="document.getElementById('groupLongNameAlertBanner').hidden = true" aria-label="Close"></button>
                         </div>
