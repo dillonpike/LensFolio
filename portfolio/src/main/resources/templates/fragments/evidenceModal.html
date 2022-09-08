@@ -52,6 +52,28 @@
                             </span>
                             </div>
                         </div>
+
+<!--                        weblinks-->
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert" id="evidenceWebLinksAlertBanner" th:hidden="${evidenceDescriptionAlertMessage==null}">
+                            <span id="evidenceWebLinksAlertMessage" data-test-id="alertMessage" th:text="${evidenceWebLinksAlertMessage}"></span>
+                            <button type="button" class="btn-close" onclick="document.getElementById('addWeblinksAlertBanner').hidden = true" aria-label="Close"></button>
+                        </div>
+                        <div class="mb-3">
+                            <label for="evidenceWeblink" class="col-form-label">Web Links:</label>
+                            <div class="input-group mb-3">
+                                <input id="evidenceWeblink" onkeyup="{updateCharsLeft('evidenceWeblink', 'evidenceWebLinkLength', 250);isEvidenceInputFieldFilled()}"
+                                       maxlength="250" type="text" class="form-control" placeholder="e.g. https://www.example.com" aria-label="Add Web links"
+                                       aria-describedby="button-addon2" name="evidenceWeblink" th:value="${currentWebLink?.url}">
+                                <button class="btn btn-outline-secondary" type="button" id="button-addon2" onclick="addWebLinks()">Add</button>
+                            </div>
+                            <div class="name-length-message">
+                                <span id="evidenceWebLinkLength"></span>
+                            </div>
+                            <div id="webLinkList">
+
+                            </div>
+
+                        </div>
                     </div>
                     <div class="modal-footer">
                         <button class="btn btn-primary disabled" id="evidenceModalButton" type="submit">Add Evidence</button>
@@ -73,6 +95,27 @@
         }
 
         configureEvidenceDatePicker();
+
+        let webLinksList = [];
+        let weblinkId = 1;
+        function addWebLinks(){
+
+            const url = document.getElementById("evidenceWeblink").value;
+            //validate
+            $("#webLinkList").append(`<div class="chip" id='weblinkurl${weblinkId}' style="display: inline-block;padding: 0 25px;height: 50px;font-size: 16px;line-height: 50px;border-radius: 25px;background-color: #f1f1f1f1;margin: 0 5px 5px 0;">
+                                ${url}
+                                <button onclick="removeWebLink('weblinkurl${weblinkId}')" type="button" class="btn-close" aria-label="Close"></button>
+                            </div>`);
+            weblinkId += 1;
+
+            $("#evidenceWeblink").val("");
+            //add to list
+            webLinksList.add(url);
+        }
+
+        function removeWebLink(id) {
+            $("#" + id).remove();
+        }
 
 
     </script>
