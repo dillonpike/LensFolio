@@ -82,7 +82,7 @@ function inputValidateCheck() {
  * @returns {boolean} true if the input is not empty string, otherwise false
  */
 function validateModalName(elementId, alertBanner, alertMessage) {
-    const nameInput = document.getElementById(elementId).value;
+    const nameInput = document.getElementById(elementId).value.trim();
     if (nameInput === "") {
         document.getElementById(alertBanner).hidden = false;
         document.getElementById(alertMessage).innerText = "Name cannot be empty!";
@@ -96,7 +96,7 @@ function validateModalName(elementId, alertBanner, alertMessage) {
 }
 
 /**
- * Check if the repo Id of the item that the user inputted is less than 10 characters.
+ * Check if the repo ID of the item that the user inputted is less than 10 characters.
  * @param elementId the ID of the text input HTML element for item's repo Id
  * @param alertBanner the ID of the alert banner HTML element
  * @param alertMessage the ID of the alert banner message HTML element
