@@ -58,8 +58,6 @@ public class EvidenceController {
             if (wasAdded) {
                 // * Add the evidence to the model *
                 // * Maybe add something to the model to make sure the evidence tab is shown? *
-                String successMessage = "Evidence Added. ";
-                model.addAttribute(ADD_EVIDENCE_MODAL_FRAGMENT_TITLE_MESSAGE, successMessage);
                 httpServletResponse.setStatus(HttpServletResponse.SC_OK);
                 return "fragments/evidenceModal::evidenceModalBody"; // * return some sort of evidence fragment? *
             } else {

@@ -41,11 +41,8 @@ function addEvidence() {
         replaceEvidenceModalBody(result);
         let messageAlert = $("evidenceTitleAlertBanner");
         messageAlert.toggleClass("alert-danger alert-success");
-        setTimeout(() => {
-            $('#evidenceModal').modal('toggle')
-            messageAlert.toggleClass("alert-success alert-danger");
-            clearEvidenceModalFields();
-        }, 1000);
+        $('#evidenceModal').modal('toggle')
+        showAlertToast("Evidence added successfully!");
     }).fail((response) => {
         replaceEvidenceModalBody(response.responseText);
     })
