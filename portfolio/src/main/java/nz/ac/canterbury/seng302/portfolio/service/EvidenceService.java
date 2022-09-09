@@ -59,12 +59,18 @@ public class EvidenceService {
         if (evidence.getTitle() == null || evidence.getTitle().isEmpty()) {
             model.addAttribute(ADD_EVIDENCE_MODAL_FRAGMENT_TITLE_MESSAGE, "Title is required");
             hasError = true;
+        } else if (evidence.getTitle().length() < 2) {
+            model.addAttribute(ADD_EVIDENCE_MODAL_FRAGMENT_TITLE_MESSAGE, "Title must be at least 2 characters");
+            hasError = true;
         } else if (evidence.getTitle().length() > 30) {
             model.addAttribute(ADD_EVIDENCE_MODAL_FRAGMENT_TITLE_MESSAGE, "Title must be less than 30 characters");
             hasError = true;
         }
         if (evidence.getDescription() == null || evidence.getDescription().isEmpty()) {
             model.addAttribute(ADD_EVIDENCE_MODAL_FRAGMENT_DESCRIPTION_MESSAGE, "Description is required");
+            hasError = true;
+        } else if (evidence.getDescription().length() < 2) {
+            model.addAttribute(ADD_EVIDENCE_MODAL_FRAGMENT_DESCRIPTION_MESSAGE, "Description must be at least 2 characters");
             hasError = true;
         } else if (evidence.getDescription().length() > 250) {
             model.addAttribute(ADD_EVIDENCE_MODAL_FRAGMENT_DESCRIPTION_MESSAGE, "Description must be less than 250 characters");

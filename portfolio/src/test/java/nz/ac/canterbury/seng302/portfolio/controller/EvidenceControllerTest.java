@@ -60,6 +60,8 @@ class EvidenceControllerTest {
     @MockBean
     private EvidenceService evidenceService;
 
+
+
     @MockBean
     private UserAccountClientService userAccountClientService; // needed to load application context
 
@@ -173,7 +175,7 @@ class EvidenceControllerTest {
     }
 
     /**
-     * Tests adding evidence failing due to the evidence data not including a date.
+     * Tests adding evidence failing due to the evidence data having a description that exceeds 250 characters.
      * @throws Exception If mocking the MVC fails.
      */
     @Test
@@ -186,6 +188,60 @@ class EvidenceControllerTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(model().attributeDoesNotExist(ADD_EVIDENCE_MODAL_FRAGMENT_TITLE_MESSAGE))
                 .andExpect(model().attribute(ADD_EVIDENCE_MODAL_FRAGMENT_DESCRIPTION_MESSAGE, "Description must be less than 250 characters"))
+                .andExpect(model().attributeDoesNotExist(ADD_EVIDENCE_MODAL_FRAGMENT_DATE_MESSAGE));
+
+        verify(evidenceService, times(0)).addEvidence(any(Evidence.class));
+    }
+
+    /**
+     * Tests adding evidence failing due to the evidence data not including a date.
+     * @throws Exception If mocking the MVC fails.
+     */
+    @Test
+    void testAddEvidence400MissingDate() throws Exception {
+        Evidence invalidEvidence = new Evidence(0 ,0, "test evidence", "test description", null);
+        doCallRealMethod().when(evidenceService).validateEvidence(eq(invalidEvidence), any(Model.class));
+
+        mockMvc.perform(post("/add-evidence").flashAttr("evidence", invalidEvidence))
+                .andExpect(status().isBadRequest())
+                .andExpect(model().attributeDoesNotExist(ADD_EVIDENCE_MODAL_FRAGMENT_TITLE_MESSAGE))
+                .andExpect(model().attributeDoesNotExist(ADD_EVIDENCE_MODAL_FRAGMENT_DESCRIPTION_MESSAGE))
+                .andExpect(model().attribute(ADD_EVIDENCE_MODAL_FRAGMENT_DATE_MESSAGE, "Correctly formatted date is required"));
+
+        verify(evidenceService, times(0)).addEvidence(any(Evidence.class));
+    }
+
+    /**
+     * Tests adding evidence failing due to the evidence data having a title is only one character.
+     * @throws Exception If mocking the MVC fails.
+     */
+    @Test
+    void testAddEvidence400TooShortTitle() throws Exception {
+        Evidence invalidEvidence = new Evidence(0 ,0, "a", "test description", new Date());
+        doCallRealMethod().when(evidenceService).validateEvidence(eq(invalidEvidence), any(Model.class));
+
+        mockMvc.perform(post("/add-evidence").flashAttr("evidence", invalidEvidence))
+                .andExpect(status().isBadRequest())
+                .andExpect(model().attribute(ADD_EVIDENCE_MODAL_FRAGMENT_TITLE_MESSAGE, "Title must be at least 2 characters"))
+                .andExpect(model().attributeDoesNotExist(ADD_EVIDENCE_MODAL_FRAGMENT_DESCRIPTION_MESSAGE))
+                .andExpect(model().attributeDoesNotExist(ADD_EVIDENCE_MODAL_FRAGMENT_DATE_MESSAGE));
+
+        verify(evidenceService, times(0)).addEvidence(any(Evidence.class));
+    }
+
+    /**
+     * Tests adding evidence failing due to the evidence data having a description is only one character.
+     * @throws Exception If mocking the MVC fails.
+     */
+    @Test
+    void testAddEvidence400TooShortDescription() throws Exception {
+        Evidence invalidEvidence = new Evidence(0 ,0, "test evidence", "a", new Date());
+        doCallRealMethod().when(evidenceService).validateEvidence(eq(invalidEvidence), any(Model.class));
+
+        mockMvc.perform(post("/add-evidence").flashAttr("evidence", invalidEvidence))
+                .andExpect(status().isBadRequest())
+                .andExpect(model().attributeDoesNotExist(ADD_EVIDENCE_MODAL_FRAGMENT_TITLE_MESSAGE))
+                .andExpect(model().attribute(ADD_EVIDENCE_MODAL_FRAGMENT_DESCRIPTION_MESSAGE, "Description must be at least 2 characters"))
                 .andExpect(model().attributeDoesNotExist(ADD_EVIDENCE_MODAL_FRAGMENT_DATE_MESSAGE));
 
         verify(evidenceService, times(0)).addEvidence(any(Evidence.class));
