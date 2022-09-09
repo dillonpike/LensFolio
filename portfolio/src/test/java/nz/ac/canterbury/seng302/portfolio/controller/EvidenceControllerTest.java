@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.protobuf.Timestamp;
 import nz.ac.canterbury.seng302.portfolio.PortfolioApplication;
 import nz.ac.canterbury.seng302.portfolio.model.Evidence;
+import nz.ac.canterbury.seng302.portfolio.repository.EvidenceRepository;
 import nz.ac.canterbury.seng302.portfolio.service.ElementService;
 import nz.ac.canterbury.seng302.portfolio.service.EvidenceService;
 import nz.ac.canterbury.seng302.portfolio.service.RegisterClientService;
@@ -17,6 +18,7 @@ import org.junit.Before;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,9 +34,11 @@ import org.springframework.security.web.authentication.preauth.PreAuthenticatedA
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.ui.Model;
 
 import java.util.Date;
 
+import static nz.ac.canterbury.seng302.portfolio.controller.EvidenceController.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -57,9 +61,6 @@ class EvidenceControllerTest {
     private EvidenceService evidenceService;
 
     @MockBean
-    private ElementService elementService; // needed to load application context
-
-    @MockBean
     private UserAccountClientService userAccountClientService; // needed to load application context
 
     @MockBean
@@ -68,7 +69,7 @@ class EvidenceControllerTest {
     /**
      * Mocked user response which contains the data of the user
      */
-    private UserResponse mockUser = UserResponse.newBuilder()
+    private final UserResponse mockUser = UserResponse.newBuilder()
             .setBio("default bio")
             .setCreated(Timestamp.newBuilder().setSeconds(55))
             .setEmail("hello@test.com")
@@ -93,8 +94,6 @@ class EvidenceControllerTest {
             .setName("validtesttoken")
             .build();
 
-    private static final String ADD_EVIDENCE_MODAL_FRAGMENT_TITLE_MESSAGE = "evidenceTitleAlertMessage";
-
     private static final Evidence testEvidence = new Evidence(0 ,0, "test evidence", "test description", new Date());
 
     @BeforeEach
@@ -115,9 +114,10 @@ class EvidenceControllerTest {
     @Test
     void testAddEvidence200() throws Exception {
         when(evidenceService.addEvidence(any(Evidence.class))).thenReturn(true);
+        doCallRealMethod().when(evidenceService).validateEvidence(eq(testEvidence), any(Model.class));
 
-        mockMvc.perform(post("/add-evidence").flashAttr("evidence", testEvidence)).andExpect(status().isOk())
-                .andExpect(model().attribute(ADD_EVIDENCE_MODAL_FRAGMENT_TITLE_MESSAGE, "Evidence Added. "));
+        mockMvc.perform(post("/add-evidence").flashAttr("evidence", testEvidence)).andExpect(status().isOk());
+        // TODO Add extra andExpect statements when the returned fragment is finalised
 
         verify(evidenceService, times(1)).addEvidence(any(Evidence.class));
     }
@@ -129,6 +129,7 @@ class EvidenceControllerTest {
     @Test
     void testAddEvidence500() throws Exception {
         when(evidenceService.addEvidence(any(Evidence.class))).thenReturn(false);
+        doCallRealMethod().when(evidenceService).validateEvidence(eq(testEvidence), any(Model.class));
 
         mockMvc.perform(post("/add-evidence").flashAttr("evidence", testEvidence)).andExpect(status().isInternalServerError())
                 .andExpect(model().attribute(ADD_EVIDENCE_MODAL_FRAGMENT_TITLE_MESSAGE, "Evidence Not Added. Saving Error Occurred."));
@@ -142,8 +143,31 @@ class EvidenceControllerTest {
      */
     @Test
     void testAddEvidence400MissingData() throws Exception {
+        doCallRealMethod().when(evidenceService).validateEvidence(any(Evidence.class), any(Model.class));
+
         mockMvc.perform(post("/add-evidence")).andExpect(status().isBadRequest())
-                .andExpect(model().attribute(ADD_EVIDENCE_MODAL_FRAGMENT_TITLE_MESSAGE, "Evidence Not Added. Following fields are required: 'title' 'description' 'date'. "));
+                .andExpect(model().attribute(ADD_EVIDENCE_MODAL_FRAGMENT_TITLE_MESSAGE, "Title is required"))
+                .andExpect(model().attribute(ADD_EVIDENCE_MODAL_FRAGMENT_DESCRIPTION_MESSAGE, "Description is required"))
+                .andExpect(model().attribute(ADD_EVIDENCE_MODAL_FRAGMENT_DATE_MESSAGE, "Correctly formatted date is required"));
+
+        verify(evidenceService, times(0)).addEvidence(any(Evidence.class));
+    }
+
+    /**
+     * Tests adding evidence failing due to the evidence data having a title that exceeds 30 characters.
+     * @throws Exception If mocking the MVC fails.
+     */
+    @Test
+    void testAddEvidence400TooLongTitle() throws Exception {
+        String stringWith31Chars = new String(new char[31]).replace('\0', 't');
+        Evidence invalidEvidence = new Evidence(0 ,0, stringWith31Chars, "test description", new Date());
+        doCallRealMethod().when(evidenceService).validateEvidence(eq(invalidEvidence), any(Model.class));
+
+        mockMvc.perform(post("/add-evidence").flashAttr("evidence", invalidEvidence))
+                .andExpect(status().isBadRequest())
+                .andExpect(model().attribute(ADD_EVIDENCE_MODAL_FRAGMENT_TITLE_MESSAGE, "Title must be less than 30 characters"))
+                .andExpect(model().attributeDoesNotExist(ADD_EVIDENCE_MODAL_FRAGMENT_DESCRIPTION_MESSAGE))
+                .andExpect(model().attributeDoesNotExist(ADD_EVIDENCE_MODAL_FRAGMENT_DATE_MESSAGE));
 
         verify(evidenceService, times(0)).addEvidence(any(Evidence.class));
     }
@@ -153,13 +177,16 @@ class EvidenceControllerTest {
      * @throws Exception If mocking the MVC fails.
      */
     @Test
-    void testAddEvidence400MissingDate() throws Exception {
+    void testAddEvidence400TooLongDescription() throws Exception {
+        String stringWith251Chars = new String(new char[251]).replace('\0', 't');
+        Evidence invalidEvidence = new Evidence(0 ,0, "test evidence", stringWith251Chars, new Date());
+        doCallRealMethod().when(evidenceService).validateEvidence(eq(invalidEvidence), any(Model.class));
 
-        Evidence testEvidenceWithoutDate = new Evidence(0 ,0, "test evidence", "test description", null);
-
-        mockMvc.perform(post("/add-evidence").flashAttr("evidence", testEvidenceWithoutDate))
+        mockMvc.perform(post("/add-evidence").flashAttr("evidence", invalidEvidence))
                 .andExpect(status().isBadRequest())
-                .andExpect(model().attribute(ADD_EVIDENCE_MODAL_FRAGMENT_TITLE_MESSAGE, "Evidence Not Added. Following fields are required: 'date'. "));
+                .andExpect(model().attributeDoesNotExist(ADD_EVIDENCE_MODAL_FRAGMENT_TITLE_MESSAGE))
+                .andExpect(model().attribute(ADD_EVIDENCE_MODAL_FRAGMENT_DESCRIPTION_MESSAGE, "Description must be less than 250 characters"))
+                .andExpect(model().attributeDoesNotExist(ADD_EVIDENCE_MODAL_FRAGMENT_DATE_MESSAGE));
 
         verify(evidenceService, times(0)).addEvidence(any(Evidence.class));
     }
