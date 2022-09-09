@@ -48,7 +48,7 @@ public class DeadlineLifetimeController {
         Integer userID = userAccountClientService.getUserIDFromAuthState(principal);
         elementService.addHeaderAttributes(model, userID);
 
-        if (permissionService.isValidToModifyProjectPage(userID)) {
+        if (permissionService.isValidToModify(userID)) {
             deadlineService.addDeadline(deadline);
         }
         return "redirect:/details";
@@ -65,7 +65,7 @@ public class DeadlineLifetimeController {
         Integer userID = userAccountClientService.getUserIDFromAuthState(principal);
         elementService.addHeaderAttributes(model, userID);
 
-        if (permissionService.isValidToModifyProjectPage(userID)) {
+        if (permissionService.isValidToModify(userID)) {
             deadlineService.removeDeadline(id);
         }
         return "redirect:/details";

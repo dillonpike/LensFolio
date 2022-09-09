@@ -31,6 +31,9 @@ public class Evidence {
 
     private Date date;
 
+    /**
+     * The tags associated with this evidence.
+     */
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
     @JoinTable(name = "evidence_to_tag",
             joinColumns =
@@ -39,6 +42,18 @@ public class Evidence {
             @JoinColumn(name = "tag_id")
     )
     private Set<Tag> tags = new HashSet<>();
+
+    /**
+     * The Weblinks associated with this evidence.
+     */
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
+    @JoinTable(name = "evidence_to_weblink",
+            joinColumns =
+            @JoinColumn(name = "evidence_id"),
+            inverseJoinColumns =
+            @JoinColumn(name = "weblink_id")
+    )
+    private Set<WebLink> webLinks = new HashSet<>();
 
     /**
      * Empty constructor for JPA.
@@ -123,5 +138,38 @@ public class Evidence {
      */
     public void removeTag(Tag tag) {
         this.tags.remove(tag);
+    }
+
+    /**
+     * FOR JAVASCRIPT USE ONLY. Please use addWebLinks() and removeWebLinks() instead.
+     * Sets the weblinks associated with this evidence.
+     * @param webLinks new set of weblinks.
+     */
+    public void setWebLinks(Set<WebLink> webLinks) {
+        this.webLinks = webLinks;
+    }
+
+    /**
+     * Gets a set of weblinks corresponding to the evidence.
+     * @return HashSet of WebLinks.
+     */
+    public Set<WebLink> getWebLinks() {
+        return webLinks;
+    }
+
+    /**
+     * Adds a weblink to the evidence.
+     * @param webLink New weblink to add.
+     */
+    public void addWebLink(WebLink webLink) {
+        this.webLinks.add(webLink);
+    }
+
+    /**
+     * Remove a weblink from the evidence. Does nothing if the weblink is not in the evidence.
+     * @param webLink Weblink to remove.
+     */
+    public void removeWebLink(WebLink webLink) {
+        this.webLinks.remove(webLink);
     }
 }

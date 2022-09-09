@@ -5,9 +5,11 @@ import org.gitlab4j.api.GitLabApi;
 import org.gitlab4j.api.GitLabApiException;
 import org.gitlab4j.api.models.Branch;
 import org.gitlab4j.api.models.Commit;
-import org.gitlab4j.api.models.Member;
+import org.gitlab4j.api.models.Contributor;
+import org.hibernate.ObjectNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 
 import java.util.List;
 import java.util.Objects;
@@ -40,10 +42,10 @@ public class GitLabApiService {
      * @return list of users in the repository linked to the group
      * @throws GitLabApiException if any exception occurs communicating with the GitLab API
      */
-    public List<Member> getMembers(Integer groupId) throws GitLabApiException {
+    public List<Contributor> getContributors(Integer groupId) throws GitLabApiException {
         GroupSettings groupSettings = groupSettingsService.getGroupSettingsByGroupId(groupId);
         GitLabApi gitLabApi = groupSettings.getGitLabApi();
-        return gitLabApi.getProjectApi().getAllMembers(groupSettings.getRepoId());
+        return gitLabApi.getRepositoryApi().getContributors(groupSettings.getRepoId());
     }
 
     /**
@@ -55,7 +57,7 @@ public class GitLabApiService {
      * @return list of commits from the given branch in the repository linked to the group
      * @throws GitLabApiException if any exception occurs communicating with the GitLab API
      */
-    public List<Commit> getCommits(Integer groupId, String branchName, String userEmail) throws GitLabApiException {
+    public List<Commit> getCommits(Integer groupId, String branchName, String userEmail) throws GitLabApiException,ObjectNotFoundException {
         GroupSettings groupSettings = groupSettingsService.getGroupSettingsByGroupId(groupId);
         GitLabApi gitLabApi = groupSettings.getGitLabApi();
 
@@ -64,7 +66,25 @@ public class GitLabApiService {
                 : gitLabApi.getCommitsApi().getCommits(groupSettings.getRepoId(), branchName, null, null);
 
         // Filter results by user email if one is given
-        return userEmail == null ? commits :
-                commits.stream().filter(commit -> Objects.equals(commit.getAuthorEmail(), userEmail)).toList();
+        return userEmail == null ? commits.stream().sorted((o1, o2)->o2.getCommittedDate().
+                compareTo(o1.getCommittedDate())).toList() :
+                commits.stream().filter(commit -> Objects.equals(commit.getAuthorEmail(), userEmail)).sorted((o1, o2)->o2.getCommittedDate().
+                        compareTo(o1.getCommittedDate())).toList();
+
+    }
+
+    /**
+     * Checks if a repository is accessible using the given API key and the repoId.
+     * @param repoId the id of the repository
+     * @param repoApiKey the API key to use
+     * @return true if the repository is accessible, false otherwise
+     */
+    public boolean checkGitLabToken(int repoId, String repoApiKey) {
+        try (GitLabApi gitLabApi = new GitLabApi("https://eng-git.canterbury.ac.nz", repoApiKey)) {
+            gitLabApi.getRepositoryApi().getBranches(Integer.toString(repoId));
+            return true;
+        } catch (GitLabApiException e) {
+            return false;
+        }
     }
 }

@@ -1,13 +1,20 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
 import nz.ac.canterbury.seng302.portfolio.model.Group;
+import nz.ac.canterbury.seng302.portfolio.model.GroupSettings;
+import nz.ac.canterbury.seng302.portfolio.repository.GroupSettingsRepository;
 import nz.ac.canterbury.seng302.portfolio.service.*;
 import nz.ac.canterbury.seng302.shared.identityprovider.*;
+import org.gitlab4j.api.models.Commit;
+import org.hibernate.ObjectNotFoundException;
 import org.junit.Before;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.Spy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -19,12 +26,18 @@ import org.springframework.security.web.authentication.preauth.PreAuthenticatedA
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.ui.Model;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.times;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 /**
@@ -52,7 +65,19 @@ class GroupSettingsControllerTest {
     private MockMvc mockMvc;
 
     @SpyBean
+    private GroupSettingsController groupSettingsController;
+
+    @SpyBean
     private GroupService groupService;
+
+    @SpyBean
+    private GroupSettingsService groupSettingsServiceSpy;
+
+    @MockBean
+    private GroupSettingsService groupSettingsService;
+
+    @MockBean
+    private GroupSettingsRepository groupSettingsRepository;
 
     @MockBean
     private ElementService elementService; // needed to load application context
@@ -64,7 +89,11 @@ class GroupSettingsControllerTest {
     private RegisterClientService registerClientService; // needed to load application context
 
     @MockBean
+    private PermissionService permissionService; // needed to load application context
+
+    @MockBean
     private GitLabApiService gitLabApiService; // needed to load application context
+
 
     private static final Group testGroup = new Group("Test", "Test Group", 1);
 
@@ -72,6 +101,9 @@ class GroupSettingsControllerTest {
 
     private static final Group teachersGroup = new Group("Short Name", "Long Name", 1);
 
+    private static final List<Commit> testCommits = new ArrayList<>();
+
+    private static final GroupSettings testGroupSettings = new GroupSettings(123, "This is test settings", "test123", 123);
     /**
      * Build the mockMvc object and mock security contexts.
      */
@@ -91,24 +123,103 @@ class GroupSettingsControllerTest {
         testGroup.setGroupId(5);
         membersGroup.setGroupId(1);
         teachersGroup.setGroupId(2);
+        testGroupSettings.setGroupSettingsId(1);
+
+        for (int i = 0; i < 5; i++) {
+            Commit testCommit = new Commit();
+            testCommit.setTitle(String.format("Test Commit %d", i));
+            testCommits.add(testCommit);
+        }
     }
 
 
     /**
      * Test that the group settings page is loaded with the correct short and long name when given a valid id.
+     * Also test that the group settings page shows error banner if the repository that has been set up is not reachable.
      * @throws Exception when an exception is thrown while performing the get request
      */
     @Test
-    void groupSettingsValid() throws Exception {
+    void groupSettingsValidAndWhenRepositoryIsUnreachable() throws Exception {
         doReturn(GroupDetailsResponse.newBuilder()
                 .setGroupId(testGroup.getGroupId()).setShortName(testGroup.getShortName())
                 .setLongName(testGroup.getLongName()).build())
                 .when(groupService).getGroupDetails(testGroup.getGroupId());
 
+        when(groupSettingsService.getGroupSettingsByGroupId(any(Integer.class))).thenReturn(testGroupSettings);
+        when(gitLabApiService.checkGitLabToken(any(Integer.class), any(String.class))).thenReturn(false);
+
+        mockMvc.perform(get("/groupSettings").param("groupId", Integer.toString(testGroup.getGroupId())))
+                .andExpect(status().isOk())
+                .andExpect(model().attribute("groupShortName", testGroup.getShortName()))
+                .andExpect(model().attribute("groupLongName", testGroup.getLongName()))
+                .andExpect(model().attribute("groupSettingsAlertMessage", "Repository Is Unreachable With The Current Settings"));
+    }
+
+    /**
+     * Test that the group settings page is loaded with the correct short and long name when given a valid id
+     * Also test if the user has write access to the current page if user is in current group.
+     * @throws Exception when an exception is thrown while performing the get request
+     */
+    @Test
+    void groupSettingValidAndUserIsInGroupCheckWritePermission() throws Exception {
+        doReturn(GroupDetailsResponse.newBuilder()
+                .setGroupId(testGroup.getGroupId()).setShortName(testGroup.getShortName())
+                .setLongName(testGroup.getLongName()).build())
+                .when(groupService).getGroupDetails(testGroup.getGroupId());
+
+        when(groupSettingsService.getGroupSettingsByGroupId(any(Integer.class))).thenReturn(testGroupSettings);
+        when(gitLabApiService.checkGitLabToken(any(Integer.class), any(String.class))).thenReturn(true);
+        when(permissionService.isValidToModifyGroupSettingPage(any(Integer.class), any(Integer.class))).thenReturn(true);
+        mockMvc.perform(get("/groupSettings").param("groupId", Integer.toString(testGroup.getGroupId())))
+                .andExpect(status().isOk())
+                .andExpect(model().attribute("groupShortName", testGroup.getShortName()))
+                .andExpect(model().attribute("groupLongName", testGroup.getLongName()))
+                .andExpect(model().attribute("isValidToModify", true));
+    }
+
+    /**
+     * Test that the group settings page is loaded with the correct short and long name when given a valid id
+     * Also test if the user has write access to the current page if user is not in current group.
+     * @throws Exception when an exception is thrown while performing the get request
+     */
+    @Test
+    void groupSettingValidAndUserIsNotInGroupCheckWritePermission() throws Exception {
+        doReturn(GroupDetailsResponse.newBuilder()
+                .setGroupId(testGroup.getGroupId()).setShortName(testGroup.getShortName())
+                .setLongName(testGroup.getLongName()).build())
+                .when(groupService).getGroupDetails(testGroup.getGroupId());
+
+        when(groupSettingsService.getGroupSettingsByGroupId(any(Integer.class))).thenReturn(testGroupSettings);
+        when(gitLabApiService.checkGitLabToken(any(Integer.class), any(String.class))).thenReturn(true);
+        when(permissionService.isValidToModifyGroupSettingPage(any(Integer.class), any(Integer.class))).thenReturn(false);
+        mockMvc.perform(get("/groupSettings").param("groupId", Integer.toString(testGroup.getGroupId())))
+                .andExpect(status().isOk())
+                .andExpect(model().attribute("groupShortName", testGroup.getShortName()))
+                .andExpect(model().attribute("groupLongName", testGroup.getLongName()))
+                .andExpect(model().attribute("isValidToModify", false));
+    }
+
+    /**
+     * Test that the group settings page is loaded with the correct short and long name when given a valid id
+     * Also test if the group setting page contains the correct information(group attributes and group setting attributes).
+     * @throws Exception when an exception is thrown while performing the get request
+     */
+    @Test
+    void groupSettingsValidAndGroupSettingExist() throws Exception {
+        doReturn(GroupDetailsResponse.newBuilder()
+                .setGroupId(testGroup.getGroupId()).setShortName(testGroup.getShortName())
+                .setLongName(testGroup.getLongName()).build())
+                .when(groupService).getGroupDetails(testGroup.getGroupId());
+        doReturn(testGroupSettings)
+                .when(groupSettingsServiceSpy).getGroupSettingsByGroupId(any(Integer.class));
+        when(gitLabApiService.checkGitLabToken(any(Integer.class), any(String.class))).thenReturn(true);
+
         mockMvc.perform(get("/groupSettings").param("groupId", Integer.toString(testGroup.getGroupId())))
                 .andExpect(status().isOk())
                 .andExpect(model().attribute("groupShortName", testGroup.getShortName()))
                 .andExpect(model().attribute("groupLongName", testGroup.getLongName()));
+
+        verify(groupSettingsService, times(1)).addSettingAttributesToModel(any(Integer.class), any(Model.class));
     }
 
     /**
@@ -159,4 +270,170 @@ class GroupSettingsControllerTest {
         mockMvc.perform(get("/groupSettings").param("groupId", Integer.toString(invalidId)))
                 .andExpect(redirectedUrl("/groups"));
     }
+
+    /**
+     * In this test, it is assumed that the groupId is valid but the group has no repository set up yet
+     * Test that endpoint  will return a model indicating the group does not have repository
+     * @throws Exception when an exception is thrown while performing the get request
+     */
+    @Test
+    void groupDoesNotHaveRepo() throws Exception {
+        ObjectNotFoundException exception = new ObjectNotFoundException(testGroup.getGroupId(), "test");
+        doReturn(GroupDetailsResponse.newBuilder()
+                .setGroupId(testGroup.getGroupId()).setShortName(testGroup.getShortName())
+                .setLongName(testGroup.getLongName()).build())
+                .when(groupService).getGroupDetails(testGroup.getGroupId());
+        when(gitLabApiService.getContributors(any(Integer.class))).thenThrow(exception);
+        when(groupSettingsService.getGroupSettingsByGroupId(any(Integer.class))).thenReturn(testGroupSettings);
+        when(gitLabApiService.checkGitLabToken(any(Integer.class), any(String.class))).thenReturn(false);
+        mockMvc.perform(get("/groupSettings").param("groupId", Integer.toString(testGroup.getGroupId())))
+                .andExpect(status().isOk())
+                .andExpect(model().attribute("groupShortName", testGroup.getShortName()))
+                .andExpect(model().attribute("groupLongName", testGroup.getLongName()))
+                .andExpect(model().attribute("isRepoExist", false));
+    }
+
+    /**
+     * Test that the endpoint return a model which contains commits, also check that when
+     * selected Branch Name is All Branches and selected user is All Users, we called getCommits() function
+     * from GitlabApi Service with value of null for branchName parameter and userEmail parameter
+     * @throws Exception when an exception is thrown while performing the get request
+     */
+    @Test
+    void getCommitsInAllBranchesAndAllUsers() throws Exception {
+        ArgumentCaptor<String> branchNameCaptor = ArgumentCaptor.forClass(String.class);
+        ArgumentCaptor<String> userCaptor = ArgumentCaptor.forClass(String.class);
+
+        when(gitLabApiService.getCommits(eq(testGroup.getGroupId()), any(),any())).thenReturn(testCommits);
+
+        mockMvc.perform(get("/repository-commits").param("groupId", Integer.toString(testGroup.getGroupId())).param("branchName", "All Branches").param("userEmail", "All Users"))
+                .andExpect(status().isOk())
+                .andExpect(model().attribute("commitList", testCommits));
+        verify(gitLabApiService, times(1)).getCommits(eq(testGroup.getGroupId()),branchNameCaptor.capture(), userCaptor.capture());
+        assertNull(branchNameCaptor.getValue());
+        assertNull(userCaptor.getValue());
+
+    }
+
+    /**
+     * Test that the endpoint return a model which contains commits, also check that when
+     * selected Branch Name is All Branches and selected user is All Users, we called getCommits() function
+     * from GitlabApi Service with value of null for branchName parameter and userEmail parameter
+     * @throws Exception when an exception is thrown while performing the get request
+     */
+    @Test
+    void getCommitsInSpecificBranchAndFromSpecificUsers() throws Exception {
+        ObjectNotFoundException exception = new ObjectNotFoundException(testGroup.getGroupId(), "test");
+        String userEmail = "test@test.com";
+        String branchName = "test Branch";
+        ArgumentCaptor<String> branchNameCaptor = ArgumentCaptor.forClass(String.class);
+        ArgumentCaptor<String> userCaptor = ArgumentCaptor.forClass(String.class);
+
+        when(gitLabApiService.getCommits(eq(testGroup.getGroupId()), any(String.class),any(String.class))).thenThrow(exception);
+
+        mockMvc.perform(get("/repository-commits").param("groupId", Integer.toString(testGroup.getGroupId())).param("branchName", branchName).param("userEmail", userEmail))
+                .andExpect(status().isOk());
+
+        verify(gitLabApiService, times(1)).getCommits(eq(testGroup.getGroupId()),branchNameCaptor.capture(), userCaptor.capture());
+        assertEquals(branchName, branchNameCaptor.getValue());
+        assertEquals(userEmail, userCaptor.getValue());
+
+    }
+
+    /**
+     * Test that a post request is sent to update the group's Long name but the system fails to update the long name.
+     * This test expect that the system will return a model with the error message. it also expects that the system will return 400 status code and return groupLongNameAlertBanner fragment.
+     * @throws Exception when an exception is thrown while performing the post request
+     */
+    @Test
+    void modifyGroupLongNameButUnableToUpdate() throws Exception {
+        ModifyGroupDetailsResponse response = ModifyGroupDetailsResponse.newBuilder()
+                .setIsSuccess(false).setMessage("Unable to update group long name").build();
+        doReturn(response).when(groupService).editGroupDetails(any(Integer.class),any(String.class), any(String.class));
+        when(permissionService.isValidToModifyGroupSettingPage(any(Integer.class), any(Integer.class))).thenReturn(true);
+
+        mockMvc.perform(post("/saveGroupSettings")
+                        .param("groupLongName", "newLongName")
+                        .param("groupShortName", testGroup.getShortName())
+                        .param("groupId", Integer.toString(testGroup.getGroupId()))
+                        .param("repoName", testGroupSettings.getRepoName())
+                        .param("repoID", Integer.toString((int) testGroupSettings.getRepoId()))
+                        .param("repoToken", testGroupSettings.getRepoApiKey())
+                        .param("groupSettingsId", Integer.toString(testGroupSettings.getGroupSettingsId())))
+                        .andExpect(status().isBadRequest())
+                        .andExpect(model().attribute("groupLongNameAlertMessage", "Error updating group long name"))
+                        .andExpect(view().name("groupSettings::groupLongNameAlertBanner"));
+
+        verify(groupService, times(1)).editGroupDetails(testGroup.getGroupId(),testGroup.getShortName(), "newLongName");
+    }
+
+    /**
+     * Test that a post request to update or set up repository details for a group fails because the system is unable to reach the repository in Gitlab.
+     * This test expects that the system will return a model with the error message. it also expects that the system will return 200 status code and return groupSetting fragment.
+     * @throws Exception when an exception is thrown while performing the post request
+     */
+    @Test
+    void modifyRepositorySettingButTheRepositoryIsUnreachable() throws Exception {
+        ModifyGroupDetailsResponse response = ModifyGroupDetailsResponse.newBuilder()
+                .setIsSuccess(true).setMessage("Unable to update group long name").build();
+        doReturn(response).when(groupService).editGroupDetails(any(Integer.class),any(String.class), any(String.class));
+        doReturn(false).when(gitLabApiService).checkGitLabToken(any(Integer.class), any(String.class));
+        doReturn(true).when(groupSettingsService).isGroupSettingSaved(any(Integer.class),any(Integer.class),any(String.class),any(String.class),any(Integer.class));
+        doNothing().when(groupService).addGroupDetailToModel(any(Model.class),any(Integer.class));
+        doNothing().when(groupSettingsService).addSettingAttributesToModel(any(Integer.class),any(Model.class));
+        doNothing().when(groupSettingsController).addGroupSettingAttributeToModel(any(Model.class),any(Integer.class));
+        when(permissionService.isValidToModifyGroupSettingPage(any(Integer.class), any(Integer.class))).thenReturn(true);
+
+
+
+        mockMvc.perform(post("/saveGroupSettings")
+                        .param("groupLongName", "newLongName")
+                        .param("groupShortName", testGroup.getShortName())
+                        .param("groupId", Integer.toString(testGroup.getGroupId()))
+                        .param("repoName", testGroupSettings.getRepoName())
+                        .param("repoID", Integer.toString((int) testGroupSettings.getRepoId()))
+                        .param("repoToken", testGroupSettings.getRepoApiKey())
+                        .param("groupSettingsId", Integer.toString(testGroupSettings.getGroupSettingsId())))
+                .andExpect(status().isOk())
+                .andExpect(model().attribute("groupSettingsAlertMessage", "Repository Is Unreachable With The Current Settings"))
+                .andExpect(view().name("groupSettings::groupSetting"));
+
+        verify(groupService, times(1)).editGroupDetails(testGroup.getGroupId(),testGroup.getShortName(), "newLongName");
+    }
+
+    /**
+     * Test that a post request to update or set up repository details for a group fails because the system is unable to reach the repository in Gitlab.
+     * This test expects that the system will return a model with the error message. it also expects that the system will return 200 status code and return groupSetting fragment.
+     * @throws Exception when an exception is thrown while performing the post request
+     */
+    @Test
+    void modifyRepositorySettingButFailToPersistTheModificationToDatabase() throws Exception {
+        ModifyGroupDetailsResponse response = ModifyGroupDetailsResponse.newBuilder()
+                .setIsSuccess(true).setMessage("Unable to update group long name").build();
+        doReturn(response).when(groupService).editGroupDetails(any(Integer.class),any(String.class), any(String.class));
+        doReturn(true).when(gitLabApiService).checkGitLabToken(any(Integer.class), any(String.class));
+        doReturn(false).when(groupSettingsService).isGroupSettingSaved(any(Integer.class),any(Integer.class),any(String.class),any(String.class),any(Integer.class));
+        doNothing().when(groupService).addGroupDetailToModel(any(Model.class),any(Integer.class));
+        doNothing().when(groupSettingsService).addSettingAttributesToModel(any(Integer.class),any(Model.class));
+        doNothing().when(groupSettingsController).addGroupSettingAttributeToModel(any(Model.class),any(Integer.class));
+        when(permissionService.isValidToModifyGroupSettingPage(any(Integer.class), any(Integer.class))).thenReturn(true);
+
+
+
+        mockMvc.perform(post("/saveGroupSettings")
+                        .param("groupLongName", "newLongName")
+                        .param("groupShortName", testGroup.getShortName())
+                        .param("groupId", Integer.toString(testGroup.getGroupId()))
+                        .param("repoName", testGroupSettings.getRepoName())
+                        .param("repoID", Integer.toString((int) testGroupSettings.getRepoId()))
+                        .param("repoToken", testGroupSettings.getRepoApiKey())
+                        .param("groupSettingsId", Integer.toString(testGroupSettings.getGroupSettingsId())))
+                .andExpect(status().isBadRequest())
+                .andExpect(model().attribute("groupSettingsAlertMessage", "Invalid Repository Information"))
+                .andExpect(view().name("groupSettings::groupSettingsAlertBanner"));
+
+        verify(groupService, times(1)).editGroupDetails(testGroup.getGroupId(),testGroup.getShortName(), "newLongName");
+    }
+
+
 }

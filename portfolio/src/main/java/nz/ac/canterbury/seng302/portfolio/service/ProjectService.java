@@ -78,7 +78,7 @@ public class ProjectService {
             projectUpdate.setDescription(project.getDescription());
             projectUpdate.setStartDate(project.getStartDate());
             projectUpdate.setEndDate(project.getEndDate());
-            projectUpdate.setName(project.getName());
+            projectUpdate.setName(project.getName().trim());
 
             projectUpdate = repository.save(projectUpdate);
             return projectUpdate;

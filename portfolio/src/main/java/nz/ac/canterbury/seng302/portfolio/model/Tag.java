@@ -10,6 +10,7 @@ import java.util.Set;
 @Entity
 public class Tag {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int tagId;
 
     private String tagName;

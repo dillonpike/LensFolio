@@ -21,7 +21,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 
-import java.time.LocalTime;
 import java.util.Date;
 
 import static nz.ac.canterbury.seng302.portfolio.controller.SprintLifetimeController.getUpdatedDate;
@@ -32,7 +31,6 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
 
 /**
  * Junit testing to test the Edit Event Controller
@@ -58,12 +56,12 @@ class EditEventControllerTest {
     /**
      * Create mockEvent to be returned when a function return an Event object
      */
-    private Date startEvent = new Date();
-    private Date endEvent = getUpdatedDate(startEvent, 5, 0);
-    private Event mockEvent = new Event(1,0,"test event", startEvent, endEvent);
+    private final Date startEvent = new Date();
+    private final Date endEvent = getUpdatedDate(startEvent, 5, 0);
+    private final Event mockEvent = new Event(1,0,"test event", startEvent, endEvent);
 
     @Autowired
-    private MockMvc mockMvc;
+    private MockMvc mockMvc = MockMvcBuilders.standaloneSetup(AccountController.class).build();
 
     @MockBean
     private EventService eventService;
@@ -83,11 +81,6 @@ class EditEventControllerTest {
     @MockBean
     private ElementService elementService;
 
-    @Before
-    public void setup() {
-        mockMvc = MockMvcBuilders.standaloneSetup(AccountController.class).build();
-    }
-
     /**
      * unit testing to test the get method when calling "/edit-event/{id}"
      * Expect to return 302 status code and project details page
@@ -103,7 +96,7 @@ class EditEventControllerTest {
         when(eventService.getEventById(any(Integer.class))).thenReturn(mockEvent);
         ArgumentCaptor<Event> eventArgumentCaptor = ArgumentCaptor.forClass(Event.class);
         when(eventService.updateEvent(any(Event.class))).thenReturn(mockEvent);
-        when(permissionService.isValidToModifyProjectPage(any(Integer.class))).thenReturn(true);
+        when(permissionService.isValidToModify(any(Integer.class))).thenReturn(true);
 
         mockMvc.perform(post("/edit-event/1").flashAttr("event",mockEvent))
                 .andExpect(status().is3xxRedirection())

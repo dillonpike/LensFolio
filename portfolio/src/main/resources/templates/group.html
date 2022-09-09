@@ -214,7 +214,6 @@
             'username': username
         }));
     }
-
     /**
      * Sends the message that a group has been added.
      */
@@ -346,8 +345,8 @@
         deletePageReload(selectedArtefactName, selectedArtefactId,userId, userFirstName, userLastName, username, text[1]);
     })
 
-    sendEditingLiveNotificationRequest('#shortGroupName', 'groupModal', 'edit-group');
-    sendEditingLiveNotificationRequest("#longGroupName", 'groupModal', 'edit-group');
+    sendEditingLiveNotificationRequest('#shortGroupNameInput', 'groupModal', 'edit-group');
+    sendEditingLiveNotificationRequest("#longGroupNameInput", 'groupModal', 'edit-group');
 
     sendSavedLiveNotificationRequest("#groupModalButton", 'groupModal', 'add-group');
     sendSavedLiveNotificationRequest("#groupModalButton", 'groupModal', 'edit-group');
@@ -390,10 +389,14 @@
      * @returns {boolean} true if the input is not empty string, otherwise false
      */
     function validateModalName(elementId, alertBanner, alertMessage) {
-        const nameInput = document.getElementById(elementId).value;
+        const nameInput = document.getElementById(elementId).value.trim();
         if (nameInput === "") {
             document.getElementById(alertBanner).hidden = false;
             document.getElementById(alertMessage).innerText = "Name cannot be empty!";
+            return false
+        } else if (nameInput.length > 30) {
+            document.getElementById(alertBanner).hidden = false;
+            document.getElementById(alertMessage).innerText = "Name cannot be more than 30 characters!";
             return false
         } else {
             document.getElementById(alertBanner).hidden = true;
@@ -416,6 +419,7 @@
             options.collapse('hide')
         }
     });
+
 </script>
 
 

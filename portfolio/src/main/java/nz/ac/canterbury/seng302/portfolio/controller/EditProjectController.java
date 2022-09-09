@@ -50,11 +50,11 @@ public class EditProjectController {
             @RequestParam(value="endDateString") String projectEndDate,
             @RequestParam(value="description") String projectDescription,
             Model model
-    ) throws Exception {
+    ) {
         Integer userID = userAccountClientService.getUserIDFromAuthState(principal);
         elementService.addHeaderAttributes(model, userID);
 
-        if (permissionService.isValidToModifyProjectPage(userID)) {
+        if (permissionService.isValidToModify(userID)) {
             // Gets the project with id 0 to plonk on the page
             Project newProject = projectService.getProjectById(0);
             newProject.setName(projectName);

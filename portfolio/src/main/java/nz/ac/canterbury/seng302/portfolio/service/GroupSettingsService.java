@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.ui.Model;
 
 import java.util.Optional;
 
@@ -34,7 +35,11 @@ public class GroupSettingsService {
         if (groupSettings.isPresent()) {
             return groupSettings.get();
         } else {
-            throw new ObjectNotFoundException(groupId, "Unknown GroupSettings with group id");
+            // Generate a new group setting model
+            GroupSettings newGroupSetting = new GroupSettings();
+            newGroupSetting.setGroupId(groupId);
+            repository.save(newGroupSetting);
+            return newGroupSetting;
         }
     }
 
@@ -46,7 +51,7 @@ public class GroupSettingsService {
      */
     public GroupSettings saveGroupSettings(GroupSettings groupSettings) {
         logger.info("Saving group settings {} ({}) for group {}",
-                groupSettings.getGroupSettingsId(), groupSettings.getRepoName(), groupSettings.getGroupId());
+                groupSettings.getGroupSettingsId(), groupSettings.getRepoName().trim(), groupSettings.getGroupId());
         return repository.save(groupSettings);
     }
 
@@ -65,5 +70,55 @@ public class GroupSettingsService {
             return true;
         }
         return false;
+    }
+
+    /**
+     * Check if a repository has been set up or not.
+     * @param groupId the id of the group in interest
+     * @return True if repoId is not 0 and repoApiKey is not null, Otherwise False.
+     */
+    public boolean doesGroupHaveRepo(int groupId) {
+        GroupSettings groupSettings = getGroupSettingsByGroupId(groupId);
+        return groupSettings.getRepoId() != 0 && groupSettings.getRepoApiKey() != null;
+    }
+
+    /**
+     * Method to add group setting modal attribute to the model,
+     * it will set repo id to 0 if current group repository has not been set up.
+     * @param groupId current group id
+     * @param model model to add group setting modal attribute to
+     */
+    public void addSettingAttributesToModel(int groupId, Model model) {
+        GroupSettings groupSettings = getGroupSettingsByGroupId(groupId);
+        // Check if group setting is default
+        if (groupSettings.getRepoId() != 0) {
+            model.addAttribute("repoId", groupSettings.getRepoId());
+        } else {
+            model.addAttribute("repoId", 0);
+
+        }
+        model.addAttribute("repoName", groupSettings.getRepoName());
+        model.addAttribute("repoApiKey", groupSettings.getRepoApiKey());
+        model.addAttribute("groupSettingsId", groupSettings.getGroupSettingsId());
+    }
+
+    /**
+     * Method to check if current group setting has been sabe to the database successfully.
+     * @param groupSettingId current group setting id
+     * @param repoId current group setting repo id
+     * @param repoName current group setting repo name
+     * @param repoToken current group setting repo token
+     * @param groupId current group id
+     * @return true if current group setting has been saved successfully, otherwise false.
+     */
+    public boolean isGroupSettingSaved(int groupSettingId, int repoId, String repoName, String repoToken, int groupId) {
+        try {
+            GroupSettings targetGroupSetting = new GroupSettings(repoId, repoName, repoToken, groupId);
+            targetGroupSetting.setGroupSettingsId(groupSettingId);
+            saveGroupSettings(targetGroupSetting);
+        } catch (Exception e) {
+            return false;
+        }
+        return true;
     }
 }
