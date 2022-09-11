@@ -176,6 +176,10 @@ public class GroupSettings {
         return gitLabApi;
     }
 
+    /**
+     * Returns the repo server url.
+     * @return repo server url
+     */
     public String getRepoUrl() {
         if (repoServerUrl == null) {
             return "";
