@@ -7,10 +7,13 @@ import nz.ac.canterbury.seng302.portfolio.repository.EventRepository;
 import org.hibernate.ObjectNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.ui.Model;
 
+import javax.ws.rs.NotAcceptableException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+
 
 /***
  * Contains methods for saving, deleting, updating and retrieving event objects to the database.
@@ -177,5 +180,37 @@ public class EventService {
      */
     public boolean validateEventEndDateInSprintDate(Event event, Sprint sprint) {
         return event.getEventEndDate().compareTo(sprint.getStartDate()) >= 0 && event.getEventEndDate().compareTo(sprint.getEndDate()) <= 0;
+    }
+
+    /**
+     * Validate an events fields to ensure they are valid.
+     * @param event Event to validate
+     * @param model Model to add errors to
+     * @throws NotAcceptableException If the event is not valid
+     */
+    public void validateEvent(Event event, Model model) throws NotAcceptableException {
+
+        boolean hasError = false;
+        if (event.getEventName() == null || event.getEventName().trim().isEmpty()) {
+            model.addAttribute("eventAlertMessage", "Event name cannot be empty");
+            hasError = true;
+        } else if (event.getEventName().length() < 2) {
+            model.addAttribute("eventAlertMessage", "Title must be at least 2 characters");
+            hasError = true;
+        } else if (event.getEventName().length() > 50) {
+            model.addAttribute("eventAlertMessage", "Title must be less than 50 characters");
+            hasError = true;
+        }
+        if (event.getEventStartDate() == null) {
+            model.addAttribute("eventDateTimeAlertMessage", "Event start date cannot be empty");
+            hasError = true;
+        }
+        if (event.getEventEndDate() == null) {
+            model.addAttribute("eventDateTimeAlertMessage", "Correctly formatted date is required");
+            hasError = true;
+        }
+        if (hasError) {
+            throw new NotAcceptableException("Evidence fields have errors");
+        }
     }
 }

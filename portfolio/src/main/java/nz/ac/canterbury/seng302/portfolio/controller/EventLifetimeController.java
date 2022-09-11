@@ -1,16 +1,15 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
 import nz.ac.canterbury.seng302.portfolio.model.Event;
-import nz.ac.canterbury.seng302.portfolio.service.ElementService;
-import nz.ac.canterbury.seng302.portfolio.service.EventService;
-import nz.ac.canterbury.seng302.portfolio.service.PermissionService;
-import nz.ac.canterbury.seng302.portfolio.service.UserAccountClientService;
+import nz.ac.canterbury.seng302.portfolio.service.*;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+
+import javax.ws.rs.NotAcceptableException;
 
 
 /**
@@ -43,8 +42,13 @@ public class EventLifetimeController {
     ) {
         Integer userID = userAccountClientService.getUserIDFromAuthState(principal);
         elementService.addHeaderAttributes(model, userID);
-        if (permissionService.isValidToModify(userID)) {
-            eventService.addEvent(event);
+        try {
+            eventService.validateEvent(event, model);
+            if (permissionService.isValidToModify(userID)) {
+                eventService.addEvent(event);
+            }
+        } catch (NotAcceptableException e) {
+            return "fragments/eventModal::eventModalBody";
         }
         return "redirect:/details";
     }

@@ -6,7 +6,7 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="closeEventModalButton"></button>
       </div>
       <form method="post" id="eventForm" onsubmit="validateEvent(); return false;" th:action="@{add-event}">
-        <div class="modal-body">
+        <div class="modal-body" id="eventModalBody" th:fragment="eventModalBody">
           <div class="alert alert-danger alert-dismissible fade show" role="alert" id="eventAlertBanner" hidden>
             <span id="eventAlertMessage" data-test-id="alertMessage"></span>
             <button type="button" class="btn-close" onclick="document.getElementById('eventAlertBanner').hidden = true" aria-label="Close"></button>
