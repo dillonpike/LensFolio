@@ -96,7 +96,10 @@ function validateModalName(elementId, alertBanner, alertMessage) {
 }
 
 /**
- * Check if the repo ID of the item that the user inputted is less than 10 characters.
+ * Validate repository settings input
+ * Check if repoId is less than 0, if so show error banner with the error message and return false
+ * Also check if access token is at least 20 characters long, if not show error banner with the error message and return false
+ *
  * @param elementId the ID of the text input HTML element for item's repo Id
  * @param alertBanner the ID of the alert banner HTML element
  * @param alertMessage the ID of the alert banner message HTML element
@@ -104,11 +107,18 @@ function validateModalName(elementId, alertBanner, alertMessage) {
  */
 function validateRepoSetting(elementId, alertBanner, alertMessage) {
     const repoId = document.getElementById('repoId').value;
+    const token = document.getElementById('repoToken').value;
     if (repoId.toString().length > 10) {
         document.getElementById(alertBanner).hidden = false;
         document.getElementById(alertMessage).innerText = "Invalid Repository ID!";
         return false
-    } else {
+    }
+    else if (token.toString().length < 20) {
+        document.getElementById(alertBanner).hidden = false;
+        document.getElementById(alertMessage).innerText = "Invalid Repository Token! Token length should be at least 20 characters.";
+        return false
+    }
+    else {
         if (document.getElementById(alertBanner)) {
             document.getElementById(alertBanner).hidden = true;
         }
