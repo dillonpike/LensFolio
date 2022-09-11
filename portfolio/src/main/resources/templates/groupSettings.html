@@ -100,6 +100,14 @@
                                 <span id="repoTokenLength"></span>
                             </div>
                         </div>
+                        <div class="mb-3 mx-3">
+                            <label for="repoUrl" class="col-form-label">Repository Server URL:</label>
+                            <input onkeyup="updateCharsLeft('repoUrl', 'repoServerUrlLength', 100)" maxlength="100" type="text"
+                                   class="form-control" id="repoUrl" th:name="repoUrl" th:value="${repoServerUrl}" disabled>
+                            <div class="name-length-message">
+                                <span id="repoServerUrlLength"></span>
+                            </div>
+                        </div>
                         <input type="hidden" th:value="${groupId}" name="groupId" id="groupId" th:name="groupId" maxlength="10">
                         <input type="hidden" th:value="${groupSettingsId}" name="groupSettingsId" id="groupSettingsId" th:name="groupSettingsId">
                         <br>
@@ -325,6 +333,7 @@
         $("#repoName").prop("disabled", false);
         $("#repoId").prop("disabled", false);
         $("#repoToken").prop("disabled", false);
+        $("#repoUrl").prop("disabled", false);
         $("#saveButton").prop("hidden", false)
         $("#cancelButton").prop("hidden", false)
         $("#groupSettingEdit").prop("hidden", true)
@@ -342,11 +351,11 @@
         $("#repoName").prop("disabled", true);
         $("#repoId").prop("disabled", true);
         $("#repoToken").prop("disabled", true);
+        $("#repoUrl").prop("disabled", true);
         $("#saveButton").prop("hidden", true)
         $("#cancelButton").prop("hidden", true)
         $("#groupSettingEdit").prop("hidden", false)
         $("#groupSettingsAlertBanner").prop("hidden", false)
-
     }
 </script>
 </body>

@@ -146,7 +146,7 @@ public class GroupSettingsController {
             @RequestParam(name = "repoID", required = false) int repoId,
             @RequestParam(name = "repoToken", required = false, defaultValue = "") String repoToken,
             @RequestParam(name = "groupSettingsId") int groupSettingsId,
-            @RequestParam(name = "repoServerUrl", required = false, defaultValue = "") String repoServerUrl,
+            @RequestParam(name = "repoURL", required = false, defaultValue = "") String repoServerUrl,
             @AuthenticationPrincipal AuthState principal,
             HttpServletResponse httpServletResponse,
             RedirectAttributes rm

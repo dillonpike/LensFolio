@@ -75,13 +75,15 @@ public class GroupSettings {
      * @param repoId Repository id of the group.
      * @param repoName Repository name of the group.
      * @param repoApiKey Repository API Key of the group.
-     * @param groupId Id of the group instance the group settings relate too .
+     * @param groupId Id of the group instance the group settings relate too.
+     * @param repoServerUrl Repository url of the group.
      */
     public GroupSettings(int repoId, String repoName, String repoApiKey, int groupId, String repoServerUrl) {
         this.repoId = repoId;
         this.repoName = repoName;
         this.repoApiKey = repoApiKey;
         this.groupId = groupId;
+        this.repoServerUrl = repoServerUrl;
         this.gitLabApi = new GitLabApi(repoServerUrl, repoApiKey);
     }
 

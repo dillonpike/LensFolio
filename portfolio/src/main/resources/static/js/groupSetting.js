@@ -14,6 +14,7 @@ function editGroupSetting() {
         repoName: document.getElementById("repoName").value,
         repoID: document.getElementById("repoId").value,
         repoToken: document.getElementById("repoToken").value,
+        repoURL: document.getElementById("repoUrl").value,
         groupId: document.getElementById("groupId").value,
         groupSettingsId: document.getElementById("groupSettingsId").value
     }

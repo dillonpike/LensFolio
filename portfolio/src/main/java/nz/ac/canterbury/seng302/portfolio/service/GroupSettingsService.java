@@ -100,6 +100,7 @@ public class GroupSettingsService {
         model.addAttribute("repoName", groupSettings.getRepoName());
         model.addAttribute("repoApiKey", groupSettings.getRepoApiKey());
         model.addAttribute("groupSettingsId", groupSettings.getGroupSettingsId());
+        model.addAttribute("repoServerUrl", groupSettings.getRepoUrl());
     }
 
     /**
