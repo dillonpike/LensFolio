@@ -61,14 +61,14 @@
                     <li><a>
                         <div>
                             <input type="hidden" th:value="${userId}" name="userId">
-                            <button id="profileButton" th:onclick="redirectToProfilePage()" class="btn btn-link" style="color:black;text-decoration: none;">Profile</button>
+                            <button id="profileButton" th:onclick="redirectToProfilePage()" class="btn btn-link dropdown-item" style="color:black;text-decoration: none;">Profile</button>
                         </div>
                     </a></li>
                     <li><hr class="dropdown-divider"></li>
                     <li><a>
                         <div>
                             <input type="hidden" th:value="${userId}" name="userId">
-                            <button id="profileEvidenceButton" th:onclick="redirectToEvidencePage()" class="btn btn-link" style="color:black;text-decoration: none;">Evidence</button>
+                            <button id="profileEvidenceButton" th:onclick="redirectToEvidencePage()" class="btn btn-link dropdown-item" style="color:black;text-decoration: none;">Evidence</button>
                         </div>
                     </a></li>
                     <li><hr class="dropdown-divider"></li>
