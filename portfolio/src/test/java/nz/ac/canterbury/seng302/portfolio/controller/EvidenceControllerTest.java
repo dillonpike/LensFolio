@@ -246,4 +246,40 @@ class EvidenceControllerTest {
 
         verify(evidenceService, times(0)).addEvidence(any(Evidence.class));
     }
+
+    /**
+     * Tests adding evidence failing due to the evidence data having a title with only punctuation.
+     * @throws Exception If mocking the MVC fails.
+     */
+    @Test
+    void testAddEvidence400PunctuationTitle() throws Exception {
+        Evidence invalidEvidence = new Evidence(0 ,0, ",.!@#$%^&*';:", "test description", new Date());
+        doCallRealMethod().when(evidenceService).validateEvidence(eq(invalidEvidence), any(Model.class));
+
+        mockMvc.perform(post("/add-evidence").flashAttr("evidence", invalidEvidence))
+                .andExpect(status().isBadRequest())
+                .andExpect(model().attribute(ADD_EVIDENCE_MODAL_FRAGMENT_TITLE_MESSAGE, "Title must contain at least one letter"))
+                .andExpect(model().attributeDoesNotExist(ADD_EVIDENCE_MODAL_FRAGMENT_DESCRIPTION_MESSAGE))
+                .andExpect(model().attributeDoesNotExist(ADD_EVIDENCE_MODAL_FRAGMENT_DATE_MESSAGE));
+
+        verify(evidenceService, times(0)).addEvidence(any(Evidence.class));
+    }
+
+    /**
+     * Tests adding evidence failing due to the evidence data having a description with only punctuation.
+     * @throws Exception If mocking the MVC fails.
+     */
+    @Test
+    void testAddEvidence400PunctuationDescription() throws Exception {
+        Evidence invalidEvidence = new Evidence(0 ,0, "test evidence", ".,!@#$%^&*';:", new Date());
+        doCallRealMethod().when(evidenceService).validateEvidence(eq(invalidEvidence), any(Model.class));
+
+        mockMvc.perform(post("/add-evidence").flashAttr("evidence", invalidEvidence))
+                .andExpect(status().isBadRequest())
+                .andExpect(model().attributeDoesNotExist(ADD_EVIDENCE_MODAL_FRAGMENT_TITLE_MESSAGE))
+                .andExpect(model().attribute(ADD_EVIDENCE_MODAL_FRAGMENT_DESCRIPTION_MESSAGE, "Description must contain at least one letter"))
+                .andExpect(model().attributeDoesNotExist(ADD_EVIDENCE_MODAL_FRAGMENT_DATE_MESSAGE));
+
+        verify(evidenceService, times(0)).addEvidence(any(Evidence.class));
+    }
 }

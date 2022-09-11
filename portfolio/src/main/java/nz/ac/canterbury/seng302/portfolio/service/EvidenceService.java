@@ -13,6 +13,7 @@ import java.util.Date;
 import static nz.ac.canterbury.seng302.portfolio.controller.EvidenceController.*;
 
 import java.util.List;
+import java.util.regex.Pattern;
 
 /**
  * Contains methods for saving, deleting, updating and retrieving evidence objects to the database.
@@ -55,6 +56,7 @@ public class EvidenceService {
      * @throws NotAcceptableException Thrown if there are any errors with the evidence piece's fields.
      */
     public void validateEvidence(Evidence evidence, Model model) throws NotAcceptableException {
+        Pattern regex = Pattern.compile("^[\\p{N}\\p{P}\\p{S}\\p{Zs}]{1,}$");
         boolean hasError = false;
         if (evidence.getTitle() == null || evidence.getTitle().isEmpty()) {
             model.addAttribute(ADD_EVIDENCE_MODAL_FRAGMENT_TITLE_MESSAGE, "Title is required");
@@ -65,6 +67,9 @@ public class EvidenceService {
         } else if (evidence.getTitle().length() > 30) {
             model.addAttribute(ADD_EVIDENCE_MODAL_FRAGMENT_TITLE_MESSAGE, "Title must be less than 30 characters");
             hasError = true;
+        } else if (regex.matcher(evidence.getTitle()).matches()) {
+            model.addAttribute(ADD_EVIDENCE_MODAL_FRAGMENT_TITLE_MESSAGE, "Title must contain at least one letter");
+            hasError = true;
         }
         if (evidence.getDescription() == null || evidence.getDescription().isEmpty()) {
             model.addAttribute(ADD_EVIDENCE_MODAL_FRAGMENT_DESCRIPTION_MESSAGE, "Description is required");
@@ -74,6 +79,9 @@ public class EvidenceService {
             hasError = true;
         } else if (evidence.getDescription().length() > 250) {
             model.addAttribute(ADD_EVIDENCE_MODAL_FRAGMENT_DESCRIPTION_MESSAGE, "Description must be less than 250 characters");
+            hasError = true;
+        } else if (regex.matcher(evidence.getDescription()).matches()) {
+            model.addAttribute(ADD_EVIDENCE_MODAL_FRAGMENT_DESCRIPTION_MESSAGE, "Description must contain at least one letter");
             hasError = true;
         }
         if (evidence.getDate() == null || evidence.getDate().before(new Date(0))) {
