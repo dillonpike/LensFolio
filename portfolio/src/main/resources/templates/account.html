@@ -4,6 +4,15 @@
   <meta charset="UTF-8">
   <title>Account Page</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.5/dist/umd/popper.min.js" integrity="sha384-Xe+8cL9oJa6tN/veChSP7q+mnSPaj5Bcu9mPX5F5xIGE0DVittaqT5lorf0EI7Vk" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js" integrity="sha512-iKDtgDyTHjAitUDdLljGhenhPwrbBfqTKWO1mkhSFH3A7blITC9MhYon6SjnMhp4o0rADGw9yAC6EW4t5a4K3g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script src="https://cdn.jsdelivr.net/gh/Eonasdan/tempus-dominus@master/dist/js/tempus-dominus.js"></script>
+  <link href="https://cdn.jsdelivr.net/gh/Eonasdan/tempus-dominus@master/dist/css/tempus-dominus.css" rel="stylesheet"/>
+  <script src="webjars/jquery/3.6.0/dist/jquery.min.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css">
+
   <link href="css/fineCrop.css" rel="stylesheet">
 </head>
 
@@ -12,7 +21,7 @@
   <div class="container">
 
 <!--    start left-side profile card-->
-    <div class="row ">
+    <div class="row">
       <div class="col-md-7 col-lg-4 mb-5 mb-lg-0">
         <div class="card border-4 shadow">
           <img th:src="${userImage}" id="uploadPreview" alt="Image Error" width="300" height="300" class="rounded-circle" style ="margin-left: 60px; margin-top:20px">
@@ -38,8 +47,6 @@
         </div>
       </div>
 <!--      end left-side profile card-->
-
-<!--start the right side profile card-->
       <div class="col-lg-8">
         <div class="ps-lg-1-6 ps-xl-5">
           <div class="mb-5">
@@ -50,73 +57,264 @@
                 <button id="removeUpdateAlert" type="button" class="btn btn-outline-warning" onclick="removeAlertBanner()">X</button>
               </div>
             </div>
+            <ul class="nav nav-tabs" id="myTab" role="tablist">
+              <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="profile-tab" data-bs-toggle="tab" data-bs-target="#user-info" type="button" role="tab" aria-controls="profile" aria-selected="true" th:attr="onClick='saveTab(\'profile-tab\')'">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person" viewBox="0 0 16 16">
+                    <path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm4 8c0 1-1 1-1 1H3s-1 0-1-1 1-4 6-4 6 3 6 4zm-1-.004c-.001-.246-.154-.986-.832-1.664C11.516 10.68 10.289 10 8 10c-2.29 0-3.516.68-4.168 1.332-.678.678-.83 1.418-.832 1.664h10z"/>
+                  </svg>
+                  Profile
+                </button>
+              </li>
+              <li class="nav-item" role="presentation">
+                <button class="nav-link" id="evidence-tab" data-bs-toggle="tab" data-bs-target="#evidence" type="button" role="tab" aria-controls="evidence" aria-selected="false" th:attr="onClick='saveTab(\'evidence-tab\')'">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-journal-text" viewBox="0 0 16 16">
+                    <path d="M5 10.5a.5.5 0 0 1 .5-.5h2a.5.5 0 0 1 0 1h-2a.5.5 0 0 1-.5-.5zm0-2a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5zm0-2a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5zm0-2a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5z"/>
+                    <path d="M3 0h10a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2v-1h1v1a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H3a1 1 0 0 0-1 1v1H1V2a2 2 0 0 1 2-2z"/>
+                    <path d="M1 5v-.5a.5.5 0 0 1 1 0V5h.5a.5.5 0 0 1 0 1h-2a.5.5 0 0 1 0-1H1zm0 3v-.5a.5.5 0 0 1 1 0V8h.5a.5.5 0 0 1 0 1h-2a.5.5 0 0 1 0-1H1zm0 3v-.5a.5.5 0 0 1 1 0v.5h.5a.5.5 0 0 1 0 1h-2a.5.5 0 0 1 0-1H1z"/>
+                  </svg>
+                  Evidence
+                </button>
+              </li>
+            </ul>
+            <div class="tab-content" id="myTabContent">
+              <div class="tab-pane fade show active" id="user-info" role="tabpanel" aria-labelledby="user-info-tab">
+        <!--start the right side profile card-->
+                <div class="text-start mb-1-6 mt-3">
+                  <h2 class="h1 mb-0 fs-1">Profile</h2>
+                </div>
 
-            <div class="text-start mb-1-6">
-              <h2 class="h1 mb-0 fs-1">Profile</h2>
+                <br>
+
+      <!--            start form-->
+                <form action="#">
+                  <div class="form-floating mb-3">
+                    <input type="text" class="form-control" id="firstName" th:name="firstName" placeholder="First name" disabled th:value="*{firstName}">
+                    <label for="firstName">First name</label>
+                  </div>
+
+                  <div class="form-floating mb-3">
+                    <input type="text" class="form-control" id="middleNameInput" placeholder=" " disabled th:value="${middleName}">
+                    <label for="middleNameInput">Middle name</label>
+                  </div>
+
+                  <div class="form-floating mb-3">
+                    <input type="text" class="form-control" id="lastNameInput" placeholder="Last name" disabled th:value="${lastName}">
+                    <label for="lastNameInput">Last name</label>
+                  </div>
+
+                  <div class="form-floating mb-3">
+                    <input type="text" class="form-control" id="nickNameInput" placeholder="Nickname/alias" disabled th:value="${nickName}">
+                    <label for="nickNameInput">Nickname/alias</label>
+                  </div>
+
+                  <div class="form-floating mb-3">
+                    <input type="email" class="form-control" id="emailInput" placeholder="name@example.com" disabled th:value="${email}">
+                    <label for="emailInput">Email address</label>
+                  </div>
+
+                  <div class="form-floating mb-3">
+                    <input type="text" class="form-control" id="pronounInput" placeholder="name@example.com" disabled th:value="${personalPronouns}">
+                    <label for="pronounInput">Personal Pronouns</label>
+                  </div>
+
+                  <div class="form-floating">
+                    <textarea class="form-control" placeholder="bio" id="floatingTextarea2" style="height: 100px" th:text="${bio}" disabled></textarea>
+                    <label for="floatingTextarea2">Bio</label>
+                  </div>
+                </form>
+      <!--          end form-->
+                <form th:action="@{editAccountLoad}" method="post" th:if="${isAuthorised} == true">
+                  <div style="display:flex; justify-content: end" class="mt-3">
+                    <input type="hidden" th:value="${userId}" name="userId" id="userId">
+                    <button type="submit" id="editProfileButton" class="btn btn-primary">Edit Profile</button>
+                  </div>
+                </form>
+              </div>
+              <div class="tab-pane fade" id="evidence" role="tabpanel" aria-labelledby="user-evidence-tab">
+                <div class="text-start mb-1-6 mt-3">
+                  <h2 class="h1 mb-0 fs-1">Evidence</h2>
+                  <a class="button-link" data-bs-toggle="modal" data-bs-target="#evidenceModal" data-bs-type="add" th:if="${isAuthorised} == true">
+                    <button id="addEvidenceButton" class="dropdown-item" type="button">
+                      <span class='bi bi-plus'></span> <i>Add Evidence</i>
+                    </button>
+                  </a>
+                </div>
+              </div>
             </div>
-
-            <br>
-
-<!--            start form-->
-            <form action="#">
-              <div class="form-floating mb-3">
-                <input type="text" class="form-control" id="firstName" th:name="firstName" placeholder="First name" disabled th:value="*{firstName}">
-                <label for="firstName">First name</label>
-              </div>
-
-              <div class="form-floating mb-3">
-                <input type="text" class="form-control" id="middleNameInput" placeholder=" " disabled th:value="${middleName}">
-                <label for="middleNameInput">Middle name</label>
-              </div>
-
-              <div class="form-floating mb-3">
-                <input type="text" class="form-control" id="lastNameInput" placeholder="Last name" disabled th:value="${lastName}">
-                <label for="lastNameInput">Last name</label>
-              </div>
-
-              <div class="form-floating mb-3">
-                <input type="text" class="form-control" id="nickNameInput" placeholder="Nickname/alias" disabled th:value="${nickName}">
-                <label for="nickNameInput">Nickname/alias</label>
-              </div>
-
-              <div class="form-floating mb-3">
-                <input type="email" class="form-control" id="emailInput" placeholder="name@example.com" disabled th:value="${email}">
-                <label for="emailInput">Email address</label>
-              </div>
-
-              <div class="form-floating mb-3">
-                <input type="text" class="form-control" id="pronounInput" placeholder="name@example.com" disabled th:value="${personalPronouns}">
-                <label for="pronounInput">Personal Pronouns</label>
-              </div>
-
-              <div class="form-floating">
-                <textarea class="form-control" placeholder="bio" id="floatingTextarea2" style="height: 100px" th:text="${bio}" disabled></textarea>
-                <label for="floatingTextarea2">Bio</label>
-              </div>
-            </form>
-<!--          end form-->
-            <form th:action="@{editAccountLoad}" method="post" th:if="${isAuthorised} == true">
-              <div style="display:flex; justify-content: end" class="mt-3">
-                <input type="hidden" th:value="${userId}" name="userId" id="userId">
-                <button type="submit" id="editProfileButton" class="btn btn-primary">Edit Profile</button>
-              </div>
-            </form>
+          </div>
         </div>
       </div>
     </div>
   </div>
 <!--end the right-side profile card-->
 
-  </div>
-  </div>
+  <div id="evidenceModal" th:replace="fragments/evidenceModal :: evidenceModal"></div>
 
 </body>
 <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha384-xBuQ/xzmlsLoJpyjoggmTEz8OWUFM0/RC5BsqQBDX2v5cMvDHcMakNTNrHIW2I5f" crossorigin="anonymous"></script>
 <script src="js/fineCrop.js"></script>
-<script>
+<script src="js/evidence.js"></script>
+<script th:inline="javascript">
+
+  /*<![CDATA[*/
+  let projectEndDate = /*[[${project.getEndDate()}]]*/ "Error";
+  let projectStartDate = /*[[${project.getStartDate()}]]*/ "Error";
+  /*]]>*/
+
+  /**
+   * Sets up datepicker for the start and end dates of the project.
+   */
+  function setEvidenceDatePickerValues() {
+    evidenceDatePicker.dates.setValue(tempusDominus.DateTime.convert(new Date()));
+    // Set minimum and maximum dates for greying out in the calendar
+    evidenceDatePicker.updateOptions({restrictions: {minDate: new Date(projectStartDate), maxDate: new Date(projectEndDate)}});
+  }
+
+  setEvidenceDatePickerValues();
+
   // Hides the alert banner
   function removeAlertBanner() {
     document.getElementById("alertBanner").style.display = "none";
   }
+
+  /**
+   * Updates characters left for modal input fields
+   * @param elementId Id of the input field
+   * @param messageElementId Id of the message element, for displaying the right error message if necessary.
+   * @param numChars Number of characters allowed
+   */
+  function updateCharsLeft(elementId, messageElementId, numChars) {
+    let chars_left = numChars - document.getElementById(elementId).value.length;
+    if (chars_left === numChars) {
+      document.getElementById(messageElementId).innerText = "";
+    } else if (chars_left === 1) {
+      document.getElementById(messageElementId).innerText = chars_left + " character left";
+    } else if (chars_left === 0) {
+      document.getElementById(messageElementId).innerText = "No characters left";
+    } else {
+      document.getElementById(messageElementId).innerText = chars_left + " characters left";
+    }
+  }
+
+  /**
+   * Check if the name of the item that the user inputted is not an empty string
+   * Submit the form and return true if the input is not empty string, otherwise show error banner with the error message and return false
+   * @param elementId the ID of the text input HTML element for item's name
+   * @param alertBanner the ID of the alert banner HTML element
+   * @param alertMessage the ID of the alert banner message HTML element
+   * @returns {boolean} true if the input is not empty string, otherwise false
+   */
+  function validateModalName(elementId, alertBanner, alertMessage) {
+    const nameInput = document.getElementById(elementId).value;
+    if (nameInput === "") {
+      document.getElementById(alertBanner).hidden = false;
+      document.getElementById(alertMessage).innerText = "Name cannot be empty!";
+      return false
+    } else {
+      document.getElementById(alertBanner).hidden = true;
+      return true
+    }
+  }
+
+  /**
+   * Check if the date of the item that the user inputted is within the project dates range
+   * Show error banner with error message and disable the submit button if the inputted date is outside the project dates range
+   * @param elementId the ID of the date input HTML element
+   * @param submitElementId the ID of the submit button on the modal
+   * @param alertBanner the ID of the banner element that will display the alert message
+   * @param alertMessage the ID of the alert message element
+   */
+  function validateModalDate(elementId, submitElementId, alertBanner, alertMessage) {
+    if (!checkEmpty(elementId, 'Date', submitElementId, alertBanner, alertMessage)) {
+      return false
+    }
+    const dateInput = new Date(document.getElementById(elementId).value);
+    return checkDate(dateInput, submitElementId, alertBanner, alertMessage)
+  }
+
+  /**
+   * Returns true if the user has entered a valid date and time, otherwise false
+   * @param dateId id of element with date
+   * @param submitElementId id of element for submitting the modal
+   * @param alertBanner id of element that displays an error message
+   * @param alertMessage id of element that stores the error message
+   * @returns {boolean} true if valid date and time, otherwise false
+   */
+  function validateModalDateTime(dateId, submitElementId, alertBanner, alertMessage) {
+    if (!checkEmpty(dateId, 'Date', submitElementId, alertBanner, alertMessage)) {
+      return false
+    }
+    const dateInput = new Date(`${document.getElementById(dateId).value}`)
+    return checkDate(dateInput, submitElementId, alertBanner, alertMessage)
+  }
+
+  /**
+   * Returns true if the user has entered a valid date (and maybe time), otherwise false.
+   * A valid date is one that is within the project date range.
+   * @param date date to check
+   * @param submitElementId id of element for submitting the modal
+   * @param alertBanner id of element that displays an error message
+   * @param alertMessage id of element that stores the error message
+   * @returns {boolean} true if valid date and time, otherwise false
+   */
+  function checkDate(date, submitElementId, alertBanner, alertMessage) {
+    if (date < new Date(projectStartDate) || date > new Date(projectEndDate)) {
+      $('#' + submitElementId).prop('disabled', true);
+      document.getElementById(alertBanner).hidden = false;
+      document.getElementById(alertMessage).innerText = "Date must be within the project's date range (" +
+              projectStartDate + " - " + projectEndDate + ").";
+      return false;
+    } else {
+      $('#' + submitElementId).prop('disabled', false);
+      document.getElementById(alertBanner).hidden = true;
+      return true;
+    }
+  }
+
+  /**
+   * Checks that the element with the given id isn't empty. If it is, it displays an error message and disables the
+   * submit button. Returns true if it is not empty, otherwise false.
+   * @param id id of element to check
+   * @param type type of value the element stores (displayed at start of error message)
+   * @param submitElementId id of element for submitting the modal
+   * @param alertBanner id of element that displays an error message
+   * @param alertMessage id of element that stores the error message
+   * @returns {boolean} true if it is not empty, otherwise false
+   */
+  function checkEmpty(id, type, submitElementId, alertBanner, alertMessage) {
+    if (document.getElementById(id).value === "") {
+      $('#' + submitElementId).prop('disabled', true);
+      document.getElementById(alertBanner).hidden = false;
+      document.getElementById(alertMessage).innerText = `${type} must not be empty!`;
+      return false;
+    }
+    return true;
+  }
+
+  // This is used to ensure that the tabs state is saved,
+  // during reloading events of the page by either the user or application.
+
+  /**
+   * Set the current tab selected to session storage.
+   * @param tab tab ID
+   */
+  function saveTab(tab) {
+    localStorage.setItem('tab', tab)
+  }
+
+  /**
+   * Get the current tab selected from session storage.
+   */
+  function getTab() {
+    return localStorage.getItem('tab')
+  }
+
+  // Set the current tab selected to what is in session storage, if it is not null.
+  let tabToSet = getTab();
+  if (tabToSet) {
+    document.getElementById(tabToSet).click();
+  }
+
 </script>
 </html>

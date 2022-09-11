@@ -52,7 +52,7 @@
                             </div>
 
                             <div class="form-floating mb-3">
-                                <input type="text" class="form-control" id="firstName" placeholder="first name" th:name="firstName" th:value="${defaultFirstName}" minlength="2" maxlength="20" pattern="[a-zA-Z].{2,}" required>
+                                <input type="text" class="form-control" id="firstName" placeholder="first name" th:name="firstName" th:value="${defaultFirstName}" minlength="2" maxlength="20" pattern="[A-Za-z'-]{2,20}" required>
                                 <label for="firstName">First name(*)</label>
                                 <div class="invalid-feedback">
                                     Please enter your first name. Between 2 and 20 characters. No numbers or special characters.
@@ -63,7 +63,7 @@
                                 <label for="middleName">Middle name(Not required)</label>
                             </div>
                             <div class="form-floating mb-3">
-                                <input type="text" class="form-control" id="lastName"  placeholder="last name" th:name="lastName" th:value="${defaultLastName}"  minlength="2" maxlength="20" pattern="[A-Za-z]+.{2,}" required>
+                                <input type="text" class="form-control" id="lastName"  placeholder="last name" th:name="lastName" th:value="${defaultLastName}"  minlength="2" maxlength="20" pattern="[A-Za-z'-]{2,20}" required>
                                 <label for="lastName">Last name(*)</label>
                                 <div class="invalid-feedback">
                                     Please enter your last name. Between 2 and 20 characters. No numbers or special characters.

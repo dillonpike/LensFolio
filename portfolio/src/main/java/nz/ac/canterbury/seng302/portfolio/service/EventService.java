@@ -57,7 +57,7 @@ public class EventService {
             Event eventUpdate = sOptional.get();
             eventUpdate.setEventStartDate(event.getEventStartDate());
             eventUpdate.setEventEndDate(event.getEventEndDate());
-            eventUpdate.setEventName(event.getEventName());
+            eventUpdate.setEventName(event.getEventName().trim());
 
             eventUpdate = eventRepository.save(eventUpdate);
             return eventUpdate;
@@ -69,11 +69,13 @@ public class EventService {
 
 
     /**
-     * Add a new event to the database. It gives the new event an ID based on eventIdCount.
+     * Add a new event to the database, trim any whitespace from the event name. It gives the new event an ID based on eventIdCount.
      * @param event New event to add
      * @return Event that was added to the database
      */
     public Event addEvent(Event event) {
+        String eventName = event.getEventName().trim();
+        event.setEventName(eventName);
         event = eventRepository.save(event);
         return event;
     }

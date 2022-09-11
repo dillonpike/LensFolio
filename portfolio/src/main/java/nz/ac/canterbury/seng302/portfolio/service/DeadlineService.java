@@ -29,10 +29,8 @@ public class DeadlineService {
 
         if (sOptional.isPresent()) {
             Deadline deadlineUpdate = sOptional.get();
-            deadlineUpdate.setDeadlineName(deadline.getDeadlineName());
+            deadlineUpdate.setDeadlineName(deadline.getDeadlineName().trim());
             deadlineUpdate.setDeadlineDate(deadline.getDeadlineDate());
-
-
             deadlineUpdate = repository.save(deadlineUpdate);
             return deadlineUpdate;
         } else {
@@ -73,11 +71,14 @@ public class DeadlineService {
 
 
     /**
-     * Saves the given deadline to the database and returns it.
+     * Saves the given deadline to the database after removing whitespace from name
+     * and returns it.
      * @param deadline deadline to be saved
      * @return saved deadline
      */
     public Deadline addDeadline(Deadline deadline) {
+        String deadlineName = deadline.getDeadlineName().trim();
+        deadline.setDeadlineName(deadlineName);
         return repository.save(deadline);
     }
 

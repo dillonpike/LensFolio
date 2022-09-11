@@ -17,8 +17,10 @@ import org.springframework.security.web.authentication.preauth.PreAuthenticatedA
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.ui.Model;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -32,7 +34,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class SearchUsersControllerTest {
 
     @Autowired
-    private MockMvc mockMvc;
+    private MockMvc mockMvc = MockMvcBuilders.standaloneSetup(AccountController.class).build();
 
     @MockBean
     private UserAccountClientService userAccountClientService;
@@ -54,12 +56,6 @@ class SearchUsersControllerTest {
 
     private final int USER_ID = 1;
     private final String USERNAME = "Username";
-
-    @Before
-    public void setup() {
-        mockMvc = MockMvcBuilders.standaloneSetup(AccountController.class).build();
-    }
-
 
     /**
      * AuthState object to be used when we mock security context
@@ -129,25 +125,6 @@ class SearchUsersControllerTest {
     }
 
     /**
-     * Test to check if user model(users) is existed in search users page
-     */
-    @Test
-    void showSearchUsersPage_whenLoggedIn_returnUsersAttributeIsExist() throws Exception {
-        SecurityContext mockedSecurityContext = Mockito.mock(SecurityContext.class);
-        when(mockedSecurityContext.getAuthentication()).thenReturn(new PreAuthenticatedAuthenticationToken(validAuthState, ""));
-
-        userResponse = UserResponse.newBuilder().setUsername(USERNAME).setId(USER_ID).build();
-        when(userAccountClientService.getUserIDFromAuthState(any(AuthState.class))).thenReturn(USER_ID);
-        when(registerClientService.getUserData(any(Integer.class))).thenReturn(userResponse);
-
-        SecurityContextHolder.setContext(mockedSecurityContext);
-        when(userAccountClientService.getUserIDFromAuthState(any(AuthState.class))).thenReturn(1);
-        when(userAccountClientService.getAllUsers()).thenReturn(mockedUserList);
-        mockMvc.perform(get("/viewUsersSearch"))
-                .andExpect(model().attributeExists("users"));
-    }
-
-    /**
      * Test to check if model attribute(users) has been added in search users page
      */
     @Test
@@ -160,10 +137,9 @@ class SearchUsersControllerTest {
         when(registerClientService.getUserData(any(Integer.class))).thenReturn(userResponse);
 
         SecurityContextHolder.setContext(mockedSecurityContext);
-        when(userAccountClientService.getUserIDFromAuthState(any(AuthState.class))).thenReturn(1);
-        when(userAccountClientService.getAllUsers()).thenReturn(mockedUserList);
-        mockMvc.perform(get("/viewUsersSearch"))
-                .andExpect(model().attribute("users", mockedUserList.getUsersList()));
+        mockMvc.perform(get("/viewUsersSearch"));
+
+        verify(elementService).addUsersToModel(any(Model.class), any(Integer.class));
     }
 
     /**

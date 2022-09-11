@@ -24,8 +24,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(controllers = RegisterController.class)
 @AutoConfigureMockMvc(addFilters = false)
 class RegisterControllerTest {
+
     @Autowired
-    private MockMvc mockMvc;
+    private MockMvc mockMvc = MockMvcBuilders.standaloneSetup(RegisterController.class).build();
 
     @MockBean
     private RegisterClientService registerClientService;
@@ -35,14 +36,6 @@ class RegisterControllerTest {
 
     @MockBean
     private UserAccountClientService userAccountClientService;
-
-    /**
-     * create mock MVC object which then will be used to perform http request
-     */
-    @Before
-    public void setup() {
-        mockMvc = MockMvcBuilders.standaloneSetup(RegisterController.class).build();
-    }
 
     /**
      * Test get method of register controller

@@ -24,13 +24,9 @@ public class GroupService {
     @GrpcClient(value = "identity-provider-grpc-server")
     GroupsServiceGrpc.GroupsServiceBlockingStub groupsServiceBlockingStub;
 
-    private List<GroupDetailsResponse> groupDetailsResponseList;
+    private final List<NotificationResponse> groupsToDisplay = new ArrayList<>();
 
-    private List<UserResponse> userResponseList;
-
-    private List<NotificationResponse> groupsToDisplay = new ArrayList<>();
-
-    /***
+    /**
      * Method to create group by sending request using GRPC to the idp
      * @param shortName (String) the short name of the new group that will be created and persisted in database
      * @param longName (String) the long name of the new group that will be created and persisted in database
@@ -38,13 +34,13 @@ public class GroupService {
      */
     public CreateGroupResponse createNewGroup(String shortName, String longName){
         CreateGroupRequest request = CreateGroupRequest.newBuilder()
-                .setShortName(shortName)
-                .setLongName(longName)
+                .setShortName(shortName.trim())
+                .setLongName(longName.trim())
                 .build();
         return groupsServiceBlockingStub.createGroup(request);
     }
 
-    /***
+    /**
      * Method to add user(s) to an existing group by sending request using GRPC to the idp
      * @param groupId (Integer) id of the group
      * @param userIds (ArrayList<Integer>) a list of all the user ids that will be added to a group
@@ -58,7 +54,7 @@ public class GroupService {
         return groupsServiceBlockingStub.addGroupMembers(request);
     }
 
-    /***
+    /**
      * Method to remove user(s) from an existing group by sending request using GRPC to the idp
      * @param groupId (Integer) id of the group
      * @param userIds (ArrayList<Integer>) a list of all the user ids that will be removed from a group
@@ -72,7 +68,7 @@ public class GroupService {
         return groupsServiceBlockingStub.removeGroupMembers(request);
     }
 
-    /***
+    /**
      * Method to remove user(s) from an existing group by sending request using GRPC to the idp
      * @param groupId (Integer) id of the group
      * @param shortName (String) the new short name of the group
@@ -88,7 +84,7 @@ public class GroupService {
         return groupsServiceBlockingStub.modifyGroupDetails(request);
     }
 
-    /***
+    /**
      * Method to delete an existing group from database by sending request using GRPC to the idp
      * @param groupId (Integer) id of the group
      * @return (DeleteGroupResponse) contains the response after deletion of a group
@@ -100,7 +96,7 @@ public class GroupService {
         return groupsServiceBlockingStub.deleteGroup(request);
     }
 
-    /***
+    /**
      * Method to get the detail information of a group by sending request using GRPC to the idp
      * @param groupId (Integer) id of the group
      * @return (GroupDetailsResponse) contains the details of a group requested
@@ -112,7 +108,7 @@ public class GroupService {
         return groupsServiceBlockingStub.getGroupDetails(request);
     }
 
-    /***
+    /**
      * Method to delete an existing group from database by sending request using GRPC to the idp
      * @param offset (Integer) number used to identify the starting point to return rows from a result set
      * @param limit (Integer) number to determine how many rows are returned from a query(this is ignored due to we don't implement pagination)
@@ -136,7 +132,7 @@ public class GroupService {
      */
     public void addGroupListToModel(Model model) {
         PaginatedGroupsResponse groupList = getPaginatedGroups(1, 1, "null", false);
-        groupDetailsResponseList = groupList.getGroupsList();
+        List<GroupDetailsResponse> groupDetailsResponseList = groupList.getGroupsList();
         model.addAttribute("groupList", groupDetailsResponseList);
     }
 
@@ -148,7 +144,8 @@ public class GroupService {
      */
     public void addGroupDetailToModel(Model model, Integer groupId) {
         GroupDetailsResponse groupDetailsResponse = getGroupDetails(groupId);
-        userResponseList = groupDetailsResponse.getMembersList();
+        List<UserResponse> userResponseList = groupDetailsResponse.getMembersList();
+
         model.addAttribute("groupLongName", groupDetailsResponse.getLongName());
         model.addAttribute("groupShortName", groupDetailsResponse.getShortName());
 

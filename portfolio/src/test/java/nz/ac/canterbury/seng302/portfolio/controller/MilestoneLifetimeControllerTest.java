@@ -1,7 +1,6 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
 import nz.ac.canterbury.seng302.portfolio.model.Milestone;
-import nz.ac.canterbury.seng302.portfolio.repository.MilestoneRepository;
 import nz.ac.canterbury.seng302.portfolio.service.ElementService;
 import nz.ac.canterbury.seng302.portfolio.service.MilestoneService;
 import nz.ac.canterbury.seng302.portfolio.service.PermissionService;
@@ -10,7 +9,6 @@ import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import nz.ac.canterbury.seng302.shared.identityprovider.ClaimDTO;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -23,7 +21,6 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.Date;
-import java.util.Optional;
 
 import static org.mockito.AdditionalAnswers.returnsFirstArg;
 import static org.mockito.ArgumentMatchers.any;
@@ -80,7 +77,7 @@ class MilestoneLifetimeControllerTest {
 
         Milestone expectedMilestone = new Milestone(0,"Test Milestone", new Date());
         when(milestoneService.addMilestone(any(Milestone.class))).then(returnsFirstArg());
-        when(permissionService.isValidToModifyProjectPage(any(Integer.class))).thenReturn(true);
+        when(permissionService.isValidToModify(any(Integer.class))).thenReturn(true);
         mockMvc.perform(post("/add-milestone").flashAttr("milestone", expectedMilestone))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/details"));
@@ -100,7 +97,7 @@ class MilestoneLifetimeControllerTest {
         SecurityContextHolder.setContext(mockedSecurityContext);
 
         Milestone expectedMilestone = new Milestone(0,"Test Milestone", new Date());
-        when(permissionService.isValidToModifyProjectPage(any(Integer.class))).thenReturn(true);
+        when(permissionService.isValidToModify(any(Integer.class))).thenReturn(true);
         mockMvc.perform(get("/delete-milestone/" + expectedMilestone.getId()))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/details"));

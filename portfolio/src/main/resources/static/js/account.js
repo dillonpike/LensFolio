@@ -32,10 +32,6 @@ function deleteModalSetup() {
         form.setAttribute("method", `get`)
         form.submit();
     });
-    //
-    // $("#eventModalButton").on('click', function (ignore) {
-    //     pageReload();
-    // });
 }
 
 
