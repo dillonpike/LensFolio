@@ -1,6 +1,7 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
 
+import nz.ac.canterbury.seng302.portfolio.model.GroupSettings;
 import nz.ac.canterbury.seng302.portfolio.service.*;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import nz.ac.canterbury.seng302.shared.identityprovider.ModifyGroupDetailsResponse;
@@ -164,6 +165,20 @@ public class GroupSettingsController {
         addGroupSettingAttributeToModel(model, groupId);
         model.addAttribute(GROUP_ID, groupId);
         model.addAttribute(CURRENT_USER_ROLE, role);
+
+        GroupSettings groupSettings = groupSettingsService.getGroupSettingsByGroupId(groupId);
+        // Check if group setting is default
+        if (groupSettings.getRepoId() != 0) {
+            model.addAttribute("repoId", groupSettings.getRepoId());
+        } else {
+            model.addAttribute("repoId", 0);
+
+        }
+        model.addAttribute("repoName", groupSettings.getRepoName());
+        model.addAttribute("repoApiKey", groupSettings.getRepoApiKey());
+        model.addAttribute("groupSettingsId", groupSettings.getGroupSettingsId());
+        model.addAttribute("repoServerUrl", groupSettings.getRepoUrl());
+
         return "groupSettings::groupSettingsRefresh";
     }
 

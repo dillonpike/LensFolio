@@ -76,6 +76,9 @@ class GroupSettingsControllerTest {
     @MockBean
     private GroupSettingsService groupSettingsService;
 
+    @Mock
+    private GroupSettingsService mockGroupSettingsService;
+
     @MockBean
     private GroupSettingsRepository groupSettingsRepository;
 
@@ -234,6 +237,9 @@ class GroupSettingsControllerTest {
                 .setLongName(membersGroup.getLongName()).build())
                 .when(groupService).getGroupDetails(membersGroup.getGroupId());
 
+        when(groupSettingsService.getGroupSettingsByGroupId(testGroupSettings.getGroupId())).thenReturn(testGroupSettings);
+
+
         mockMvc.perform(get("/groupSettings").param("groupId", Integer.toString(membersGroup.getGroupId())))
                 .andExpect(redirectedUrl("/groups"));
     }
@@ -313,6 +319,22 @@ class GroupSettingsControllerTest {
         assertNull(branchNameCaptor.getValue());
         assertNull(userCaptor.getValue());
 
+    }
+
+    @Test
+    void testGroupSettingUpdate() throws Exception {
+        doReturn(GroupDetailsResponse.newBuilder()
+                .setGroupId(testGroup.getGroupId()).setShortName(testGroup.getShortName())
+                .setLongName(testGroup.getLongName()).build())
+                .when(groupService).getGroupDetails(testGroup.getGroupId());
+
+        when(mockGroupSettingsService.getGroupSettingsByGroupId(testGroupSettings.getGroupId())).thenReturn(testGroupSettings);
+
+        mockMvc.perform(get("/groupSettings/refreshGroupSettings").param("groupId", Integer.toString(testGroup.getGroupId())))
+                .andExpect(status().isOk())
+                .andExpect(model().attribute("groupShortName", testGroup.getShortName()))
+                .andExpect(model().attribute("groupLongName", testGroup.getLongName()))
+                .andExpect(model().attribute("repoName", testGroupSettings.getRepoName()));
     }
 
     /**
