@@ -62,7 +62,7 @@
                             <label for="evidenceWeblink" class="col-form-label">Web Links:</label>
                             <div class="input-group mb-3">
                                 <input id="evidenceWeblink" onkeyup="{updateCharsLeft('evidenceWeblink', 'evidenceWebLinkLength', 250);isEvidenceInputFieldFilled()}"
-                                       maxlength="250" type="text" class="form-control" placeholder="e.g. https://www.example.com" aria-label="Add Web links"
+                                       maxlength="250" type="url" class="form-control" placeholder="e.g. https://www.example.com" aria-label="Add Web links"
                                        aria-describedby="button-addon2" name="evidenceWeblink" th:value="${currentWebLink?.url}">
                                 <button class="btn btn-outline-secondary" type="button" id="button-addon2" onclick="addWebLinks()">Add</button>
                             </div>
@@ -99,52 +99,62 @@
 
         let webLinksList = [];
         let weblinkId = 1;
+
+        /**
+         * Adds a web link to the list of web links.
+         */
         function addWebLinks(){
 
             const urlString = document.getElementById("evidenceWeblink").value;
             //validate
+            if (!isValidUrl(urlString)) {
+                $("#evidenceWebLinksAlertMessage").text("Please enter a valid URL.");
+                document.getElementById("evidenceWebLinksAlertBanner").removeAttribute("hidden");
+            } else {
+                if (webLinksList.length < MAX_NUM_WEBLINKS) {
+                    let displayUrlString = "";
+                    let splitIndex = urlString.indexOf("://");
+                    if (splitIndex !== -1) {
+                        displayUrlString = urlString.substring(splitIndex + 3);
+                    } else {
+                        displayUrlString = urlString;
+                    }
+                    if (displayUrlString.length > 30) {
+                        displayUrlString = displayUrlString.substring(0, 29) + "...";
+                    }
 
-            if (webLinksList.length < MAX_NUM_WEBLINKS) {
-                let displayUrlString = "";
-                let splitIndex = urlString.indexOf("://");
-                if (splitIndex !== -1) {
-                    displayUrlString = urlString.substring(splitIndex + 3);
-                } else {
-                    displayUrlString = urlString;
-                }
-                if (displayUrlString.length > 30) {
-                    displayUrlString = displayUrlString.substring(0, 29) + "...";
-                }
 
-
-                $("#webLinkList").append(`<div class="chip" id='weblinkurl${weblinkId}' style="display: inline-block;padding: 0 12px 0 15px;height: fit-content;font-size: 16px;line-height: 30px;border-radius: 25px;background-color: #f1f1f1f1;margin: 0 10px 10px 0;" data-toggle="tooltip" data-bs-placement="right" title="${urlString}">
+                    $("#webLinkList").append(`<div class="chip" id='weblinkurl${weblinkId}' style="display: inline-block;padding: 0 12px 0 15px;height: fit-content;font-size: 16px;line-height: 30px;border-radius: 25px;background-color: #f1f1f1f1;margin: 0 10px 10px 0;" data-toggle="tooltip" data-bs-placement="right" title="${urlString}">
                                 <div class="d-flex justify-content-between flex-row align-items-center">
                                     <span style="margin-right: 10px">${displayUrlString}</span>
                                     <button onclick="removeWebLink('weblinkurl${weblinkId}')" type="button" class="btn-close" aria-label="Close"></button>
                                 </div>
                             </div>`);
-                weblinkId += 1;
+                    weblinkId += 1;
 
-                $('[data-toggle="tooltip"]').tooltip();
+                    $('[data-toggle="tooltip"]').tooltip();
 
-                $("#evidenceWeblink").val("");
-                updateCharsLeft('evidenceWeblink', 'evidenceWebLinkLength', 250);
-                //add to list
-                webLinksList.push(urlString);
-            } else {
-                $("#evidenceWebLinksAlertMessage").text("You can only add up to " + MAX_NUM_WEBLINKS + " web links.");
-                document.getElementById("evidenceWebLinksAlertBanner").removeAttribute("hidden");
+                    $("#evidenceWeblink").val("");
+                    updateCharsLeft('evidenceWeblink', 'evidenceWebLinkLength', 250);
+                    //add to list
+                    webLinksList.push(urlString);
+                } else {
+                    $("#evidenceWebLinksAlertMessage").text("You can only add up to " + MAX_NUM_WEBLINKS + " web links.");
+                    document.getElementById("evidenceWebLinksAlertBanner").removeAttribute("hidden");
+                }
             }
 
 
         }
 
+        /**
+         * Removes a web link from the list of web links.
+         * @param id the id of the web link to remove
+         */
         function removeWebLink(id) {
             let urlHTML = $("#" + id);
             let urlString = urlHTML.attr("data-bs-original-title");
             for (let i = 0; i < webLinksList.length; i++) {
-                console.log(webLinksList[i]);
-                console.log(urlString);
                 if (webLinksList[i] === urlString) {
                     webLinksList.splice(i, 1);
                     break;
@@ -154,6 +164,20 @@
             urlHTML.remove();
         }
 
-
+        /**
+         * Method to use regex to validate a URL String
+         * inspired by https://www.freecodecamp.org/news/check-if-a-javascript-string-is-a-url/#:~:text=You%20can%20use%20the%20URLConstructor,given%20URL%20is%20not%20valid.
+         * @param urlString the url string to validate
+         * @returns {boolean} true if valid, false otherwise
+         */
+        function isValidUrl(urlString) {
+            const urlPattern = new RegExp('^(https?:\\/\\/)?'+ // validate protocol
+                '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|'+ // validate domain name
+                '((\\d{1,3}\\.){3}\\d{1,3}))'+ // validate OR ip (v4) address
+                '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*'+ // validate port and path
+                '(\\?[;&a-z\\d%_.~+=-]*)?'+ // validate query string
+                '(\\#[-a-z\\d_]*)?$','i'); // validate fragment locator
+            return !!urlPattern.test(urlString);
+        }
     </script>
 </div>
