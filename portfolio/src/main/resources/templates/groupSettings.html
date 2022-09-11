@@ -94,7 +94,7 @@
                         </div>
                         <div class="mb-3 mx-3">
                             <label for="repoToken" class="col-form-label">Repository Access Token:</label>
-                            <input onkeyup="updateCharsLeft('repoToken', 'repoTokenLength', 50)" maxlength="50" type="text"
+                            <input onkeyup="updateCharsLeft('repoToken', 'repoTokenLength', 40)" maxlength="40" type="text"
                                    class="form-control" id="repoToken" th:name="repoToken" th:value="${repoApiKey}" disabled>
                             <div class="name-length-message">
                                 <span id="repoTokenLength"></span>
