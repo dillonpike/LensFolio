@@ -36,7 +36,7 @@ class GitLabApiServiceTest {
     private GitLabApiService gitLabApiService;
 
     @Spy
-    private GroupSettings testGroupSettings = new GroupSettings(12345, "test repo", "kjbfdsouoih321312ewln", 1);
+    private GroupSettings testGroupSettings = new GroupSettings(12345, "test repo", "kjbfdsouoih321312ewln", 1, "https://eng-git.canterbury.ac.nz");
 
     @Mock
     private GitLabApi gitLabApi;
@@ -192,10 +192,10 @@ class GitLabApiServiceTest {
     void testCheckGitLabTokenValid() throws GitLabApiException {
         int repoId = 12345;
         MockedConstruction<GitLabApi> mockedConstruction = mockConstruction(GitLabApi.class, (mock, context) ->
-            when(mock.getRepositoryApi()).thenReturn(repositoryApi));
+                when(mock.getRepositoryApi()).thenReturn(repositoryApi));
         when(repositoryApi.getBranches(Integer.toString(repoId))).thenReturn(null);
 
-        assertTrue(gitLabApiService.checkGitLabToken(repoId, "testToken"));
+        assertTrue(gitLabApiService.checkGitLabToken(repoId, "testToken", "https://eng-git.canterbury.ac.nz"));
         mockedConstruction.close();
     }
 
@@ -208,10 +208,11 @@ class GitLabApiServiceTest {
     void testCheckGitLabTokenInvalid() throws GitLabApiException {
         int repoId = 12345;
         MockedConstruction<GitLabApi> mockedConstruction = mockConstruction(GitLabApi.class, (mock, context) ->
-            when(mock.getRepositoryApi()).thenReturn(repositoryApi));
+                when(mock.getRepositoryApi()).thenReturn(repositoryApi));
         when(repositoryApi.getBranches(Integer.toString(repoId))).thenThrow(GitLabApiException.class);
 
-        assertFalse(gitLabApiService.checkGitLabToken(repoId, "testToken"));
+        assertFalse(gitLabApiService.checkGitLabToken(repoId, "testToken", "https://eng-git.canterbury.ac.nz"));
         mockedConstruction.close();
     }
+
 }

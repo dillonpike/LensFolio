@@ -84,7 +84,8 @@ public class GroupSettingsController {
 
         int repoId = (int) groupSettingsService.getGroupSettingsByGroupId(groupId).getRepoId();
         String repoToken = groupSettingsService.getGroupSettingsByGroupId(groupId).getRepoApiKey();
-        boolean isConnected = gitLabApiService.checkGitLabToken(repoId, repoToken);
+        String repoUrl = groupSettingsService.getGroupSettingsByGroupId(groupId).getRepoUrl();
+        boolean isConnected = gitLabApiService.checkGitLabToken(repoId, repoToken, repoUrl);
         if (!isConnected) {
             model.addAttribute(GROUP_SETTING_ALERT_MESSAGE, "Repository Is Unreachable With The Current Settings");
         }
@@ -145,6 +146,7 @@ public class GroupSettingsController {
             @RequestParam(name = "repoID", required = false) int repoId,
             @RequestParam(name = "repoToken", required = false, defaultValue = "") String repoToken,
             @RequestParam(name = "groupSettingsId") int groupSettingsId,
+            @RequestParam(name = "repoServerUrl", required = false, defaultValue = "") String repoServerUrl,
             @AuthenticationPrincipal AuthState principal,
             HttpServletResponse httpServletResponse,
             RedirectAttributes rm
@@ -170,8 +172,8 @@ public class GroupSettingsController {
             return "groupSettings::groupLongNameAlertBanner";
         }
 
-        boolean isSaved = groupSettingsService.isGroupSettingSaved(groupSettingsId, repoId, repoName, repoToken, groupId);
-        boolean isConnected = gitLabApiService.checkGitLabToken(repoId, repoToken);
+        boolean isSaved = groupSettingsService.isGroupSettingSaved(groupSettingsId, repoId, repoName, repoToken, groupId, repoServerUrl);
+        boolean isConnected = gitLabApiService.checkGitLabToken(repoId, repoToken, repoServerUrl);
 
         if(!isConnected) {
             model.addAttribute(GROUP_SETTING_ALERT_MESSAGE, "Repository Is Unreachable With The Current Settings");

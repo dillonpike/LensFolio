@@ -103,7 +103,7 @@ class GroupSettingsControllerTest {
 
     private static final List<Commit> testCommits = new ArrayList<>();
 
-    private static final GroupSettings testGroupSettings = new GroupSettings(123, "This is test settings", "test123", 123);
+    private static final GroupSettings testGroupSettings = new GroupSettings(123, "This is test settings", "test123", 123, "https://eng-git.canterbury.ac.nz");
     /**
      * Build the mockMvc object and mock security contexts.
      */
@@ -146,7 +146,7 @@ class GroupSettingsControllerTest {
                 .when(groupService).getGroupDetails(testGroup.getGroupId());
 
         when(groupSettingsService.getGroupSettingsByGroupId(any(Integer.class))).thenReturn(testGroupSettings);
-        when(gitLabApiService.checkGitLabToken(any(Integer.class), any(String.class))).thenReturn(false);
+        when(gitLabApiService.checkGitLabToken(any(Integer.class), any(String.class), any(String.class))).thenReturn(false);
 
         mockMvc.perform(get("/groupSettings").param("groupId", Integer.toString(testGroup.getGroupId())))
                 .andExpect(status().isOk())
@@ -168,7 +168,7 @@ class GroupSettingsControllerTest {
                 .when(groupService).getGroupDetails(testGroup.getGroupId());
 
         when(groupSettingsService.getGroupSettingsByGroupId(any(Integer.class))).thenReturn(testGroupSettings);
-        when(gitLabApiService.checkGitLabToken(any(Integer.class), any(String.class))).thenReturn(true);
+        when(gitLabApiService.checkGitLabToken(any(Integer.class), any(String.class), any(String.class))).thenReturn(true);
         when(permissionService.isValidToModifyGroupSettingPage(any(Integer.class), any(Integer.class))).thenReturn(true);
         mockMvc.perform(get("/groupSettings").param("groupId", Integer.toString(testGroup.getGroupId())))
                 .andExpect(status().isOk())
@@ -190,7 +190,7 @@ class GroupSettingsControllerTest {
                 .when(groupService).getGroupDetails(testGroup.getGroupId());
 
         when(groupSettingsService.getGroupSettingsByGroupId(any(Integer.class))).thenReturn(testGroupSettings);
-        when(gitLabApiService.checkGitLabToken(any(Integer.class), any(String.class))).thenReturn(true);
+        when(gitLabApiService.checkGitLabToken(any(Integer.class), any(String.class), any(String.class))).thenReturn(true);
         when(permissionService.isValidToModifyGroupSettingPage(any(Integer.class), any(Integer.class))).thenReturn(false);
         mockMvc.perform(get("/groupSettings").param("groupId", Integer.toString(testGroup.getGroupId())))
                 .andExpect(status().isOk())
@@ -212,7 +212,7 @@ class GroupSettingsControllerTest {
                 .when(groupService).getGroupDetails(testGroup.getGroupId());
         doReturn(testGroupSettings)
                 .when(groupSettingsServiceSpy).getGroupSettingsByGroupId(any(Integer.class));
-        when(gitLabApiService.checkGitLabToken(any(Integer.class), any(String.class))).thenReturn(true);
+        when(gitLabApiService.checkGitLabToken(any(Integer.class), any(String.class), any(String.class))).thenReturn(true);
 
         mockMvc.perform(get("/groupSettings").param("groupId", Integer.toString(testGroup.getGroupId())))
                 .andExpect(status().isOk())
@@ -285,7 +285,7 @@ class GroupSettingsControllerTest {
                 .when(groupService).getGroupDetails(testGroup.getGroupId());
         when(gitLabApiService.getContributors(any(Integer.class))).thenThrow(exception);
         when(groupSettingsService.getGroupSettingsByGroupId(any(Integer.class))).thenReturn(testGroupSettings);
-        when(gitLabApiService.checkGitLabToken(any(Integer.class), any(String.class))).thenReturn(false);
+        when(gitLabApiService.checkGitLabToken(any(Integer.class), any(String.class), any(String.class))).thenReturn(false);
         mockMvc.perform(get("/groupSettings").param("groupId", Integer.toString(testGroup.getGroupId())))
                 .andExpect(status().isOk())
                 .andExpect(model().attribute("groupShortName", testGroup.getShortName()))
@@ -377,8 +377,8 @@ class GroupSettingsControllerTest {
         ModifyGroupDetailsResponse response = ModifyGroupDetailsResponse.newBuilder()
                 .setIsSuccess(true).setMessage("Unable to update group long name").build();
         doReturn(response).when(groupService).editGroupDetails(any(Integer.class),any(String.class), any(String.class));
-        doReturn(false).when(gitLabApiService).checkGitLabToken(any(Integer.class), any(String.class));
-        doReturn(true).when(groupSettingsService).isGroupSettingSaved(any(Integer.class),any(Integer.class),any(String.class),any(String.class),any(Integer.class));
+        doReturn(false).when(gitLabApiService).checkGitLabToken(any(Integer.class), any(String.class), any(String.class));
+        doReturn(true).when(groupSettingsService).isGroupSettingSaved(any(Integer.class),any(Integer.class),any(String.class),any(String.class),any(Integer.class), any(String.class));
         doNothing().when(groupService).addGroupDetailToModel(any(Model.class),any(Integer.class));
         doNothing().when(groupSettingsService).addSettingAttributesToModel(any(Integer.class),any(Model.class));
         doNothing().when(groupSettingsController).addGroupSettingAttributeToModel(any(Model.class),any(Integer.class));
@@ -411,8 +411,8 @@ class GroupSettingsControllerTest {
         ModifyGroupDetailsResponse response = ModifyGroupDetailsResponse.newBuilder()
                 .setIsSuccess(true).setMessage("Unable to update group long name").build();
         doReturn(response).when(groupService).editGroupDetails(any(Integer.class),any(String.class), any(String.class));
-        doReturn(true).when(gitLabApiService).checkGitLabToken(any(Integer.class), any(String.class));
-        doReturn(false).when(groupSettingsService).isGroupSettingSaved(any(Integer.class),any(Integer.class),any(String.class),any(String.class),any(Integer.class));
+        doReturn(true).when(gitLabApiService).checkGitLabToken(any(Integer.class), any(String.class), any(String.class));
+        doReturn(false).when(groupSettingsService).isGroupSettingSaved(any(Integer.class),any(Integer.class),any(String.class),any(String.class),any(Integer.class),any(String.class));
         doNothing().when(groupService).addGroupDetailToModel(any(Model.class),any(Integer.class));
         doNothing().when(groupSettingsService).addSettingAttributesToModel(any(Integer.class),any(Model.class));
         doNothing().when(groupSettingsController).addGroupSettingAttributeToModel(any(Model.class),any(Integer.class));

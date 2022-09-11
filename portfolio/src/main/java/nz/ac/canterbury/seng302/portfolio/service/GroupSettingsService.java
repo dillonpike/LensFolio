@@ -111,9 +111,9 @@ public class GroupSettingsService {
      * @param groupId current group id
      * @return true if current group setting has been saved successfully, otherwise false.
      */
-    public boolean isGroupSettingSaved(int groupSettingId, int repoId, String repoName, String repoToken, int groupId) {
+    public boolean isGroupSettingSaved(int groupSettingId, int repoId, String repoName, String repoToken, int groupId, String repoServerUrl) {
         try {
-            GroupSettings targetGroupSetting = new GroupSettings(repoId, repoName, repoToken, groupId);
+            GroupSettings targetGroupSetting = new GroupSettings(repoId, repoName, repoToken, groupId, repoServerUrl);
             targetGroupSetting.setGroupSettingsId(groupSettingId);
             saveGroupSettings(targetGroupSetting);
         } catch (Exception e) {

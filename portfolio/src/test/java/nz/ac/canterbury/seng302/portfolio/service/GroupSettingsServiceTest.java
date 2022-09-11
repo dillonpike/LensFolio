@@ -33,7 +33,7 @@ class GroupSettingsServiceTest {
     @Spy
     private GroupSettingsService groupSettingsServiceMock;
 
-    private static final GroupSettings testGroupSettings = new GroupSettings(12345, "test repo", "kjbfdsouoih321312ewln", 1);
+    private static final GroupSettings testGroupSettings = new GroupSettings(12345, "test repo", "kjbfdsouoih321312ewln", 1, "https://eng-git.canterbury.ac.nz");
 
     @BeforeAll
     static void setUp() {
@@ -93,7 +93,7 @@ class GroupSettingsServiceTest {
      */
     @Test
     void checkRepositoryHasBeenSetUpWhenItIsNot() {
-        GroupSettings test = new GroupSettings(0, "test repo", null, 1234);
+        GroupSettings test = new GroupSettings(0, "test repo", null, 1234, "https://eng-git.canterbury.ac.nz");
         lenient().when(groupSettingsService.getGroupSettingsByGroupId(test.getGroupId())).thenReturn(test);
         assertFalse(groupSettingsService.doesGroupHaveRepo(test.getGroupId()));
     }
@@ -103,7 +103,7 @@ class GroupSettingsServiceTest {
      */
     @Test
     void checkRepositoryHasBeenSetUpWhenItIs() {
-        GroupSettings test = new GroupSettings(123, "test repo", "testKey", 1234);
+        GroupSettings test = new GroupSettings(123, "test repo", "testKey", 1234,"https://eng-git.canterbury.ac.nz");
         doReturn(test).when(groupSettingsServiceMock).getGroupSettingsByGroupId(test.getGroupId());
         assertTrue(groupSettingsServiceMock.doesGroupHaveRepo(test.getGroupId()));
     }
@@ -113,8 +113,8 @@ class GroupSettingsServiceTest {
      */
     @Test
     void checkIsGroupSettingSavedWhenItIs() {
-        GroupSettings test = new GroupSettings(1, "test repo", "testKey", 1234);
+        GroupSettings test = new GroupSettings(1, "test repo", "testKey", 1234, "https://eng-git.canterbury.ac.nz");
         test.setGroupSettingsId(1);
-        assertTrue(groupSettingsService.isGroupSettingSaved(1,1, "test", "test", 1234));
+        assertTrue(groupSettingsService.isGroupSettingSaved(1,1, "test", "test", 1234, "https://eng-git.canterbury.ac.nz"));
     }
 }
