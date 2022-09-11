@@ -43,6 +43,7 @@ function addEvidence() {
         messageAlert.toggleClass("alert-danger alert-success");
         $('#evidenceModal').modal('toggle')
         showAlertToast("Evidence added successfully!");
+        clearEvidenceModalFields();
     }).fail((response) => {
         replaceEvidenceModalBody(response.responseText);
     })
