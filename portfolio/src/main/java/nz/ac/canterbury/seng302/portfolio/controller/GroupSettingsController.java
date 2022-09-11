@@ -117,10 +117,10 @@ public class GroupSettingsController {
         try {
             String branchRequestName = null;
             String userRequestEmail = null;
-            if(!branchName.equals("All Branches")){
+            if(!branchName.equals("All Branches")) {
                 branchRequestName = branchName;
             }
-            if(!userEmail.equals("All Users")){
+            if (!userEmail.equals("All Users")) {
                 userRequestEmail = userEmail;
             }
             List<Commit> allCommit = gitLabApiService.getCommits(groupId, branchRequestName, userRequestEmail);
@@ -130,6 +130,44 @@ public class GroupSettingsController {
             return "groupSettings::commitsListRefresh";
         }
     }
+
+    /**
+     * Method to partial refresh the group setting card.
+     *
+     * @param groupId current group id
+     * @param model   model for group setting page
+     * @return repository contributors fragment
+     */
+    @RequestMapping("/groupSettings/refreshGroupSettings")
+    public String refreshGroupSetting(
+            Model model,
+            @RequestParam(value = "groupId") int groupId,
+            @AuthenticationPrincipal AuthState principal) {
+
+        Integer id = userAccountClientService.getUserIDFromAuthState(principal);
+        elementService.addHeaderAttributes(model, id);
+        UserResponse user = registerClientService.getUserData(id);
+        String role = elementService.getUserHighestRole(user);
+
+        int repoId = (int) groupSettingsService.getGroupSettingsByGroupId(groupId).getRepoId();
+        String repoToken = groupSettingsService.getGroupSettingsByGroupId(groupId).getRepoApiKey();
+        String repoUrl = groupSettingsService.getGroupSettingsByGroupId(groupId).getRepoUrl();
+        boolean isConnected = gitLabApiService.checkGitLabToken(repoId, repoToken, repoUrl);
+        if (!isConnected) {
+            model.addAttribute(GROUP_SETTING_ALERT_MESSAGE, "Repository Is Unreachable With The Current Settings");
+        }
+        boolean isValidToModify = permissionService.isValidToModifyGroupSettingPage(groupId, id);
+        model.addAttribute("isValidToModify", isValidToModify);
+
+        groupService.addGroupDetailToModel(model, groupId);
+        groupSettingsService.addSettingAttributesToModel(groupId, model);
+        addGroupSettingAttributeToModel(model, groupId);
+        model.addAttribute(GROUP_ID, groupId);
+        model.addAttribute(CURRENT_USER_ROLE, role);
+        return "groupSettings::groupSettingsRefresh";
+    }
+
+
 
     /**
      * POST method for group setting page to update group long name,
