@@ -11,8 +11,8 @@ async function validateEvidence() {
         document.getElementById('evidenceForm').onsubmit = () => { return false };
         addEvidence()
         document.getElementById('evidenceForm').onsubmit = () => {validateEvidence(); return false}
-        var url = "http://localhost:9000/account?userId=1"
-
+        /* Refresh the container after adding a piece of evidence*/
+        var url = "account?userId=" + document.getElementById('userId').value
            setTimeout(function() {
             $("#evidence").load(url+" #evidence>*","");
            }, 10);
