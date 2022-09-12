@@ -35,7 +35,8 @@ function addEvidence() {
         description: document.getElementById('evidenceDescription').value,
         date: dateValue,
         projectId: 0,
-        userId: document.getElementById('userId').value
+        userId: document.getElementById('userId').value,
+        webLinks: webLinksList
     }
 
     $.post(document.getElementById('evidenceForm').action + "?" + new URLSearchParams(data)).done((result) => {
@@ -108,5 +109,6 @@ function clearEvidenceModalFields() {
     document.getElementById('evidenceTitle').value = "";
     document.getElementById('evidenceDescription').value = "";
     evidenceDatePicker.dates.setValue(tempusDominus.DateTime.convert(new Date()));
+    webLinksList = [];
     $("#evidenceTitleAlertBanner").hide();
 }

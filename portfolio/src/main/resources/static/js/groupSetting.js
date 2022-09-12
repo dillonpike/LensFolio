@@ -17,20 +17,22 @@ function editGroupSetting() {
         groupId: document.getElementById("groupId").value,
         groupSettingsId: document.getElementById("groupSettingsId").value
     }
-    $.post('saveGroupSettings?'+new URLSearchParams(data)).done((result) => {
+    $.post('saveGroupSettings?' + new URLSearchParams(data)).done((result) => {
         $(`#groupSettingContainer`).replaceWith(result);
         initialiseCommitsList()
     }).fail(showError)
 }
 
 /**
- * Function to generate alert banner for error messages and display it on the group setting page.
- * @param modalBodyResponse modal body response from the server
+ * Display the alert banner in the response
+ * @param response response containing an alert banner
  */
-function showError(modalBodyResponse) {
-    $("#groupLongNameAlertBanner").replaceWith(modalBodyResponse.responseText)
-    $("#groupRepoAPIKeyAlertBanner").replaceWith(modalBodyResponse.responseText)
-
+function showError(response) {
+    if (response.responseText.includes("groupLongNameAlertBanner")) {
+        $("#groupLongNameAlertBanner").replaceWith(response.responseText)
+    } else if (response.responseText.includes("groupSettingsAlertBanner")) {
+        $("#groupSettingsAlertBanner").replaceWith(response.responseText)
+    }
 }
 /**
  * Each time a character is typed/pasted will be checked uses a regex validator that are not part of a valid set,
