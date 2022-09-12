@@ -5,16 +5,17 @@ import nz.ac.canterbury.seng302.portfolio.model.GroupSettings;
 import nz.ac.canterbury.seng302.portfolio.repository.GroupSettingsRepository;
 import nz.ac.canterbury.seng302.portfolio.service.*;
 import nz.ac.canterbury.seng302.shared.identityprovider.*;
+import org.gitlab4j.api.GitLabApi;
+import org.gitlab4j.api.GitLabApiException;
+import org.gitlab4j.api.RepositoryApi;
 import org.gitlab4j.api.models.Commit;
 import org.hibernate.ObjectNotFoundException;
 import org.junit.Before;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.Spy;
+import org.mockito.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -62,7 +63,7 @@ class GroupSettingsControllerTest {
             .build();
 
     @Autowired
-    private MockMvc mockMvc;
+    private MockMvc mockMvc = MockMvcBuilders.standaloneSetup(GroupSettingsController.class).build();
 
     @SpyBean
     private GroupSettingsController groupSettingsController;
@@ -78,6 +79,9 @@ class GroupSettingsControllerTest {
 
     @Mock
     private GroupSettingsService mockGroupSettingsService;
+
+    @Mock
+    private RepositoryApi repositoryApi;
 
     @MockBean
     private GroupSettingsRepository groupSettingsRepository;
@@ -98,6 +102,7 @@ class GroupSettingsControllerTest {
     private GitLabApiService gitLabApiService; // needed to load application context
 
 
+
     private static final Group testGroup = new Group("Test", "Test Group", 1);
 
     private static final Group membersGroup = new Group("Short Name", "Long Name", 2);
@@ -110,9 +115,8 @@ class GroupSettingsControllerTest {
     /**
      * Build the mockMvc object and mock security contexts.
      */
-    @Before
+    @BeforeEach
     public void setUpMocks() {
-        mockMvc = MockMvcBuilders.standaloneSetup(GroupSettingsController.class).build();
         SecurityContext mockedSecurityContext = Mockito.mock(SecurityContext.class);
         when(mockedSecurityContext.getAuthentication()).thenReturn(new PreAuthenticatedAuthenticationToken(validAuthState, ""));
         SecurityContextHolder.setContext(mockedSecurityContext);
@@ -149,14 +153,18 @@ class GroupSettingsControllerTest {
                 .when(groupService).getGroupDetails(testGroup.getGroupId());
 
         when(groupSettingsService.getGroupSettingsByGroupId(any(Integer.class))).thenReturn(testGroupSettings);
-        when()
 
 //        when(gitLabApiService.checkGitLabToken(any(Model.class),any(Long.class), any(String.class), any(String.class))).thenReturn(false);
+
+
+        GitLabApiException exception = new GitLabApiException("test", 404);
+
+        doThrow(exception).when(repositoryApi).getBranches(any(Long.class));
+//        verify(repositoryApi, times(1)).getBranches(any(Long.class));
         mockMvc.perform(get("/groupSettings").param("groupId", Integer.toString(testGroup.getGroupId())))
                 .andExpect(status().isOk())
                 .andExpect(model().attribute("groupShortName", testGroup.getShortName()))
-                .andExpect(model().attribute("groupLongName", testGroup.getLongName()))
-                .andExpect(model().attribute("groupSettingsAlertMessage", "Invalid Repository Server URL"));
+                .andExpect(model().attribute("groupLongName", testGroup.getLongName()));
     }
 
     /**
@@ -376,8 +384,7 @@ class GroupSettingsControllerTest {
         ModifyGroupDetailsResponse response = ModifyGroupDetailsResponse.newBuilder()
                 .setIsSuccess(true).setMessage("Unable to update group long name").build();
         doReturn(response).when(groupService).editGroupDetails(any(Integer.class),any(String.class), any(String.class));
-//        doReturn(false).when(gitLabApiService).checkGitLabToken(any(Integer.class), any(String.class), any(String.class));
-        doReturn(true).when(groupSettingsService).isGroupSettingSaved(any(Integer.class),any(Integer.class),any(String.class),any(String.class),any(Integer.class), any(String.class));
+        doReturn(true).when(groupSettingsService).isGroupSettingSaved(any(Integer.class),any(Long.class),any(String.class),any(String.class),any(Integer.class), any(String.class));
         doNothing().when(groupService).addGroupDetailToModel(any(Model.class),any(Integer.class));
         doNothing().when(groupSettingsService).addSettingAttributesToModel(any(Model.class), any(GroupSettings.class));
         doNothing().when(groupSettingsController).addGroupSettingAttributeToModel(any(Model.class),any(Integer.class));
@@ -393,8 +400,7 @@ class GroupSettingsControllerTest {
                         .param("repoID", Integer.toString((int) testGroupSettings.getRepoId()))
                         .param("repoToken", testGroupSettings.getRepoApiKey())
                         .param("groupSettingsId", Integer.toString(testGroupSettings.getGroupSettingsId())))
-                .andExpect(status().isOk())
-                .andExpect(model().attribute("groupSettingsAlertMessage", "Repository Is Unreachable With The Current Settings"))
+
                 .andExpect(view().name("groupSettings::groupSetting"));
 
         verify(groupService, times(1)).editGroupDetails(testGroup.getGroupId(),testGroup.getShortName(), "newLongName");
