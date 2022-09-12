@@ -9,6 +9,7 @@ import org.gitlab4j.api.models.Contributor;
 import org.hibernate.ObjectNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.ui.Model;
 
 
 import java.util.List;
@@ -22,6 +23,9 @@ public class GitLabApiService {
 
     @Autowired
     private GroupSettingsService groupSettingsService;
+
+    private static final String GROUP_SETTING_ALERT_MESSAGE = "groupSettingsAlertMessage";
+
 
     /**
      * Returns a list of branch names for the repository linked to the group.
@@ -79,13 +83,17 @@ public class GitLabApiService {
      * @param repoApiKey the API key to use
      * @return true if the repository is accessible, false otherwise
      */
-    public boolean checkGitLabToken(int repoId, String repoApiKey, String repoUrl) {
+    public void checkGitLabToken(Model model, long repoId, String repoApiKey, String repoUrl) {
         try (GitLabApi gitLabApi = new GitLabApi(repoUrl, repoApiKey)) {
-            gitLabApi.getRepositoryApi().getBranches(Integer.toString(repoId));
-            return true;
+            gitLabApi.getRepositoryApi().getBranches(Long.toString(repoId));
         } catch (GitLabApiException e) {
-            return false;
+            switch (e.getHttpStatus()) {
+                case 401 -> model.addAttribute(GROUP_SETTING_ALERT_MESSAGE, "Invalid API key");
+                case 404 -> model.addAttribute(GROUP_SETTING_ALERT_MESSAGE, "Repository not found");
+                default -> model.addAttribute(GROUP_SETTING_ALERT_MESSAGE, "Invalid Repository Server URL");
+            }
         }
     }
+
 
 }

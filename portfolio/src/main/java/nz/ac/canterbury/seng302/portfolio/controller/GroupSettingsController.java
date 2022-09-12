@@ -83,13 +83,11 @@ public class GroupSettingsController {
             return "redirect:/groups";
         }
 
-        int repoId = (int) groupSettingsService.getGroupSettingsByGroupId(groupId).getRepoId();
+        long repoId = groupSettingsService.getGroupSettingsByGroupId(groupId).getRepoId();
         String repoToken = groupSettingsService.getGroupSettingsByGroupId(groupId).getRepoApiKey();
         String repoUrl = groupSettingsService.getGroupSettingsByGroupId(groupId).getRepoUrl();
-        boolean isConnected = gitLabApiService.checkGitLabToken(repoId, repoToken, repoUrl);
-        if (!isConnected) {
-            model.addAttribute(GROUP_SETTING_ALERT_MESSAGE, "Repository Is Unreachable With The Current Settings");
-        }
+        gitLabApiService.checkGitLabToken(model, repoId, repoToken, repoUrl);
+
         boolean isValidToModify = permissionService.isValidToModifyGroupSettingPage(groupId, id);
         model.addAttribute("isValidToModify", isValidToModify);
 
@@ -153,13 +151,10 @@ public class GroupSettingsController {
         UserResponse user = registerClientService.getUserData(id);
         String role = elementService.getUserHighestRole(user);
 
-        int repoId = (int) groupSettingsService.getGroupSettingsByGroupId(groupId).getRepoId();
+        long repoId = groupSettingsService.getGroupSettingsByGroupId(groupId).getRepoId();
         String repoToken = groupSettingsService.getGroupSettingsByGroupId(groupId).getRepoApiKey();
         String repoUrl = groupSettingsService.getGroupSettingsByGroupId(groupId).getRepoUrl();
-        boolean isConnected = gitLabApiService.checkGitLabToken(repoId, repoToken, repoUrl);
-        if (!isConnected) {
-            model.addAttribute(GROUP_SETTING_ALERT_MESSAGE, "Repository Is Unreachable With The Current Settings");
-        }
+        gitLabApiService.checkGitLabToken(model, repoId, repoToken, repoUrl);
         boolean isValidToModify = permissionService.isValidToModifyGroupSettingPage(groupId, id);
         model.addAttribute("isValidToModify", isValidToModify);
 
@@ -198,7 +193,7 @@ public class GroupSettingsController {
             @RequestParam(name = "groupShortName") String shortName,
             @RequestParam(value = "groupId") int groupId,
             @RequestParam(name = "repoName", required = false, defaultValue = "") String repoName,
-            @RequestParam(name = "repoID", required = false) int repoId,
+            @RequestParam(name = "repoID", required = false) long repoId,
             @RequestParam(name = "repoToken", required = false, defaultValue = "") String repoToken,
             @RequestParam(name = "groupSettingsId") int groupSettingsId,
             @RequestParam(name = "repoURL", required = false, defaultValue = "") String repoServerUrl,
@@ -228,11 +223,8 @@ public class GroupSettingsController {
         }
 
         boolean isSaved = groupSettingsService.isGroupSettingSaved(groupSettingsId, repoId, repoName, repoToken, groupId, repoServerUrl);
-        boolean isConnected = gitLabApiService.checkGitLabToken(repoId, repoToken, repoServerUrl);
+        gitLabApiService.checkGitLabToken(model, repoId, repoToken, repoServerUrl);
 
-        if(!isConnected) {
-            model.addAttribute(GROUP_SETTING_ALERT_MESSAGE, "Repository Is Unreachable With The Current Settings");
-        }
 
         if(!isSaved) {
             model.addAttribute(GROUP_SETTING_ALERT_MESSAGE, "Invalid Repository Information");
@@ -241,7 +233,8 @@ public class GroupSettingsController {
         }
         groupService.addGroupDetailToModel(model, groupId);
         GroupSettings groupSettings = groupSettingsService.getGroupSettingsByGroupId(groupId);
-        groupSettingsService.addSettingAttributesToModel(model, groupSettings);        addGroupSettingAttributeToModel(model, groupId);
+        groupSettingsService.addSettingAttributesToModel(model, groupSettings);
+        addGroupSettingAttributeToModel(model, groupId);
 
         httpServletResponse.setStatus(HttpServletResponse.SC_OK);
         model.addAttribute("successMessage", "Save changed");

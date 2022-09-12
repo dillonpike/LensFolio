@@ -66,10 +66,10 @@ function inputValidateCheck() {
     }, false);
 
     repoToken.addEventListener( "input", event => {
-        repoToken.value = repoToken.value.replace( /[^a-zA-Z0-9~!@#$%^&*()_+|}{:"?><,./;' ]/gm, '');
+        repoToken.value = repoToken.value.replace( /[^a-zA-Z0-9-~!@#$%^&*()_+|}{:"?><,./;' ]/gm, '');
     }, false);
     repoToken.addEventListener( "paste", event => {
-        repoToken.value = repoToken.value.replace( /[^a-zA-Z0-9~!@#$%^&*()_+|}{:"?><,./;' ]/gm, '');
+        repoToken.value = repoToken.value.replace( /[^a-zA-Z0-9-~!@#$%^&*()_+|}{:"?><,./;' ]/gm, '');
     }, false);
 
 }
