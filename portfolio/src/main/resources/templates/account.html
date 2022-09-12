@@ -147,9 +147,27 @@
                     <div class="evidence-block">
                       <div class="detail-block">
                         <div class="evidence-info-block" th:if="${evidence}">
-                          <div class="evidence-title" th:text="${evidence.getTitle}"></div>
-                          <div class="evidence-date" th:text="'Date: ' + ${evidence.getDate}"></div>
-                          <div class="evidence-description" th:text="'Description: ' + ${evidence.getDescription}"></div>
+                          <button th:id="evidenceDropdown + (${meta.index} + 1)" class="btn" type="button" data-bs-toggle="collapse" th:attr="data-bs-target='#collapseEvidence' + ${evidence.getEvidenceId()}, aria-controls='collapseEvidence' + ${evidence.getEvidenceId()}, onClick='changeIcon(eventArrow' + (${meta.index} + 1) + ')'" aria-expanded="false" >
+                            <span class="evidence-title" th:text="${evidence.getTitle}"></span>
+                            <svg th:id="evidenceArrow + (${meta.index} + 1)" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-caret-left-fill" viewBox="0 0 16 16">
+                              <path d="m3.86 8.753 5.482 4.796c.646.566 1.658.106 1.658-.753V3.204a1 1 0 0 0-1.659-.753l-5.48 4.796a1 1 0 0 0 0 1.506z"/>
+                            </svg>
+                          </button>
+                          <div class="padded">
+                            <div class="evidence-date" th:text="'Date: ' + ${evidence.getDate}"></div>
+                            <div class="collapse" th:id="collapseEvidence + ${evidence.getEvidenceId()}">
+                              <div class="evidence-description" th:text="'Description: ' + ${evidence.getDescription}"></div>
+                              <div th:each="webLink, meta: ${evidence.getWebLinks()}">
+                                <a th:href="${webLink.getUrl()}" target="_blank" th:text="${webLink.getUrl()}"></a>
+                              </div>
+                            </div>
+                          </div>
+                          <script th:inline="javascript">
+                            buttonId = /*[['eventDropdown' + (${meta.index} + 1)]]*/ null;
+                            arrowId = /*[['eventArrow' + (${meta.index} + 1)]]*/ null;
+                            setToggle(buttonId, arrowId);
+                          </script>
+
                         </div>
 
                         <!--Buttons for editing and deleting, for future use!!-->
@@ -363,6 +381,13 @@
   let tabToSet = getTab();
   if (tabToSet) {
     document.getElementById(tabToSet).click();
+  }
+
+  function setToggle(collapseButtonId, arrowId) {
+    let shouldToggle = sessionStorage.getItem(arrowId);
+    if (shouldToggle === "true") {
+      document.getElementById(collapseButtonId).click();
+    }
   }
 
 </script>

@@ -167,7 +167,7 @@
                                         </button>
                                     </div>
                                     <div class="collapse" th:id="collapseEvent + ${sprint.getId()}">
-                                    <div th:each="event, meta: ${eventsForSprints.get(meta.index)}">
+                                        <div th:each="event, meta: ${eventsForSprints.get(meta.index)}">
                                             <div class="artefact-info-block">
                                                 <div class="artefact-title" th:text="${event.getEventName()}"/>
                                                 <div class="artefact-date event-start-date" th:text="From + ': ' + ${event.getStartDateDetail()}" th:style="color + ':' + ${event.getStartDateColour()}"/>
