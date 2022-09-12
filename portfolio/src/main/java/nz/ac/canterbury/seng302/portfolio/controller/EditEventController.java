@@ -66,7 +66,7 @@ public class EditEventController {
                 rm.addFlashAttribute("isAccessDenied", true);
             }
         } catch (NotAcceptableException e) {
-            logger.error(String.format("Error occurred while trying to save event, %s", e.getMessage()));
+            logger.error(String.format("Error occurred while trying to save event with id %d: %s", id, e.getMessage()));
         }
 
         return "redirect:/details";

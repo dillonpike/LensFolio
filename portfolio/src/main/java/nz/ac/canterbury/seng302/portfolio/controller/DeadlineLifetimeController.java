@@ -6,6 +6,8 @@ import nz.ac.canterbury.seng302.portfolio.service.ElementService;
 import nz.ac.canterbury.seng302.portfolio.service.PermissionService;
 import nz.ac.canterbury.seng302.portfolio.service.UserAccountClientService;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
@@ -15,11 +17,15 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
+import javax.ws.rs.NotAcceptableException;
+
 /**
  * Controller that handles adding and deleting deadlines.
  */
 @Controller
 public class DeadlineLifetimeController {
+
+    private static final Logger logger = LoggerFactory.getLogger(DeadlineLifetimeController.class);
 
     /**
      * Service for persisting deadlines.
@@ -48,8 +54,13 @@ public class DeadlineLifetimeController {
         Integer userID = userAccountClientService.getUserIDFromAuthState(principal);
         elementService.addHeaderAttributes(model, userID);
 
-        if (permissionService.isValidToModify(userID)) {
-            deadlineService.addDeadline(deadline);
+        try {
+            deadlineService.validateDeadline(deadline, model);
+            if (permissionService.isValidToModify(userID)) {
+                deadlineService.addDeadline(deadline);
+            }
+        } catch (NotAcceptableException e) {
+            logger.error(String.format("Error adding deadline: %s", e.getMessage()));
         }
         return "redirect:/details";
     }

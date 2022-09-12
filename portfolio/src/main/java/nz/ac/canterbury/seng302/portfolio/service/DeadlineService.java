@@ -7,7 +7,9 @@ import nz.ac.canterbury.seng302.portfolio.repository.DeadlinesRepository;
 import org.hibernate.ObjectNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.ui.Model;
 
+import javax.ws.rs.NotAcceptableException;
 import java.util.*;
 
 /***
@@ -18,6 +20,10 @@ public class DeadlineService {
 
     @Autowired
     private DeadlinesRepository repository;
+
+    private static final String DEADLINE_NAME_ERROR_MESSAGE = "deadlineAlertMessage";
+
+    private static final String DEADLINE_DATE_ERROR_MESSAGE = "deadlineDateAlertMessage";
 
     /**
      * Updates a deadline
@@ -168,6 +174,34 @@ public class DeadlineService {
             repository.save(currentDeadline);
         }
         return getAllDeadlinesOrdered();
+    }
+
+    /**
+     * Validate a deadlines fields to ensure they are valid.
+     * @param deadline Deadline to validate
+     * @param model Model to add errors to
+     * @throws NotAcceptableException If the deadline is not valid
+     */
+    public void validateDeadline(Deadline deadline, Model model) throws NotAcceptableException {
+
+        boolean hasError = false;
+        if (deadline.getDeadlineName() == null || deadline.getDeadlineName().trim().isEmpty()) {
+            model.addAttribute(DEADLINE_NAME_ERROR_MESSAGE, "Milestone name cannot be empty");
+            hasError = true;
+        } else if (deadline.getDeadlineName().length() < 2) {
+            model.addAttribute(DEADLINE_NAME_ERROR_MESSAGE, "Name must be at least 2 characters");
+            hasError = true;
+        } else if (deadline.getDeadlineName().length() > 30) {
+            model.addAttribute(DEADLINE_NAME_ERROR_MESSAGE, "Name must be less than 30 characters");
+            hasError = true;
+        }
+        if (deadline.getDeadlineDate() == null) {
+            model.addAttribute(DEADLINE_DATE_ERROR_MESSAGE, "Milestone date cannot be empty");
+            hasError = true;
+        }
+        if (hasError) {
+            throw new NotAcceptableException("Milestone fields have errors");
+        }
     }
 
 }

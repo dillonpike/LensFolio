@@ -6,7 +6,9 @@ import nz.ac.canterbury.seng302.portfolio.repository.MilestoneRepository;
 import org.hibernate.ObjectNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.ui.Model;
 
+import javax.ws.rs.NotAcceptableException;
 import java.util.Date;
 import java.util.ArrayList;
 import java.util.Optional;
@@ -21,6 +23,10 @@ public class MilestoneService {
 
     @Autowired
     private MilestoneRepository repository;
+
+    private static final String MILESTONE_NAME_ERROR_MESSAGE = "milestoneAlertMessage";
+
+    private static final String MILESTONE_DATE_ERROR_MESSAGE = "milestoneDateAlertMessage";
 
 
     /**
@@ -159,5 +165,33 @@ public class MilestoneService {
             }
         }
         return milestonesOverlapped;
+    }
+
+    /**
+     * Validate a milestones fields to ensure they are valid.
+     * @param milestone Milestone to validate
+     * @param model Model to add errors to
+     * @throws NotAcceptableException If the milestone is not valid
+     */
+    public void validateMilestone(Milestone milestone, Model model) throws NotAcceptableException {
+
+        boolean hasError = false;
+        if (milestone.getMilestoneName() == null || milestone.getMilestoneName().trim().isEmpty()) {
+            model.addAttribute(MILESTONE_NAME_ERROR_MESSAGE, "Milestone name cannot be empty");
+            hasError = true;
+        } else if (milestone.getMilestoneName().length() < 2) {
+            model.addAttribute(MILESTONE_NAME_ERROR_MESSAGE, "Name must be at least 2 characters");
+            hasError = true;
+        } else if (milestone.getMilestoneName().length() > 30) {
+            model.addAttribute(MILESTONE_NAME_ERROR_MESSAGE, "Name must be less than 30 characters");
+            hasError = true;
+        }
+        if (milestone.getMilestoneDate() == null) {
+            model.addAttribute(MILESTONE_DATE_ERROR_MESSAGE, "Milestone date cannot be empty");
+            hasError = true;
+        }
+        if (hasError) {
+            throw new NotAcceptableException("Milestone fields have errors");
+        }
     }
 }

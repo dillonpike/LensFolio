@@ -7,6 +7,8 @@ import nz.ac.canterbury.seng302.portfolio.service.PermissionService;
 import nz.ac.canterbury.seng302.portfolio.service.UserAccountClientService;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import org.hibernate.ObjectNotFoundException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
@@ -16,11 +18,15 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import javax.ws.rs.NotAcceptableException;
+
 /**
  * Controller receive HTTP GET, POST, PUT, DELETE calls for edit deadline
  */
 @Controller
 public class EditDeadlineController {
+
+    private static final Logger logger = LoggerFactory.getLogger(EditDeadlineController.class);
 
     @Autowired
     private DeadlineService deadlineService;
@@ -51,13 +57,18 @@ public class EditDeadlineController {
         Integer userID = userAccountClientService.getUserIDFromAuthState(principal);
         elementService.addHeaderAttributes(model, userID);
 
-        if (permissionService.isValidToModify(userID)) {
-            Deadline newDeadline = deadlineService.getDeadlineById(id);
-            newDeadline.setDeadlineName(deadline.getDeadlineName());
-            newDeadline.setDeadlineDate(deadline.getDeadlineDate());
-            deadlineService.updateDeadline(newDeadline);
-        } else{
-            rm.addFlashAttribute("isAccessDenied", true);
+        try {
+            deadlineService.validateDeadline(deadline, model);
+            if (permissionService.isValidToModify(userID)) {
+                Deadline newDeadline = deadlineService.getDeadlineById(id);
+                newDeadline.setDeadlineName(deadline.getDeadlineName());
+                newDeadline.setDeadlineDate(deadline.getDeadlineDate());
+                deadlineService.updateDeadline(newDeadline);
+            } else {
+                rm.addFlashAttribute("isAccessDenied", true);
+            }
+        } catch (NotAcceptableException e) {
+            logger.error(String.format("Error while updating deadline with id  %d: %s", id, e.getMessage()));
         }
         return "redirect:/details";
 

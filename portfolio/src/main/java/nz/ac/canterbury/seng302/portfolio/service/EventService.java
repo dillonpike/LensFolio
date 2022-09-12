@@ -199,18 +199,18 @@ public class EventService {
             model.addAttribute(EVENT_NAME_ERROR_MESSAGE, "Event name cannot be empty");
             hasError = true;
         } else if (event.getEventName().length() < 2) {
-            model.addAttribute(EVENT_NAME_ERROR_MESSAGE, "Title must be at least 2 characters");
+            model.addAttribute(EVENT_NAME_ERROR_MESSAGE, "Name must be at least 2 characters");
             hasError = true;
-        } else if (event.getEventName().length() > 50) {
-            model.addAttribute(EVENT_NAME_ERROR_MESSAGE, "Title must be less than 50 characters");
+        } else if (event.getEventName().length() > 30) {
+            model.addAttribute(EVENT_NAME_ERROR_MESSAGE, "Name must be less than 30 characters");
             hasError = true;
         }
         if (event.getEventStartDate() == null) {
-            model.addAttribute(EVENT_DATE_ERROR_MESSAGE, "Event start date cannot be empty");
+            model.addAttribute(EVENT_DATE_ERROR_MESSAGE, "Correctly formatted dates is required");
             hasError = true;
         }
         if (event.getEventEndDate() == null) {
-            model.addAttribute(EVENT_DATE_ERROR_MESSAGE, "Correctly formatted date is required");
+            model.addAttribute(EVENT_DATE_ERROR_MESSAGE, "Correctly formatted dates is required");
             hasError = true;
         }
         if (hasError) {
