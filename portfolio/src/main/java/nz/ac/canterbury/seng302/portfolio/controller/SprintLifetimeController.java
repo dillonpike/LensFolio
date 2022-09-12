@@ -1,5 +1,7 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
+import nz.ac.canterbury.seng302.portfolio.model.NotificationMessage;
+import nz.ac.canterbury.seng302.portfolio.model.NotificationResponse;
 import nz.ac.canterbury.seng302.portfolio.model.Sprint;
 import nz.ac.canterbury.seng302.portfolio.service.ElementService;
 import nz.ac.canterbury.seng302.portfolio.service.PermissionService;
@@ -7,6 +9,8 @@ import nz.ac.canterbury.seng302.portfolio.service.SprintService;
 import nz.ac.canterbury.seng302.portfolio.service.UserAccountClientService;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -84,5 +88,29 @@ public class SprintLifetimeController {
         }
         /* Return the name of the Thymeleaf template */
         return "redirect:/details";
+    }
+
+    /**
+     * Tells the calendar that sprints or projects have been updated on the details page.
+     * Only sends a string because the calendar has no implementation to show the changes of the project and
+     * sprints other than reloading.
+     * @param message The message to send to the calendar
+     * @return The message to send to the calendar
+     */
+    @MessageMapping("/sprint-project-details-save")
+    @SendTo("/webSocketGet/sprint-project-details-save")
+    public String sprintProjectDetailsChange(String message) {
+        return message;
+    }
+
+    /**
+     * Tells the details page that a sprint has been updated.
+     * @param message The message to send to the details page containing the sprint.
+     * @return The message to send to the details page containing the sprint.
+     */
+    @MessageMapping("/sprint-project-calendar-save")
+    @SendTo("/webSocketGet/sprint-project-calendar-save")
+    public NotificationResponse sprintProjectCalendarChange(NotificationMessage message) {
+        return NotificationResponse.fromMessage(message, "save");
     }
 }

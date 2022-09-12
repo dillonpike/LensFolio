@@ -261,6 +261,7 @@
 <script src="webjars/fullcalendar/5.10.2/main.min.js"></script>
 
 <script>
+    let stompClient = null;
     function connect() {
         let socket = new SockJS('mywebsockets');
         stompClient = Stomp.over(socket);
@@ -273,6 +274,9 @@
                 refreshEvents();
             });
             stompClient.subscribe('/webSocketGet/artefact-add', function (ignore) {
+                refreshEvents();
+            });
+            stompClient.subscribe('/webSocketGet/sprint-project-details-save', function (ignore) {
                 refreshEvents();
             });
         });

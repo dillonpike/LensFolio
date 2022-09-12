@@ -10,6 +10,7 @@ function saveSprint(sprint) {
     $.post("update-sprint?" + new URLSearchParams(data)).done(function (response) {
         if (response) {
             showAlertToast(`${sprint.title} updated`);
+            stompClient.send("/webSocketGet/sprint-project-calendar-save", {}, "Sprint updated");
         }
     });
 }
