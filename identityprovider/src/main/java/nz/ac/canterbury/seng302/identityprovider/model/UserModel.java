@@ -4,7 +4,6 @@ import com.google.protobuf.Timestamp;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.sql.Blob;
 import java.sql.Date;
 import java.text.SimpleDateFormat;
 import java.time.Instant;

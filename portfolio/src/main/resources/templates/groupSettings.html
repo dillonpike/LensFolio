@@ -35,9 +35,15 @@
         </div>
     </div>
 </div>
-<div class="container" id="groupSettingContainer" th:fragment="groupSetting">
+<!-- #object.nullSafe test if an object is null and then returns the provided value if it is.
+        This used because during testing isRepoExist is null value and cause problems
+        when comparing it to the boolean value of isValidToModify-->
+<div class="container" id="groupSettingContainer" th:fragment="groupSetting"  th:style="${#objects.nullSafe(isRepoExist,false) && isValidToModify} ? '' : 'width: 750px;'">
     <div class="row">
-        <div class="col-12 col-md-6 ps-lg-1-6 ps-xl-5" id="settingContainer">
+        <!-- #object.nullSafe test if an object is null and then returns the provided value if it is.
+     This used because during testing isRepoExist is null value and cause problems
+     when comparing it to the boolean value of isValidToModify-->
+        <div  id="settingContainer" th:class="${#objects.nullSafe(isRepoExist,false) && isValidToModify} ? 'col-12 col-md-6 ps-lg-1-6 ps-xl-5 vstack gap-3' : 'ps-lg-1-6 ps-xl-5 vstack gap-3'">
             <div class="card shadow" th:fragment="groupSettingsRefresh">
                 <div class="text-start mb-1-6">
                     <div class="hstack gap-3">
@@ -54,11 +60,11 @@
                         <button type="button" class="btn-close" onclick="document.getElementById('successMessageBanner').hidden = true" aria-label="Close"></button>
                     </div>
                     <form th:action="@{saveGroupSettings}" onsubmit="validateGroupSetting(); return false" id="groupSettingForm" method="post">
-                        <div th:fragment="groupLongNameAlertBanner" class="alert alert-danger alert-dismissible fade show mx-3" role="alert" id="groupLongNameAlertBanner" th:hidden="${groupLongNameAlertMessage==null}">
-                            <span id="groupLongNameAlertMessage" data-test-id="alertMessage" th:text="${groupLongNameAlertMessage}"></span>
-                            <button type="button" class="btn-close" onclick="document.getElementById('groupLongNameAlertBanner').hidden = true" aria-label="Close"></button>
-                        </div>
                         <div class="mb-3 mx-3">
+                            <div th:fragment="groupLongNameAlertBanner" class="alert alert-danger alert-dismissible fade show" role="alert" id="groupLongNameAlertBanner" th:hidden="${groupLongNameAlertMessage==null}">
+                                <span id="groupLongNameAlertMessage" data-test-id="alertMessage" th:text="${groupLongNameAlertMessage}"></span>
+                                <button type="button" class="btn-close" onclick="document.getElementById('groupLongNameAlertBanner').hidden = true" aria-label="Close"></button>
+                            </div>
                             <label for="longGroupName" class="col-form-label">Long Group Name:</label>
                             <input onkeyup="updateCharsLeft('longGroupName', 'longGroupNameLength', 30)" maxlength="30" type="text"
                                    class="form-control" id="longGroupName" th:name="longName" th:value="${groupLongName}" disabled>
@@ -73,29 +79,29 @@
                             <span id="groupRepoAlertMessage" data-test-id="alertMessage" th:text="${groupRepoAlertMessage}"></span>
                             <button type="button" class="btn-close" onclick="document.getElementById('groupRepoAlertBanner').hidden = true" aria-label="Close"></button>
                         </div>
-                        <div class="alert alert-danger alert-dismissible fade show mx-3" role="alert" id="groupSettingsAlertBanner" th:if="${isValidToModify}" th:hidden="${groupSettingsAlertMessage==null}">
+                        <div th:fragment="groupSettingsAlertBanner" class="alert alert-danger alert-dismissible fade show mx-3" role="alert" id="groupSettingsAlertBanner" th:if="${isValidToModify}" th:hidden="${groupSettingsAlertMessage==null}">
                             <span id="groupSettingsAlertMessage" data-test-id="alertMessage" th:text="${groupSettingsAlertMessage}"></span>
                         </div>
                         <div class="mb-3 mx-3">
                             <label for="repoName" class="col-form-label">Repository Name:</label>
-                            <input onkeyup="updateCharsLeft('repoName', 'repoNameLength', 30)" maxlength="30" type="text"
-                                   class="form-control" id="repoName" th:name="repoName" th:value="${repoName}" disabled>
+                            <input onkeyup="updateCharsLeft('repoName', 'repoNameLength', 30)" maxlength="30"
+                                   type="text" class="form-control" id="repoName" th:name="repoName" th:value="${repoName}" disabled>
                             <div class="name-length-message">
                                 <span id="repoNameLength"></span>
                             </div>
                         </div>
                         <div class="mb-3 mx-3">
                             <label for="repoId" class="col-form-label">Repository ID:</label>
-                            <input onkeyup="updateCharsLeft('repoId', 'repoIdLength', 10)" maxlength="10" type="text"
-                                   class="form-control" id="repoId" th:name="repoId" th:value="${repoId}" disabled>
+                            <input onkeyup="updateCharsLeft('repoId', 'repoIdLength', 9)" maxlength="9"
+                                   type="text" class="form-control" id="repoId" th:name="repoId" th:value="${repoId}" th:style="${isConnectionSuccessful} ? '' : 'border-style: solid; border-color: red;'" disabled>
                             <div class="name-length-message">
                                 <span id="repoIdLength"></span>
                             </div>
                         </div>
                         <div class="mb-3 mx-3">
                             <label for="repoToken" class="col-form-label">Repository Access Token:</label>
-                            <input onkeyup="updateCharsLeft('repoToken', 'repoTokenLength', 40)" maxlength="40" type="text"
-                                   class="form-control" id="repoToken" th:name="repoToken" th:value="${repoApiKey}" disabled>
+                            <input onkeyup="updateCharsLeft('repoToken', 'repoTokenLength', 50)" maxlength="50" type="text"
+                                   class="form-control" id="repoToken" th:name="repoToken" th:value="${repoApiKey}" th:style="${isConnectionSuccessful} ? '' : 'border-style: solid; border-color: red;'" disabled>
                             <div class="name-length-message">
                                 <span id="repoTokenLength"></span>
                             </div>
@@ -134,8 +140,7 @@
             </script>
         </div>
 
-        <div id="rightSide" class="col-6 col-md-6 sticky-md-top vstack gap-3">
-            <div class="card shadow">
+            <div class="card shadow" style="margin-bottom: 50px">
                 <div class="container">
                     <h4 id="groupMember" class="mt-3">Group Members</h4>
                     <table class="table table-striped table-bordered display" id="table" >
@@ -160,116 +165,114 @@
                     $('table').dataTable({searching: false, paging: false, info: false, select: true});
                 </script>
             </div>
-
-            <div th:if="${isValidToModify}">
-                <div class="alert alert-danger" role="alert" th:hidden="${isRepoExist}">
-                    No Repository Has Been Set Up Yet!
-                </div>
-                <div class="card shadow" style="padding: 10px" th:hidden="!${isRepoExist}" >
-                    <div class="d-flex flex-row justify-content-between">
-                        <div class="d-flex flex-row justify-content-start">
-                            <h4 id="Recent Commits" class="mt-3">Repository Commits</h4>
-                            <div id="spinnerBox" class="pt-2" style="margin-left: 10px">
-                                <div class="spinner-border" role="status">
-                                    <span class="sr-only"></span>
-                                </div>
+        </div>
+        <!-- #object.nullSafe test if an object is null and then returns the provided value if it is.
+        This used because during testing isRepoExist is null value and cause problems
+        when comparing it to the boolean value of isValidToModify-->
+        <div id="rightSide" class="col-6 col-md-6 sticky-md-top vstack gap-3" th:if="${#objects.nullSafe(isRepoExist,false) && isValidToModify}">
+            <div class="card shadow" style="padding: 10px">
+                <div class="d-flex flex-row justify-content-between">
+                    <div class="d-flex flex-row justify-content-start">
+                        <h4 id="Recent Commits" class="mt-3">Repository Commits</h4>
+                        <div id="spinnerBox" class="pt-2" style="margin-left: 10px">
+                            <div class="spinner-border" role="status">
+                                <span class="sr-only"></span>
                             </div>
                         </div>
-                        <button class="btn btn-light" data-toggle="collapse" href="#collapseFilter" role="button" aria-expanded="false" aria-controls="collapseFilter">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-filter" viewBox="0 0 16 16">
-                                <path d="M6 10.5a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 0 1h-3a.5.5 0 0 1-.5-.5zm-2-3a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1-.5-.5zm-2-3a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-11a.5.5 0 0 1-.5-.5z"/>
-                            </svg>
-                            Filter
-                        </button>
                     </div>
-                    <div class="collapse mt-3" id="collapseFilter">
-                        <div class="d-flex flex-row justify-content-around">
-                            <div>
-                                <label for="branchNamesDropdown">Branch Name</label>
-                                <select id="branchNamesDropdown" class="dropDownSelect selectpicker" data-live-search="true" >
-                                    <option value="All Branches">All Branches</option>
-                                    <option th:each="branchName: ${branchesName}" th:text="${branchName}" th:value="${branchName}"></option>
-                                </select>
-                            </div>
-                            <div>
-                                <label for="nameDropdown">Author Name</label>
-                                <select id="nameDropdown" class="dropDownSelect selectpicker" data-live-search="true" >
-                                    <option value="All Users">All Users</option>
-                                    <option th:each="contributor: ${repositoryContributors}" th:text="${contributor.getName() + ' ('+contributor.getEmail()+')'}" th:value="${contributor.getEmail()}"></option>
-                                </select>
-                            </div>
-
-
+                    <button class="btn btn-light" data-toggle="collapse" href="#collapseFilter" role="button" aria-expanded="false" aria-controls="collapseFilter">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-filter" viewBox="0 0 16 16">
+                            <path d="M6 10.5a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 0 1h-3a.5.5 0 0 1-.5-.5zm-2-3a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1-.5-.5zm-2-3a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-11a.5.5 0 0 1-.5-.5z"/>
+                        </svg>
+                        Filter
+                    </button>
+                </div>
+                <div class="collapse mt-3" id="collapseFilter">
+                    <div class="d-flex flex-row justify-content-around">
+                        <div>
+                            <label for="branchNamesDropdown">Branch Name</label>
+                            <select id="branchNamesDropdown" class="dropDownSelect selectpicker" data-live-search="true" >
+                                <option value="All Branches">All Branches</option>
+                                <option th:each="branchName: ${branchesName}" th:text="${branchName}" th:value="${branchName}"></option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="nameDropdown">Author Name</label>
+                            <select id="nameDropdown" class="dropDownSelect selectpicker" data-live-search="true" >
+                                <option value="All Users">All Users</option>
+                                <option th:each="contributor: ${repositoryContributors}" th:text="${contributor.getName() + ' ('+contributor.getEmail()+')'}" th:value="${contributor.getEmail()}"></option>
+                            </select>
                         </div>
                     </div>
                 </div>
-                <div  th:hidden="!${isRepoExist}">
-                    <div id = "commitsListRefresh" th:fragment="commitsListRefresh" class="overflow-auto" style="height: 500px; margin-bottom: 50px">
+            </div>
 
-                        <div class="card mb-1" th:each="commit: ${commitList}">
-                            <div class="card-body mt-2">
-                                <div class="d-flex flex-row">
-                                    <p style="margin-right: 10px">
-                                        Commits
-                                    </p>
-                                    <a th:href="${commit.getWebUrl()}" th:text="${commit.getId()}"></a>
-                                </div>
-                                <h5 class="card-title" th:text="${commit.getTitle()}"></h5>
-                                <div class="d-flex flex-row justify-content-between">
-                                    <p th:text="${commit.getAuthorName()}"> </p>
-                                    <p th:text="${#dates.format(commit.getCommittedDate(), 'dd/MMM/yyyy h:mm a')}"></p>
-                                </div>
+            <div class="card shadow" style="padding: 10px; margin-bottom: 50px" >
+                <div id = "commitsListRefresh" th:fragment="commitsListRefresh" class="overflow-auto" style="max-height: 500px;">
+                    <div th:if="${commitList !=null and commitList.isEmpty()}">
+                        <div class="card-body mt-2">
+                            <h5 class="card-title">No Commits Found</h5>
+                        </div>
+                    </div>
+                    <div class="card mb-1" th:each="commit: ${commitList}">
+                        <div class="card-body mt-2">
+                            <div class="d-flex flex-row">
+                                <p style="margin-right: 10px">
+                                    Commits
+                                </p>
+                                <a th:href="${commit.getWebUrl()}" th:text="${commit.getId()}"></a>
+                            </div>
+                            <h5 class="card-title" th:text="${commit.getTitle()}"></h5>
+                            <div class="d-flex flex-row justify-content-between">
+                                <p th:text="${commit.getAuthorName()}"> </p>
+                                <p th:text="${#dates.format(commit.getCommittedDate(), 'dd/MMM/yyyy h:mm a')}"></p>
                             </div>
                         </div>
-                        <script th:inline="javascript">
-                            /**
-                             * Update the commit list when the selected branch name is updated
-                             */
-                            $("#branchNamesDropdown").on("change", function () {
-                                updatingCommitsList()
-                                const data = {
-                                    groupId: ID,
-                                    branchName: $(this).val(),
-                                    userEmail: $("#nameDropdown").val()
-                                }
-                                $.get('repository-commits?' + new URLSearchParams(data)).done((result) => {
-                                    $(`#commitsListRefresh`).replaceWith(result)
-                                    finishUpdatingCommitsList()
-                                    $('.dropDownSelect').selectpicker();
-                                })
-
-                            });
-
-                            /**
-                             * Update the commit list when the selected user is updated
-                             */
-                            $("#nameDropdown").on("change", function () {
-                                updatingCommitsList()
-                                const data = {
-                                    groupId: ID,
-                                    branchName: $("#branchNamesDropdown").val(),
-                                    userEmail: $(this).val()
-                                }
-                                $.get('repository-commits?' + new URLSearchParams(data)).done((result) => {
-                                    $(`#commitsListRefresh`).replaceWith(result)
-                                    finishUpdatingCommitsList()
-                                    $('.dropDownSelect').selectpicker();
-                                })
-
-                            });
-                        </script>
                     </div>
+                    <script th:inline="javascript">
+                        /**
+                         * Update the commit list when the selected branch name is updated
+                         */
+                        $("#branchNamesDropdown").on("change", function () {
+                            updatingCommitsList()
+                            const data = {
+                                groupId: ID,
+                                branchName: $(this).val(),
+                                userEmail: $("#nameDropdown").val()
+                            }
+                            $.get('repository-commits?' + new URLSearchParams(data)).done((result) => {
+                                $(`#commitsListRefresh`).replaceWith(result)
+                                finishUpdatingCommitsList()
+                                $('.dropDownSelect').selectpicker();
+                            })
+
+                        });
+
+                        /**
+                         * Update the commit list when the selected user is updated
+                         */
+                        $("#nameDropdown").on("change", function () {
+                            updatingCommitsList()
+                            const data = {
+                                groupId: ID,
+                                branchName: $("#branchNamesDropdown").val(),
+                                userEmail: $(this).val()
+                            }
+                            $.get('repository-commits?' + new URLSearchParams(data)).done((result) => {
+                                $(`#commitsListRefresh`).replaceWith(result)
+                                finishUpdatingCommitsList()
+                                $('.dropDownSelect').selectpicker();
+                            })
+
+                        });
+                    </script>
                 </div>
             </div>
-            </div>
-            </div>
-         </div>
+        </div>
     </div>
 </div>
 
 <script th:inline="javascript">
-
-
     /*<![CDATA[*/
     const ID = /*[[${group.getGroupId()}]]*/ "-1";
     /*]]>*/
@@ -292,8 +295,6 @@
         }
     }
 
-
-
     /**
      * This function is called when the process of updating commits list is running
      * This function will disable the filtering input to prevent concurrency and display spinner
@@ -312,12 +313,10 @@
         document.getElementById("spinnerBox").style.setProperty("visibility", 'hidden', "important");
     }
 
-
     /**
      * Initialise the commit list when group settings page is loaded
      */
     function initialiseCommitsList() {
-
         updatingCommitsList();
         const data = {
             groupId: ID,
@@ -329,13 +328,13 @@
             finishUpdatingCommitsList()
             $('.dropDownSelect').selectpicker();
         })
-
     }
+    inputValidateCheck()
     initialiseCommitsList()
 
     /**
-     * Enable all input fields, display 'Save'
-     * and 'Cancel' buttons and hide edit button when click edit button
+     * Enable all input fields, display 'Save' and 'Cancel' buttons and character length messages, and hide edit button.
+     * Runs when edit button is clicked.
      */
     function isEditing() {
         $("#longGroupName").prop("disabled", false);
@@ -346,6 +345,7 @@
         $("#saveButton").prop("hidden", false)
         $("#cancelButton").prop("hidden", false)
         $("#groupSettingEdit").prop("hidden", true)
+        $(".name-length-message").prop("hidden", false)
         $("#groupSettingsAlertBanner").prop("hidden", true)
         document.getElementById('successMessageBanner').hidden = true
     }
@@ -353,21 +353,21 @@
 
 
     /**
-     * Disable all input field, hide 'Save', 'Cancel' buttons
-     * and display edit button when click cancel button or finish edit.
+     * Disable all input fields, hide 'Save' and 'Cancel' buttons and character length messages, and display edit button.
+     * Runs when cancel button is clicked.
      */
-    function stopEditing(groupId) {
+    function stopEditing() {
         const url = "groupSettings/refreshGroupSettings";
         $('#settingContainer').load(url, "groupId=" + groupId)
-        //
-        // $("#longGroupName").prop("disabled", true);
-        // $("#repoName").prop("disabled", true);
-        // $("#repoId").prop("disabled", true);
-        // $("#repoToken").prop("disabled", true);
-        // $("#repoUrl").prop("disabled", true);
-        // $("#saveButton").prop("hidden", true)
-        // $("#cancelButton").prop("hidden", true)
-        // $("#groupSettingEdit").prop("hidden", false)
+
+        $("#longGroupName").prop("disabled", true);
+        $("#repoName").prop("disabled", true);
+        $("#repoId").prop("disabled", true);
+        $("#repoToken").prop("disabled", true);
+        $("#saveButton").prop("hidden", true)
+        $("#cancelButton").prop("hidden", true)
+        $("#groupSettingEdit").prop("hidden", false)
+        $(".name-length-message").prop("hidden", true)
     }
 </script>
 </body>

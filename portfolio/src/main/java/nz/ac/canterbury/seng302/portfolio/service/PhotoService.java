@@ -49,7 +49,7 @@ public class PhotoService {
             paths = trueImagePath.split("/identityprovider");
             path = paths[1];
         } else { // The VM uses a shared folder currently so no additional saving is necessary.
-            paths = profileImagePath.split("/" + getApplicationLocation(dataSource));
+            paths = profileImagePath.split(String.format("/%s",getApplicationLocation(dataSource)));
             path = getApplicationLocation(dataSource) + paths[1];
         }
         return path;

@@ -205,6 +205,29 @@ class GroupSettingsControllerTest {
     }
 
     /**
+     * Test that the group settings page is loaded with the correct short and long name when given a valid id
+     * Also test if the group setting page contains the correct information(group attributes and group setting attributes).
+     * @throws Exception when an exception is thrown while performing the get request
+     */
+    @Test
+    void groupSettingsValidAndGroupSettingExist() throws Exception {
+        doReturn(GroupDetailsResponse.newBuilder()
+                .setGroupId(testGroup.getGroupId()).setShortName(testGroup.getShortName())
+                .setLongName(testGroup.getLongName()).build())
+                .when(groupService).getGroupDetails(testGroup.getGroupId());
+        doReturn(testGroupSettings)
+                .when(groupSettingsServiceSpy).getGroupSettingsByGroupId(any(Integer.class));
+        when(gitLabApiService.checkGitLabToken(any(Integer.class), any(String.class))).thenReturn(true);
+
+        mockMvc.perform(get("/groupSettings").param("groupId", Integer.toString(testGroup.getGroupId())))
+                .andExpect(status().isOk())
+                .andExpect(model().attribute("groupShortName", testGroup.getShortName()))
+                .andExpect(model().attribute("groupLongName", testGroup.getLongName()));
+
+        verify(groupSettingsService, times(1)).addSettingAttributesToModel(any(Integer.class), any(Model.class));
+    }
+
+    /**
      * Test that the group settings page redirects to the groups page when trying to access the group settings page for
      * the special non-members group.
      * @throws Exception when an exception is thrown while performing the get request
@@ -360,7 +383,7 @@ class GroupSettingsControllerTest {
                         .param("repoToken", testGroupSettings.getRepoApiKey())
                         .param("groupSettingsId", Integer.toString(testGroupSettings.getGroupSettingsId())))
                         .andExpect(status().isBadRequest())
-                        .andExpect(model().attribute("groupLongNameAlertMessage", "Error updating group long name"))
+                        .andExpect(model().attribute("groupLongNameAlertMessage", "Unable to update group long name"))
                         .andExpect(view().name("groupSettings::groupLongNameAlertBanner"));
 
         verify(groupService, times(1)).editGroupDetails(testGroup.getGroupId(),testGroup.getShortName(), "newLongName");
@@ -381,6 +404,9 @@ class GroupSettingsControllerTest {
         doNothing().when(groupSettingsService).addSettingAttributesToModel(any(Model.class), any(GroupSettings.class));
         doNothing().when(groupSettingsController).addGroupSettingAttributeToModel(any(Model.class),any(Integer.class));
         when(permissionService.isValidToModifyGroupSettingPage(any(Integer.class), any(Integer.class))).thenReturn(true);
+
+        doReturn(true).when(groupSettingsService).isValidGroupSettings((int)testGroupSettings.getRepoId(),
+                testGroupSettings.getRepoName(), testGroupSettings.getRepoApiKey());
 
         mockMvc.perform(post("/saveGroupSettings")
                         .param("groupLongName", "newLongName")
@@ -411,6 +437,8 @@ class GroupSettingsControllerTest {
         doNothing().when(groupSettingsService).addSettingAttributesToModel(any(Model.class), any(GroupSettings.class));
         doNothing().when(groupSettingsController).addGroupSettingAttributeToModel(any(Model.class),any(Integer.class));
         when(permissionService.isValidToModifyGroupSettingPage(any(Integer.class), any(Integer.class))).thenReturn(true);
+        doReturn(true).when(groupSettingsService).isValidGroupSettings((int)testGroupSettings.getRepoId(),
+                testGroupSettings.getRepoName(), testGroupSettings.getRepoApiKey());
 
         mockMvc.perform(post("/saveGroupSettings")
                         .param("groupLongName", "newLongName")
@@ -427,5 +455,27 @@ class GroupSettingsControllerTest {
         verify(groupService, times(1)).editGroupDetails(testGroup.getGroupId(),testGroup.getShortName(), "newLongName");
     }
 
+    /**
+     * Tests that a post request to update the repository details returns bad request response with an error banner
+     * when the new repository settings are invalid.
+     * @throws Exception when an exception is thrown while performing the post request
+     */
+    @Test
+    void modifyRepositorySettingInvalidGroupSettingsArguments() throws Exception {
+        when(permissionService.isValidToModifyGroupSettingPage(any(Integer.class), any(Integer.class))).thenReturn(true);
+        doReturn(false).when(groupSettingsService).isValidGroupSettings((int)testGroupSettings.getRepoId(),
+                testGroupSettings.getRepoName(), testGroupSettings.getRepoApiKey());
 
+        mockMvc.perform(post("/saveGroupSettings")
+                        .param("groupLongName", "newLongName")
+                        .param("groupShortName", testGroup.getShortName())
+                        .param("groupId", Integer.toString(testGroup.getGroupId()))
+                        .param("repoName", testGroupSettings.getRepoName())
+                        .param("repoID", Integer.toString((int) testGroupSettings.getRepoId()))
+                        .param("repoToken", testGroupSettings.getRepoApiKey())
+                        .param("groupSettingsId", Integer.toString(testGroupSettings.getGroupSettingsId())))
+                .andExpect(status().isBadRequest())
+                .andExpect(model().attribute("groupSettingsAlertMessage", "Please enter valid repository settings"))
+                .andExpect(view().name("groupSettings::groupSettingsAlertBanner"));
+    }
 }

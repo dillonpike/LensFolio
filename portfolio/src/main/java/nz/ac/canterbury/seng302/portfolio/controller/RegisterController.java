@@ -33,10 +33,10 @@ public class RegisterController {
 
     private static final Pattern NAME_PATTERN = Pattern.compile("[A-Za-z'-]{2,20}");
 
-    private static final String PASSWORD_PATTERN =
+    private static final String PASS_PATTERN =
             "^(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#&()–[{}]:;',.?/*~$^+=<>]).{8,20}$";
 
-    private static final Pattern pattern = Pattern.compile(PASSWORD_PATTERN);
+    private static final Pattern pattern = Pattern.compile(PASS_PATTERN);
 
 
     String defaultUsername = "defaultUsername";
