@@ -62,7 +62,7 @@ public class GroupModelServerService extends GroupsServiceGrpc.GroupsServiceImpl
             GroupModel group = groupModelService.getGroupById(request.getGroupId());
             Set<UserModel> users = group.getMembers();
 
-            if (groupModelService.removeGroup(request.getGroupId())) {
+            if (groupModelService.removeGroup(groupId)) {
                 for (UserModel user : users) {
                     user.getGroups().remove(group);
                     if (user.getGroups().isEmpty()) {

@@ -191,7 +191,7 @@ public class RegisteringStepDefs {
 
     @Then("username error message should be displayed")
     public void usernameErrorMessageShouldBeDisplayed() {
-        assertTrue(webDriver.findElement(By.id("usernameInvalidMessage")).isDisplayed());
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("usernameInvalidMessage")));
     }
 
     @When("I login with a  right username {string}")
