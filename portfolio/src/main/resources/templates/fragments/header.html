@@ -84,16 +84,16 @@
      * Redirect user to their profile page.
      */
     function redirectToProfilePage() {
-        localStorage.setItem('tab', 'profile-tab')
-        document.location.href = '/account?userId=' + /*[[${userId}]]*/ null
+        localStorage.setItem('tab', 'profile-tab');
+        document.location.href = '../account?userId=' + /*[[${userId}]]*/ null;
     }
 
     /**
      * Redirect user to their evidence page.
      */
     function redirectToEvidencePage() {
-        localStorage.setItem('tab', 'evidence-tab')
-        document.location.href = '/account?userId=' + /*[[${userId}]]*/ null
+        localStorage.setItem('tab', 'evidence-tab');
+        document.location.href = '../account?userId=' + /*[[${userId}]]*/ null;
     }
     /*]]>*/
 </script>
