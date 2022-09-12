@@ -137,11 +137,6 @@
                     $('#questionToolTip').tooltip();
                 </script>
             </div>
-            <script>
-                inputValidateCheck();
-            </script>
-        </div>
-
             <div class="card shadow" style="margin-bottom: 50px">
                 <div class="container">
                     <h4 id="groupMember" class="mt-3">Group Members</h4>
@@ -167,7 +162,11 @@
                     $('table').dataTable({searching: false, paging: false, info: false, select: true});
                 </script>
             </div>
+            <script>
+                inputValidateCheck();
+            </script>
         </div>
+
         <!-- #object.nullSafe test if an object is null and then returns the provided value if it is.
         This used because during testing isRepoExist is null value and cause problems
         when comparing it to the boolean value of isValidToModify-->
