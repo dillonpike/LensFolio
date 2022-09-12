@@ -9,6 +9,7 @@ import org.gitlab4j.api.models.Commit;
 import org.hibernate.ObjectNotFoundException;
 import org.junit.Before;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -62,7 +63,7 @@ class GroupSettingsControllerTest {
             .build();
 
     @Autowired
-    private MockMvc mockMvc;
+    private MockMvc mockMvc = MockMvcBuilders.standaloneSetup(GroupSettingsController.class).build();
 
     @SpyBean
     private GroupSettingsController groupSettingsController;
@@ -107,9 +108,9 @@ class GroupSettingsControllerTest {
     /**
      * Build the mockMvc object and mock security contexts.
      */
-    @Before
+    @BeforeEach
     public void setUpMocks() {
-        mockMvc = MockMvcBuilders.standaloneSetup(GroupSettingsController.class).build();
+
         SecurityContext mockedSecurityContext = Mockito.mock(SecurityContext.class);
         when(mockedSecurityContext.getAuthentication()).thenReturn(new PreAuthenticatedAuthenticationToken(validAuthState, ""));
         SecurityContextHolder.setContext(mockedSecurityContext);
