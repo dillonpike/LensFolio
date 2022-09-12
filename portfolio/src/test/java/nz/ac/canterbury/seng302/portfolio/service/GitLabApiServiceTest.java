@@ -8,10 +8,8 @@ import org.gitlab4j.api.models.Contributor;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockedConstruction;
-import org.mockito.Spy;
+import org.junit.jupiter.params.provider.EnumSource;
+import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.ui.ExtendedModelMap;
 import org.springframework.ui.Model;
@@ -196,8 +194,15 @@ class GitLabApiServiceTest {
         int repoId = 12345;
         MockedConstruction<GitLabApi> mockedConstruction = mockConstruction(GitLabApi.class, (mock, context) ->
                 when(mock.getRepositoryApi()).thenReturn(repositoryApi));
-        when(repositoryApi.getBranches(Integer.toString(repoId))).thenReturn(null);
+        when(repositoryApi.getBranches(Integer.toString(repoId))).thenThrow(new GitLabApiException("test", 404));
+        ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
+        ArgumentCaptor<String> captor1 = ArgumentCaptor.forClass(String.class);
+        Model model = mock(Model.class);
+        gitLabApiService.checkGitLabToken(model, testGroupSettings.getRepoId(),testGroupSettings.getRepoApiKey(),testGroupSettings.getRepoUrl());
+        verify(model).addAttribute(captor.capture(),captor1.capture());
 
+        assertEquals("groupSettingsAlertMessage", captor.getValue());
+        assertEquals("Repository not found", captor1.getValue());
 //        assertTrue(gitLabApiService.checkGitLabToken(any(Model.class)), "testToken", "https://eng-git.canterbury.ac.nz");
         mockedConstruction.close();
     }
