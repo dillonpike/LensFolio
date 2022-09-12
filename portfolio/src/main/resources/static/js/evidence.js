@@ -9,10 +9,13 @@ async function validateEvidence() {
         validateModalDate('evidenceDate', 'milestoneModalButton', 'evidenceDateAlertBanner', 'evidenceDateAlertMessage')
     ) {
         document.getElementById('evidenceForm').onsubmit = () => { return false };
-
         addEvidence()
-
         document.getElementById('evidenceForm').onsubmit = () => {validateEvidence(); return false}
+        var url = "http://localhost:9000/account?userId=1"
+
+           setTimeout(function() {
+            $("#evidence").load(url+" #evidence>*","");
+           }, 10);
     }
 }
 
