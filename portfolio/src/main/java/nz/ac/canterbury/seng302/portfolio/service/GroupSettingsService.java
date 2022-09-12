@@ -85,7 +85,6 @@ public class GroupSettingsService {
     /**
      * Method to add group setting modal attribute to the model,
      * it will set repo id to 0 if current group repository has not been set up.
-     * @param groupId current group id
      * @param model model to add group setting modal attribute to
      */
     public void addSettingAttributesToModel(Model model, GroupSettings groupSettings) {
