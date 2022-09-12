@@ -103,7 +103,7 @@
         /**
          * Adds a web link to the list of web links.
          */
-        function addWebLinks(){
+        function addWebLinks() {
 
             const urlString = document.getElementById("evidenceWeblink").value;
             //validate
@@ -179,5 +179,15 @@
                 '(\\#[-a-z\\d_]*)?$','i'); // validate fragment locator
             return !!urlPattern.test(urlString);
         }
+
+        // Adds a web link rather than submitting the form if the user presses the enter key in the web link input
+        // field and has something typed in
+        const webLinkInput = document.getElementById("evidenceWeblink");
+        webLinkInput.addEventListener("keydown", function (e) {
+            if (e.code === "Enter" && webLinkInput.value.trim() !== "") {
+                e.preventDefault();
+                addWebLinks(e);
+            }
+        });
     </script>
 </div>
