@@ -64,7 +64,7 @@ public class GroupSettingsController {
      * @param model group setting page model
      * @return group settings page
      */
-    @RequestMapping("/groupSettings")
+    @GetMapping("/groupSettings")
     public String groupSettings(
             @RequestParam(value = "groupId") int groupId,
             @AuthenticationPrincipal AuthState principal,
