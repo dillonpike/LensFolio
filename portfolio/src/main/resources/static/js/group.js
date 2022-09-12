@@ -29,7 +29,7 @@ function updateTable(groupId) {
  */
 function redirectToSettingsPage(groupId) {
     const url = 'groupSettings?groupId=' + groupId
-    document.location.href = url
+    window.location.href = url
 }
 
 /**
