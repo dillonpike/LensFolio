@@ -1,6 +1,3 @@
-
-
-
 /**
  * Checks that the evidence modal inputs have text entered in them, then submits the evidence adding form and adds
  * the new evidence to the page if the action was successful, otherwise updates the modal with error messages.
@@ -26,6 +23,7 @@ async function validateEvidence() {
 function addEvidence() {
 
     let dateValue = new Date(document.getElementById('evidenceDate').value);
+
     if (dateValue.toString() === "Invalid Date") {
         dateValue = new Date("01/01/1970");
     }
