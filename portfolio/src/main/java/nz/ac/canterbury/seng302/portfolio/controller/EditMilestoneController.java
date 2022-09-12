@@ -59,7 +59,6 @@ public class EditMilestoneController {
             milestoneService.updateMilestone(newMilestone);
         }
 
-
         return "redirect:/details";
     }
 }

@@ -69,10 +69,14 @@
                         </div>
                         <br>
                         <h4 id="repositorySetting" class="mx-3">Repository Settings</h4>
+                        <div th:fragment="groupRepoAlertBanner" class="alert alert-danger alert-dismissible fade show mx-3" role="alert" id="groupRepoAlertBanner" th:hidden="${groupRepoAlertMessage==null}">
+                            <span id="groupRepoAlertMessage" data-test-id="alertMessage" th:text="${groupRepoAlertMessage}"></span>
+                            <button type="button" class="btn-close" onclick="document.getElementById('groupRepoAlertBanner').hidden = true" aria-label="Close"></button>
+                        </div>
+                        <div th:fragment="groupSettingsAlertBanner" class="alert alert-danger alert-dismissible fade show mx-3" role="alert" id="groupSettingsAlertBanner" th:if="${isValidToModify}" th:hidden="${groupSettingsAlertMessage==null}">
+                            <span id="groupSettingsAlertMessage" data-test-id="alertMessage" th:text="${groupSettingsAlertMessage}"></span>
+                        </div>
                         <div class="mb-3 mx-3">
-                            <div th:fragment="groupSettingsAlertBanner" class="alert alert-danger alert-dismissible fade show" role="alert" id="groupSettingsAlertBanner" th:hidden="${groupSettingsAlertMessage==null}">
-                                <span id="groupSettingsAlertMessage" data-test-id="alertMessage" th:text="${groupSettingsAlertMessage}"></span>
-                            </div>
                             <label for="repoName" class="col-form-label">Repository Name:</label>
                             <input onkeyup="updateCharsLeft('repoName', 'repoNameLength', 30)" maxlength="30"
                                    type="text" class="form-control" id="repoName" th:name="repoName" th:value="${repoName}" disabled>
@@ -96,7 +100,7 @@
                                 <span id="repoTokenLength"></span>
                             </div>
                         </div>
-                        <input type="hidden" th:value="${groupId}" name="groupId" id="groupId" th:name="groupId">
+                        <input type="hidden" th:value="${groupId}" name="groupId" id="groupId" th:name="groupId" maxlength="10">
                         <input type="hidden" th:value="${groupSettingsId}" name="groupSettingsId" id="groupSettingsId" th:name="groupSettingsId">
                         <br>
                         <div class="hstack gap-3">
@@ -106,6 +110,9 @@
                     </form>
                 </div>
             </div>
+            <script>
+                inputValidateCheck();
+            </script>
         </div>
 
         <div id="rightSide" class="col-6 col-md-6 sticky-md-top vstack gap-3">
@@ -141,7 +148,14 @@
                 </div>
                 <div class="card shadow" style="padding: 10px" th:hidden="!${isRepoExist}" >
                     <div class="d-flex flex-row justify-content-between">
-                        <h4 id="Recent Commits" class="mt-3">Repository Commits</h4>
+                        <div class="d-flex flex-row justify-content-start">
+                            <h4 id="Recent Commits" class="mt-3">Repository Commits</h4>
+                            <div id="spinnerBox" class="pt-2" style="margin-left: 10px">
+                                <div class="spinner-border" role="status">
+                                    <span class="sr-only"></span>
+                                </div>
+                            </div>
+                        </div>
                         <button class="btn btn-light" data-toggle="collapse" href="#collapseFilter" role="button" aria-expanded="false" aria-controls="collapseFilter">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-filter" viewBox="0 0 16 16">
                                 <path d="M6 10.5a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 0 1h-3a.5.5 0 0 1-.5-.5zm-2-3a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1-.5-.5zm-2-3a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-11a.5.5 0 0 1-.5-.5z"/>
@@ -162,7 +176,7 @@
                                 <label for="nameDropdown">Author Name</label>
                                 <select id="nameDropdown" class="dropDownSelect selectpicker" data-live-search="true" >
                                     <option value="All Users">All Users</option>
-                                    <option th:each="contributor: ${repositoryContributors}" th:text="${contributor.getName()}" th:value="${contributor.getEmail()}"></option>
+                                    <option th:each="contributor: ${repositoryContributors}" th:text="${contributor.getName() + ' ('+contributor.getEmail()+')'}" th:value="${contributor.getEmail()}"></option>
                                 </select>
                             </div>
                             <div id="spinnerBox">
@@ -291,7 +305,6 @@
             $('.dropDownSelect').selectpicker();
         })
     }
-    inputValidateCheck()
     initialiseCommitsList()
 
     /**
@@ -308,6 +321,8 @@
         $("#groupSettingEdit").prop("hidden", true)
         $(".name-length-message").prop("hidden", false)
     }
+
+
 
     /**
      * Disable all input fields, hide 'Save' and 'Cancel' buttons and character length messages, and display edit button.

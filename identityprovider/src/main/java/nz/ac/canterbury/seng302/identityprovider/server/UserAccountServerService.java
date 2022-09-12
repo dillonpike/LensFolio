@@ -502,23 +502,17 @@ public class UserAccountServerService extends UserAccountServiceGrpc.UserAccount
             UserRole role = request.getRole();
             if (user != null) {
                 if (role.getNumber() == 0) {
-                    Roles studentRole = rolesRepository.findByRoleName("STUDENT");
-                    user.deleteRole(studentRole);
-                    userModelService.saveEditedUser(user);
+                    userModelService.removeUserRole(user, "STUDENT");
                     reply.setIsSuccess(true);
                 }else if (role.getNumber() == 1) {
-                    Roles teacherRole = rolesRepository.findByRoleName("TEACHER");
-                    user.deleteRole(teacherRole);
-                    userModelService.saveEditedUser(user);
+                    userModelService.removeUserRole(user, "TEACHER");
                     boolean wasRemovedFromGroup = groupModelService.removeUsersFromGroup(new ArrayIterator<>(new UserModel[]{user}), GroupModelServerService.TEACHERS_GROUP_ID);
                     if (!wasRemovedFromGroup) {
                         throw new InvalidAttributesException("Teacher Group did not exist. ");
                     }
                     reply.setIsSuccess(true);
                 } else {
-                    Roles adminRole = rolesRepository.findByRoleName("COURSE ADMINISTRATOR");
-                    user.deleteRole(adminRole);
-                    userModelService.saveEditedUser(user);
+                    userModelService.removeUserRole(user, "COURSE ADMINISTRATOR");
                     reply.setIsSuccess(true);
                 }
             }

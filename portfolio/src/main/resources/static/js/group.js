@@ -78,8 +78,8 @@ function groupModalSetup() {
         modalBodyInputs[0].value = shortName
         modalBodyInputs[1].value = longName
 
-        updateCharsLeft('shortGroupName', 'shortGroupNameLength', 10)
-        updateCharsLeft('longGroupName', 'longGroupNameLength', 30)
+        updateCharsLeft('shortGroupNameInput', 'shortGroupNameLength', 10)
+        updateCharsLeft('longGroupNameInput', 'longGroupNameLength', 30)
     })
  }
 
@@ -90,8 +90,8 @@ function groupModalSetup() {
  * @returns {Promise<void>} null
  */
 async function validateGroup() {
-    if (validateModalName('shortGroupName', 'groupShortNameAlertBanner', 'groupShortNameAlertMessage') &&
-        validateModalName('longGroupName', 'groupLongNameAlertBanner', 'groupLongNameAlertMessage')
+    if (validateModalName('shortGroupNameInput', 'groupShortNameAlertBanner', 'groupShortNameAlertMessage') &&
+        validateModalName('longGroupNameInput', 'groupLongNameAlertBanner', 'groupLongNameAlertMessage')
     ) {
         document.getElementById('groupForm').onsubmit = () => { return false };
 
@@ -111,14 +111,14 @@ async function validateGroup() {
  */
 function addGroup() {
     const data = {
-        shortName: document.getElementById('shortGroupName').value,
-        longName: document.getElementById('longGroupName').value
+        shortName: document.getElementById('shortGroupNameInput').value,
+        longName: document.getElementById('longGroupNameInput').value
     }
     $.post(document.getElementById('groupForm').action + "?" + new URLSearchParams(data)).done((result) => {
         $('#groupModal').modal('toggle')
         document.getElementById("groupList").innerHTML += result
         groupButtonSetup() // Allow group cards to be highlighted when selected
-    }).fail(replaceModalBody)
+    }).fail(replaceGroupModalBody)
 }
 
 /**
@@ -127,8 +127,8 @@ function addGroup() {
  */
 function editGroup() {
     const data = {
-        shortName: document.getElementById('shortGroupName').value,
-        longName: document.getElementById('longGroupName').value
+        shortName: document.getElementById('shortGroupNameInput').value,
+        longName: document.getElementById('longGroupNameInput').value
     }
     const action = document.getElementById('groupForm').action
     $.post(action + "?" + new URLSearchParams(data)).done((result) => {
@@ -138,17 +138,17 @@ function editGroup() {
         $(`#groupCard${id}`).replaceWith(result)
         groupButtonSetup() // Allow group cards to be highlighted when selected
         $(`#groupCard${id} button`).click() // Select edited group
-    }).fail(replaceModalBody)
+    }).fail(replaceGroupModalBody)
 }
 
 /**
- * Replaces the body of the modal with the given modalBody response from the backend.
+ * Replaces the body of the group modal with the given modalBody response from the backend.
  * @param modalBodyResponse response with new modalBody to display (groupModalBody fragment)
  */
-function replaceModalBody(modalBodyResponse) {
+function replaceGroupModalBody(modalBodyResponse) {
     $("#groupModalBody").replaceWith(modalBodyResponse.responseText)
-    updateCharsLeft('shortGroupName', 'shortGroupNameLength', 10)
-    updateCharsLeft('longGroupName', 'longGroupNameLength', 30)
+    updateCharsLeft('shortGroupNameInput', 'shortGroupNameLength', 10)
+    updateCharsLeft('longGroupNameInput', 'longGroupNameLength', 30)
 }
 
 /**
@@ -242,8 +242,8 @@ function highlightCurrentGroup() {
 function updateMembersWithoutAGroupCard() {
     $.get('members-without-a-group').done((result) => {
         $(`#groupCard1`).replaceWith(result)
-        highlightCurrentGroup()
         groupButtonSetup() // Allow group cards to be highlighted when selected
+        highlightCurrentGroup()
     })
 }
 
@@ -321,7 +321,7 @@ function removeUserModalButtonFunction() {
     const selected = userTable.rows('.selected').data().toArray().map(row => row.DT_RowId)
     const groupId = getCurrentGroupId()
     const data = {groupId: groupId, userIds: selected}
-    const groupName = document.getElementById('shortGroupName').innerText
+    const groupName = document.getElementById('shortGroupNameInput').innerText
     $.post('remove-users' + "?" + new URLSearchParams(data)).done((result) => {
             if (data.groupId === '1') {
                 $(`#groupList`).replaceWith(result)
@@ -336,7 +336,6 @@ function removeUserModalButtonFunction() {
             updateTable(groupId)
             updateMembersWithoutAGroupCard()
             $('#removeUserModal').modal('toggle')
-            groupButtonSetup() // Allow group cards to be highlighted when selected
             showAlertToast("Group " + groupName + " Updated")
             reloadRemovedUsers()
         }).fail(() => {
@@ -350,7 +349,7 @@ function removeUserModalButtonFunction() {
  * replace invalid character with a blank character
  */
 function nameValidateCheck() {
-    const ShortNameText = document.getElementById('shortGroupName');
+    const ShortNameText = document.getElementById('shortGroupNameInput');
     ShortNameText.addEventListener( "input", event => {
         ShortNameText.value = ShortNameText.value.replace( /[^a-zA-Z0-9~!@#$%^&*()_+|}{:"?><,./;' ]/gm, '');
     }, false);
@@ -359,7 +358,7 @@ function nameValidateCheck() {
         ShortNameText.value = ShortNameText.value.replace( /[^a-zA-Z0-9~!@#$%^&*()_+|}{:"?><,./;' ]/gm, '');
     }, false);
 
-    const longNameText = document.getElementById('longGroupName');
+    const longNameText = document.getElementById('longGroupNameInput');
     longNameText.addEventListener( "input", event => {
         longNameText.value = longNameText.value.replace( /[^a-zA-Z0-9~!@#$%^&*()_+|}{:"?><,./;' ]/gm, '');
     }, false);

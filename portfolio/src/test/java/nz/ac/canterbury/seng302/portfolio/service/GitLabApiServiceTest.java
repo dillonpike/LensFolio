@@ -6,20 +6,21 @@ import org.gitlab4j.api.models.Branch;
 import org.gitlab4j.api.models.Commit;
 import org.gitlab4j.api.models.Contributor;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.MockedConstruction;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 /**
  * Unit tests for the {@link GitLabApiService} class.
@@ -69,21 +70,9 @@ class GitLabApiServiceTest {
 
             Commit commit = new Commit();
             commit.setAuthorEmail(String.format("testEmail%d@gmail.com", i));
+            commit.setCommittedDate(new Date(i * -1000));
             testCommits.add(commit);
         }
-
-    }
-
-    /**
-     * Mocking some common functions calls to the GroupSetting and Group SettingsService class.
-     * The mocking is done in a function with @BeforeEach annotation instead of @BeforeAll annotation in order to
-     * prevent the mocked class (in this case GroupSetting and groupSettingService Class) to be static which would cause
-     * a null error when the tests runs.
-     */
-    @BeforeEach
-    void setUpEach() {
-        when(groupSettingsService.getGroupSettingsByGroupId(testGroupSettings.getGroupId())).thenReturn(testGroupSettings);
-        when(testGroupSettings.getGitLabApi()).thenReturn(gitLabApi);
     }
 
     /**
@@ -93,6 +82,8 @@ class GitLabApiServiceTest {
      */
     @Test
     void testGetBranchNames() throws GitLabApiException {
+        when(groupSettingsService.getGroupSettingsByGroupId(testGroupSettings.getGroupId())).thenReturn(testGroupSettings);
+        when(testGroupSettings.getGitLabApi()).thenReturn(gitLabApi);
         when(gitLabApi.getRepositoryApi()).thenReturn(repositoryApi);
         when(repositoryApi.getBranches(testGroupSettings.getRepoId())).thenReturn(testBranches);
 
@@ -108,6 +99,8 @@ class GitLabApiServiceTest {
      */
     @Test
     void testGetContributors() throws GitLabApiException {
+        when(groupSettingsService.getGroupSettingsByGroupId(testGroupSettings.getGroupId())).thenReturn(testGroupSettings);
+        when(testGroupSettings.getGitLabApi()).thenReturn(gitLabApi);
         when(gitLabApi.getRepositoryApi()).thenReturn(repositoryApi);
         when(repositoryApi.getContributors(testGroupSettings.getRepoId())).thenReturn(testContributors);
 
@@ -124,6 +117,8 @@ class GitLabApiServiceTest {
      */
     @Test
     void testGetCommitsNoBranchNameNoAuthor() throws GitLabApiException {
+        when(groupSettingsService.getGroupSettingsByGroupId(testGroupSettings.getGroupId())).thenReturn(testGroupSettings);
+        when(testGroupSettings.getGitLabApi()).thenReturn(gitLabApi);
         when(gitLabApi.getCommitsApi()).thenReturn(commitsApi);
         when(gitLabApi.getCommitsApi().getCommits(testGroupSettings.getRepoId())).thenReturn(testCommits);
 
@@ -141,6 +136,8 @@ class GitLabApiServiceTest {
     @Test
     void testGetCommitsWithBranchNameNoAuthor() throws GitLabApiException {
         String branchName = testBranches.get(0).getName();
+        when(groupSettingsService.getGroupSettingsByGroupId(testGroupSettings.getGroupId())).thenReturn(testGroupSettings);
+        when(testGroupSettings.getGitLabApi()).thenReturn(gitLabApi);
         when(gitLabApi.getCommitsApi()).thenReturn(commitsApi);
         when(gitLabApi.getCommitsApi().getCommits(testGroupSettings.getRepoId(), branchName, null, null)).thenReturn(testCommits);
 
@@ -157,6 +154,8 @@ class GitLabApiServiceTest {
     @Test
     void testGetCommitsNoBranchNameWithAuthor() throws GitLabApiException {
         Contributor contributor = testContributors.get(3);
+        when(groupSettingsService.getGroupSettingsByGroupId(testGroupSettings.getGroupId())).thenReturn(testGroupSettings);
+        when(testGroupSettings.getGitLabApi()).thenReturn(gitLabApi);
         when(gitLabApi.getCommitsApi()).thenReturn(commitsApi);
         when(gitLabApi.getCommitsApi().getCommits(testGroupSettings.getRepoId())).thenReturn(testCommits);
 
@@ -172,13 +171,47 @@ class GitLabApiServiceTest {
      * @throws GitLabApiException if an error occurs when calling the GitLab API
      */
     @Test
-    void testGetCommitsNWithBranchNameAndAuthor() throws GitLabApiException {
+    void testGetCommitsWithBranchNameAndAuthor() throws GitLabApiException {
         Contributor contributor = testContributors.get(4);
         String branchName = testBranches.get(2).getName();
+        when(groupSettingsService.getGroupSettingsByGroupId(testGroupSettings.getGroupId())).thenReturn(testGroupSettings);
+        when(testGroupSettings.getGitLabApi()).thenReturn(gitLabApi);
         when(gitLabApi.getCommitsApi()).thenReturn(commitsApi);
         when(gitLabApi.getCommitsApi().getCommits(testGroupSettings.getRepoId(), branchName, null, null)).thenReturn(testCommits);
 
         List<Commit> commits = gitLabApiService.getCommits(testGroupSettings.getGroupId(), branchName, contributor.getEmail());
         assertEquals(testCommits.stream().filter(commit -> Objects.equals(commit.getAuthorEmail(), contributor.getEmail())).toList(), commits);
+    }
+
+    /**
+     * Checks that the checkGitLabToken method returns true when the repo id and token can be used to get information
+     * from the GitLab API.
+     * @throws GitLabApiException if an error occurs when calling the GitLab API
+     */
+    @Test
+    void testCheckGitLabTokenValid() throws GitLabApiException {
+        int repoId = 12345;
+        MockedConstruction<GitLabApi> mockedConstruction = mockConstruction(GitLabApi.class, (mock, context) ->
+            when(mock.getRepositoryApi()).thenReturn(repositoryApi));
+        when(repositoryApi.getBranches(Integer.toString(repoId))).thenReturn(null);
+
+        assertTrue(gitLabApiService.checkGitLabToken(repoId, "testToken"));
+        mockedConstruction.close();
+    }
+
+    /**
+     * Checks that the checkGitLabToken method returns false when the repo id and token cannot be used to get
+     * information from the GitLab API.
+     * @throws GitLabApiException if an error occurs when calling the GitLab API
+     */
+    @Test
+    void testCheckGitLabTokenInvalid() throws GitLabApiException {
+        int repoId = 12345;
+        MockedConstruction<GitLabApi> mockedConstruction = mockConstruction(GitLabApi.class, (mock, context) ->
+            when(mock.getRepositoryApi()).thenReturn(repositoryApi));
+        when(repositoryApi.getBranches(Integer.toString(repoId))).thenThrow(GitLabApiException.class);
+
+        assertFalse(gitLabApiService.checkGitLabToken(repoId, "testToken"));
+        mockedConstruction.close();
     }
 }
