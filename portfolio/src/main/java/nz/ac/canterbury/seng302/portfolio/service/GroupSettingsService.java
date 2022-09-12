@@ -50,8 +50,6 @@ public class GroupSettingsService {
      * @return the saved object
      */
     public GroupSettings saveGroupSettings(GroupSettings groupSettings) {
-        logger.info("Saving group settings {} ({}) for group {}",
-                groupSettings.getGroupSettingsId(), groupSettings.getRepoName().trim(), groupSettings.getGroupId());
         return repository.save(groupSettings);
     }
 
@@ -103,7 +101,7 @@ public class GroupSettingsService {
     }
 
     /**
-     * Method to check if current group setting has been sabe to the database successfully.
+     * Method to check if current group setting has been saved to the database successfully.
      * @param groupSettingId current group setting id
      * @param repoId current group setting repo id
      * @param repoName current group setting repo name
@@ -120,5 +118,22 @@ public class GroupSettingsService {
             return false;
         }
         return true;
+    }
+
+    /**
+     * Checks that the group settings attributes are valid for storing in the database.
+     * Returns true if they are valid, otherwise false.
+     * @param repoId repo id to check, must be small enough to store in an int
+     * @param repoName repo name to check, must be between 1 and 30 characters (inclusive)
+     * @param repoToken repo token to check, must not be between 1 and 50 characters (inclusive)
+     * @return true if settings are valid, otherwise false
+     */
+    public boolean isValidGroupSettings(int repoId, String repoName, String repoToken) {
+        int maxRepoId = 2147483647;
+        int maxRepoNameLength = 30;
+        int maxRepoTokenLength = 50;
+        return repoId < maxRepoId &&
+                0 < repoName.length() && repoName.length() <= maxRepoNameLength &&
+                0 < repoToken.length() && repoToken.length() <= maxRepoTokenLength;
     }
 }

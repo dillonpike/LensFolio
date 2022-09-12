@@ -26,7 +26,6 @@ public class PermissionService {
     @Autowired
     private GroupService groupService;
 
-    private List<UserResponse> userResponseList;
 
     /**
      * Function to validate user's current operation(Delete/add role).
@@ -82,7 +81,7 @@ public class PermissionService {
         }
         // If the user is a student, we check if the user is in the group
         GroupDetailsResponse groupDetailsResponse = groupService.getGroupDetails(groupId);
-        userResponseList = groupDetailsResponse.getMembersList();
+        List<UserResponse> userResponseList = groupDetailsResponse.getMembersList();
         for (UserResponse userResponse : userResponseList) {
             if (userResponse.getId() == userId) {
                 return true;

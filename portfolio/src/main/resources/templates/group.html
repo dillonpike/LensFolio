@@ -103,7 +103,7 @@
                     </div>
                     <h4 id="longGroupName" th:text="${groupLongName}"></h4>
                     <div class="collapse">
-                        <div class="hstack gap-3 pb-2" th:if="${currentUserRole != 'student'}">
+                        <div class="hstack gap-3 pb-2" th:if="${currentUserRole != 'student'}" id="groupOption">
                             <span>Copy Users To </span>
                             <select class="form-select input-sm" aria-label="Default select example" id="groupDropdownList">
                                 <option th:each="copyToGroup : ${groupList}" th:if="${group?.getGroupId() != copyToGroup.getGroupId()}" th:value="${copyToGroup.getGroupId()}" th:text="${copyToGroup.getShortName()}"></option>
@@ -419,7 +419,6 @@
             options.collapse('hide')
         }
     });
-
 </script>
 
 

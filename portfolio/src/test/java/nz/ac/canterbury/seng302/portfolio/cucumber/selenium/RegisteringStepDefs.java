@@ -6,6 +6,8 @@ import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
+
+import java.time.Duration;
 import java.util.Objects;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
@@ -185,12 +187,11 @@ public class RegisteringStepDefs {
     public void iLoginWithAnyPassword() throws InterruptedException {
         webDriver.findElement(By.id("passwordLogin")).sendKeys("anyPassword");
         webDriver.findElement(By.id("signIn")).click();
-        Thread.sleep(2000);
     }
 
     @Then("username error message should be displayed")
     public void usernameErrorMessageShouldBeDisplayed() {
-        assertTrue(webDriver.findElement(By.id("usernameInvalidMessage")).isDisplayed());
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("usernameInvalidMessage")));
     }
 
     @When("I login with a  right username {string}")
@@ -203,7 +204,7 @@ public class RegisteringStepDefs {
     public void iLoginWithWrongPassword(String password) throws InterruptedException {
         webDriver.findElement(By.id("passwordLogin")).sendKeys(password);
         webDriver.findElement(By.id("signIn")).click();
-        Thread.sleep(2000);
+        wait.until(ExpectedConditions.elementToBeClickable(By.id("usernameLogin")));
 
     }
 
