@@ -208,8 +208,8 @@ public class ProjectDetailsStepDefs {
         webDriver.findElement(By.id("projectStartDate")).click();
         for(int i = 0; i < 20; i++) {
             webDriver.findElement(By.xpath("//th[contains(., '«')]")).click();
-            Thread.sleep(100);
         }
+        wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//td[contains(., '1')]")));
         webDriver.findElement(By.xpath("//td[contains(., '1')]")).click();
         webDriver.findElement(By.id("projectName")).click();
     }

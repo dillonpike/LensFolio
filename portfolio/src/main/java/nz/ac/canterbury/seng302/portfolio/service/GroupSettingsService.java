@@ -50,8 +50,6 @@ public class GroupSettingsService {
      * @return the saved object
      */
     public GroupSettings saveGroupSettings(GroupSettings groupSettings) {
-        logger.info("Saving group settings {} ({}) for group {}",
-                groupSettings.getGroupSettingsId(), groupSettings.getRepoName().trim(), groupSettings.getGroupId());
         return repository.save(groupSettings);
     }
 
