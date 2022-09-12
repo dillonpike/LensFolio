@@ -190,7 +190,7 @@ class GitLabApiServiceTest {
      * @throws GitLabApiException if an error occurs when calling the GitLab API
      */
     @Test
-    void testCheckGitLabTokenValid() throws GitLabApiException {
+    void testCheckGitLabTokenValidWhenRepositoryNotFound() throws GitLabApiException {
         int repoId = 12345;
         MockedConstruction<GitLabApi> mockedConstruction = mockConstruction(GitLabApi.class, (mock, context) ->
                 when(mock.getRepositoryApi()).thenReturn(repositoryApi));
@@ -203,24 +203,51 @@ class GitLabApiServiceTest {
 
         assertEquals("groupSettingsAlertMessage", captor.getValue());
         assertEquals("Repository not found", captor1.getValue());
-//        assertTrue(gitLabApiService.checkGitLabToken(any(Model.class)), "testToken", "https://eng-git.canterbury.ac.nz");
         mockedConstruction.close();
     }
 
-//    /**
-//     * Checks that the checkGitLabToken method returns false when the repo id and token cannot be used to get
-//     * information from the GitLab API.
-//     * @throws GitLabApiException if an error occurs when calling the GitLab API
-//     */
-//    @Test
-//    void testCheckGitLabTokenInvalid() throws GitLabApiException {
-//        int repoId = 12345;
-//        MockedConstruction<GitLabApi> mockedConstruction = mockConstruction(GitLabApi.class, (mock, context) ->
-//                when(mock.getRepositoryApi()).thenReturn(repositoryApi));
-//        when(repositoryApi.getBranches(Integer.toString(repoId))).thenThrow(GitLabApiException.class);
-//
-//        assertFalse(gitLabApiService.checkGitLabToken(repoId, "testToken", "https://eng-git.canterbury.ac.nz"));
-//        mockedConstruction.close();
-//    }
+    /**
+     * Check if checkGitLabToken send groupSettingsAlertMessage with "Invalid API Key" when 401 is thrown
+     * @throws GitLabApiException 401 is thrown
+     */
+    @Test
+    void testCheckGitLabTokenValidWhenInvalidAPIKey() throws GitLabApiException {
+        int repoId = 12345;
+        MockedConstruction<GitLabApi> mockedConstruction = mockConstruction(GitLabApi.class, (mock, context) ->
+                when(mock.getRepositoryApi()).thenReturn(repositoryApi));
+        when(repositoryApi.getBranches(Integer.toString(repoId))).thenThrow(new GitLabApiException("test", 401));
+        ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
+        ArgumentCaptor<String> captor1 = ArgumentCaptor.forClass(String.class);
+        Model model = mock(Model.class);
+        gitLabApiService.checkGitLabToken(model, testGroupSettings.getRepoId(),testGroupSettings.getRepoApiKey(),testGroupSettings.getRepoUrl());
+        verify(model).addAttribute(captor.capture(),captor1.capture());
+
+        assertEquals("groupSettingsAlertMessage", captor.getValue());
+        assertEquals("Invalid API key", captor1.getValue());
+        mockedConstruction.close();
+    }
+
+    /**
+     * Check if checkGitLabToken send groupSettingsAlertMessage with "Invalid Repository Server URL" when 500 is thrown
+     * @throws GitLabApiException 500 is thrown
+     */
+    @Test
+    void testCheckGitLabTokenValidWhenInvalidRepositoryServerURL() throws GitLabApiException {
+        int repoId = 12345;
+        MockedConstruction<GitLabApi> mockedConstruction = mockConstruction(GitLabApi.class, (mock, context) ->
+                when(mock.getRepositoryApi()).thenReturn(repositoryApi));
+        when(repositoryApi.getBranches(Integer.toString(repoId))).thenThrow(new GitLabApiException("test", 500));
+        ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
+        ArgumentCaptor<String> captor1 = ArgumentCaptor.forClass(String.class);
+        Model model = mock(Model.class);
+        gitLabApiService.checkGitLabToken(model, testGroupSettings.getRepoId(),testGroupSettings.getRepoApiKey(),testGroupSettings.getRepoUrl());
+        verify(model).addAttribute(captor.capture(),captor1.capture());
+
+        assertEquals("groupSettingsAlertMessage", captor.getValue());
+        assertEquals("Invalid Repository Server URL", captor1.getValue());
+        mockedConstruction.close();
+    }
+
+
 
 }
