@@ -1,7 +1,9 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
 
+import nz.ac.canterbury.seng302.portfolio.model.NotificationGroup;
 import nz.ac.canterbury.seng302.portfolio.service.*;
+import nz.ac.canterbury.seng302.portfolio.utility.ToastUtility;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import nz.ac.canterbury.seng302.shared.identityprovider.ModifyGroupDetailsResponse;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
@@ -10,6 +12,8 @@ import org.gitlab4j.api.models.Commit;
 import org.gitlab4j.api.models.Contributor;
 import org.hibernate.ObjectNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -17,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -63,7 +68,7 @@ public class GroupSettingsController {
      * @param model group setting page model
      * @return group settings page
      */
-    @RequestMapping("/groupSettings")
+    @GetMapping("/groupSettings")
     public String groupSettings(
             @RequestParam(value = "groupId") int groupId,
             @AuthenticationPrincipal AuthState principal,
@@ -81,6 +86,7 @@ public class GroupSettingsController {
                 groupService.getGroupDetails(groupId).getGroupId() <= 2) {
             return "redirect:/groups";
         }
+        ToastUtility.addToastsToModel(model, new ArrayList<>(), 3);
 
         int repoId = (int) groupSettingsService.getGroupSettingsByGroupId(groupId).getRepoId();
         String repoToken = groupSettingsService.getGroupSettingsByGroupId(groupId).getRepoApiKey();
@@ -94,6 +100,11 @@ public class GroupSettingsController {
         groupService.addGroupDetailToModel(model, groupId);
         groupSettingsService.addSettingAttributesToModel(groupId, model);
         addGroupSettingAttributeToModel(model, groupId);
+
+        model.addAttribute("userId", id);
+        model.addAttribute("username", user.getUsername());
+        model.addAttribute("userFirstName", user.getFirstName());
+        model.addAttribute("userLastName", user.getLastName());
 
         return "groupSettings";
     }
@@ -218,6 +229,18 @@ public class GroupSettingsController {
             model.addAttribute(IS_CONNECTION_SUCCESSFUL, false);
             model.addAttribute(IS_REPO_EXIST, false);
         }
+    }
+
+    /**
+     * Websocket controller to send notification to users to have their pages refreshed when new settings are saved.
+     * @param notificationGroup Holds the ID of the group being refreshed.
+     * @return The notificationGroup object.
+     */
+    @MessageMapping("/save-group-settings")
+    @SendTo("/webSocketGet/group-settings-saved")
+    public NotificationGroup refreshGroupSettings(NotificationGroup notificationGroup) {
+        System.out.println("helo");
+        return notificationGroup;
     }
 }
 

@@ -15,6 +15,23 @@
 </head>
 <body>
 <header th:replace="fragments/header"></header>
+<div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 2000">
+    <div th:each="toast, meta: ${toastsToGenerate}">
+        <div class="toast" role="alert" aria-live="assertive" aria-atomic="true" th:id="${#ids.seq('liveToast')}" data-bs-autohide="false" data-bs-animation="false">
+            <div class="toast-header">
+                <strong class="me-auto" th:id="${#ids.seq('toastTitle')}"></strong>
+            </div>
+            <div class="toast-body" th:id="${#ids.seq('popupText')}"></div>
+            <div th:id="${#ids.seq('toastInformation')}" th:text="${toast.getArtefactInformation()}" hidden="true"></div>
+            <div th:id="${#ids.seq('toastArtefactName')}" th:text="${toast.getArtefactName()}" hidden="true"></div>
+            <div th:id="${#ids.seq('toastArtefactId')}" th:text="${toast.getArtefactId()}" hidden="true"></div>
+            <div th:id="${#ids.seq('toastUsername')}" th:text="${toast.getUsername()}" hidden="true"></div>
+            <div th:id="${#ids.seq('toastFirstName')}" th:text="${toast.getUserFirstName()}" hidden="true"></div>
+            <div th:id="${#ids.seq('toastLastName')}" th:text="${toast.getUserLastName()}" hidden="true"></div>
+            <div th:id="${#ids.seq('toastAction')}" th:text="${toast.getAction()}" hidden="true"></div>
+        </div>
+    </div>
+</div>
 <div class="container">
     <div class="row">
         <div class="col-12 col-md-6 ps-lg-1-6 ps-xl-5">

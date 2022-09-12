@@ -43,16 +43,7 @@ public class GroupSettingController {
         return "groupSetting";
     }
 
-    /**
-     * Websocket controller to send notification to users to have their pages refreshed when new settings are saved.
-     * @param notificationGroup Holds the ID of the group being refreshed.
-     * @return The notificationGroup object.
-     */
-    @MessageMapping("/save-group-settings")
-    @SendTo("/webSocketGet/group-settings-saved")
-    public NotificationGroup refreshGroupSettings(NotificationGroup notificationGroup) {
-        return notificationGroup;
-    }
+
 
 }
 
