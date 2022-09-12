@@ -34,13 +34,13 @@
                             </div>
                         </div>
 
-                        <div class="alert alert-danger alert-dismissible fade show" role="alert" id="evidenceDateAlertBanner" hidden>
-                            <span id="evidenceDateAlertMessage" data-test-id="alertMessage"></span>
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert" id="evidenceDateAlertBanner" th:hidden="${evidenceDateAlertMessage==null}">
+                            <span id="evidenceDateAlertMessage" data-test-id="alertMessage" th:text="${evidenceDateAlertMessage}"></span>
                             <button type="button" class="btn-close" onclick="document.getElementById('evidenceDateAlertBanner').hidden = true" aria-label="Close"></button>
                         </div>
                         <div class="mb-3">
                             <label for="evidenceDate" class="col-form-label">Date(*):</label>
-                            <button type="button" id="questionToolTip" class="btn" style="margin: 0; padding: 0" data-toggle="tooltip" data-bs-placement="right" title="This date should indicate the day that the evidence took place. ">
+                            <button type="button" id="questionToolTip" class="btn" style="margin: 0; padding: 0" data-bs-toggle="tooltip" data-bs-placement="right" title="This date should indicate the day that the evidence took place. You can only select a date that is within the project's start and end dates. ">
                                 <span class="bi bi-question-circle"></span>
                             </button>
                             <div class="input-group" id="evidenceDateInput" data-td-target-input="nearest" data-td-target-toggle="nearest">

@@ -800,11 +800,16 @@
      * @returns {boolean} true if valid date and time, otherwise false
      */
     function checkDate(date, submitElementId, alertBanner, alertMessage) {
-        if (date < new Date(projectStartDate) || date > new Date(projectEndDate)) {
+        const projectStartDateObj = new Date(projectStartDate);
+        const projectEndDateObj = new Date(projectEndDate);
+        if (date < projectStartDateObj || date > projectEndDateObj) {
             $('#' + submitElementId).prop('disabled', true);
             document.getElementById(alertBanner).hidden = false;
             document.getElementById(alertMessage).innerText = "Date must be within the project's date range (" +
-                projectStartDate + " - " + projectEndDate + ").";
+                projectStartDateObj.toLocaleDateString("en-us", {day: 'numeric', month: 'short', year: 'numeric'})
+                + " - " +
+                projectEndDateObj.toLocaleDateString("en-us", {day: 'numeric', month: 'short', year: 'numeric'})
+                + ").";
             return false;
         } else {
             $('#' + submitElementId).prop('disabled', false);
