@@ -24,6 +24,10 @@ public class EventService {
     @Autowired
     private EventRepository eventRepository;
 
+    private static final String EVENT_NAME_ERROR_MESSAGE = "eventAlertMessage";
+
+    private static final String EVENT_DATE_ERROR_MESSAGE = "eventDateTimeAlertMessage";
+
     /**
      * Get list of all events
      * @return List of events
@@ -36,7 +40,7 @@ public class EventService {
      * Get event by Id
      * @param id id of event
      * @return event with the id that is the input
-     * @throws Exception If event can't be found
+     * @throws ObjectNotFoundException If event can't be found
      */
     public Event getEventById(Integer id) throws ObjectNotFoundException {
 
@@ -192,25 +196,25 @@ public class EventService {
 
         boolean hasError = false;
         if (event.getEventName() == null || event.getEventName().trim().isEmpty()) {
-            model.addAttribute("eventAlertMessage", "Event name cannot be empty");
+            model.addAttribute(EVENT_NAME_ERROR_MESSAGE, "Event name cannot be empty");
             hasError = true;
         } else if (event.getEventName().length() < 2) {
-            model.addAttribute("eventAlertMessage", "Title must be at least 2 characters");
+            model.addAttribute(EVENT_NAME_ERROR_MESSAGE, "Title must be at least 2 characters");
             hasError = true;
         } else if (event.getEventName().length() > 50) {
-            model.addAttribute("eventAlertMessage", "Title must be less than 50 characters");
+            model.addAttribute(EVENT_NAME_ERROR_MESSAGE, "Title must be less than 50 characters");
             hasError = true;
         }
         if (event.getEventStartDate() == null) {
-            model.addAttribute("eventDateTimeAlertMessage", "Event start date cannot be empty");
+            model.addAttribute(EVENT_DATE_ERROR_MESSAGE, "Event start date cannot be empty");
             hasError = true;
         }
         if (event.getEventEndDate() == null) {
-            model.addAttribute("eventDateTimeAlertMessage", "Correctly formatted date is required");
+            model.addAttribute(EVENT_DATE_ERROR_MESSAGE, "Correctly formatted date is required");
             hasError = true;
         }
         if (hasError) {
-            throw new NotAcceptableException("Evidence fields have errors");
+            throw new NotAcceptableException("Event fields have errors");
         }
     }
 }
