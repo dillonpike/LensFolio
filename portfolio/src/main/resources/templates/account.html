@@ -155,7 +155,7 @@
                         <!--Buttons for editing and deleting, for future use!!-->
                         <div>
                           <div class="button-divider">
-                            <div class="dropdown" th:if="${currentUserRole != 'student'}"> <!-- Change to if user id is the same as the profile then edit...-->
+                            <div class="dropdown" th:if="${isAuthorised} == true">
                               <button class="btn btn-default " type="button" id="evidenceActions" data-bs-toggle="dropdown" aria-expanded="false" >
                                 <i class='bi bi-gear-fill'></i>
                               </button>
