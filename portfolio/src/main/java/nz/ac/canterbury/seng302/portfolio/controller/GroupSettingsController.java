@@ -64,7 +64,7 @@ public class GroupSettingsController {
      * @param model group setting page model
      * @return group settings page
      */
-    @RequestMapping("/groupSettings")
+    @GetMapping("/groupSettings")
     public String groupSettings(
             @RequestParam(value = "groupId") int groupId,
             @AuthenticationPrincipal AuthState principal,
@@ -94,7 +94,10 @@ public class GroupSettingsController {
         model.addAttribute("isValidToModify", isValidToModify);
 
         groupService.addGroupDetailToModel(model, groupId);
-        groupSettingsService.addSettingAttributesToModel(groupId, model);
+
+        GroupSettings groupSettings = groupSettingsService.getGroupSettingsByGroupId(groupId);
+        groupSettingsService.addSettingAttributesToModel(model, groupSettings);
+
         addGroupSettingAttributeToModel(model, groupId);
 
         return "groupSettings";
@@ -161,13 +164,12 @@ public class GroupSettingsController {
         model.addAttribute("isValidToModify", isValidToModify);
 
         groupService.addGroupDetailToModel(model, groupId);
-        groupSettingsService.addSettingAttributesToModel(groupId, model);
+        GroupSettings groupSettings = groupSettingsService.getGroupSettingsByGroupId(groupId);
+        groupSettingsService.addSettingAttributesToModel(model, groupSettings);
         addGroupSettingAttributeToModel(model, groupId);
         model.addAttribute(GROUP_ID, groupId);
         model.addAttribute(CURRENT_USER_ROLE, role);
 
-        GroupSettings groupSettings = groupSettingsService.getGroupSettingsByGroupId(groupId);
-        // Check if group setting is default
         if (groupSettings.getRepoId() != 0) {
             model.addAttribute("repoId", groupSettings.getRepoId());
         } else {
@@ -238,8 +240,8 @@ public class GroupSettingsController {
             return "groupSettings::groupSettingsAlertBanner";
         }
         groupService.addGroupDetailToModel(model, groupId);
-        groupSettingsService.addSettingAttributesToModel(groupId, model);
-        addGroupSettingAttributeToModel(model, groupId);
+        GroupSettings groupSettings = groupSettingsService.getGroupSettingsByGroupId(groupId);
+        groupSettingsService.addSettingAttributesToModel(model, groupSettings);        addGroupSettingAttributeToModel(model, groupId);
 
         httpServletResponse.setStatus(HttpServletResponse.SC_OK);
         model.addAttribute("successMessage", "Save changed");

@@ -88,8 +88,7 @@ public class GroupSettingsService {
      * @param groupId current group id
      * @param model model to add group setting modal attribute to
      */
-    public void addSettingAttributesToModel(int groupId, Model model) {
-        GroupSettings groupSettings = getGroupSettingsByGroupId(groupId);
+    public void addSettingAttributesToModel(Model model, GroupSettings groupSettings) {
         // Check if group setting is default
         if (groupSettings.getRepoId() != 0) {
             model.addAttribute("repoId", groupSettings.getRepoId());

@@ -203,29 +203,6 @@ class GroupSettingsControllerTest {
     }
 
     /**
-     * Test that the group settings page is loaded with the correct short and long name when given a valid id
-     * Also test if the group setting page contains the correct information(group attributes and group setting attributes).
-     * @throws Exception when an exception is thrown while performing the get request
-     */
-    @Test
-    void groupSettingsValidAndGroupSettingExist() throws Exception {
-        doReturn(GroupDetailsResponse.newBuilder()
-                .setGroupId(testGroup.getGroupId()).setShortName(testGroup.getShortName())
-                .setLongName(testGroup.getLongName()).build())
-                .when(groupService).getGroupDetails(testGroup.getGroupId());
-        doReturn(testGroupSettings)
-                .when(groupSettingsServiceSpy).getGroupSettingsByGroupId(any(Integer.class));
-        when(gitLabApiService.checkGitLabToken(any(Integer.class), any(String.class), any(String.class))).thenReturn(true);
-
-        mockMvc.perform(get("/groupSettings").param("groupId", Integer.toString(testGroup.getGroupId())))
-                .andExpect(status().isOk())
-                .andExpect(model().attribute("groupShortName", testGroup.getShortName()))
-                .andExpect(model().attribute("groupLongName", testGroup.getLongName()));
-
-        verify(groupSettingsService, times(1)).addSettingAttributesToModel(any(Integer.class), any(Model.class));
-    }
-
-    /**
      * Test that the group settings page redirects to the groups page when trying to access the group settings page for
      * the special non-members group.
      * @throws Exception when an exception is thrown while performing the get request
@@ -327,8 +304,7 @@ class GroupSettingsControllerTest {
                 .setGroupId(testGroup.getGroupId()).setShortName(testGroup.getShortName())
                 .setLongName(testGroup.getLongName()).build())
                 .when(groupService).getGroupDetails(testGroup.getGroupId());
-
-        when(mockGroupSettingsService.getGroupSettingsByGroupId(testGroupSettings.getGroupId())).thenReturn(testGroupSettings);
+        when(groupSettingsService.getGroupSettingsByGroupId(testGroup.getGroupId())).thenReturn(testGroupSettings);
 
         mockMvc.perform(get("/groupSettings/refreshGroupSettings").param("groupId", Integer.toString(testGroup.getGroupId())))
                 .andExpect(status().isOk())
@@ -402,7 +378,7 @@ class GroupSettingsControllerTest {
         doReturn(false).when(gitLabApiService).checkGitLabToken(any(Integer.class), any(String.class), any(String.class));
         doReturn(true).when(groupSettingsService).isGroupSettingSaved(any(Integer.class),any(Integer.class),any(String.class),any(String.class),any(Integer.class), any(String.class));
         doNothing().when(groupService).addGroupDetailToModel(any(Model.class),any(Integer.class));
-        doNothing().when(groupSettingsService).addSettingAttributesToModel(any(Integer.class),any(Model.class));
+        doNothing().when(groupSettingsService).addSettingAttributesToModel(any(Model.class), any(GroupSettings.class));
         doNothing().when(groupSettingsController).addGroupSettingAttributeToModel(any(Model.class),any(Integer.class));
         when(permissionService.isValidToModifyGroupSettingPage(any(Integer.class), any(Integer.class))).thenReturn(true);
 
@@ -436,7 +412,7 @@ class GroupSettingsControllerTest {
         doReturn(true).when(gitLabApiService).checkGitLabToken(any(Integer.class), any(String.class), any(String.class));
         doReturn(false).when(groupSettingsService).isGroupSettingSaved(any(Integer.class),any(Integer.class),any(String.class),any(String.class),any(Integer.class),any(String.class));
         doNothing().when(groupService).addGroupDetailToModel(any(Model.class),any(Integer.class));
-        doNothing().when(groupSettingsService).addSettingAttributesToModel(any(Integer.class),any(Model.class));
+        doNothing().when(groupSettingsService).addSettingAttributesToModel(any(Model.class), any(GroupSettings.class));
         doNothing().when(groupSettingsController).addGroupSettingAttributeToModel(any(Model.class),any(Integer.class));
         when(permissionService.isValidToModifyGroupSettingPage(any(Integer.class), any(Integer.class))).thenReturn(true);
 
