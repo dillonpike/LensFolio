@@ -54,11 +54,11 @@
                         <button type="button" class="btn-close" onclick="document.getElementById('successMessageBanner').hidden = true" aria-label="Close"></button>
                     </div>
                     <form th:action="@{saveGroupSettings}" onsubmit="validateGroupSetting(); return false" id="groupSettingForm" method="post">
-                        <div th:fragment="groupLongNameAlertBanner" class="alert alert-danger alert-dismissible fade show mx-3" role="alert" id="groupLongNameAlertBanner" th:hidden="${groupLongNameAlertMessage==null}">
-                            <span id="groupLongNameAlertMessage" data-test-id="alertMessage" th:text="${groupLongNameAlertMessage}"></span>
-                            <button type="button" class="btn-close" onclick="document.getElementById('groupLongNameAlertBanner').hidden = true" aria-label="Close"></button>
-                        </div>
                         <div class="mb-3 mx-3">
+                            <div th:fragment="groupLongNameAlertBanner" class="alert alert-danger alert-dismissible fade show" role="alert" id="groupLongNameAlertBanner" th:hidden="${groupLongNameAlertMessage==null}">
+                                <span id="groupLongNameAlertMessage" data-test-id="alertMessage" th:text="${groupLongNameAlertMessage}"></span>
+                                <button type="button" class="btn-close" onclick="document.getElementById('groupLongNameAlertBanner').hidden = true" aria-label="Close"></button>
+                            </div>
                             <label for="longGroupName" class="col-form-label">Long Group Name:</label>
                             <input onkeyup="updateCharsLeft('longGroupName', 'longGroupNameLength', 30)" maxlength="30" type="text"
                                    class="form-control" id="longGroupName" th:name="longName" th:value="${groupLongName}" disabled>
@@ -73,21 +73,21 @@
                             <span id="groupRepoAlertMessage" data-test-id="alertMessage" th:text="${groupRepoAlertMessage}"></span>
                             <button type="button" class="btn-close" onclick="document.getElementById('groupRepoAlertBanner').hidden = true" aria-label="Close"></button>
                         </div>
-                        <div class="alert alert-danger alert-dismissible fade show mx-3" role="alert" id="groupSettingsAlertBanner" th:if="${isValidToModify}" th:hidden="${groupSettingsAlertMessage==null}">
+                        <div th:fragment="groupSettingsAlertBanner" class="alert alert-danger alert-dismissible fade show mx-3" role="alert" id="groupSettingsAlertBanner" th:if="${isValidToModify}" th:hidden="${groupSettingsAlertMessage==null}">
                             <span id="groupSettingsAlertMessage" data-test-id="alertMessage" th:text="${groupSettingsAlertMessage}"></span>
                         </div>
                         <div class="mb-3 mx-3">
                             <label for="repoName" class="col-form-label">Repository Name:</label>
-                            <input onkeyup="updateCharsLeft('repoName', 'repoNameLength', 30)" maxlength="30" type="text"
-                                   class="form-control" id="repoName" th:name="repoName" th:value="${repoName}" disabled>
+                            <input onkeyup="updateCharsLeft('repoName', 'repoNameLength', 30)" maxlength="30"
+                                   type="text" class="form-control" id="repoName" th:name="repoName" th:value="${repoName}" disabled>
                             <div class="name-length-message">
                                 <span id="repoNameLength"></span>
                             </div>
                         </div>
                         <div class="mb-3 mx-3">
                             <label for="repoId" class="col-form-label">Repository ID:</label>
-                            <input onkeyup="updateCharsLeft('repoId', 'repoIdLength', 10)" maxlength="10" type="text"
-                                   class="form-control" id="repoId" th:name="repoId" th:value="${repoId}" disabled>
+                            <input onkeyup="updateCharsLeft('repoId', 'repoIdLength', 9)" maxlength="9"
+                                   type="text" class="form-control" id="repoId" th:name="repoId" th:value="${repoId}" disabled>
                             <div class="name-length-message">
                                 <span id="repoIdLength"></span>
                             </div>
@@ -179,14 +179,16 @@
                                     <option th:each="contributor: ${repositoryContributors}" th:text="${contributor.getName() + ' ('+contributor.getEmail()+')'}" th:value="${contributor.getEmail()}"></option>
                                 </select>
                             </div>
-
-
+                            <div id="spinnerBox">
+                                <div class="spinner-border" role="status">
+                                    <span class="sr-only"></span>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
                 <div  th:hidden="!${isRepoExist}">
                     <div id = "commitsListRefresh" th:fragment="commitsListRefresh" class="overflow-auto" style="height: 500px; margin-bottom: 50px">
-
                         <div class="card mb-1" th:each="commit: ${commitList}">
                             <div class="card-body mt-2">
                                 <div class="d-flex flex-row">
@@ -219,7 +221,6 @@
                                     finishUpdatingCommitsList()
                                     $('.dropDownSelect').selectpicker();
                                 })
-
                             });
 
                             /**
@@ -238,21 +239,16 @@
                                     finishUpdatingCommitsList()
                                     $('.dropDownSelect').selectpicker();
                                 })
-
                             });
                         </script>
                     </div>
                 </div>
-            </div>
-            </div>
             </div>
          </div>
     </div>
 </div>
 
 <script th:inline="javascript">
-
-
     /*<![CDATA[*/
     const ID = /*[[${group.getGroupId()}]]*/ "-1";
     /*]]>*/
@@ -275,8 +271,6 @@
         }
     }
 
-
-
     /**
      * This function is called when the process of updating commits list is running
      * This function will disable the filtering input to prevent concurrency and display spinner
@@ -295,12 +289,10 @@
         document.getElementById("spinnerBox").style.setProperty("visibility", 'hidden', "important");
     }
 
-
     /**
      * Initialise the commit list when group settings page is loaded
      */
     function initialiseCommitsList() {
-
         updatingCommitsList();
         const data = {
             groupId: ID,
@@ -312,13 +304,12 @@
             finishUpdatingCommitsList()
             $('.dropDownSelect').selectpicker();
         })
-
     }
     initialiseCommitsList()
 
     /**
-     * Enable all input fields, display 'Save'
-     * and 'Cancel' buttons and hide edit button when click edit button
+     * Enable all input fields, display 'Save' and 'Cancel' buttons and character length messages, and hide edit button.
+     * Runs when edit button is clicked.
      */
     function isEditing() {
         $("#longGroupName").prop("disabled", false);
@@ -328,13 +319,14 @@
         $("#saveButton").prop("hidden", false)
         $("#cancelButton").prop("hidden", false)
         $("#groupSettingEdit").prop("hidden", true)
+        $(".name-length-message").prop("hidden", false)
     }
 
 
 
     /**
-     * Disable all input field, hide 'Save', 'Cancel' buttons
-     * and display edit button when click cancel button or finish edit.
+     * Disable all input fields, hide 'Save' and 'Cancel' buttons and character length messages, and display edit button.
+     * Runs when cancel button is clicked.
      */
     function stopEditing() {
         $("#longGroupName").prop("disabled", true);
@@ -344,7 +336,7 @@
         $("#saveButton").prop("hidden", true)
         $("#cancelButton").prop("hidden", true)
         $("#groupSettingEdit").prop("hidden", false)
-
+        $(".name-length-message").prop("hidden", true)
     }
 </script>
 </body>

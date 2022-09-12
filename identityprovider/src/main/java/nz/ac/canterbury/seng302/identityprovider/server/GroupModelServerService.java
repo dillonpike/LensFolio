@@ -167,8 +167,15 @@ public class GroupModelServerService extends GroupsServiceGrpc.GroupsServiceImpl
                 } else {
                     reply.setIsSuccess(false).setMessage("Group not found");
                 }
-            }  catch (Exception e) {
-                reply.setIsSuccess(false).setMessage("Something went wrong saving the group");
+            } catch (Exception e) {
+                reply.setIsSuccess(false);
+                if (request.getLongName().length() > 30) {
+                    reply.setMessage("Long name must be 30 characters or less");
+                } else if (request.getShortName().length() > 10) {
+                    reply.setMessage("Short name must be 10 characters or less");
+                } else {
+                    reply.setMessage("Something went wrong saving the group");
+                }
             }
         }
         responseObserver.onNext(reply.build());
