@@ -217,14 +217,14 @@ class GroupSettingsControllerTest {
                 .when(groupService).getGroupDetails(testGroup.getGroupId());
         doReturn(testGroupSettings)
                 .when(groupSettingsServiceSpy).getGroupSettingsByGroupId(any(Integer.class));
-        when(gitLabApiService.checkGitLabToken(any(Integer.class), any(String.class))).thenReturn(true);
+//        when(gitLabApiService.checkGitLabToken(any(Integer.class), any(String.class))).thenReturn(true);
 
         mockMvc.perform(get("/groupSettings").param("groupId", Integer.toString(testGroup.getGroupId())))
                 .andExpect(status().isOk())
                 .andExpect(model().attribute("groupShortName", testGroup.getShortName()))
                 .andExpect(model().attribute("groupLongName", testGroup.getLongName()));
 
-        verify(groupSettingsService, times(1)).addSettingAttributesToModel(any(Integer.class), any(Model.class));
+        verify(groupSettingsService, times(1)).addSettingAttributesToModel(any(Model.class), any(GroupSettings.class));
     }
 
     /**
@@ -373,7 +373,8 @@ class GroupSettingsControllerTest {
                 .setIsSuccess(false).setMessage("Unable to update group long name").build();
         doReturn(response).when(groupService).editGroupDetails(any(Integer.class),any(String.class), any(String.class));
         when(permissionService.isValidToModifyGroupSettingPage(any(Integer.class), any(Integer.class))).thenReturn(true);
-
+        doReturn(true).when(groupSettingsService).isValidGroupSettings((int)testGroupSettings.getRepoId(),
+                testGroupSettings.getRepoName(), testGroupSettings.getRepoApiKey());
         mockMvc.perform(post("/saveGroupSettings")
                         .param("groupLongName", "newLongName")
                         .param("groupShortName", testGroup.getShortName())
@@ -382,9 +383,9 @@ class GroupSettingsControllerTest {
                         .param("repoID", Integer.toString((int) testGroupSettings.getRepoId()))
                         .param("repoToken", testGroupSettings.getRepoApiKey())
                         .param("groupSettingsId", Integer.toString(testGroupSettings.getGroupSettingsId())))
-                        .andExpect(status().isBadRequest())
-                        .andExpect(model().attribute("groupLongNameAlertMessage", "Unable to update group long name"))
-                        .andExpect(view().name("groupSettings::groupLongNameAlertBanner"));
+                .andExpect(status().isBadRequest())
+                .andExpect(model().attribute("groupLongNameAlertMessage", "Unable to update group long name"))
+                .andExpect(view().name("groupSettings::groupLongNameAlertBanner"));
 
         verify(groupService, times(1)).editGroupDetails(testGroup.getGroupId(),testGroup.getShortName(), "newLongName");
     }

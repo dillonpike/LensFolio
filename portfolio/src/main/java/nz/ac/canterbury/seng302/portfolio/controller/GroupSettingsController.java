@@ -216,7 +216,7 @@ public class GroupSettingsController {
 
         repoName = repoName.trim();
         repoToken = repoToken.trim();
-        if (!groupSettingsService.isValidGroupSettings(repoId, repoName, repoToken)) {
+        if (!groupSettingsService.isValidGroupSettings((int) repoId, repoName, repoToken)) {
             model.addAttribute(GROUP_SETTING_ALERT_MESSAGE, "Please enter valid repository settings");
             httpServletResponse.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             return "groupSettings::groupSettingsAlertBanner";
