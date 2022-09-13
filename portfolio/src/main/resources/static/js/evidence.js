@@ -77,7 +77,7 @@ function replaceEvidenceModalBody(modalBodyResponse) {
  */
 function validateEvidenceTextInput(elementId, alertBanner, alertMessage, typeTextInput) {
     const input = document.getElementById(elementId).value;
-    const regex = /^[\p{N}\p{P}\p{S}\p{Zs}]{1,}$/u; // this regex use Unicode awareness regex, it matches with any sequence of characters that are number, punctuation, or whitespace. Supposedly it works with all languages
+    const regex = /^[\p{N}\p{P}\p{S}\p{Zs}]+$/u; // this regex use Unicode awareness regex, it matches with any sequence of characters that are number, punctuation, or whitespace. Supposedly it works with all languages
     if (regex.test(input) || input.length < 2) {
         document.getElementById(alertBanner).removeAttribute("hidden");
         document.getElementById(alertMessage).innerText = typeTextInput+" cannot only contains numbers, punctuation, and/or symbols. and must be at least 2 characters long.";

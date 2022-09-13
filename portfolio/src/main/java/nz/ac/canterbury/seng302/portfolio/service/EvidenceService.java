@@ -57,13 +57,13 @@ public class EvidenceService {
      * @throws NotAcceptableException Thrown if there are any errors with the evidence piece's fields.
      */
     public void validateEvidence(Evidence evidence, Model model) throws NotAcceptableException {
-        Pattern regex = Pattern.compile("^[\\p{N}\\p{P}\\p{S}\\p{Zs}]{1,}$");
-        Pattern webLinkRegex = Pattern.compile("^(https?:\\\\/\\\\/)?" + // validate protocol
-                "((([a-z\\\\d]([a-z\\\\d-]*[a-z\\\\d])*)\\\\.)+[a-z]{2,}|" + // validate domain name
-                "((\\\\d{1,3}\\\\.){3}\\\\d{1,3}))" + // validate OR ip (v4) address
-                "(\\\\:\\\\d+)?(\\\\/[-a-z\\\\d%_.~+]*)*" + // validate port and path
-                "(\\\\?[;&a-z\\\\d%_.~+=-]*)?" + // validate query string
-                "(\\\\#[-a-z\\\\d_]*)?$");
+        Pattern regex = Pattern.compile("^[\\p{N}\\p{P}\\p{S}\\p{Zs}]+$");
+        Pattern webLinkRegex = Pattern.compile("^(https?://)?" + // validate protocol
+                "((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|" + // validate domain name
+                "((\\d{1,3}\\.){3}\\d{1,3}))" + // validate OR ip (v4) address
+                "(:\\d+)?(/[-a-z\\d%_.~+]*)*" + // validate port and path
+                "(\\?[;&a-z\\d%_.~+=-]*)?" + // validate query string
+                "(#[-a-z\\d_]*)?$");
         int maxNumWebLinks = 10;
         boolean hasError = false;
         if (evidence.getTitle() == null || evidence.getTitle().isEmpty()) {
