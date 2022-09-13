@@ -12,7 +12,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.text.MessageFormat;
+
 import java.util.*;
 
 @Service
@@ -241,7 +241,7 @@ public class UserModelService {
             if (usersGroups.isEmpty()) {
                 user.addGroup(usersWithoutGroupGroup);
                 repository.save(user);
-                logger.info(MessageFormat.format("New user id:{0} found without group, added them to 'users without a group' group", user.getUserId()));
+                logger.info("New user id:{} found without group, added them to 'users without a group' group", user.getUserId());
             }
         }
     }

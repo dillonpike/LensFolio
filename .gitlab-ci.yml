@@ -18,12 +18,18 @@ junit-porfolio:
   script:
     - cd portfolio
     - ./gradlew test
+  artifacts:
+    paths:
+      - portfolio/build/jacoco/test-report.xml
 
 junit-identityprovider:
   stage: test
   script:
     - cd identityprovider
     - ./gradlew test
+  artifacts:
+    paths:
+      - identityprovider/build/jacoco/test-report.xml
 
 publish-protos-to-maven-local:
   stage: publishProtosToLocalMavenRepo

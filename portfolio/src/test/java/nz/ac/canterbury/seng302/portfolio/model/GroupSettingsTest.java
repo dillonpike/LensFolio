@@ -17,11 +17,12 @@ class GroupSettingsTest {
     void testConstructor() {
       int expectedRepoId = 0;
       int expectedGroupId = 0;
+      String expectedRepoServerUrl = "https://eng-git.canterbury.ac.nz";
       String expectedRepoName = "Test Repo";
       String expectedRepoAPIKey = "TEST123";
 
       GroupSettings groupSettings = new GroupSettings(expectedRepoId, expectedRepoName,
-          expectedRepoAPIKey, expectedGroupId);
+          expectedRepoAPIKey, expectedGroupId, expectedRepoServerUrl);
 
       assertEquals(expectedRepoId, groupSettings.getRepoId());
       assertEquals(expectedRepoName, groupSettings.getRepoName());
