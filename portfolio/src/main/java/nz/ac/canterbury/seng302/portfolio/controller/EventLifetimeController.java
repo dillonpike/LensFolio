@@ -11,6 +11,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.NotAcceptableException;
 
 
@@ -42,7 +43,8 @@ public class EventLifetimeController {
     public String projectSave(
             @ModelAttribute("event") Event event,
             @AuthenticationPrincipal AuthState principal,
-            Model model
+            Model model,
+            HttpServletResponse httpServletResponse
     ) {
         Integer userID = userAccountClientService.getUserIDFromAuthState(principal);
         elementService.addHeaderAttributes(model, userID);
@@ -52,9 +54,12 @@ public class EventLifetimeController {
                 eventService.addEvent(event);
             }
         } catch (NotAcceptableException e) {
+            httpServletResponse.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             logger.error(String.format("Error adding event: %s", e.getMessage()));
+            return "fragments/eventModal::eventModalBody";
         }
-        return "redirect:/details";
+        httpServletResponse.setStatus(HttpServletResponse.SC_OK);
+        return "fragments/eventModal::eventModalBody";
     }
 
 

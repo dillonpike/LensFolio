@@ -208,11 +208,11 @@ public class EventService {
             model.addAttribute(EVENT_NAME_ERROR_MESSAGE, "Name cannot be greater than 30 characters");
             hasError = true;
         }
-        if (event.getEventStartDate() == null || event.getEventStartDate().before(new Date(0))) {
+        if (event.getEventStartDate() == null || event.getEventStartDate().before(new Date(0)) || event.getEventEndDate().equals(new Date(0))) {
             model.addAttribute(EVENT_DATE_ERROR_MESSAGE, "Correctly formatted dates is required");
             hasError = true;
         }
-        if (event.getEventEndDate() == null || event.getEventEndDate().before(new Date(0))) {
+        if (event.getEventEndDate() == null || event.getEventEndDate().before(new Date(0)) || event.getEventEndDate().equals(new Date(0))) {
             model.addAttribute(EVENT_DATE_ERROR_MESSAGE, "Correctly formatted dates is required");
             hasError = true;
         }

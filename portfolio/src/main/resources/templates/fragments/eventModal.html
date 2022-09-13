@@ -78,8 +78,8 @@
      * Configures the date pickers for the modal.
      */
     function configureEventDatePickers() {
-      eventStartDatePicker = configureDateTimePicker('eventStartDate');
-      eventEndDatePicker = configureDateTimePicker('eventEndDate');
+      eventStartDatePicker = configureDateTimePicker('eventStartDateInput');
+      eventEndDatePicker = configureDateTimePicker('eventEndDateInput');
       eventStartDatePicker.updateOptions({restrictions: {minDate: new Date(projectStartDate), maxDate: new Date(projectEndDate)}});
       eventEndDatePicker.updateOptions({restrictions: {minDate: new Date(projectStartDate), maxDate: new Date(projectEndDate)}});
     }

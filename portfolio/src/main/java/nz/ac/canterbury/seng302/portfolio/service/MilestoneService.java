@@ -187,8 +187,8 @@ public class MilestoneService {
             model.addAttribute(MILESTONE_NAME_ERROR_MESSAGE, "Name cannot be greater than 30 characters");
             hasError = true;
         }
-        if (milestone.getMilestoneDate() == null) {
-            model.addAttribute(MILESTONE_DATE_ERROR_MESSAGE, "Milestone date cannot be empty");
+        if (milestone.getMilestoneDate() == null || milestone.getMilestoneDate().before(new Date(0)) || milestone.getMilestoneDate().equals(new Date(0))) {
+            model.addAttribute(MILESTONE_DATE_ERROR_MESSAGE, "Correctly formatted date is required");
             hasError = true;
         }
         if (hasError) {

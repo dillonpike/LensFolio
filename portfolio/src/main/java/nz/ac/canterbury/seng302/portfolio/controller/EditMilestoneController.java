@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.NotAcceptableException;
 
 
@@ -53,7 +54,8 @@ public class EditMilestoneController {
             @PathVariable("id") Integer id,
             @ModelAttribute("milestone") Milestone milestone,
             @AuthenticationPrincipal AuthState principal,
-            Model model
+            Model model,
+            HttpServletResponse httpServletResponse
     ) throws ObjectNotFoundException {
         Integer userID = userAccountClientService.getUserIDFromAuthState(principal);
 
@@ -68,10 +70,11 @@ public class EditMilestoneController {
                 milestoneService.updateMilestone(newMilestone);
             }
         } catch (NotAcceptableException e) {
+            httpServletResponse.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             logger.error(String.format("Error saving milestone with id %d: %s", id, e.getMessage()));
+            return "fragments/milestoneModal::milestoneModalBody";
         }
-
-
-        return "redirect:/details";
+        httpServletResponse.setStatus(HttpServletResponse.SC_OK);
+        return "fragments/milestoneModal::milestoneModalBody";
     }
 }

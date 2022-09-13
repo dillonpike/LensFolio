@@ -14,6 +14,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.ui.Model;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.NotAcceptableException;
 
 /**
@@ -44,9 +45,12 @@ public class MilestoneLifetimeController {
      * @param milestone new milestone to be saved
      */
     @PostMapping("/add-milestone")
-    public String milestoneSave(@ModelAttribute("milestone") Milestone milestone,
-                                @AuthenticationPrincipal AuthState principal,
-                                Model model) {
+    public String milestoneSave(
+            @ModelAttribute("milestone") Milestone milestone,
+            @AuthenticationPrincipal AuthState principal,
+            Model model,
+            HttpServletResponse httpServletResponse
+    ) {
         Integer userID = userAccountClientService.getUserIDFromAuthState(principal);
         elementService.addHeaderAttributes(model, userID);
 
@@ -56,9 +60,12 @@ public class MilestoneLifetimeController {
                 milestoneService.addMilestone(milestone);
             }
         } catch (NotAcceptableException e) {
+            httpServletResponse.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             logger.error(String.format("Error adding milestone: %s", e.getMessage()));
+            return "fragments/milestoneModal::milestoneModalBody";
         }
-        return "redirect:/details";
+        httpServletResponse.setStatus(HttpServletResponse.SC_OK);
+        return "fragments/milestoneModal::milestoneModalBody";
     }
 
     /**

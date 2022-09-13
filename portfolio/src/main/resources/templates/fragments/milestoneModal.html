@@ -6,9 +6,9 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="closeMilestoneModalButton"></button>
             </div>
             <form method="post" id="milestoneForm" onsubmit="validateMilestone(); return false;" th:action="@{add-milestone}">
-                <div class="modal-body">
-                    <div class="alert alert-danger alert-dismissible fade show" role="alert" id="milestoneAlertBanner" hidden>
-                        <span id="milestoneAlertMessage" data-test-id="alertMessage"></span>
+                <div class="modal-body" id="milestoneModalBody" th:fragment="milestoneModalBody">
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert" id="milestoneAlertBanner"  th:hidden="${milestoneAlertMessage==null}">
+                        <span id="milestoneAlertMessage" data-test-id="alertMessage" th:text="${milestoneAlertMessage}"></span>
                         <button type="button" class="btn-close" onclick="document.getElementById('milestoneAlertBanner').hidden = true" aria-label="Close"></button>
                     </div>
                     <div class="mb-3">
@@ -18,8 +18,8 @@
                             <span id="milestoneNameLength"></span>
                         </div>
                     </div>
-                    <div class="alert alert-danger alert-dismissible fade show" role="alert" id="milestoneDateAlertBanner" hidden>
-                        <span id="milestoneDateAlertMessage" data-test-id="alertMessage"></span>
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert" id="milestoneDateAlertBanner"  th:hidden="${milestoneDateAlertMessage==null}">
+                        <span id="milestoneDateAlertMessage" data-test-id="alertMessage" th:text="${milestoneDateAlertMessage}"></span>
                         <button type="button" class="btn-close" onclick="document.getElementById('milestoneDateAlertBanner').hidden = true" aria-label="Close"></button>
                     </div>
                     <div class="mb-3">
@@ -50,11 +50,51 @@
             if (validateModalDate('milestoneDate', 'submitMilestoneButton', 'milestoneDateAlertBanner', 'milestoneDateAlertMessage') && // "submitMilestoneButton" may be the wrong id?
                 validateModalName('milestoneName', 'milestoneAlertBanner', 'milestoneAlertMessage')) {
                 document.getElementById('milestoneForm').onsubmit = () => { return false };
-                document.getElementById('milestoneForm').submit();
-                sendSavedLiveNotificationRequest('Milestone');
+                // document.getElementById('milestoneForm').submit();
+                submitMilestone();
+                document.getElementById('milestoneForm').onsubmit = () => { validateMilestone(); return false };
             }
         }
 
-        milestoneDatePicker = configureDateTimePicker('milestoneDateInput');
+        let milestoneDatePicker = configureDateTimePicker('milestoneDateInput');
+
+
+        /**
+         * Submit a milestone when adding or editing a milestone. Creates a post request and shows errors if needed.
+         */
+        function submitMilestone() {
+            // Info of milestone to submit
+            let date = new Date(document.getElementById('milestoneDate').value);
+            if (date.toString() === "Invalid Date") {
+                date = new Date("01/01/1970");
+            }
+            const data = {
+                milestoneName: document.getElementById('milestoneName').value,
+                milestoneDate: date,
+                parentProjectId: 0
+            }
+
+            // Post for adding or editing
+            $.post(document.getElementById('milestoneForm').action + "?" + new URLSearchParams(data)).done((ignoredResult) => {
+                $('#milestoneModal').modal('toggle')
+                sendSavedLiveNotificationRequest('Milestone');
+            }).fail((response) => {
+                // Add errors to modal
+                let listOfAlertsChanged = $(response.responseText).find("div.alert");
+                let listOfAlertsReal = $("#milestoneModalBody").find("div.alert");
+                for (let i = 0; i < listOfAlertsChanged.length; i++) {
+                    if (listOfAlertsChanged[i].getElementsByTagName("span")[0].innerHTML !== "") {
+                        $("#" + listOfAlertsReal[i].id).replaceWith(listOfAlertsChanged[i])
+                        listOfAlertsReal[i].setAttribute("hidden", null);
+                    }
+                }
+                // Update general values of the modal
+                updateCharsLeft('milestoneName', 'milestoneNameLength', 30)
+                const date = moment($("#" + milestoneDate).val(), 'DD/MMM/yyyy h:mm a').toDate();
+                milestoneDatePicker.dates.setValue(tempusDominus.DateTime.convert(date));
+                milestoneDatePicker = configureDateTimePicker('milestoneDateInput');
+            })
+        }
+
     </script>
 </div>
