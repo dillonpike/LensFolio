@@ -11,6 +11,7 @@ import org.springframework.ui.Model;
 
 import javax.ws.rs.NotAcceptableException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -195,6 +196,7 @@ public class EventService {
     public void validateEvent(Event event, Model model) throws NotAcceptableException {
 
         event.setEventName(event.getEventName().trim());
+        model.addAttribute("event", event);
         boolean hasError = false;
         if (event.getEventName() == null || event.getEventName().trim().isEmpty()) {
             model.addAttribute(EVENT_NAME_ERROR_MESSAGE, "Event name cannot be empty");
@@ -206,11 +208,11 @@ public class EventService {
             model.addAttribute(EVENT_NAME_ERROR_MESSAGE, "Name cannot be greater than 30 characters");
             hasError = true;
         }
-        if (event.getEventStartDate() == null) {
+        if (event.getEventStartDate() == null || event.getEventStartDate().before(new Date(0))) {
             model.addAttribute(EVENT_DATE_ERROR_MESSAGE, "Correctly formatted dates is required");
             hasError = true;
         }
-        if (event.getEventEndDate() == null) {
+        if (event.getEventEndDate() == null || event.getEventEndDate().before(new Date(0))) {
             model.addAttribute(EVENT_DATE_ERROR_MESSAGE, "Correctly formatted dates is required");
             hasError = true;
         }

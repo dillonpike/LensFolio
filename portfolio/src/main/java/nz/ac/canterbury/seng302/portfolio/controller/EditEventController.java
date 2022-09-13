@@ -13,6 +13,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.NotAcceptableException;
 
 /**
@@ -53,7 +54,8 @@ public class EditEventController {
             @AuthenticationPrincipal AuthState principal,
             @ModelAttribute("event") Event event,
             RedirectAttributes rm,
-            Model model
+            Model model,
+            HttpServletResponse httpServletResponse
     ) throws ObjectNotFoundException {
         Integer userID = userAccountClientService.getUserIDFromAuthState(principal);
         elementService.addHeaderAttributes(model, userID);
@@ -66,10 +68,12 @@ public class EditEventController {
                 rm.addFlashAttribute("isAccessDenied", true);
             }
         } catch (NotAcceptableException e) {
+            httpServletResponse.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             logger.error(String.format("Error occurred while trying to save event with id %d: %s", id, e.getMessage()));
+            return "fragments/eventModal::eventModalBody";
         }
-
-        return "redirect:/details";
+        httpServletResponse.setStatus(HttpServletResponse.SC_OK);
+        return "fragments/eventModal::eventModalBody";
     }
 
 }

@@ -7,8 +7,8 @@
       </div>
       <form method="post" id="eventForm" onsubmit="validateEvent(); return false;" th:action="@{add-event}">
         <div class="modal-body" id="eventModalBody" th:fragment="eventModalBody">
-          <div class="alert alert-danger alert-dismissible fade show" role="alert" id="eventAlertBanner" hidden>
-            <span id="eventAlertMessage" data-test-id="alertMessage"></span>
+          <div class="alert alert-danger alert-dismissible fade show" role="alert" id="eventAlertBanner" th:hidden="${eventAlertMessage==null}">
+            <span id="eventAlertMessage" data-test-id="alertMessage" th:text="${eventAlertMessage}"></span>
             <button type="button" class="btn-close" onclick="document.getElementById('eventAlertBanner').hidden = true" aria-label="Close"></button>
           </div> 
           <div class="mb-3">
@@ -18,8 +18,8 @@
               <span id="eventNameLength"></span>
             </div>
           </div>
-          <div class="alert alert-danger alert-dismissible fade show" role="alert" id="eventDateTimeAlertBanner" hidden>
-            <span id="eventDateTimeAlertMessage" data-test-id="alertMessage"></span>
+          <div class="alert alert-danger alert-dismissible fade show" role="alert" id="eventDateTimeAlertBanner" th:hidden="${eventDateTimeAlertMessage==null}">
+            <span id="eventDateTimeAlertMessage" data-test-id="alertMessage" th:text="${eventDateTimeAlertMessage}"></span>
             <button type="button" class="btn-close" onclick="document.getElementById('eventDateTimeAlertBanner').hidden = true" aria-label="Close"></button>
           </div>
           <div class="mb-3">
@@ -63,13 +63,74 @@
       if (validateModalDateTimeRange('eventStartDate', 'eventEndDate', 'submitEventButton', 'eventDateTimeAlertBanner', 'eventDateTimeAlertMessage') &&
               validateModalName('eventName', 'eventAlertBanner', 'eventAlertMessage')) {
         document.getElementById('eventForm').onsubmit = () => { return false };
-        document.getElementById('eventForm').submit();
-        sendSavedLiveNotificationRequest('Event');
+
+        submitEvent()
+
+        document.getElementById('eventForm').onsubmit = () => { validateEvent(); return false };
+
       }
     }
 
-    eventStartDatePicker = configureDateTimePicker('eventStartDateInput');
-    eventEndDatePicker = configureDateTimePicker('eventEndDateInput');
+    let eventStartDatePicker;
+    let eventEndDatePicker;
+
+    /**
+     * Configures the date pickers for the modal.
+     */
+    function configureEventDatePickers() {
+      eventStartDatePicker = configureDateTimePicker('eventStartDate');
+      eventEndDatePicker = configureDateTimePicker('eventEndDate');
+      eventStartDatePicker.updateOptions({restrictions: {minDate: new Date(projectStartDate), maxDate: new Date(projectEndDate)}});
+      eventEndDatePicker.updateOptions({restrictions: {minDate: new Date(projectStartDate), maxDate: new Date(projectEndDate)}});
+    }
+
+    configureEventDatePickers()
+
+
+    /**
+     * Submit an event when adding or editing an event. Creates a post request and shows errors if needed.
+     */
+    function submitEvent() {
+      // Info of event to submit
+      let startDate = new Date(document.getElementById('eventStartDate').value);
+      if (startDate.toString() === "Invalid Date") {
+        startDate = new Date("01/01/1970");
+      }
+      let endDate = new Date(document.getElementById('eventEndDate').value);
+      if (endDate.toString() === "Invalid Date") {
+        endDate = new Date("01/01/1970");
+      }
+      const data = {
+        eventName: document.getElementById('eventName').value,
+        eventStartDate: startDate,
+        eventEndDate: endDate,
+        parentProjectId: 0
+      }
+
+      // Post for adding or editing
+      $.post(document.getElementById('eventForm').action + "?" + new URLSearchParams(data)).done((ignoredResult) => {
+        $('#eventModal').modal('toggle')
+        sendSavedLiveNotificationRequest('Event');
+      }).fail((response) => {
+        // Add errors to modal
+        let listOfAlertsChanged = $(response.responseText).find("div.alert");
+        let listOfAlertsReal = $("#eventModalBody").find("div.alert");
+        for (let i = 0; i < listOfAlertsChanged.length; i++) {
+          if (listOfAlertsChanged[i].getElementsByTagName("span")[0].innerHTML !== "") {
+            $("#" + listOfAlertsReal[i].id).replaceWith(listOfAlertsChanged[i])
+            listOfAlertsReal[i].setAttribute("hidden", null);
+          }
+        }
+        // Update general values of the modal
+        updateCharsLeft('eventName', 'eventNameLength', 30)
+        const startDate = moment($("#" + eventStartDate).val(), 'DD/MMM/yyyy h:mm a').toDate();
+        eventStartDatePicker.dates.setValue(tempusDominus.DateTime.convert(startDate));
+        const endDate = moment($("#" + eventEndDate).val(), 'DD/MMM/yyyy h:mm a').toDate();
+        eventEndDatePicker.dates.setValue(tempusDominus.DateTime.convert(endDate));
+        configureEventDatePickers();
+
+      })
+    }
 
   </script>
 </div>

@@ -281,7 +281,10 @@ function eventModalSetup() {
         $('#' + modalButton.getAttribute("id")).prop('hidden', false);
     })
 
-    eventModal.addEventListener('hidden.bs.modal', function (event) {
+    eventModal.addEventListener('hidden.bs.modal', function (ignoredEvent) {
         $("#eventAlertMessage").val(null);
+        $("#eventAlertBanner").setAttribute("hidden", "true")
+        $("#eventDateTimeAlertMessage").val(null);
+        $("#eventDateTimeAlertBanner").setAttribute("hidden", "true")
     });
 }
