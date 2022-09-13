@@ -69,7 +69,7 @@ public class GroupSettingsController {
      * @param model group setting page model
      * @return group settings page
      */
-    @RequestMapping("/groupSettings", method = { RequestMethod.GET, RequestMethod.POST })
+    @RequestMapping(value = "/groupSettings", method = { RequestMethod.GET, RequestMethod.POST })
     public String groupSettings(
             @RequestParam(value = "groupId") int groupId,
             @AuthenticationPrincipal AuthState principal,
@@ -305,7 +305,6 @@ public class GroupSettingsController {
     @MessageMapping("/save-group-settings")
     @SendTo("/webSocketGet/group-settings-saved")
     public NotificationGroup refreshGroupSettings(NotificationGroup notificationGroup) {
-        System.out.println("helo");
         return notificationGroup;
     }
 }
