@@ -14,12 +14,14 @@ function editGroupSetting() {
         repoName: document.getElementById("repoName").value,
         repoID: document.getElementById("repoId").value,
         repoToken: document.getElementById("repoToken").value,
+        repoURL: document.getElementById("repoUrl").value,
         groupId: document.getElementById("groupId").value,
         groupSettingsId: document.getElementById("groupSettingsId").value
     }
     $.post('saveGroupSettings?' + new URLSearchParams(data)).done((result) => {
         $(`#groupSettingContainer`).replaceWith(result);
         initialiseCommitsList()
+        sendIdRefresh($("#groupId").val());
     }).fail(showError)
 }
 
@@ -98,7 +100,11 @@ function validateModalName(elementId, alertBanner, alertMessage) {
 }
 
 /**
- * Check if the repo ID of the item that the user inputted is less than 10 characters.
+ * Validate repository settings input
+ * 1. Check if repoId is less than 0, if so show error banner with the error message and return false.
+ * 2. check if access token is at least 20 characters long, if not show error banner with the error message and return false.
+ * 3. check if repository server URL is in correct format, if not show error banner with the error message and return false.
+ *
  * @param elementId the ID of the text input HTML element for item's repo Id
  * @param alertBanner the ID of the alert banner HTML element
  * @param alertMessage the ID of the alert banner message HTML element
@@ -106,11 +112,24 @@ function validateModalName(elementId, alertBanner, alertMessage) {
  */
 function validateRepoSetting(elementId, alertBanner, alertMessage) {
     const repoId = document.getElementById('repoId').value;
+    const token = document.getElementById('repoToken').value;
+    const serverUrl = document.getElementById('repoUrl').value;
     if (repoId.toString().length > 10) {
         document.getElementById(alertBanner).hidden = false;
         document.getElementById(alertMessage).innerText = "Invalid Repository ID!";
         return false
-    } else {
+    }
+    else if (token.toString().length < 20 && token.toString().length >= 1) {
+        document.getElementById(alertBanner).hidden = false;
+        document.getElementById(alertMessage).innerText = "Invalid Repository Token! Token length should be at least 20 characters.";
+        return false
+    }
+    else if (serverUrl.toString().length >= 1 && !isValidUrl(serverUrl)) {
+            document.getElementById(alertBanner).hidden = false;
+            document.getElementById(alertMessage).innerText = "Invalid Repository URL!";
+            return false
+    }
+    else {
         if (document.getElementById(alertBanner)) {
             document.getElementById(alertBanner).hidden = true;
         }
@@ -136,4 +155,20 @@ async function validateGroupSetting() {
         }
         document.getElementById('groupSettingForm').onsubmit = () => {validateGroupSetting(); return false}
     }
+}
+
+/**
+ * Method to use regex to validate a URL String
+ * inspired by https://www.freecodecamp.org/news/check-if-a-javascript-string-is-a-url/#:~:text=You%20can%20use%20the%20URLConstructor,given%20URL%20is%20not%20valid.
+ * @param urlString the url string to validate
+ * @returns {boolean} true if valid, false otherwise
+ */
+function isValidUrl(urlString) {
+    const urlPattern = new RegExp('^(https?:\\/\\/)?'+ // validate protocol
+        '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|'+ // validate domain name
+        '((\\d{1,3}\\.){3}\\d{1,3}))'+ // validate OR ip (v4) address
+        '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*'+ // validate port and path
+        '(\\?[;&a-z\\d%_.~+=-]*)?'+ // validate query string
+        '(\\#[-a-z\\d_]*)?$','i'); // validate fragment locator
+    return !!urlPattern.test(urlString);
 }

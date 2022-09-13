@@ -33,6 +33,12 @@ public class GroupSettings {
     private String repoName;
 
     /**
+     * Repository url of the group.
+     */
+    @Column(name="repo_server_Url", length=100)
+    private String repoServerUrl;
+
+    /**
      * Repository API Key of the group.
      */
     @Column(name="repo_api_key", length=50)
@@ -69,14 +75,16 @@ public class GroupSettings {
      * @param repoId Repository id of the group.
      * @param repoName Repository name of the group.
      * @param repoApiKey Repository API Key of the group.
-     * @param groupId Id of the group instance the group settings relate too .
+     * @param groupId Id of the group instance the group settings relate too.
+     * @param repoServerUrl Repository url of the group.
      */
-    public GroupSettings(int repoId, String repoName, String repoApiKey, int groupId) {
+    public GroupSettings(int repoId, String repoName, String repoApiKey, int groupId, String repoServerUrl) {
         this.repoId = repoId;
         this.repoName = repoName;
         this.repoApiKey = repoApiKey;
         this.groupId = groupId;
-        this.gitLabApi = new GitLabApi("https://eng-git.canterbury.ac.nz", repoApiKey);
+        this.repoServerUrl = repoServerUrl;
+        this.gitLabApi = new GitLabApi(repoServerUrl, repoApiKey);
     }
 
     /**
@@ -165,9 +173,19 @@ public class GroupSettings {
      */
     public GitLabApi getGitLabApi() {
         if (gitLabApi == null) {
-            gitLabApi = new GitLabApi("https://eng-git.canterbury.ac.nz", repoApiKey);
+            gitLabApi = new GitLabApi(getRepoUrl(), repoApiKey);
         }
         return gitLabApi;
     }
 
+    /**
+     * Returns the repo server url.
+     * @return repo server url
+     */
+    public String getRepoUrl() {
+        if (repoServerUrl == null) {
+            return "";
+        }
+        return repoServerUrl;
+    }
 }
