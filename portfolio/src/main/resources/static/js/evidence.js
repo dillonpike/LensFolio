@@ -54,9 +54,13 @@ function addEvidence() {
  * @param modalBodyResponse response with new modalBody to display (evidenceModalBody fragment)
  */
 function replaceEvidenceModalBody(modalBodyResponse) {
-    $("#evidenceModalBody").replaceWith(modalBodyResponse)
-    updateCharsLeft('evidenceTitle', 'evidenceTitleLength', 30)
-    updateCharsLeft('evidenceDescription', 'evidenceDescriptionLength', 250)
+    const webLinks = $("#webLinkList").children();
+    $("#evidenceModalBody").replaceWith(modalBodyResponse);
+    // Restore weblinks that were deleted when the modal was replaced
+    // Uses two duplicate jquery selectors since the element is replaced between each use
+    $("#webLinkList").html(webLinks);
+    updateCharsLeft('evidenceTitle', 'evidenceTitleLength', 30);
+    updateCharsLeft('evidenceDescription', 'evidenceDescriptionLength', 250);
     configureEvidenceDatePicker();
     setEvidenceDatePickerValues();
 }
