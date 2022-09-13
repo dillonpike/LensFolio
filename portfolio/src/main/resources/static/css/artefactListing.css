@@ -35,5 +35,9 @@
 }
 
 .evidence-info-block {
-    width: 50%;
+    width: 100%;
+}
+
+.padded {
+    padding-left: 13px;
 }
