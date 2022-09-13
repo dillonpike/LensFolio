@@ -181,14 +181,18 @@
             return !!urlPattern.test(urlString);
         }
 
-        // Adds a web link rather than submitting the form if the user presses the enter key in the web link input
-        // field and has something typed in
-        const webLinkInput = document.getElementById("evidenceWeblink");
-        webLinkInput.addEventListener("keydown", function (e) {
-            if (e.code === "Enter" && webLinkInput.value.trim() !== "") {
-                e.preventDefault();
-                addWebLinks();
-            }
-        });
+        /**
+         * Configures the web link input so that it adds a web link rather than submitting the form if the user
+         * presses the enter key in the web link input field and has something typed in.
+         */
+        function configureWebLinkInput() {
+            const webLinkInput = document.getElementById("evidenceWeblink");
+            webLinkInput.addEventListener("keydown", function (e) {
+                if (e.code === "Enter" && webLinkInput.value.trim() !== "") {
+                    e.preventDefault();
+                    addWebLinks();
+                }
+            });
+        }
     </script>
 </div>

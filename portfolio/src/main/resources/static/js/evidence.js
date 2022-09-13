@@ -63,6 +63,7 @@ function replaceEvidenceModalBody(modalBodyResponse) {
     updateCharsLeft('evidenceDescription', 'evidenceDescriptionLength', 250);
     configureEvidenceDatePicker();
     setEvidenceDatePickerValues();
+    configureWebLinkInput();
 }
 
 /**
