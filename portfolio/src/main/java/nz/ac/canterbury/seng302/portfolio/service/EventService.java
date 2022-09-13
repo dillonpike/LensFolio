@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.regex.Pattern;
 
 
 /***
@@ -194,7 +195,7 @@ public class EventService {
      * @throws NotAcceptableException If the event is not valid
      */
     public void validateEvent(Event event, Model model) throws NotAcceptableException {
-
+        Pattern regex = Pattern.compile("^[\\p{N}\\p{P}\\p{S}\\p{Zs}]{1,}$");
         event.setEventName(event.getEventName().trim());
         model.addAttribute("event", event);
         boolean hasError = false;
@@ -206,6 +207,9 @@ public class EventService {
             hasError = true;
         } else if (event.getEventName().length() > 30) {
             model.addAttribute(EVENT_NAME_ERROR_MESSAGE, "Name cannot be greater than 30 characters");
+            hasError = true;
+        } else if (regex.matcher(event.getEventName()).matches()) {
+            model.addAttribute(EVENT_NAME_ERROR_MESSAGE, "Name must contain at least one letter");
             hasError = true;
         }
         if (event.getEventStartDate() == null || event.getEventStartDate().before(new Date(0)) || event.getEventEndDate().equals(new Date(0))) {

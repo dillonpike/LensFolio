@@ -11,6 +11,7 @@ import org.springframework.ui.Model;
 
 import javax.ws.rs.NotAcceptableException;
 import java.util.*;
+import java.util.regex.Pattern;
 
 /***
  * Service class for saving, deleting, updating and retrieving event objects to the database.
@@ -183,7 +184,7 @@ public class DeadlineService {
      * @throws NotAcceptableException If the deadline is not valid
      */
     public void validateDeadline(Deadline deadline, Model model) throws NotAcceptableException {
-
+        Pattern regex = Pattern.compile("^[\\p{N}\\p{P}\\p{S}\\p{Zs}]{1,}$");
         deadline.setDeadlineName(deadline.getDeadlineName().trim());
         boolean hasError = false;
         if (deadline.getDeadlineName() == null || deadline.getDeadlineName().trim().isEmpty()) {
@@ -194,6 +195,9 @@ public class DeadlineService {
             hasError = true;
         } else if (deadline.getDeadlineName().length() > 30) {
             model.addAttribute(DEADLINE_NAME_ERROR_MESSAGE, "Name cannot be greater than 30 characters");
+            hasError = true;
+        } else if (regex.matcher(deadline.getDeadlineName()).matches()) {
+            model.addAttribute(DEADLINE_NAME_ERROR_MESSAGE, "Name must contain at least one letter");
             hasError = true;
         }
         if (deadline.getDeadlineDate() == null) {
