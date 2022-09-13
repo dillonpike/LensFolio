@@ -1,5 +1,6 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
+import com.google.protobuf.Timestamp;
 import nz.ac.canterbury.seng302.portfolio.model.Group;
 import nz.ac.canterbury.seng302.portfolio.model.GroupSettings;
 import nz.ac.canterbury.seng302.portfolio.repository.GroupSettingsRepository;
@@ -60,6 +61,21 @@ class GroupSettingsControllerTest {
             .addClaims(ClaimDTO.newBuilder().setType("nameid").setValue("123456").build()) // Set the mock user's ID
             .setAuthenticationType("AuthenticationTypes.Federation")
             .setName("validtesttoken")
+            .build();
+
+    /**
+     * Mocked user response which contains the data of the user
+     */
+    private final UserResponse mockUser = UserResponse.newBuilder()
+            .setBio("default bio")
+            .setCreated(Timestamp.newBuilder().setSeconds(55))
+            .setEmail("hello@test.com")
+            .setFirstName("firsttestname")
+            .setLastName("lasttestname")
+            .setMiddleName("middlettestname")
+            .setNickname("niktestname")
+            .setPersonalPronouns("He/him")
+            .addRoles(UserRole.STUDENT)
             .build();
 
     @Autowired
@@ -149,6 +165,8 @@ class GroupSettingsControllerTest {
                 .setLongName(testGroup.getLongName()).build())
                 .when(groupService).getGroupDetails(testGroup.getGroupId());
 
+        when(registerClientService.getUserData(any(Integer.class))).thenReturn(mockUser);
+
         when(groupSettingsService.getGroupSettingsByGroupId(any(Integer.class))).thenReturn(testGroupSettings);
         when(gitLabApiService.checkGitLabToken(any(Integer.class), any(String.class), any(String.class))).thenReturn(false);
 
@@ -171,6 +189,8 @@ class GroupSettingsControllerTest {
                 .setLongName(testGroup.getLongName()).build())
                 .when(groupService).getGroupDetails(testGroup.getGroupId());
 
+        when(registerClientService.getUserData(any(Integer.class))).thenReturn(mockUser);
+
         when(groupSettingsService.getGroupSettingsByGroupId(any(Integer.class))).thenReturn(testGroupSettings);
         when(gitLabApiService.checkGitLabToken(any(Integer.class), any(String.class), any(String.class))).thenReturn(true);
         when(permissionService.isValidToModifyGroupSettingPage(any(Integer.class), any(Integer.class))).thenReturn(true);
@@ -192,6 +212,8 @@ class GroupSettingsControllerTest {
                 .setGroupId(testGroup.getGroupId()).setShortName(testGroup.getShortName())
                 .setLongName(testGroup.getLongName()).build())
                 .when(groupService).getGroupDetails(testGroup.getGroupId());
+
+        when(registerClientService.getUserData(any(Integer.class))).thenReturn(mockUser);
 
         when(groupSettingsService.getGroupSettingsByGroupId(any(Integer.class))).thenReturn(testGroupSettings);
         when(gitLabApiService.checkGitLabToken(any(Integer.class), any(String.class), any(String.class))).thenReturn(true);
@@ -267,6 +289,9 @@ class GroupSettingsControllerTest {
                 .setGroupId(testGroup.getGroupId()).setShortName(testGroup.getShortName())
                 .setLongName(testGroup.getLongName()).build())
                 .when(groupService).getGroupDetails(testGroup.getGroupId());
+
+        when(registerClientService.getUserData(any(Integer.class))).thenReturn(mockUser);
+
         when(gitLabApiService.getContributors(any(Integer.class))).thenThrow(exception);
         when(groupSettingsService.getGroupSettingsByGroupId(any(Integer.class))).thenReturn(testGroupSettings);
         when(gitLabApiService.checkGitLabToken(any(Integer.class), any(String.class), any(String.class))).thenReturn(false);
