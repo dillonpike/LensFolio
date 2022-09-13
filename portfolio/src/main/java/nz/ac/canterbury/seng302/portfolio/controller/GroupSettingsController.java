@@ -1,6 +1,7 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
 
+import nz.ac.canterbury.seng302.portfolio.model.GroupSettings;
 import nz.ac.canterbury.seng302.portfolio.service.*;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import nz.ac.canterbury.seng302.shared.identityprovider.ModifyGroupDetailsResponse;
@@ -63,7 +64,7 @@ public class GroupSettingsController {
      * @param model group setting page model
      * @return group settings page
      */
-    @RequestMapping("/groupSettings")
+    @GetMapping("/groupSettings")
     public String groupSettings(
             @RequestParam(value = "groupId") int groupId,
             @AuthenticationPrincipal AuthState principal,
@@ -84,7 +85,8 @@ public class GroupSettingsController {
 
         int repoId = (int) groupSettingsService.getGroupSettingsByGroupId(groupId).getRepoId();
         String repoToken = groupSettingsService.getGroupSettingsByGroupId(groupId).getRepoApiKey();
-        boolean isConnected = gitLabApiService.checkGitLabToken(repoId, repoToken);
+        String repoUrl = groupSettingsService.getGroupSettingsByGroupId(groupId).getRepoUrl();
+        boolean isConnected = gitLabApiService.checkGitLabToken(repoId, repoToken, repoUrl);
         if (!isConnected) {
             model.addAttribute(GROUP_SETTING_ALERT_MESSAGE, "Repository Is Unreachable With The Current Settings");
         }
@@ -92,7 +94,10 @@ public class GroupSettingsController {
         model.addAttribute("isValidToModify", isValidToModify);
 
         groupService.addGroupDetailToModel(model, groupId);
-        groupSettingsService.addSettingAttributesToModel(groupId, model);
+
+        GroupSettings groupSettings = groupSettingsService.getGroupSettingsByGroupId(groupId);
+        groupSettingsService.addSettingAttributesToModel(model, groupSettings);
+
         addGroupSettingAttributeToModel(model, groupId);
 
         return "groupSettings";
@@ -116,10 +121,10 @@ public class GroupSettingsController {
         try {
             String branchRequestName = null;
             String userRequestEmail = null;
-            if(!branchName.equals("All Branches")){
+            if(!branchName.equals("All Branches")) {
                 branchRequestName = branchName;
             }
-            if(!userEmail.equals("All Users")){
+            if (!userEmail.equals("All Users")) {
                 userRequestEmail = userEmail;
             }
             List<Commit> allCommit = gitLabApiService.getCommits(groupId, branchRequestName, userRequestEmail);
@@ -129,6 +134,57 @@ public class GroupSettingsController {
             return "groupSettings::commitsListRefresh";
         }
     }
+
+    /**
+     * Method to partial refresh the group setting card.
+     *
+     * @param groupId current group id
+     * @param model   model for group setting page
+     * @return repository contributors fragment
+     */
+    @RequestMapping("/groupSettings/refreshGroupSettings")
+    public String refreshGroupSetting(
+            Model model,
+            @RequestParam(value = "groupId") int groupId,
+            @AuthenticationPrincipal AuthState principal) {
+
+        Integer id = userAccountClientService.getUserIDFromAuthState(principal);
+        elementService.addHeaderAttributes(model, id);
+        UserResponse user = registerClientService.getUserData(id);
+        String role = elementService.getUserHighestRole(user);
+
+        int repoId = (int) groupSettingsService.getGroupSettingsByGroupId(groupId).getRepoId();
+        String repoToken = groupSettingsService.getGroupSettingsByGroupId(groupId).getRepoApiKey();
+        String repoUrl = groupSettingsService.getGroupSettingsByGroupId(groupId).getRepoUrl();
+        boolean isConnected = gitLabApiService.checkGitLabToken(repoId, repoToken, repoUrl);
+        if (!isConnected) {
+            model.addAttribute(GROUP_SETTING_ALERT_MESSAGE, "Repository Is Unreachable With The Current Settings");
+        }
+        boolean isValidToModify = permissionService.isValidToModifyGroupSettingPage(groupId, id);
+        model.addAttribute("isValidToModify", isValidToModify);
+
+        groupService.addGroupDetailToModel(model, groupId);
+        GroupSettings groupSettings = groupSettingsService.getGroupSettingsByGroupId(groupId);
+        groupSettingsService.addSettingAttributesToModel(model, groupSettings);
+        addGroupSettingAttributeToModel(model, groupId);
+        model.addAttribute(GROUP_ID, groupId);
+        model.addAttribute(CURRENT_USER_ROLE, role);
+
+        if (groupSettings.getRepoId() != 0) {
+            model.addAttribute("repoId", groupSettings.getRepoId());
+        } else {
+            model.addAttribute("repoId", 0);
+
+        }
+        model.addAttribute("repoName", groupSettings.getRepoName());
+        model.addAttribute("repoApiKey", groupSettings.getRepoApiKey());
+        model.addAttribute("groupSettingsId", groupSettings.getGroupSettingsId());
+        model.addAttribute("repoServerUrl", groupSettings.getRepoUrl());
+
+        return "groupSettings::groupSettingsRefresh";
+    }
+
+
 
     /**
      * POST method for group setting page to update group long name,
@@ -145,6 +201,7 @@ public class GroupSettingsController {
             @RequestParam(name = "repoID", required = false) int repoId,
             @RequestParam(name = "repoToken", required = false, defaultValue = "") String repoToken,
             @RequestParam(name = "groupSettingsId") int groupSettingsId,
+            @RequestParam(name = "repoURL", required = false, defaultValue = "") String repoServerUrl,
             @AuthenticationPrincipal AuthState principal,
             HttpServletResponse httpServletResponse,
             RedirectAttributes rm
@@ -179,8 +236,8 @@ public class GroupSettingsController {
             return "groupSettings::groupLongNameAlertBanner";
         }
 
-        boolean isSaved = groupSettingsService.isGroupSettingSaved(groupSettingsId, repoId, repoName, repoToken, groupId);
-        boolean isConnected = gitLabApiService.checkGitLabToken(repoId, repoToken);
+        boolean isSaved = groupSettingsService.isGroupSettingSaved(groupSettingsId, repoId, repoName, repoToken, groupId, repoServerUrl);
+        boolean isConnected = gitLabApiService.checkGitLabToken(repoId, repoToken, repoServerUrl);
 
         if (!isConnected) {
             model.addAttribute(GROUP_SETTING_ALERT_MESSAGE, "Repository Is Unreachable With The Current Settings");
@@ -192,8 +249,8 @@ public class GroupSettingsController {
             return "groupSettings::groupSettingsAlertBanner";
         }
         groupService.addGroupDetailToModel(model, groupId);
-        groupSettingsService.addSettingAttributesToModel(groupId, model);
-        addGroupSettingAttributeToModel(model, groupId);
+        GroupSettings groupSettings = groupSettingsService.getGroupSettingsByGroupId(groupId);
+        groupSettingsService.addSettingAttributesToModel(model, groupSettings);        addGroupSettingAttributeToModel(model, groupId);
 
         httpServletResponse.setStatus(HttpServletResponse.SC_OK);
         model.addAttribute("successMessage", "Save changed");
