@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.NotAcceptableException;
 
 /**
@@ -47,9 +48,11 @@ public class DeadlineLifetimeController {
      * @param deadline new deadline to be saved
      */
     @PostMapping("/add-deadline")
-    public String deadlineSave(@ModelAttribute("deadline") Deadline deadline,
-                               @AuthenticationPrincipal AuthState principal,
-                               Model model
+    public String deadlineSave(
+            @ModelAttribute("deadline") Deadline deadline,
+            @AuthenticationPrincipal AuthState principal,
+            Model model,
+            HttpServletResponse httpServletResponse
     ) {
         Integer userID = userAccountClientService.getUserIDFromAuthState(principal);
         elementService.addHeaderAttributes(model, userID);
@@ -61,8 +64,11 @@ public class DeadlineLifetimeController {
             }
         } catch (NotAcceptableException e) {
             logger.error(String.format("Error adding deadline: %s", e.getMessage()));
+            httpServletResponse.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            return "fragments/deadlineModal::deadlineModalBody";
         }
-        return "redirect:/details";
+        httpServletResponse.setStatus(HttpServletResponse.SC_OK);
+        return "fragments/deadlineModal::deadlineModalBody";
     }
 
     /**

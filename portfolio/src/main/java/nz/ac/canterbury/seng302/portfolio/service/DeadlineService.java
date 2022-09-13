@@ -200,8 +200,8 @@ public class DeadlineService {
             model.addAttribute(DEADLINE_NAME_ERROR_MESSAGE, "Name must contain at least one letter");
             hasError = true;
         }
-        if (deadline.getDeadlineDate() == null) {
-            model.addAttribute(DEADLINE_DATE_ERROR_MESSAGE, "Milestone date cannot be empty");
+        if (deadline.getDeadlineDate() == null || deadline.getDeadlineDate().before(new Date(0)) || deadline.getDeadlineDate().equals(new Date(0))) {
+            model.addAttribute(DEADLINE_DATE_ERROR_MESSAGE, "Correctly formatted date is required");
             hasError = true;
         }
         if (hasError) {

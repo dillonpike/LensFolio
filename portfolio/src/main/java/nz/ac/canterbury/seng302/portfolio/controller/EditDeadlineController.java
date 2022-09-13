@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.NotAcceptableException;
 
 /**
@@ -52,7 +53,8 @@ public class EditDeadlineController {
             RedirectAttributes rm,
             @ModelAttribute("deadline") Deadline deadline,
             @AuthenticationPrincipal AuthState principal,
-            Model model
+            Model model,
+            HttpServletResponse httpServletResponse
     ) throws ObjectNotFoundException {
         Integer userID = userAccountClientService.getUserIDFromAuthState(principal);
         elementService.addHeaderAttributes(model, userID);
@@ -69,8 +71,10 @@ public class EditDeadlineController {
             }
         } catch (NotAcceptableException e) {
             logger.error(String.format("Error while updating deadline with id  %d: %s", id, e.getMessage()));
+            httpServletResponse.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            return "fragments/deadlineModal::deadlineModalBody";
         }
-        return "redirect:/details";
-
+        httpServletResponse.setStatus(HttpServletResponse.SC_OK);
+        return "fragments/deadlineModal::deadlineModalBody";
     }
 }
