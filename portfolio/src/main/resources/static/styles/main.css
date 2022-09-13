@@ -174,12 +174,17 @@ a {
 }
 .evidence-description {
     color: #636363;
-    padding-top: 5px;
     word-break: normal;
 }
 .evidence-date {
     color: #a0a0a0;
     font-size: normal;
+    padding-bottom: 10px;
+}
+
+.evidence-weblink-title {
+    font-weight: bold;
+    padding-top: 10px;
 }
 /* Sprints-Display End */
 
