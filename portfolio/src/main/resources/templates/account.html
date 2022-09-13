@@ -142,29 +142,31 @@
                       <span class='bi bi-plus'></span> <i>Add Evidence</i>
                     </button>
                   </a>
-
+                  <!-- This section contains the list of evidence and each have a clickable button to display a more detailed description through a collapsable object. -->
                   <div th:each="evidence, meta: ${evidences}">
                     <div class="evidence-block">
                       <div class="detail-block">
                         <div class="evidence-info-block" th:if="${evidence}">
-                          <button th:id="evidenceDropdown + (${meta.index} + 1)" class="btn" type="button" data-bs-toggle="collapse" th:attr="data-bs-target='#collapseEvidence' + ${evidence.getEvidenceId()}, aria-controls='collapseEvidence' + ${evidence.getEvidenceId()}, onClick='changeIcon(eventArrow' + (${meta.index} + 1) + ')'" aria-expanded="false" >
+                          <button th:id="evidenceDropdown + (${meta.index} + 1)" class="btn" type="button" data-bs-toggle="collapse" th:attr="data-bs-target='#collapseEvidence' + ${evidence.getEvidenceId()}, aria-controls='collapseEvidence' + ${evidence.getEvidenceId()}, onClick='changeIcon(evidenceArrow' + (${meta.index} + 1) + ')'" aria-expanded="false" >
                             <span class="evidence-title" th:text="${evidence.getTitle}"></span>
                             <svg th:id="evidenceArrow + (${meta.index} + 1)" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-caret-left-fill" viewBox="0 0 16 16">
                               <path d="m3.86 8.753 5.482 4.796c.646.566 1.658.106 1.658-.753V3.204a1 1 0 0 0-1.659-.753l-5.48 4.796a1 1 0 0 0 0 1.506z"/>
                             </svg>
                           </button>
                           <div class="padded">
-                            <div class="evidence-date" th:text="'Date: ' + ${evidence.getDate}"></div>
+                            <div class="evidence-date" th:text="${evidence.getDateString}"></div>
                             <div class="collapse" th:id="collapseEvidence + ${evidence.getEvidenceId()}">
-                              <div class="evidence-description" th:text="'Description: ' + ${evidence.getDescription}"></div>
+                              <b>Description:</b>
+                              <div class="evidence-description" th:text="${evidence.getDescription}"></div>
+                              <div class="evidence-weblink-title" th:if="${!evidence.getWebLinks().isEmpty()}">Weblinks:</div>
                               <div th:each="webLink, meta: ${evidence.getWebLinks()}">
                                 <a th:href="${webLink.getUrl()}" target="_blank" th:text="${webLink.getUrl()}"></a>
                               </div>
                             </div>
                           </div>
                           <script th:inline="javascript">
-                            buttonId = /*[['eventDropdown' + (${meta.index} + 1)]]*/ null;
-                            arrowId = /*[['eventArrow' + (${meta.index} + 1)]]*/ null;
+                            buttonId = /*[['evidenceDropdown' + (${meta.index} + 1)]]*/ null;
+                            arrowId = /*[['evidenceArrow' + (${meta.index} + 1)]]*/ null;
                             setToggle(buttonId, arrowId);
                           </script>
 
@@ -221,6 +223,7 @@
 <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha384-xBuQ/xzmlsLoJpyjoggmTEz8OWUFM0/RC5BsqQBDX2v5cMvDHcMakNTNrHIW2I5f" crossorigin="anonymous"></script>
 <script src="js/fineCrop.js"></script>
 <script src="js/evidence.js"></script>
+<script src="js/collapse.js"></script>
 <script th:inline="javascript">
 
   /*<![CDATA[*/
@@ -383,12 +386,7 @@
     document.getElementById(tabToSet).click();
   }
 
-  function setToggle(collapseButtonId, arrowId) {
-    let shouldToggle = sessionStorage.getItem(arrowId);
-    if (shouldToggle === "true") {
-      document.getElementById(collapseButtonId).click();
-    }
-  }
+
 
 </script>
 </html>
