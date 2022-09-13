@@ -294,11 +294,6 @@
 
 <script th:inline="javascript">
 
-    // $("#groupSettingForm").submit(() => {
-    //     $.post("saveGroupSettings").done((ignore) => {
-    //         sendIdRefresh($("#groupId").val());
-    //     });
-    // })
 
     /*<![CDATA[*/
     const ID = /*[[${groupId}]]*/ "-1";
@@ -307,6 +302,7 @@
     const userFirstName = /*[[${userFirstName}]]*/ "null";
     const userLastName = /*[[${userLastName}]]*/ "null";
     const groupShortName = /*[[${groupShortName}]]*/ "null";
+    const isConnectionSuccessful = /*[[${isConnectionSuccessful}]]*/ "false";
 
     /*]]>*/
 
@@ -351,7 +347,9 @@
      * Initialise the commit list when group settings page is loaded
      */
     function initialiseCommitsList() {
-        updatingCommitsList();
+        if (isConnectionSuccessful) {
+            updatingCommitsList();
+        }
         const data = {
             groupId: ID,
             branchName : "All Branches",
@@ -365,6 +363,7 @@
     }
     inputValidateCheck()
     initialiseCommitsList()
+
 
     /**
      * Enable all input fields, display 'Save' and 'Cancel' buttons and character length messages, and hide edit button.
