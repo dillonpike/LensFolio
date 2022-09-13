@@ -156,7 +156,7 @@
 
 <script th:inline="javascript">
     /**
-     * Sends the message that a group is being updated, and sends the events names with it.
+     * Sends the message that a group is being updated, and sends the groups names with it.
      */
     function sendName(artefactName, artefactId,userId, userFirstName, userLastName, username, artefactType) {
         stompClient.send("/webSocketPost/editing-group", {}, JSON.stringify({
