@@ -69,7 +69,7 @@ public class GroupSettingsController {
      * @param model group setting page model
      * @return group settings page
      */
-    @GetMapping("/groupSettings")
+    @RequestMapping("/groupSettings", method = { RequestMethod.GET, RequestMethod.POST })
     public String groupSettings(
             @RequestParam(value = "groupId") int groupId,
             @AuthenticationPrincipal AuthState principal,
