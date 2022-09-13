@@ -138,6 +138,7 @@
                     updateCharsLeft('evidenceWeblink', 'evidenceWebLinkLength', 250);
                     //add to list
                     webLinksList.push(urlString);
+                    document.getElementById("evidenceWebLinksAlertBanner").setAttribute("hidden", "true");
                 } else {
                     $("#evidenceWebLinksAlertMessage").text("You can only add up to " + MAX_NUM_WEBLINKS + " web links.");
                     document.getElementById("evidenceWebLinksAlertBanner").removeAttribute("hidden");
