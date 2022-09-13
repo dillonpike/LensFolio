@@ -27,9 +27,10 @@ function connect() {
 }
 
 function updateSettingsDisplayed(groupId) {
-    $.get('groupSettings?groupId='+groupId).done((result) => {
+    $.get('groupSettings/refreshGroupSettings?groupId='+groupId).done((result) => {
         showToast(groupShortName, ID, username, userFirstName, userLastName, false, "Group");
-        $(`html`).replaceWith(result)
+        $('#groupSettingsRefresh').replaceWith(result)
+
     })
 }
 
@@ -68,6 +69,8 @@ function showToast(groupName, groupId, username, firstName, lastName, hide, type
  */
 $(function () {
 
+    connect();
+
     // Generate list of HTML toasts.
     for (let i = 0; i < NUM_OF_TOASTS; i++) {
         let toastString = "#liveToast" + (i+1);
@@ -75,8 +78,6 @@ $(function () {
         let toastTitleString = "#toastTitle" + (i+1);
         listOfHTMLToasts.push({'toast':new bootstrap.Toast($(toastString)), 'text':$(popupTextString), 'title':$(toastTitleString)})
     }
-
-    connect();
 
     // Checks if there should be a live update, and shows a toast if needed.
     for (let i = 0; i < NUM_OF_TOASTS; i++) {

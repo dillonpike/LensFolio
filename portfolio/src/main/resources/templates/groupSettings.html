@@ -28,6 +28,15 @@
 </head>
 <body>
 <header th:replace="fragments/header"></header>
+<!-- Toast for failure to connect to GitLab API -->
+<div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 2000" th:if="${isConnectionSuccessful} == false">
+    <div class="toast hide text-white" role="alert" aria-live="assertive" aria-atomic="true" id="alertToast" data-bs-animation="true" data-bs-autohide="true" data-bs-delay="7000">
+        <div class="toast-body">
+            <span id="alertToastText">Hidden</span>
+            <button id="toastBtn" type="button" class="btn-close btn-close-white me-2 m-auto float-end" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+    </div>
+</div>
 <div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 2000">
     <div th:each="toast, meta: ${toastsToGenerate}">
         <div class="toast" role="alert" aria-live="assertive" aria-atomic="true" th:id="${#ids.seq('liveToast')}" data-bs-autohide="false" data-bs-animation="false">
@@ -45,15 +54,6 @@
         </div>
     </div>
 </div>
-<!-- Toast for failure to connect to GitLab API -->
-<div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 2000" th:if="${isConnectionSuccessful} == false">
-    <div class="toast hide text-white" role="alert" aria-live="assertive" aria-atomic="true" id="alertToast" data-bs-animation="true" data-bs-autohide="true" data-bs-delay="7000">
-        <div class="toast-body">
-            <span id="alertToastText">Hidden</span>
-            <button id="toastBtn" type="button" class="btn-close btn-close-white me-2 m-auto float-end" data-bs-dismiss="toast" aria-label="Close"></button>
-        </div>
-    </div>
-</div>
 <!-- #object.nullSafe test if an object is null and then returns the provided value if it is.
         This used because during testing isRepoExist is null value and cause problems
         when comparing it to the boolean value of isValidToModify-->
@@ -63,7 +63,7 @@
              This used because during testing isRepoExist is null value and cause problems
              when comparing it to the boolean value of isValidToModify-->
         <div th:class="${#objects.nullSafe(isRepoExist,false) && isValidToModify} ? 'col-12 col-md-6 ps-lg-1-6 ps-xl-5 vstack gap-3' : 'ps-lg-1-6 ps-xl-5 vstack gap-3'">
-            <div class="card shadow" th:fragment="groupSettingsRefresh">
+            <div class="card shadow" th:fragment="groupSettingsRefresh" id="groupSettingsRefresh">
                 <div class="text-start mb-1-6">
                     <div class="hstack gap-3">
                         <h2 class="h1 mt-2 fs-1 mx-3" id="groupSettingTitle">Group Setting</h2>
@@ -392,16 +392,7 @@
      */
     function stopEditing(groupId) {
         const url = "groupSettings/refreshGroupSettings";
-        $('#settingContainer').load(url, "groupId=" + groupId)
-        //
-        // $("#longGroupName").prop("disabled", true);
-        // $("#repoName").prop("disabled", true);
-        // $("#repoId").prop("disabled", true);
-        // $("#repoToken").prop("disabled", true);
-        // $("#repoUrl").prop("disabled", true);
-        // $("#saveButton").prop("hidden", true)
-        // $("#cancelButton").prop("hidden", true)
-        // $("#groupSettingEdit").prop("hidden", false)
+        $('#groupSettingsRefresh').load(url, "groupId=" + groupId)
     }
 </script>
 </body>
