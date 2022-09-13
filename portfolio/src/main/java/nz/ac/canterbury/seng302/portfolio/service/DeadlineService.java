@@ -184,6 +184,7 @@ public class DeadlineService {
      */
     public void validateDeadline(Deadline deadline, Model model) throws NotAcceptableException {
 
+        deadline.setDeadlineName(deadline.getDeadlineName().trim());
         boolean hasError = false;
         if (deadline.getDeadlineName() == null || deadline.getDeadlineName().trim().isEmpty()) {
             model.addAttribute(DEADLINE_NAME_ERROR_MESSAGE, "Milestone name cannot be empty");
@@ -192,7 +193,7 @@ public class DeadlineService {
             model.addAttribute(DEADLINE_NAME_ERROR_MESSAGE, "Name must be at least 2 characters");
             hasError = true;
         } else if (deadline.getDeadlineName().length() > 30) {
-            model.addAttribute(DEADLINE_NAME_ERROR_MESSAGE, "Name must be less than 30 characters");
+            model.addAttribute(DEADLINE_NAME_ERROR_MESSAGE, "Name cannot be greater than 30 characters");
             hasError = true;
         }
         if (deadline.getDeadlineDate() == null) {

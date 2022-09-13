@@ -194,6 +194,7 @@ public class EventService {
      */
     public void validateEvent(Event event, Model model) throws NotAcceptableException {
 
+        event.setEventName(event.getEventName().trim());
         boolean hasError = false;
         if (event.getEventName() == null || event.getEventName().trim().isEmpty()) {
             model.addAttribute(EVENT_NAME_ERROR_MESSAGE, "Event name cannot be empty");
@@ -202,7 +203,7 @@ public class EventService {
             model.addAttribute(EVENT_NAME_ERROR_MESSAGE, "Name must be at least 2 characters");
             hasError = true;
         } else if (event.getEventName().length() > 30) {
-            model.addAttribute(EVENT_NAME_ERROR_MESSAGE, "Name must be less than 30 characters");
+            model.addAttribute(EVENT_NAME_ERROR_MESSAGE, "Name cannot be greater than 30 characters");
             hasError = true;
         }
         if (event.getEventStartDate() == null) {

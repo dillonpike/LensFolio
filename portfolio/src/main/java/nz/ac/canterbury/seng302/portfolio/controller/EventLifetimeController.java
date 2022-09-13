@@ -3,6 +3,8 @@ package nz.ac.canterbury.seng302.portfolio.controller;
 import nz.ac.canterbury.seng302.portfolio.model.Event;
 import nz.ac.canterbury.seng302.portfolio.service.*;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
@@ -17,6 +19,8 @@ import javax.ws.rs.NotAcceptableException;
  */
 @Controller
 public class EventLifetimeController {
+
+    private static final Logger logger = LoggerFactory.getLogger(EventLifetimeController.class);
 
     @Autowired
     private EventService eventService;
@@ -48,7 +52,7 @@ public class EventLifetimeController {
                 eventService.addEvent(event);
             }
         } catch (NotAcceptableException e) {
-            return "fragments/eventModal::eventModalBody";
+            logger.error(String.format("Error adding event: %s", e.getMessage()));
         }
         return "redirect:/details";
     }

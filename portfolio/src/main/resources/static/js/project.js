@@ -280,4 +280,8 @@ function eventModalSetup() {
         updateCharsLeft('eventName', 'eventNameLength', 30)
         $('#' + modalButton.getAttribute("id")).prop('hidden', false);
     })
+
+    eventModal.addEventListener('hidden.bs.modal', function (event) {
+        $("#eventAlertMessage").val(null);
+    });
 }

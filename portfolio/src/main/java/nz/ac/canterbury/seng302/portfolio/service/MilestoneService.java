@@ -175,6 +175,7 @@ public class MilestoneService {
      */
     public void validateMilestone(Milestone milestone, Model model) throws NotAcceptableException {
 
+        milestone.setMilestoneName(milestone.getMilestoneName().trim());
         boolean hasError = false;
         if (milestone.getMilestoneName() == null || milestone.getMilestoneName().trim().isEmpty()) {
             model.addAttribute(MILESTONE_NAME_ERROR_MESSAGE, "Milestone name cannot be empty");
@@ -183,7 +184,7 @@ public class MilestoneService {
             model.addAttribute(MILESTONE_NAME_ERROR_MESSAGE, "Name must be at least 2 characters");
             hasError = true;
         } else if (milestone.getMilestoneName().length() > 30) {
-            model.addAttribute(MILESTONE_NAME_ERROR_MESSAGE, "Name must be less than 30 characters");
+            model.addAttribute(MILESTONE_NAME_ERROR_MESSAGE, "Name cannot be greater than 30 characters");
             hasError = true;
         }
         if (milestone.getMilestoneDate() == null) {
