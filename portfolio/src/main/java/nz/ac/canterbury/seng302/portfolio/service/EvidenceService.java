@@ -56,7 +56,9 @@ public class EvidenceService {
      * @throws NotAcceptableException Thrown if there are any errors with the evidence piece's fields.
      */
     public void validateEvidence(Evidence evidence, Model model) throws NotAcceptableException {
-        Pattern regex = Pattern.compile("^[\\p{N}\\p{P}\\p{S}\\p{Zs}]{1,}$");
+        Pattern regex = Pattern.compile("^[\\p{N}\\p{P}\\p{S}\\p{Zs}]+$");
+        evidence.setTitle(evidence.getTitle().trim());
+        evidence.setDescription(evidence.getDescription().trim());
         boolean hasError = false;
         if (evidence.getTitle() == null || evidence.getTitle().isEmpty()) {
             model.addAttribute(ADD_EVIDENCE_MODAL_FRAGMENT_TITLE_MESSAGE, "Title is required");
