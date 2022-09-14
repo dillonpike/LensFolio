@@ -184,8 +184,12 @@ public class DeadlineService {
      * @throws NotAcceptableException If the deadline is not valid
      */
     public void validateDeadline(Deadline deadline, Model model) throws NotAcceptableException {
-        Pattern regex = Pattern.compile("^[\\p{N}\\p{P}\\p{S}\\p{Zs}]{1,}$");
-        deadline.setDeadlineName(deadline.getDeadlineName().trim());
+        Pattern regex = Pattern.compile("^[\\p{N}\\p{P}\\p{S}\\p{Zs}]+$");
+        try {
+            deadline.setDeadlineName(deadline.getDeadlineName().trim());
+        } catch (NullPointerException ignored) { // If the title or description is null, we don't need to do anything
+            // as the later if statements catch it anyway.
+        }
         boolean hasError = false;
         if (deadline.getDeadlineName() == null || deadline.getDeadlineName().trim().isEmpty()) {
             model.addAttribute(DEADLINE_NAME_ERROR_MESSAGE, "Milestone name cannot be empty");

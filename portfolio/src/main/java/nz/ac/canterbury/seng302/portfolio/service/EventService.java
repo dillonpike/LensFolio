@@ -195,8 +195,12 @@ public class EventService {
      * @throws NotAcceptableException If the event is not valid
      */
     public void validateEvent(Event event, Model model) throws NotAcceptableException {
-        Pattern regex = Pattern.compile("^[\\p{N}\\p{P}\\p{S}\\p{Zs}]{1,}$");
-        event.setEventName(event.getEventName().trim());
+        Pattern regex = Pattern.compile("^[\\p{N}\\p{P}\\p{S}\\p{Zs}]+$");
+        try {
+            event.setEventName(event.getEventName().trim());
+        } catch (NullPointerException ignored) { // If the title or description is null, we don't need to do anything
+            // as the later if statements catch it anyway.
+        }
         model.addAttribute("event", event);
         boolean hasError = false;
         if (event.getEventName() == null || event.getEventName().trim().isEmpty()) {

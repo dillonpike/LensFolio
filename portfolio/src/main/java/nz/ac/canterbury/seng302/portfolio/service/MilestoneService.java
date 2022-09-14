@@ -175,8 +175,13 @@ public class MilestoneService {
      * @throws NotAcceptableException If the milestone is not valid
      */
     public void validateMilestone(Milestone milestone, Model model) throws NotAcceptableException {
-        Pattern regex = Pattern.compile("^[\\p{N}\\p{P}\\p{S}\\p{Zs}]{1,}$");
-        milestone.setMilestoneName(milestone.getMilestoneName().trim());
+        Pattern regex = Pattern.compile("^[\\p{N}\\p{P}\\p{S}\\p{Zs}]+$");
+        try {
+            milestone.setMilestoneName(milestone.getMilestoneName().trim());
+        } catch (NullPointerException ignored) { // If the title or description is null, we don't need to do anything
+            // as the later if statements catch it anyway.
+        }
+
         boolean hasError = false;
         if (milestone.getMilestoneName() == null || milestone.getMilestoneName().trim().isEmpty()) {
             model.addAttribute(MILESTONE_NAME_ERROR_MESSAGE, "Milestone name cannot be empty");
