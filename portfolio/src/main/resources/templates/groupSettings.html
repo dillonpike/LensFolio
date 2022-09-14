@@ -283,6 +283,7 @@
     const userFirstName = /*[[${userFirstName}]]*/ "null";
     const userLastName = /*[[${userLastName}]]*/ "null";
     const groupShortName = /*[[${groupShortName}]]*/ "null";
+    let isConnectionSuccessful = /*[[${isConnectionSuccessful}]]*/ "false";
 
     /*]]>*/
 
@@ -342,6 +343,7 @@
     inputValidateCheck()
     initialiseCommitsList()
 
+
     /**
      * Enable all input fields, display 'Save' and 'Cancel' buttons and character length messages, and hide edit button.
      * Runs when edit button is clicked.
@@ -368,7 +370,9 @@
      */
     function stopEditing(groupId) {
         const url = "groupSettings/refreshGroupSettings";
-        $('#groupSettingsRefresh').load(url, "groupId=" + groupId)
+        $('#groupSettingContainer').load(url, "groupId=" + groupId)
+        initialiseCommitsList()
+
     }
 </script>
 </body>
