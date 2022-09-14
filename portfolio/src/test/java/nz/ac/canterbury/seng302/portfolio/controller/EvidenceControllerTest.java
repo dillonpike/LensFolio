@@ -27,6 +27,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.ui.Model;
 
 import java.util.Date;
+import java.util.List;
 
 import static nz.ac.canterbury.seng302.portfolio.controller.EvidenceController.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -117,15 +118,19 @@ class EvidenceControllerTest {
      */
     @Test
     void testAddEvidence200ValidWebLink() throws Exception {
+        List<WebLink> validWebLinks = List.of(new WebLink("https://www.google.com"), new WebLink("https://localhost:9000/"),
+                new WebLink("https://dbadmin.csse.canterbury.ac.nz/index.php?route=/sql&db=jth141_portfolio-test&table=web_link&pos=0"),
+                new WebLink("http://www.site.com:8008"), new WebLink("http://www.example.com/~product?id=1&page=2"));
         when(evidenceService.addEvidence(any(Evidence.class))).thenReturn(true);
-        Evidence evidence = new Evidence(0 ,0, "test evidence", "test description", new Date());
-        evidence.addWebLink(new WebLink("https://www.google.com"));
-        doCallRealMethod().when(evidenceService).validateEvidence(eq(evidence), any(Model.class));
+        for (WebLink validWebLink : validWebLinks) {
+            Evidence evidence = new Evidence(0, 0, "test evidence", "test description", new Date());
+            evidence.addWebLink(validWebLink);
+            doCallRealMethod().when(evidenceService).validateEvidence(eq(evidence), any(Model.class));
 
-        mockMvc.perform(post("/add-evidence").flashAttr("evidence", evidence)).andExpect(status().isOk());
-        // TODO Add extra andExpect statements when the returned fragment is finalised
-
-        verify(evidenceService, times(1)).addEvidence(any(Evidence.class));
+            mockMvc.perform(post("/add-evidence").flashAttr("evidence", evidence)).andExpect(status().isOk());
+            // TODO Add extra andExpect statements when the returned fragment is finalised
+        }
+        verify(evidenceService, times(validWebLinks.size())).addEvidence(any(Evidence.class));
     }
 
     /**
@@ -301,17 +306,22 @@ class EvidenceControllerTest {
      */
     @Test
     void testAddEvidence400InvalidWebLink() throws Exception {
-        Evidence invalidEvidence = new Evidence(0 ,0, "test evidence", "test description", new Date());
-        invalidEvidence.addWebLink(new WebLink(".,!@#$%^&*';:"));
-        doCallRealMethod().when(evidenceService).validateEvidence(eq(invalidEvidence), any(Model.class));
+        List<WebLink> invalidWebLinks = List.of(new WebLink(".,!@#$%^&*';:"), new WebLink("www.test.com"),
+                new WebLink("something.ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"),
+                new WebLink("mke.ccc"));
+        for (WebLink invalidWebLink: invalidWebLinks) {
+            System.err.println(invalidWebLink.getUrl());
+            Evidence invalidEvidence = new Evidence(0, 0, "test evidence", "test description", new Date());
+            invalidEvidence.addWebLink(invalidWebLink);
+            doCallRealMethod().when(evidenceService).validateEvidence(eq(invalidEvidence), any(Model.class));
 
-        mockMvc.perform(post("/add-evidence").flashAttr("evidence", invalidEvidence))
-                .andExpect(status().isBadRequest())
-                .andExpect(model().attributeDoesNotExist(ADD_EVIDENCE_MODAL_FRAGMENT_TITLE_MESSAGE))
-                .andExpect(model().attributeDoesNotExist(ADD_EVIDENCE_MODAL_FRAGMENT_DESCRIPTION_MESSAGE))
-                .andExpect(model().attributeDoesNotExist(ADD_EVIDENCE_MODAL_FRAGMENT_DATE_MESSAGE))
-                .andExpect(model().attribute(ADD_EVIDENCE_MODAL_FRAGMENT_WEB_LINKS_MESSAGE, "Web links must be valid URLs"));
-
+            mockMvc.perform(post("/add-evidence").flashAttr("evidence", invalidEvidence))
+                    .andExpect(status().isBadRequest())
+                    .andExpect(model().attributeDoesNotExist(ADD_EVIDENCE_MODAL_FRAGMENT_TITLE_MESSAGE))
+                    .andExpect(model().attributeDoesNotExist(ADD_EVIDENCE_MODAL_FRAGMENT_DESCRIPTION_MESSAGE))
+                    .andExpect(model().attributeDoesNotExist(ADD_EVIDENCE_MODAL_FRAGMENT_DATE_MESSAGE))
+                    .andExpect(model().attribute(ADD_EVIDENCE_MODAL_FRAGMENT_WEB_LINKS_MESSAGE, "Web links must be valid URLs"));
+        }
         verify(evidenceService, times(0)).addEvidence(any(Evidence.class));
     }
 
