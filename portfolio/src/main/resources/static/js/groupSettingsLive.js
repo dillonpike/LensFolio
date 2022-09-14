@@ -29,7 +29,8 @@ function connect() {
 function updateSettingsDisplayed(groupId) {
     $.get('groupSettings/refreshGroupSettings?groupId='+groupId).done((result) => {
         showToast(groupShortName, ID, username, userFirstName, userLastName, false, "Group");
-        $('#groupSettingsRefresh').replaceWith(result)
+        $('#groupSettingContainer').replaceWith(result)
+        initialiseCommitsList()
 
     })
 }

@@ -302,7 +302,7 @@
     const userFirstName = /*[[${userFirstName}]]*/ "null";
     const userLastName = /*[[${userLastName}]]*/ "null";
     const groupShortName = /*[[${groupShortName}]]*/ "null";
-    const isConnectionSuccessful = /*[[${isConnectionSuccessful}]]*/ "false";
+    let isConnectionSuccessful = /*[[${isConnectionSuccessful}]]*/ "false";
 
     /*]]>*/
 
@@ -348,6 +348,7 @@
      */
     function initialiseCommitsList() {
         if (isConnectionSuccessful) {
+            console.log(isConnectionSuccessful)
             updatingCommitsList();
         }
         const data = {
@@ -391,7 +392,9 @@
      */
     function stopEditing(groupId) {
         const url = "groupSettings/refreshGroupSettings";
-        $('#groupSettingsRefresh').load(url, "groupId=" + groupId)
+        $('#groupSettingContainer').load(url, "groupId=" + groupId)
+        initialiseCommitsList()
+
     }
 </script>
 </body>

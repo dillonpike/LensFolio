@@ -187,7 +187,7 @@ public class GroupSettingsController {
         model.addAttribute("groupSettingsId", groupSettings.getGroupSettingsId());
         model.addAttribute("repoServerUrl", groupSettings.getRepoUrl());
 
-        return "groupSettings::groupSettingsRefresh";
+        return "groupSettings::groupSetting";
     }
 
 
