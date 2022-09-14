@@ -4,10 +4,10 @@
  * @returns {Promise<void>} null
  */
 async function validateEvidence() {
-    if (validateEvidenceTextInput('evidenceTitle', 'evidenceTitleAlertBanner', 'evidenceTitleAlertMessage',"Title") &&
-        validateEvidenceTextInput('evidenceDescription', 'evidenceDescriptionAlertBanner', 'evidenceDescriptionAlertMessage', "Description") &&
-        validateModalDate('evidenceDate', 'milestoneModalButton', 'evidenceDateAlertBanner', 'evidenceDateAlertMessage')
-    ) {
+    const titleValid = validateEvidenceTextInput('evidenceTitle', 'evidenceTitleAlertBanner', 'evidenceTitleAlertMessage', 'Title');
+    const descriptionValid = validateEvidenceTextInput('evidenceDescription', 'evidenceDescriptionAlertBanner', 'evidenceDescriptionAlertMessage', 'Description');
+    const dateValid = validateModalDate('evidenceDate', 'milestoneModalButton', 'evidenceDateAlertBanner', 'evidenceDateAlertMessage')
+    if (titleValid && descriptionValid && dateValid) {
         document.getElementById('evidenceForm').onsubmit = () => { return false };
         addEvidence()
         document.getElementById('evidenceForm').onsubmit = () => {validateEvidence(); return false}
@@ -44,11 +44,10 @@ function addEvidence() {
         replaceEvidenceModalBody(result);
         let messageAlert = $("evidenceTitleAlertBanner");
         messageAlert.toggleClass("alert-danger alert-success");
-        setTimeout(() => {
-            $('#evidenceModal').modal('toggle')
-            messageAlert.toggleClass("alert-success alert-danger");
-            clearEvidenceModalFields();
-        }, 1000);
+        $('#evidenceModal').modal('toggle')
+        showAlertToast("Evidence added successfully!");
+        clearEvidenceModalFields();
+        $("#webLinkList").html(""); // clear web links
     }).fail((response) => {
         replaceEvidenceModalBody(response.responseText);
     })
@@ -59,11 +58,16 @@ function addEvidence() {
  * @param modalBodyResponse response with new modalBody to display (evidenceModalBody fragment)
  */
 function replaceEvidenceModalBody(modalBodyResponse) {
-    $("#evidenceModalBody").replaceWith(modalBodyResponse)
-    updateCharsLeft('evidenceTitle', 'evidenceTitleLength', 30)
-    updateCharsLeft('evidenceDescription', 'evidenceDescriptionLength', 250)
+    const webLinks = $("#webLinkList").children();
+    $("#evidenceModalBody").replaceWith(modalBodyResponse);
+    // Restore weblinks that were deleted when the modal was replaced
+    // Uses two duplicate jquery selectors since the element is replaced between each use
+    $("#webLinkList").html(webLinks);
+    updateCharsLeft('evidenceTitle', 'evidenceTitleLength', 30);
+    updateCharsLeft('evidenceDescription', 'evidenceDescriptionLength', 250);
     configureEvidenceDatePicker();
     setEvidenceDatePickerValues();
+    configureWebLinkInput();
 }
 
 /**
@@ -77,17 +81,17 @@ function replaceEvidenceModalBody(modalBodyResponse) {
  */
 function validateEvidenceTextInput(elementId, alertBanner, alertMessage, typeTextInput) {
     const input = document.getElementById(elementId).value;
-    const regex = /^[\p{N}\p{P}\p{S}\p{Zs}]{1,}$/u; // this regex use Unicode awareness regex, it matches with any sequence of characters that are number, punctuation, or whitespace. Supposedly it works with all languages
+    const regex = /^[\p{N}\p{P}\p{S}\p{Zs}]+$/u; // this regex use Unicode awareness regex, it matches with any sequence of characters that are number, punctuation, or whitespace. Supposedly it works with all languages
     if (regex.test(input) || input.length < 2) {
-        document.getElementById(alertBanner).hidden = false;
+        document.getElementById(alertBanner).removeAttribute("hidden");
         document.getElementById(alertMessage).innerText = typeTextInput+" cannot only contains numbers, punctuation, and/or symbols. and must be at least 2 characters long.";
         return false
     } else if (input.trim().length === 1){
-        document.getElementById(alertBanner).hidden = false;
+        document.getElementById(alertBanner).removeAttribute("hidden");
         document.getElementById(alertMessage).innerText = typeTextInput+" should not have only 1 character non-space";
         return false
     } else {
-        document.getElementById(alertBanner).hidden = true;
+        document.getElementById(alertBanner).setAttribute("hidden", "hidden");
         return true
     }
 }

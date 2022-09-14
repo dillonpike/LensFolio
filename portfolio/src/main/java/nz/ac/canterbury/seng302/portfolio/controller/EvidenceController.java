@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.NotAcceptableException;
-import java.util.Date;
 
 /**
  * Controller for evidence endpoints.
@@ -33,7 +32,13 @@ public class EvidenceController {
 
     private static final String ADD_EVIDENCE_MODAL_FRAGMENT = "fragments/evidenceModal::evidenceModalBody";
 
-    private static final String ADD_EVIDENCE_MODAL_FRAGMENT_TITLE_MESSAGE = "evidenceTitleAlertMessage";
+    public static final String ADD_EVIDENCE_MODAL_FRAGMENT_TITLE_MESSAGE = "evidenceTitleAlertMessage";
+
+    public static final String ADD_EVIDENCE_MODAL_FRAGMENT_DESCRIPTION_MESSAGE = "evidenceDescriptionAlertMessage";
+
+    public static final String ADD_EVIDENCE_MODAL_FRAGMENT_DATE_MESSAGE = "evidenceDateAlertMessage";
+
+    public static final String ADD_EVIDENCE_MODAL_FRAGMENT_WEB_LINKS_MESSAGE = "evidenceWebLinksAlertMessage";
 
     /**
      * Method tries to add and sve the new evidence piece to the database
@@ -49,35 +54,12 @@ public class EvidenceController {
             @AuthenticationPrincipal AuthState principal
     ) {
         try {
-
-            String title = evidence.getTitle();
-            String description = evidence.getDescription();
-            Date date = evidence.getDate();
-
-            boolean throwError = false;
-            String nullErrorMessage = "Following fields are required:";
-            if (title == null) {
-                throwError = true;
-                nullErrorMessage += " 'title'";
-            }
-            if (description == null) {
-                throwError = true;
-                nullErrorMessage += " 'description'";
-            }
-            if (date == null || date.before(new Date(0))) {
-                throwError = true;
-                nullErrorMessage += " 'date'";
-            }
-            if (throwError) {
-                throw new NotAcceptableException(nullErrorMessage + ". ");
-            }
+            evidenceService.validateEvidence(evidence, model);
 
             boolean wasAdded = evidenceService.addEvidence(evidence);
             if (wasAdded) {
                 // * Add the evidence to the model *
                 // * Maybe add something to the model to make sure the evidence tab is shown? *
-                String successMessage = "Evidence Added. ";
-                model.addAttribute(ADD_EVIDENCE_MODAL_FRAGMENT_TITLE_MESSAGE, successMessage);
                 httpServletResponse.setStatus(HttpServletResponse.SC_OK);
                 return "fragments/evidenceModal::evidenceModalBody"; // * return some sort of evidence fragment? *
             } else {
@@ -88,10 +70,8 @@ public class EvidenceController {
             }
 
         } catch (NotAcceptableException e) {
-            String errorMessage = "Evidence Not Added. " + e.getMessage();
-            model.addAttribute(ADD_EVIDENCE_MODAL_FRAGMENT_TITLE_MESSAGE, errorMessage);
             httpServletResponse.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            logger.error("Unable to find attributes of evidence for adding evidence");
+            logger.error("Attributes of evidence not formatted correctly. Not adding evidence. ");
             return ADD_EVIDENCE_MODAL_FRAGMENT;
         }
 
