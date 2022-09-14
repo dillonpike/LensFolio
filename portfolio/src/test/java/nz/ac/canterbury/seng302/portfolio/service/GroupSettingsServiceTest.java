@@ -168,8 +168,8 @@ class GroupSettingsServiceTest {
      * arguments are valid.
      */
     @Test
-    void checkIsValidGroupSettingsInvalidRepoNameBlank() {
-        assertFalse(groupSettingsService.isValidGroupSettings(validRepoId, "", validRepoToken));
+    void checkIsValidGroupSettingsIsValidWhenRepoNameIsBlank() {
+        assertTrue(groupSettingsService.isValidGroupSettings(validRepoId, "", validRepoToken));
     }
 
     /**
@@ -177,7 +177,7 @@ class GroupSettingsServiceTest {
      * arguments are valid.
      */
     @Test
-    void checkIsValidGroupSettingsInvalidRepoTokenBlank() {
-        assertFalse(groupSettingsService.isValidGroupSettings(validRepoId, validRepoName, ""));
+    void checkIsValidGroupSettingsIsValidWhenRepoTokenIsBlank() {
+        assertTrue(groupSettingsService.isValidGroupSettings(validRepoId, validRepoName, ""));
     }
 }
