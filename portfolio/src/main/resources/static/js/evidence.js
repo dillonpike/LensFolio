@@ -9,6 +9,9 @@ async function validateEvidence() {
     const dateValid = validateModalDate('evidenceDate', 'milestoneModalButton', 'evidenceDateAlertBanner', 'evidenceDateAlertMessage')
     if (titleValid && descriptionValid && dateValid) {
         document.getElementById('evidenceForm').onsubmit = () => { return false };
+        removeInvalidCharacters('evidenceTitle');
+        removeInvalidCharacters('evidenceDescription');
+        removeInvalidCharacters('evidenceWeblink');
         addEvidence()
         document.getElementById('evidenceForm').onsubmit = () => {validateEvidence(); return false}
         /* Refresh the container after adding a piece of evidence*/

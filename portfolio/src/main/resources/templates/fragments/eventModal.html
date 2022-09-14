@@ -54,6 +54,7 @@
     </div>
   </div>
   <script src="js/datepicker.js"></script>
+  <script src="js/textValidation.js"></script>
   <script type="text/javascript">
 
     /**
@@ -62,6 +63,7 @@
     async function validateEvent() {
       if (validateModalDateTimeRange('eventStartDate', 'eventEndDate', 'submitEventButton', 'eventDateTimeAlertBanner', 'eventDateTimeAlertMessage') &&
               validateModalName('eventName', 'eventAlertBanner', 'eventAlertMessage')) {
+        removeInvalidCharacters('eventName');
         document.getElementById('eventForm').onsubmit = () => { return false };
 
         submitEvent()
@@ -132,5 +134,6 @@
       })
     }
 
+    disallowInvalidCharacters('eventName');
   </script>
 </div>

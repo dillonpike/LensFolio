@@ -135,14 +135,14 @@
                   </div>
                 </form>
               </div>
-              <div class="tab-pane fade" id="evidence" role="tabpanel" aria-labelledby="user-evidence-tab">
+              <div class="tab-pane-Evidence fade" id="evidence" role="tabpanel" aria-labelledby="user-evidence-tab">
                 <div class="text-start mb-1-6 mt-3">
-                  <h2 class="h1 mb-0 fs-1">Evidence</h2>
-                  <a class="button-link" data-bs-toggle="modal" data-bs-target="#evidenceModal" data-bs-type="add" th:if="${isAuthorised} == true">
-                    <button id="addEvidenceButton" class="dropdown-item" type="button">
-                      <span class='bi bi-plus'></span> <i>Add Evidence</i>
-                    </button>
-                  </a>
+                  <div style="display: flex; flex-direction: row; justify-content: space-between; align-content: center;">
+                    <h2 class="h1 mb-0 fs-1">Evidence</h2>
+                    <a class="button-link" style="margin-right: 5px" data-bs-toggle="modal" data-bs-target="#evidenceModal" data-bs-type="add" th:if="${isAuthorised} == true">
+                      <button id="addEvidenceButton" class="btn btn-primary" type="button">Add Evidence</button>
+                    </a>
+                  </div>
                   <!-- This section contains the list of evidence and each have a clickable button to display a more detailed description through a collapsable object. -->
                   <div th:each="evidence, meta: ${evidences}">
                     <div class="evidence-block">
