@@ -99,8 +99,7 @@ class EditEventControllerTest {
         when(permissionService.isValidToModify(any(Integer.class))).thenReturn(true);
 
         mockMvc.perform(post("/edit-event/1").flashAttr("event",mockEvent))
-                .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/details")); // Whether to return the status "200 OK";
+                .andExpect(status().isOk());
         Mockito.verify(eventService).updateEvent(eventArgumentCaptor.capture());
     }
 }

@@ -7,8 +7,11 @@ import nz.ac.canterbury.seng302.portfolio.repository.DeadlinesRepository;
 import org.hibernate.ObjectNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.ui.Model;
 
+import javax.ws.rs.NotAcceptableException;
 import java.util.*;
+import java.util.regex.Pattern;
 
 /***
  * Service class for saving, deleting, updating and retrieving event objects to the database.
@@ -18,6 +21,10 @@ public class DeadlineService {
 
     @Autowired
     private DeadlinesRepository repository;
+
+    private static final String DEADLINE_NAME_ERROR_MESSAGE = "deadlineAlertMessage";
+
+    private static final String DEADLINE_DATE_ERROR_MESSAGE = "deadlineDateAlertMessage";
 
     /**
      * Updates a deadline
@@ -168,6 +175,39 @@ public class DeadlineService {
             repository.save(currentDeadline);
         }
         return getAllDeadlinesOrdered();
+    }
+
+    /**
+     * Validate a deadlines fields to ensure they are valid.
+     * @param deadline Deadline to validate
+     * @param model Model to add errors to
+     * @throws NotAcceptableException If the deadline is not valid
+     */
+    public void validateDeadline(Deadline deadline, Model model) throws NotAcceptableException {
+        Pattern regex = Pattern.compile("^[\\p{N}\\p{P}\\p{S}\\p{Zs}]+$");
+        try {
+            deadline.setDeadlineName(deadline.getDeadlineName().trim());
+        } catch (NullPointerException ignored) { // If the title or description is null, we don't need to do anything
+            // as the later if statements catch it anyway.
+        }
+        boolean hasError = false;
+        if (deadline.getDeadlineName() == null || deadline.getDeadlineName().trim().isEmpty()) {
+            model.addAttribute(DEADLINE_NAME_ERROR_MESSAGE, "Milestone name cannot be empty");
+            hasError = true;
+        } else if (deadline.getDeadlineName().length() < 2 || regex.matcher(deadline.getDeadlineName()).matches()) {
+            model.addAttribute(DEADLINE_NAME_ERROR_MESSAGE, "Name must be at least 2 letters");
+            hasError = true;
+        } else if (deadline.getDeadlineName().length() > 30) {
+            model.addAttribute(DEADLINE_NAME_ERROR_MESSAGE, "Name cannot be greater than 30 characters");
+            hasError = true;
+        }
+        if (deadline.getDeadlineDate() == null || deadline.getDeadlineDate().before(new Date(0)) || deadline.getDeadlineDate().equals(new Date(0))) {
+            model.addAttribute(DEADLINE_DATE_ERROR_MESSAGE, "Correctly formatted date is required");
+            hasError = true;
+        }
+        if (hasError) {
+            throw new NotAcceptableException("Milestone fields have errors");
+        }
     }
 
 }

@@ -6,9 +6,9 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="closeDeadlineModalButton"></button>
       </div>
       <form method="post" id="deadlineForm" onsubmit="validateDeadline(); return false;" th:action="@{add-deadline}">
-        <div class="modal-body">
-          <div class="alert alert-danger alert-dismissible fade show" role="alert" id="deadlineAlertBanner" hidden>
-            <span id="deadlineAlertMessage" data-test-id="alertMessage"></span>
+        <div class="modal-body" id="deadlineModalBody" th:fragment="deadlineModalBody">
+          <div class="alert alert-danger alert-dismissible fade show" role="alert" id="deadlineAlertBanner" th:hidden="${deadlineAlertMessage==null}">
+            <span id="deadlineAlertMessage" data-test-id="alertMessage" th:text="${deadlineAlertMessage}"></span>
             <button type="button" class="btn-close" onclick="document.getElementById('deadlineAlertBanner').hidden = true" aria-label="Close"></button>
           </div>
           <div class="mb-3">
@@ -18,8 +18,8 @@
               <span id="deadlineNameLength"></span>
             </div>
           </div>
-          <div class="alert alert-danger alert-dismissible fade show" role="alert" id="deadlineDateAlertBanner" hidden>
-            <span id="deadlineDateAlertMessage" data-test-id="alertMessage"></span>
+          <div class="alert alert-danger alert-dismissible fade show" role="alert" id="deadlineDateAlertBanner" th:hidden="${deadlineDateAlertMessage==null}">
+            <span id="deadlineDateAlertMessage" data-test-id="alertMessage" th:text="${deadlineDateAlertMessage}"></span>
             <button type="button" class="btn-close" onclick="document.getElementById('deadlineDateAlertBanner').hidden = true" aria-label="Close"></button>
           </div>
           <div class="mb-3">
@@ -52,12 +52,49 @@
               validateModalName('deadlineName', 'deadlineAlertBanner', 'deadlineAlertMessage')) {
         removeInvalidCharacters('deadlineName');
         document.getElementById('deadlineForm').onsubmit = () => { return false };
-        document.getElementById('deadlineForm').submit();
-        sendSavedLiveNotificationRequest('Deadline');
+        submitDeadline();
+        document.getElementById('deadlineForm').onsubmit = () => { validateDeadline(); return false };
       }
     }
 
-    deadlineDatePicker = configureDateTimePicker('deadlineDateInput');
+    let deadlineDatePicker = configureDateTimePicker('deadlineDateInput');
+
+    /**
+     * Submit a deadline when adding or editing a deadline. Creates a post request and shows errors if needed.
+     */
+    function submitDeadline() {
+      // Info of milestone to submit
+      let date = new Date(document.getElementById('deadlineDate').value);
+      if (date.toString() === "Invalid Date") {
+        date = new Date("01/01/1970");
+      }
+      const data = {
+        deadlineName: document.getElementById('deadlineName').value,
+        deadlineDate: date,
+        parentProjectId: 0
+      }
+
+      // Post for adding or editing
+      $.post(document.getElementById('deadlineForm').action + "?" + new URLSearchParams(data)).done((ignoredResult) => {
+        $('#deadlineModal').modal('toggle')
+        sendSavedLiveNotificationRequest('Deadline');
+      }).fail((response) => {
+        // Add errors to modal
+        let listOfAlertsChanged = $(response.responseText).find("div.alert");
+        let listOfAlertsReal = $("#deadlineModalBody").find("div.alert");
+        for (let i = 0; i < listOfAlertsChanged.length; i++) {
+          if (listOfAlertsChanged[i].getElementsByTagName("span")[0].innerHTML !== "") {
+            $("#" + listOfAlertsReal[i].id).replaceWith(listOfAlertsChanged[i])
+            listOfAlertsReal[i].setAttribute("hidden", null);
+          }
+        }
+        // Update general values of the modal
+        updateCharsLeft('deadlineName', 'deadlineNameLength', 30)
+        const date = moment($("#" + deadlineDate).val(), 'DD/MMM/yyyy h:mm a').toDate();
+        deadlineDatePicker.dates.setValue(tempusDominus.DateTime.convert(date));
+        deadlineDatePicker = configureDateTimePicker('deadlineDateInput');
+      })
+    }
 
     disallowInvalidCharacters('deadlineName');
   </script>
