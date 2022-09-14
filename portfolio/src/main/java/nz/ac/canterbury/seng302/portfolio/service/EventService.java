@@ -206,14 +206,11 @@ public class EventService {
         if (event.getEventName() == null || event.getEventName().trim().isEmpty()) {
             model.addAttribute(EVENT_NAME_ERROR_MESSAGE, "Event name cannot be empty");
             hasError = true;
-        } else if (event.getEventName().length() < 2) {
-            model.addAttribute(EVENT_NAME_ERROR_MESSAGE, "Name must be at least 2 characters");
+        } else if (event.getEventName().length() < 2 || regex.matcher(event.getEventName()).matches()) {
+            model.addAttribute(EVENT_NAME_ERROR_MESSAGE, "Name must be at least 2 letters");
             hasError = true;
         } else if (event.getEventName().length() > 30) {
             model.addAttribute(EVENT_NAME_ERROR_MESSAGE, "Name cannot be greater than 30 characters");
-            hasError = true;
-        } else if (regex.matcher(event.getEventName()).matches()) {
-            model.addAttribute(EVENT_NAME_ERROR_MESSAGE, "Name must contain at least one letter");
             hasError = true;
         }
         if (event.getEventStartDate() == null || event.getEventStartDate().before(new Date(0)) || event.getEventEndDate().equals(new Date(0))) {

@@ -186,14 +186,11 @@ public class MilestoneService {
         if (milestone.getMilestoneName() == null || milestone.getMilestoneName().trim().isEmpty()) {
             model.addAttribute(MILESTONE_NAME_ERROR_MESSAGE, "Milestone name cannot be empty");
             hasError = true;
-        } else if (milestone.getMilestoneName().length() < 2) {
-            model.addAttribute(MILESTONE_NAME_ERROR_MESSAGE, "Name must be at least 2 characters");
+        } else if (milestone.getMilestoneName().length() < 2 || regex.matcher(milestone.getMilestoneName()).matches()) {
+            model.addAttribute(MILESTONE_NAME_ERROR_MESSAGE, "Name must be at least 2 letters");
             hasError = true;
         } else if (milestone.getMilestoneName().length() > 30) {
             model.addAttribute(MILESTONE_NAME_ERROR_MESSAGE, "Name cannot be greater than 30 characters");
-            hasError = true;
-        } else if (regex.matcher(milestone.getMilestoneName()).matches()) {
-            model.addAttribute(MILESTONE_NAME_ERROR_MESSAGE, "Name must contain at least one letter");
             hasError = true;
         }
         if (milestone.getMilestoneDate() == null || milestone.getMilestoneDate().before(new Date(0)) || milestone.getMilestoneDate().equals(new Date(0))) {
