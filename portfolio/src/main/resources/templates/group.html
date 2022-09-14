@@ -153,6 +153,7 @@
 <script src="js/groupLive.js"></script>
 <script src="js/project.js"></script>
 <script src="js/banner.js"></script>
+<script src="js/textValidation.js"></script>
 
 <script th:inline="javascript">
     /**
@@ -370,7 +371,8 @@
     deleteModalSetup()
     groupDeleteModalSetup()
     removeUserModalSetup()
-    nameValidateCheck()
+    disallowInvalidCharacters('groupShortNameInput')
+    disallowInvalidCharacters('groupLongNameInput')
 </script>
 
 <script>

@@ -58,6 +58,7 @@
     </div>
     <script src="js/project.js"></script>
     <script src="js/datepicker.js"></script>
+    <script src="js/textValidation.js"></script>
     <script>
 
         /**
@@ -106,6 +107,8 @@
             document.getElementById('sprintForm').onsubmit = () => { return false };
             if ((await checkSprintDates()).trim().length === 0 &&
                 validateModalName('sprintName', 'sprintAlertBanner', 'sprintAlertMessage')) {
+                removeInvalidCharacters('sprintName');
+                removeInvalidCharacters('sprintDescription');
                 document.getElementById('sprintForm').submit();
             } else {
                 document.getElementById('sprintForm').onsubmit = () => { validateSprint(); return false };
@@ -115,5 +118,8 @@
 
         sprintStartDatePicker = configureDateTimePicker('sprintStartDateInput');
         sprintEndDatePicker = configureDateTimePicker('sprintEndDateInput');
+
+        disallowInvalidCharacters('sprintName');
+        disallowInvalidCharacters('sprintDescription');
     </script>
 </div>
