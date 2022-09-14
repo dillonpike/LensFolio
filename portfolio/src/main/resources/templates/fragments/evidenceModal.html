@@ -194,5 +194,19 @@
         disallowInvalidCharacters('evidenceTitle');
         disallowInvalidCharacters('evidenceDescription');
         disallowInvalidCharacters('evidenceWeblink');
+
+        document.getElementById("evidenceModal").addEventListener("hidden.bs.modal", function () {
+            document.getElementById("evidenceModalButton").classList.add("disabled");
+            document.getElementById("evidenceTitleAlertBanner").hidden = true;
+            document.getElementById("evidenceDescriptionAlertBanner").hidden = true;
+            document.getElementById("evidenceDateAlertBanner").hidden = true;
+            document.getElementById("evidenceWebLinksAlertBanner").hidden = true;
+            webLinksList = [];
+            $("#webLinkList").empty();
+            updateCharsLeft('evidenceTitle', 'evidenceTitleLength', 250);
+            updateCharsLeft('evidenceDescription', 'evidenceDescriptionLength', 250);
+            updateCharsLeft('evidenceWeblink', 'evidenceWebLinkLength', 250);
+        });
+
     </script>
 </div>

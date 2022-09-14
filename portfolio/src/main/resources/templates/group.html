@@ -171,6 +171,13 @@
         }));
     }
 
+    function sendUpdatedSettings(groupId) {
+        stompClient.send("/webSocketPost/save-group-settings", {}, JSON.stringify({
+        'sendingGroupId': groupId,
+        'receivingGroupId' : groupId
+        }));
+    }
+
     /**
      * Sends an empty message so that the other end can realise to close any popups it may have activated.
      */
@@ -317,6 +324,7 @@
                     addGroupReload(selectedArtefactName, selectedArtefactId, userId, userFirstName, userLastName, username, "Group");
                 } else {
                     sendNameReload(selectedArtefactName, selectedArtefactId, userId, userFirstName, userLastName, username, "Group");
+                    sendUpdatedSettings(selectedArtefactId);
                 }
             }
         })

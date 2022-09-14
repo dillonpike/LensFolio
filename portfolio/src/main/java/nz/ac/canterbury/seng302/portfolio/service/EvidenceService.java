@@ -60,6 +60,12 @@ public class EvidenceService {
         Pattern regex = Pattern.compile("^[\\p{N}\\p{P}\\p{S}\\p{Zs}]+$");
         Pattern webLinkRegex = Pattern.compile("^(http(s)?://)[\\w.-]+(?:\\.[\\w\\\\.-]+)*[\\w\\-\\\\._~:/?#\\[\\]@!$&'()*+,;=]+$");
         int maxNumWebLinks = 10;
+        try {
+            evidence.setTitle(evidence.getTitle().trim());
+            evidence.setDescription(evidence.getDescription().trim());
+        } catch (NullPointerException ignored) { // If the title or description is null, we don't need to do anything
+            // as the later if statements catch it anyway.
+        }
         boolean hasError = false;
         if (evidence.getTitle() == null || evidence.getTitle().isEmpty()) {
             model.addAttribute(ADD_EVIDENCE_MODAL_FRAGMENT_TITLE_MESSAGE, "Title is required");
