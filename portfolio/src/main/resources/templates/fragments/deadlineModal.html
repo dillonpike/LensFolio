@@ -41,6 +41,7 @@
     </div>
   </div>
   <script src="js/datepicker.js"></script>
+  <script src="js/textValidation.js"></script>
   <script type="text/javascript">
 
     /**
@@ -49,6 +50,7 @@
     async function validateDeadline() {
       if (validateModalDateTime('deadlineDate', 'deadlineModalButton', 'deadlineDateAlertBanner', 'deadlineDateAlertMessage') &&
               validateModalName('deadlineName', 'deadlineAlertBanner', 'deadlineAlertMessage')) {
+        removeInvalidCharacters('deadlineName');
         document.getElementById('deadlineForm').onsubmit = () => { return false };
         document.getElementById('deadlineForm').submit();
         sendSavedLiveNotificationRequest('Deadline');
@@ -57,5 +59,6 @@
 
     deadlineDatePicker = configureDateTimePicker('deadlineDateInput');
 
+    disallowInvalidCharacters('deadlineName');
   </script>
 </div>

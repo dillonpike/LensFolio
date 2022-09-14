@@ -58,6 +58,7 @@
     </div>
     <script src="js/project.js"></script>
     <script src="js/datepicker.js"></script>
+    <script src="js/textValidation.js"></script>
     <script>
 
         /**
@@ -104,6 +105,8 @@
         async function validateProject() {
             if ((await checkProjectDates()).trim().length === 0 &&
                 validateModalName('projectName', 'projectAlertBanner', 'projectAlertMessage')) {
+                removeInvalidCharacters('projectName');
+                removeInvalidCharacters('projectDescription');
                 document.getElementById('projectForm').onsubmit = () => { return false };
                 sendProjectSprint("Project");
                 document.getElementById('projectForm').submit();
@@ -112,5 +115,8 @@
 
         projectStartDatePicker = configureDateTimePicker('projectStartDateInput');
         projectEndDatePicker = configureDateTimePicker('projectEndDateInput');
+
+        disallowInvalidCharacters('projectName');
+        disallowInvalidCharacters('projectDescription');
     </script>
 </div>

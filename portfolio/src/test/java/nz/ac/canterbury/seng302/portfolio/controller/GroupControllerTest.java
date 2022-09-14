@@ -111,25 +111,6 @@ class GroupControllerTest {
 
     }
 
-//    /**
-//     * Test that if given any valid GroupId, table refresh successfully.
-//     * @throws Exception Can be caused during mocking the MVC system.
-//     */
-//    @Test
-//    void testRefreshGroupTable() throws Exception {
-//        SecurityContext mockedSecurityContext = Mockito.mock(SecurityContext.class);
-//        when(mockedSecurityContext.getAuthentication()).thenReturn(new PreAuthenticatedAuthenticationToken(validAuthState, ""));
-//        SecurityContextHolder.setContext(mockedSecurityContext);
-//
-//        GroupDetailsResponse response = GroupDetailsResponse.newBuilder().setGroupId(testGroup.getGroupId())
-//                .setShortName(testGroup.getShortName()).setLongName(testGroup.getLongName()).build();
-//
-//        doReturn(response).when(groupService).getGroupDetails(testGroup.getGroupId());
-//
-//        mockMvc.perform(get("/groups/local?groupId=" + testGroup.getGroupId()))
-//                .andExpect(status().isOk())
-//                .andExpect(model().attribute("group", response));
-//    } TODO FIX THIS TEST
 
     /**
      * Test that when a DELETE call is made to delete a group of a given valid id, that the controller returns a successful value.

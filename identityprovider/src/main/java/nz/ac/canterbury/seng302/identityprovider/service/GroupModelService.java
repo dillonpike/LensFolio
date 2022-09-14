@@ -241,7 +241,7 @@ public class GroupModelService {
                     group.addMember(user);
                 }
                 repository.save(group);
-                logger.info(MessageFormat.format("Added the following users to group {0}: {1}", groupId, users));
+                logger.info("Added the following users to group {}: {}", groupId, users);
                 if (!groupId.equals(GroupModelServerService.MEMBERS_WITHOUT_GROUP_ID)) {
                     removeFromMembersWithoutAGroup(users);
                 }

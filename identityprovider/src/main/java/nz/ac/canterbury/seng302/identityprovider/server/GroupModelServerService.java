@@ -43,7 +43,9 @@ public class GroupModelServerService extends GroupsServiceGrpc.GroupsServiceImpl
 
     public static final Integer TEACHERS_GROUP_ID = 2;
 
-    private static boolean first_time_load_users = true;
+    private boolean firstTimeLoadUsers = true;
+
+    private static final String NAME_WAS_NOT_UNIQUE = "Name was not unique";
 
     /**
      * Attempts to delete a group with the id in the request. Sends a response with an isSuccess value and message.
@@ -60,8 +62,7 @@ public class GroupModelServerService extends GroupsServiceGrpc.GroupsServiceImpl
             GroupModel group = groupModelService.getGroupById(request.getGroupId());
             Set<UserModel> users = group.getMembers();
 
-            if (groupModelService.removeGroup(request.getGroupId())) {
-                groupId = MEMBERS_WITHOUT_GROUP_ID;
+            if (groupModelService.removeGroup(groupId)) {
                 for (UserModel user : users) {
                     user.getGroups().remove(group);
                     if (user.getGroups().isEmpty()) {
@@ -122,14 +123,14 @@ public class GroupModelServerService extends GroupsServiceGrpc.GroupsServiceImpl
             error.setErrorText("Short Name not unique");
             error.setFieldName("shortName");
             reply.addValidationErrors(error.build());
-            reply.setIsSuccess(false).setMessage("Name was not unique");
+            reply.setIsSuccess(false).setMessage(NAME_WAS_NOT_UNIQUE);
         }
         if (!longNameUnique) {
             ValidationError.Builder error = ValidationError.newBuilder();
             error.setErrorText("Long Name not unique");
             error.setFieldName("longName");
             reply.addValidationErrors(error.build());
-            reply.setIsSuccess(false).setMessage("Name was not unique");
+            reply.setIsSuccess(false).setMessage(NAME_WAS_NOT_UNIQUE);
         }
         if(shortNameUnique && longNameUnique) {
             try {
@@ -193,9 +194,9 @@ public class GroupModelServerService extends GroupsServiceGrpc.GroupsServiceImpl
         for (GroupModel groupModel : allGroups) {
             reply.addGroups(groupModelService.getGroupInfo(groupModel));
         }
-        if (first_time_load_users) {
+        if (firstTimeLoadUsers) {
             userModelService.usersAddedToUsersWithoutGroup(groupModelService.getMembersWithoutAGroup());
-            first_time_load_users = false;
+            firstTimeLoadUsers = false;
         }
 
         responseObserver.onNext(reply.build());
@@ -267,7 +268,7 @@ public class GroupModelServerService extends GroupsServiceGrpc.GroupsServiceImpl
             }
             boolean roleWasAdded = userModelService.checkUserHasTeacherRole(user);
             if (!roleWasAdded) {
-                logger.warn(MessageFormat.format("User {0} was not given teacher role. ", user.getUserId()));
+                logger.warn("User {} was not given teacher role. ", user.getUserId());
             }
         }
     }
@@ -283,7 +284,7 @@ public class GroupModelServerService extends GroupsServiceGrpc.GroupsServiceImpl
             error.setErrorText("Short Name not unique");
             error.setFieldName("shortName");
             reply.addValidationErrors(error.build());
-            reply.setIsSuccess(false).setMessage("Name was not unique");
+            reply.setIsSuccess(false).setMessage(NAME_WAS_NOT_UNIQUE);
         }
     }
 
@@ -298,7 +299,7 @@ public class GroupModelServerService extends GroupsServiceGrpc.GroupsServiceImpl
             error.setErrorText("Long Name not unique");
             error.setFieldName("longName");
             reply.addValidationErrors(error.build());
-            reply.setIsSuccess(false).setMessage("Name was not unique");
+            reply.setIsSuccess(false).setMessage(NAME_WAS_NOT_UNIQUE);
         }
     }
 
@@ -351,7 +352,7 @@ public class GroupModelServerService extends GroupsServiceGrpc.GroupsServiceImpl
 
             boolean roleWasRemoved = userModelService.checkUserDoesNotHaveTeacherRole(user);
             if (!roleWasRemoved) {
-                logger.warn(MessageFormat.format("User {0} was not given teacher role. ", user.getUserId()));
+                logger.warn("User {} was not given teacher role. ", user.getUserId());
             }
         }
     }

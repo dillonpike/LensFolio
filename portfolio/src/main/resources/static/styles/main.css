@@ -161,6 +161,31 @@ a {
     padding-top: 5px;
     word-break: break-all;
 }
+
+.evidence-block {
+    display:flex;
+    width: 100%;
+}
+.evidence-title {
+    font-weight: bold;
+    color: #453737;
+    font-size: large;
+    word-break: break-all;
+}
+.evidence-description {
+    color: #636363;
+    word-break: normal;
+}
+.evidence-date {
+    color: #a0a0a0;
+    font-size: normal;
+    padding-bottom: 10px;
+}
+
+.evidence-weblink-title {
+    font-weight: bold;
+    padding-top: 10px;
+}
 /* Sprints-Display End */
 
 /* Sprints-Buttons */
@@ -544,7 +569,7 @@ body{
 .widget-49 .widget-49-meeting-action a {
     text-transform: uppercase;
 }
-.tab-pane{
+.tab-pane-Evidence{
     height:600px;
     overflow-y:scroll;
 }

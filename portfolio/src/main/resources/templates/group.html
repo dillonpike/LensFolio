@@ -153,10 +153,11 @@
 <script src="js/groupLive.js"></script>
 <script src="js/project.js"></script>
 <script src="js/banner.js"></script>
+<script src="js/textValidation.js"></script>
 
 <script th:inline="javascript">
     /**
-     * Sends the message that a group is being updated, and sends the events names with it.
+     * Sends the message that a group is being updated, and sends the groups names with it.
      */
     function sendName(artefactName, artefactId,userId, userFirstName, userLastName, username, artefactType) {
         stompClient.send("/webSocketPost/editing-group", {}, JSON.stringify({
@@ -167,6 +168,13 @@
             'userFirstName': userFirstName,
             'userLastName': userLastName,
             'username': username
+        }));
+    }
+
+    function sendUpdatedSettings(groupId) {
+        stompClient.send("/webSocketPost/save-group-settings", {}, JSON.stringify({
+        'sendingGroupId': groupId,
+        'receivingGroupId' : groupId
         }));
     }
 
@@ -316,6 +324,7 @@
                     addGroupReload(selectedArtefactName, selectedArtefactId, userId, userFirstName, userLastName, username, "Group");
                 } else {
                     sendNameReload(selectedArtefactName, selectedArtefactId, userId, userFirstName, userLastName, username, "Group");
+                    sendUpdatedSettings(selectedArtefactId);
                 }
             }
         })
@@ -362,7 +371,8 @@
     deleteModalSetup()
     groupDeleteModalSetup()
     removeUserModalSetup()
-    nameValidateCheck()
+    disallowInvalidCharacters('groupShortNameInput')
+    disallowInvalidCharacters('groupLongNameInput')
 </script>
 
 <script>

@@ -50,8 +50,6 @@ public class GroupSettingsService {
      * @return the saved object
      */
     public GroupSettings saveGroupSettings(GroupSettings groupSettings) {
-        logger.info("Saving group settings {} ({}) for group {}",
-                groupSettings.getGroupSettingsId(), groupSettings.getRepoName().trim(), groupSettings.getGroupId());
         return repository.save(groupSettings);
     }
 
@@ -85,11 +83,9 @@ public class GroupSettingsService {
     /**
      * Method to add group setting modal attribute to the model,
      * it will set repo id to 0 if current group repository has not been set up.
-     * @param groupId current group id
      * @param model model to add group setting modal attribute to
      */
-    public void addSettingAttributesToModel(int groupId, Model model) {
-        GroupSettings groupSettings = getGroupSettingsByGroupId(groupId);
+    public void addSettingAttributesToModel(Model model, GroupSettings groupSettings) {
         // Check if group setting is default
         if (groupSettings.getRepoId() != 0) {
             model.addAttribute("repoId", groupSettings.getRepoId());
@@ -100,6 +96,7 @@ public class GroupSettingsService {
         model.addAttribute("repoName", groupSettings.getRepoName());
         model.addAttribute("repoApiKey", groupSettings.getRepoApiKey());
         model.addAttribute("groupSettingsId", groupSettings.getGroupSettingsId());
+        model.addAttribute("repoServerUrl", groupSettings.getRepoUrl());
     }
 
     /**
@@ -111,9 +108,9 @@ public class GroupSettingsService {
      * @param groupId current group id
      * @return true if current group setting has been saved successfully, otherwise false.
      */
-    public boolean isGroupSettingSaved(int groupSettingId, int repoId, String repoName, String repoToken, int groupId) {
+    public boolean isGroupSettingSaved(int groupSettingId, long repoId, String repoName, String repoToken, int groupId, String repoServerUrl) {
         try {
-            GroupSettings targetGroupSetting = new GroupSettings(repoId, repoName, repoToken, groupId);
+            GroupSettings targetGroupSetting = new GroupSettings(repoId, repoName, repoToken, groupId, repoServerUrl);
             targetGroupSetting.setGroupSettingsId(groupSettingId);
             saveGroupSettings(targetGroupSetting);
         } catch (Exception e) {
@@ -134,8 +131,6 @@ public class GroupSettingsService {
         int maxRepoId = 2147483647;
         int maxRepoNameLength = 30;
         int maxRepoTokenLength = 50;
-        return repoId < maxRepoId &&
-                0 < repoName.length() && repoName.length() <= maxRepoNameLength &&
-                0 < repoToken.length() && repoToken.length() <= maxRepoTokenLength;
+        return repoId < maxRepoId && repoName.length() <= maxRepoNameLength && repoToken.length() <= maxRepoTokenLength;
     }
 }

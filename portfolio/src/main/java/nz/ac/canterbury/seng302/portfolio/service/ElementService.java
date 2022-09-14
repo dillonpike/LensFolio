@@ -95,6 +95,7 @@ public class ElementService {
         model.addAttribute("headerFullName", fullNameHeader);
         // Gets the dynamic image spring is hosting for that user or the default image.
         model.addAttribute("userImage", photoService.getPhotoPath(userData.getProfileImagePath(), userId));
+        model.addAttribute("userId", userId);
     }
 
     /**

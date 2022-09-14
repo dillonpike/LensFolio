@@ -1,8 +1,12 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
 
+import nz.ac.canterbury.seng302.portfolio.model.NotificationGroup;
+import nz.ac.canterbury.seng302.portfolio.model.GroupSettings;
 import nz.ac.canterbury.seng302.portfolio.service.*;
+import nz.ac.canterbury.seng302.portfolio.utility.ToastUtility;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
+import nz.ac.canterbury.seng302.shared.identityprovider.GroupDetailsResponse;
 import nz.ac.canterbury.seng302.shared.identityprovider.ModifyGroupDetailsResponse;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 import org.gitlab4j.api.GitLabApiException;
@@ -10,14 +14,16 @@ import org.gitlab4j.api.models.Commit;
 import org.gitlab4j.api.models.Contributor;
 import org.hibernate.ObjectNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -64,11 +70,12 @@ public class GroupSettingsController {
      * @param model group setting page model
      * @return group settings page
      */
-    @RequestMapping("/groupSettings")
+    @GetMapping("/groupSettings")
     public String groupSettings(
             @RequestParam(value = "groupId") int groupId,
             @AuthenticationPrincipal AuthState principal,
-            Model model) {
+            Model model
+    ) {
         Integer id = userAccountClientService.getUserIDFromAuthState(principal);
         elementService.addHeaderAttributes(model, id);
         UserResponse user = registerClientService.getUserData(id);
@@ -82,19 +89,27 @@ public class GroupSettingsController {
                 groupService.getGroupDetails(groupId).getGroupId() <= 2) {
             return "redirect:/groups";
         }
+        ToastUtility.addToastsToModel(model, new ArrayList<>(), 3);
 
-        int repoId = (int) groupSettingsService.getGroupSettingsByGroupId(groupId).getRepoId();
+        long repoId = groupSettingsService.getGroupSettingsByGroupId(groupId).getRepoId();
         String repoToken = groupSettingsService.getGroupSettingsByGroupId(groupId).getRepoApiKey();
-        boolean isConnected = gitLabApiService.checkGitLabToken(repoId, repoToken);
-        if (!isConnected) {
-            model.addAttribute(GROUP_SETTING_ALERT_MESSAGE, "Repository Is Unreachable With The Current Settings");
-        }
+        String repoUrl = groupSettingsService.getGroupSettingsByGroupId(groupId).getRepoUrl();
+        gitLabApiService.checkGitLabToken(model, repoId, repoToken, repoUrl);
+
         boolean isValidToModify = permissionService.isValidToModifyGroupSettingPage(groupId, id);
         model.addAttribute("isValidToModify", isValidToModify);
 
         groupService.addGroupDetailToModel(model, groupId);
-        groupSettingsService.addSettingAttributesToModel(groupId, model);
+
+        GroupSettings groupSettings = groupSettingsService.getGroupSettingsByGroupId(groupId);
+        groupSettingsService.addSettingAttributesToModel(model, groupSettings);
+
         addGroupSettingAttributeToModel(model, groupId);
+
+        model.addAttribute("userId", id);
+        model.addAttribute("username", user.getUsername());
+        model.addAttribute("userFirstName", user.getFirstName());
+        model.addAttribute("userLastName", user.getLastName());
 
         return "groupSettings";
     }
@@ -117,10 +132,10 @@ public class GroupSettingsController {
         try {
             String branchRequestName = null;
             String userRequestEmail = null;
-            if(!branchName.equals("All Branches")){
+            if(!branchName.equals("All Branches")) {
                 branchRequestName = branchName;
             }
-            if(!userEmail.equals("All Users")){
+            if (!userEmail.equals("All Users")) {
                 userRequestEmail = userEmail;
             }
             List<Commit> allCommit = gitLabApiService.getCommits(groupId, branchRequestName, userRequestEmail);
@@ -130,6 +145,54 @@ public class GroupSettingsController {
             return "groupSettings::commitsListRefresh";
         }
     }
+
+    /**
+     * Method to partial refresh the group setting card.
+     *
+     * @param groupId current group id
+     * @param model   model for group setting page
+     * @return repository contributors fragment
+     */
+    @RequestMapping("/groupSettings/refreshGroupSettings")
+    public String refreshGroupSetting(
+            Model model,
+            @RequestParam(value = "groupId") int groupId,
+            @AuthenticationPrincipal AuthState principal) {
+
+        Integer id = userAccountClientService.getUserIDFromAuthState(principal);
+        elementService.addHeaderAttributes(model, id);
+        UserResponse user = registerClientService.getUserData(id);
+        String role = elementService.getUserHighestRole(user);
+
+        long repoId = groupSettingsService.getGroupSettingsByGroupId(groupId).getRepoId();
+        String repoToken = groupSettingsService.getGroupSettingsByGroupId(groupId).getRepoApiKey();
+        String repoUrl = groupSettingsService.getGroupSettingsByGroupId(groupId).getRepoUrl();
+        gitLabApiService.checkGitLabToken(model, repoId, repoToken, repoUrl);
+        boolean isValidToModify = permissionService.isValidToModifyGroupSettingPage(groupId, id);
+        model.addAttribute("isValidToModify", isValidToModify);
+
+        groupService.addGroupDetailToModel(model, groupId);
+        GroupSettings groupSettings = groupSettingsService.getGroupSettingsByGroupId(groupId);
+        groupSettingsService.addSettingAttributesToModel(model, groupSettings);
+        addGroupSettingAttributeToModel(model, groupId);
+        model.addAttribute(GROUP_ID, groupId);
+        model.addAttribute(CURRENT_USER_ROLE, role);
+
+        if (groupSettings.getRepoId() != 0) {
+            model.addAttribute("repoId", groupSettings.getRepoId());
+        } else {
+            model.addAttribute("repoId", 0);
+
+        }
+        model.addAttribute("repoName", groupSettings.getRepoName());
+        model.addAttribute("repoApiKey", groupSettings.getRepoApiKey());
+        model.addAttribute("groupSettingsId", groupSettings.getGroupSettingsId());
+        model.addAttribute("repoServerUrl", groupSettings.getRepoUrl());
+
+        return "groupSettings::groupSetting";
+    }
+
+
 
     /**
      * POST method for group setting page to update group long name,
@@ -143,9 +206,10 @@ public class GroupSettingsController {
             @RequestParam(name = "groupShortName") String shortName,
             @RequestParam(value = "groupId") int groupId,
             @RequestParam(name = "repoName", required = false, defaultValue = "") String repoName,
-            @RequestParam(name = "repoID", required = false) int repoId,
+            @RequestParam(name = "repoID", required = false) long repoId,
             @RequestParam(name = "repoToken", required = false, defaultValue = "") String repoToken,
             @RequestParam(name = "groupSettingsId") int groupSettingsId,
+            @RequestParam(name = "repoURL", required = false, defaultValue = "") String repoServerUrl,
             @AuthenticationPrincipal AuthState principal,
             HttpServletResponse httpServletResponse,
             RedirectAttributes rm
@@ -162,15 +226,6 @@ public class GroupSettingsController {
 
         rm.addAttribute(GROUP_ID, groupId);
         model.addAttribute(GROUP_ID, groupId);
-
-        repoName = repoName.trim();
-        repoToken = repoToken.trim();
-        if (!groupSettingsService.isValidGroupSettings(repoId, repoName, repoToken)) {
-            model.addAttribute(GROUP_SETTING_ALERT_MESSAGE, "Please enter valid repository settings");
-            httpServletResponse.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            return "groupSettings::groupSettingsAlertBanner";
-        }
-
         ModifyGroupDetailsResponse groupResponse = groupService.editGroupDetails(groupId, shortName, longName);
 
         // First, we check the response from the server to see if edit the group long name is successful
@@ -180,12 +235,9 @@ public class GroupSettingsController {
             return "groupSettings::groupLongNameAlertBanner";
         }
 
-        boolean isSaved = groupSettingsService.isGroupSettingSaved(groupSettingsId, repoId, repoName, repoToken, groupId);
-        boolean isConnected = gitLabApiService.checkGitLabToken(repoId, repoToken);
+        boolean isSaved = groupSettingsService.isGroupSettingSaved(groupSettingsId, repoId, repoName, repoToken, groupId, repoServerUrl);
+        gitLabApiService.checkGitLabToken(model, repoId, repoToken, repoServerUrl);
 
-        if (!isConnected) {
-            model.addAttribute(GROUP_SETTING_ALERT_MESSAGE, "Repository Is Unreachable With The Current Settings");
-        }
 
         if (!isSaved) {
             model.addAttribute(GROUP_SETTING_ALERT_MESSAGE, "Invalid Repository Information");
@@ -193,12 +245,33 @@ public class GroupSettingsController {
             return "groupSettings::groupSettingsAlertBanner";
         }
         groupService.addGroupDetailToModel(model, groupId);
-        groupSettingsService.addSettingAttributesToModel(groupId, model);
+        GroupSettings groupSettings = groupSettingsService.getGroupSettingsByGroupId(groupId);
+        groupSettingsService.addSettingAttributesToModel(model, groupSettings);
         addGroupSettingAttributeToModel(model, groupId);
 
         httpServletResponse.setStatus(HttpServletResponse.SC_OK);
         model.addAttribute("successMessage", "Save changed");
         return "groupSettings::groupSetting";
+    }
+
+    /**
+     * Method to get group's members
+     * @param model Parameters sent to thymeleaf template to be rendered into HTML
+     * @param groupId id of group to reload
+     * @return Group page
+     */
+    @GetMapping("/getGroupMembers")
+    public String getGroupMembers(
+            Model model,
+            @RequestParam("groupId") int groupId,
+            @AuthenticationPrincipal AuthState principal
+
+    )
+    {
+        GroupDetailsResponse groupDetailsResponse = groupService.getGroupDetails(groupId);
+        List<UserResponse> members = groupDetailsResponse.getMembersList();
+        model.addAttribute("members", members);
+        return "groupSettings::table_refresh";
     }
 
     /**
@@ -228,6 +301,29 @@ public class GroupSettingsController {
             model.addAttribute(IS_CONNECTION_SUCCESSFUL, false);
             model.addAttribute(IS_REPO_EXIST, false);
         }
+    }
+
+    /**
+     * Websocket controller to send notification to users to have their pages refreshed when new settings are saved.
+     * @param notificationGroup Holds the ID of the group being refreshed.
+     * @return The notificationGroup object.
+     */
+    @MessageMapping("/save-group-settings")
+    @SendTo("/webSocketGet/group-settings-saved")
+    public NotificationGroup refreshGroupSettings(NotificationGroup notificationGroup) {
+        return notificationGroup;
+    }
+
+    /**
+     * This method maps @MessageMapping endpoint to the @SendTo endpoint.
+     * Called when a groups long name is updated outside the group settings page so that it can be reloaded.
+     * @param notificationGroup NotificationGroup that holds information about the groups being updated.
+     * @return returns an NotificationResponse that holds information about the groups being updated.
+     */
+    @MessageMapping("/outside-save-group-settings")
+    @SendTo("/webSocketGet/outside-group-settings-saved")
+    public NotificationGroup refreshGroupSettingsOutside(NotificationGroup notificationGroup) {
+        return notificationGroup;
     }
 }
 
