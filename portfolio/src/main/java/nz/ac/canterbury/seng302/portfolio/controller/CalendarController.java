@@ -5,6 +5,7 @@ import nz.ac.canterbury.seng302.portfolio.service.*;
 import nz.ac.canterbury.seng302.portfolio.utility.EventDic;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import nz.ac.canterbury.seng302.shared.identityprovider.ClaimDTO;
+import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
@@ -39,6 +40,9 @@ public class CalendarController {
 
     @Autowired
     private ElementService elementService;
+
+    @Autowired
+    private RegisterClientService registerClientService;
 
     private static final String MESSAGE_ID = "{id: '";
     private static final String MESSAGE_TITLE = "', title: '";
@@ -169,6 +173,11 @@ public class CalendarController {
         Integer id = userAccountClientService.getUserIDFromAuthState(principal);
         elementService.addHeaderAttributes(model, id);
         model.addAttribute("userId", id);
+        UserResponse user = registerClientService.getUserData(id);
+        model.addAttribute("user", user);
+        model.addAttribute("username", user.getUsername());
+        model.addAttribute("userFirstName", user.getFirstName());
+        model.addAttribute("userLastName", user.getLastName());
         try {
             sprints = sprintService.getAllSprintsOrdered();
             events = eventService.getAllEventsOrderedStartDate();

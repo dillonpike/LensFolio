@@ -50,6 +50,11 @@ function connect() {
             refreshEvents();
             showToastSave(eventResponse.artefactName, eventResponse.artefactId, eventResponse.username, eventResponse.userFirstName, eventResponse.userLastName, eventResponse.artefactType, DELETEACTION);
         });
+        stompClient.subscribe('/webSocketGet/sprint-project-calendar-save', function (eventResponseArg) {
+            const eventResponse = JSON.parse(eventResponseArg.body);
+            refreshEvents();
+            showToastSave(eventResponse.artefactName, eventResponse.artefactId, eventResponse.username, eventResponse.userFirstName, eventResponse.userLastName, eventResponse.artefactType, SAVEACTION);
+        });
 
     });
 }

@@ -512,6 +512,13 @@
         }));
     }
 
+    /**
+     * Sends the message that a sprint or the project is being updated, and sends a string message.
+     */
+    function sendProjectSprint(name) {
+        stompClient.send("/webSocketPost/sprint-project-details-save", {}, name + " Updated");
+    }
+
     let userId = [[${userId}]];
     let userFirstName = [[${userFirstName}]];
     let userLastName = [[${userLastName}]];
