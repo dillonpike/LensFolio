@@ -113,7 +113,11 @@ function isEvidenceInputFieldFilled() {
 function clearEvidenceModalFields() {
     document.getElementById('evidenceTitle').value = "";
     document.getElementById('evidenceDescription').value = "";
+    document.getElementById('evidenceWeblink').value = "";
     evidenceDatePicker.dates.setValue(tempusDominus.DateTime.convert(new Date()));
     webLinksList = [];
-    $("#evidenceTitleAlertBanner").hide();
+    $("#evidenceTitleAlertBanner").attr("hidden", "hidden");
+    $("#evidenceDescriptionAlertBanner").attr("hidden", "hidden");
+    $("#evidenceDateAlertBanner").attr("hidden", "hidden");
+    $("#evidenceWebLinksAlertBanner").attr("hidden", "hidden");
 }
