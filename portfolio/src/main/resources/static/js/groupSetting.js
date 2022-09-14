@@ -20,8 +20,8 @@ function editGroupSetting() {
     }
     $.post('saveGroupSettings?' + new URLSearchParams(data)).done((result) => {
         $(`#groupSettingContainer`).replaceWith(result);
-        initialiseCommitsList()
         sendIdRefresh($("#groupId").val());
+        initialiseCommitsList()
     }).fail(showError)
 }
 

@@ -289,7 +289,7 @@
     const userFirstName = /*[[${userFirstName}]]*/ "null";
     const userLastName = /*[[${userLastName}]]*/ "null";
     const groupShortName = /*[[${groupShortName}]]*/ "null";
-    let isConnectionSuccessful = /*[[${isConnectionSuccessful}]]*/ "false";
+    const isConnectionSuccessful = /*[[${isConnectionSuccessful}]]*/ "false";
 
     /*]]>*/
 
@@ -317,8 +317,10 @@
      * This function will disable the filtering input to prevent concurrency and display spinner
      */
     function updatingCommitsList(){
-        document.getElementById("collapseFilter").style.setProperty("pointer-events", 'none', "important");
-        document.getElementById("spinnerBox").style.setProperty("visibility", 'visible', "important");
+        if ($("#collapseFilter").length) {
+            document.getElementById("collapseFilter").style.setProperty("pointer-events", 'none', "important");
+            document.getElementById("spinnerBox").style.setProperty("visibility", 'visible', "important");
+        }
     }
 
     /**
@@ -326,15 +328,17 @@
      * This function will make the filtering usable again and hide the spinner
      */
     function finishUpdatingCommitsList(){
-        document.getElementById("collapseFilter").style.setProperty("pointer-events", '', "important");
-        document.getElementById("spinnerBox").style.setProperty("visibility", 'hidden', "important");
+        if ($("#collapseFilter").length) {
+            document.getElementById("collapseFilter").style.setProperty("pointer-events", '', "important");
+            document.getElementById("spinnerBox").style.setProperty("visibility", 'hidden', "important");
+        }
     }
 
     /**
      * Initialise the commit list when group settings page is loaded
      */
     function initialiseCommitsList() {
-        updatingCommitsList();
+        // updatingCommitsList();
         const data = {
             groupId: ID,
             branchName : "All Branches",
@@ -342,6 +346,7 @@
         }
         $.get('repository-commits?'+new URLSearchParams(data)).done((result) => {
             $(`#commitsListRefresh`).replaceWith(result)
+            updatingCommitsList();
             finishUpdatingCommitsList()
             $('.dropDownSelect').selectpicker();
         })
