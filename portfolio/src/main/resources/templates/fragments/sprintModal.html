@@ -109,6 +109,7 @@
                 validateModalName('sprintName', 'sprintAlertBanner', 'sprintAlertMessage')) {
                 removeInvalidCharacters('sprintName');
                 removeInvalidCharacters('sprintDescription');
+                sendProjectSprint("Sprint");
                 document.getElementById('sprintForm').submit();
             } else {
                 document.getElementById('sprintForm').onsubmit = () => { validateSprint(); return false };

@@ -30,7 +30,7 @@ public class ToastUtility {
             toastsToGenerate.add(toast);
         }
 
-        // Runs if the reload was triggered by saving an event. Checks the notifications' creation time to see if 2 seconds has passed yet.
+        // Runs if the reload was triggered by saving an event. Checks the notifications' creation time to see if 5 seconds has passed yet.
         int count = 0;
         ArrayList<NotificationResponse> eventsToDelete = new ArrayList<>();
         for (NotificationResponse artefact : artefactsToDisplay) {

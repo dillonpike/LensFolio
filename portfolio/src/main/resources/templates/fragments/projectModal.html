@@ -108,6 +108,7 @@
                 removeInvalidCharacters('projectName');
                 removeInvalidCharacters('projectDescription');
                 document.getElementById('projectForm').onsubmit = () => { return false };
+                sendProjectSprint("Project");
                 document.getElementById('projectForm').submit();
             }
         }

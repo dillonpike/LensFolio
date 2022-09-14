@@ -85,4 +85,5 @@ public class SprintLifetimeController {
         /* Return the name of the Thymeleaf template */
         return "redirect:/details";
     }
+
 }
