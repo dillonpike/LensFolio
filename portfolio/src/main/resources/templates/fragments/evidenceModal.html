@@ -165,18 +165,13 @@
 
         /**
          * Method to use regex to validate a URL String
-         * inspired by https://www.freecodecamp.org/news/check-if-a-javascript-string-is-a-url/#:~:text=You%20can%20use%20the%20URLConstructor,given%20URL%20is%20not%20valid.
+         * regex slightly modified from:
+         * https://stackoverflow.com/questions/60621028/validate-url-only-http-or-https-at-the-beginning-of-the-string
          * @param urlString the url string to validate
          * @returns {boolean} true if valid, false otherwise
          */
         function isValidUrl(urlString) {
-            const urlPattern = new RegExp('^(https?:\\/\\/)?'+ // validate protocol
-                '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|'+ // validate domain name
-                '((\\d{1,3}\\.){3}\\d{1,3}))'+ // validate OR ip (v4) address
-                '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*'+ // validate port and path
-                '(\\?[;&a-z\\d%_.~+=-]*)?'+ // validate query string
-                '(\\#[-a-z\\d_]*)?$','i'); // validate fragment locator
-            return !!urlPattern.test(urlString);
+            return urlString.match(/^(http(s)?:\/\/)[\w.-]+(?:\.[\w\.-]+)*[\w\-\._~:/?#[\]@!\$&'\(\)\*\+,;=.]+$/)
         }
 
         /**
@@ -192,5 +187,7 @@
                 }
             });
         }
+
+        configureWebLinkInput();
     </script>
 </div>

@@ -44,6 +44,7 @@ function addEvidence() {
         $('#evidenceModal').modal('toggle')
         showAlertToast("Evidence added successfully!");
         clearEvidenceModalFields();
+        $("#webLinkList").html(""); // clear web links
     }).fail((response) => {
         replaceEvidenceModalBody(response.responseText);
     })
