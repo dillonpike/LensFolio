@@ -2,6 +2,7 @@ package nz.ac.canterbury.seng302.portfolio.service;
 
 
 import nz.ac.canterbury.seng302.portfolio.model.Evidence;
+import nz.ac.canterbury.seng302.portfolio.model.WebLink;
 import nz.ac.canterbury.seng302.portfolio.repository.EvidenceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -57,13 +58,14 @@ public class EvidenceService {
      */
     public void validateEvidence(Evidence evidence, Model model) throws NotAcceptableException {
         Pattern regex = Pattern.compile("^[\\p{N}\\p{P}\\p{S}\\p{Zs}]+$");
+        Pattern webLinkRegex = Pattern.compile("^(http(s)?://)[\\w.-]+(?:\\.[\\w\\\\.-]+)*[\\w\\-\\\\._~:/?#\\[\\]@!$&'()*+,;=]+$");
+        int maxNumWebLinks = 10;
         try {
             evidence.setTitle(evidence.getTitle().trim());
             evidence.setDescription(evidence.getDescription().trim());
         } catch (NullPointerException ignored) { // If the title or description is null, we don't need to do anything
             // as the later if statements catch it anyway.
         }
-
         boolean hasError = false;
         if (evidence.getTitle() == null || evidence.getTitle().isEmpty()) {
             model.addAttribute(ADD_EVIDENCE_MODAL_FRAGMENT_TITLE_MESSAGE, "Title is required");
@@ -94,6 +96,17 @@ public class EvidenceService {
         if (evidence.getDate() == null || evidence.getDate().before(new Date(0))) {
             model.addAttribute(ADD_EVIDENCE_MODAL_FRAGMENT_DATE_MESSAGE, "Correctly formatted date is required");
             hasError = true;
+        }
+        if (evidence.getWebLinks().size() > maxNumWebLinks) {
+            model.addAttribute(ADD_EVIDENCE_MODAL_FRAGMENT_WEB_LINKS_MESSAGE, "You can only have up to 10 web links");
+            hasError = true;
+        }
+        for (WebLink webLink : evidence.getWebLinks()) {
+            if (!webLinkRegex.matcher(webLink.getUrl()).matches()) {
+                model.addAttribute(ADD_EVIDENCE_MODAL_FRAGMENT_WEB_LINKS_MESSAGE, "Web links must be valid URLs");
+                hasError = true;
+                break;
+            }
         }
         if (hasError) {
             throw new NotAcceptableException("Evidence fields have errors");

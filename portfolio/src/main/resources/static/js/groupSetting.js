@@ -20,8 +20,8 @@ function editGroupSetting() {
     }
     $.post('saveGroupSettings?' + new URLSearchParams(data)).done((result) => {
         $(`#groupSettingContainer`).replaceWith(result);
-        initialiseCommitsList()
         sendIdRefresh($("#groupId").val());
+        initialiseCommitsList()
     }).fail(showError)
 }
 
@@ -69,10 +69,10 @@ function inputValidateCheck() {
     }, false);
 
     repoToken.addEventListener( "input", event => {
-        repoToken.value = repoToken.value.replace( /[^a-zA-Z0-9~!@#$%^&*()_+|}{:"?><,./;' ]/gm, '');
+        repoToken.value = repoToken.value.replace( /[^a-zA-Z0-9-~!@#$%^&*()_+|}{:"?><,./;' ]/gm, '');
     }, false);
     repoToken.addEventListener( "paste", event => {
-        repoToken.value = repoToken.value.replace( /[^a-zA-Z0-9~!@#$%^&*()_+|}{:"?><,./;' ]/gm, '');
+        repoToken.value = repoToken.value.replace( /[^a-zA-Z0-9-~!@#$%^&*()_+|}{:"?><,./;' ]/gm, '');
     }, false);
 
 }

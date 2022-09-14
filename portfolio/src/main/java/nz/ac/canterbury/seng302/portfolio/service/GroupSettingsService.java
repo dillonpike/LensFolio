@@ -83,7 +83,6 @@ public class GroupSettingsService {
     /**
      * Method to add group setting modal attribute to the model,
      * it will set repo id to 0 if current group repository has not been set up.
-     * @param groupId current group id
      * @param model model to add group setting modal attribute to
      */
     public void addSettingAttributesToModel(Model model, GroupSettings groupSettings) {
@@ -109,7 +108,7 @@ public class GroupSettingsService {
      * @param groupId current group id
      * @return true if current group setting has been saved successfully, otherwise false.
      */
-    public boolean isGroupSettingSaved(int groupSettingId, int repoId, String repoName, String repoToken, int groupId, String repoServerUrl) {
+    public boolean isGroupSettingSaved(int groupSettingId, long repoId, String repoName, String repoToken, int groupId, String repoServerUrl) {
         try {
             GroupSettings targetGroupSetting = new GroupSettings(repoId, repoName, repoToken, groupId, repoServerUrl);
             targetGroupSetting.setGroupSettingsId(groupSettingId);

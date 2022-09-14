@@ -1,12 +1,8 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.protobuf.Timestamp;
-import nz.ac.canterbury.seng302.portfolio.PortfolioApplication;
 import nz.ac.canterbury.seng302.portfolio.model.Evidence;
-import nz.ac.canterbury.seng302.portfolio.repository.EvidenceRepository;
-import nz.ac.canterbury.seng302.portfolio.service.ElementService;
+import nz.ac.canterbury.seng302.portfolio.model.WebLink;
 import nz.ac.canterbury.seng302.portfolio.service.EvidenceService;
 import nz.ac.canterbury.seng302.portfolio.service.RegisterClientService;
 import nz.ac.canterbury.seng302.portfolio.service.UserAccountClientService;
@@ -14,20 +10,14 @@ import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import nz.ac.canterbury.seng302.shared.identityprovider.ClaimDTO;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserRole;
-import org.junit.Before;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.boot.test.mock.mockito.SpyBean;
-import org.springframework.http.MediaType;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
@@ -37,11 +27,11 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.ui.Model;
 
 import java.util.Date;
+import java.util.List;
 
 import static nz.ac.canterbury.seng302.portfolio.controller.EvidenceController.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -59,8 +49,6 @@ class EvidenceControllerTest {
 
     @MockBean
     private EvidenceService evidenceService;
-
-
 
     @MockBean
     private UserAccountClientService userAccountClientService; // needed to load application context
@@ -125,6 +113,27 @@ class EvidenceControllerTest {
     }
 
     /**
+     * Tests blue sky scenario for adding evidence with a valid web link.
+     * @throws Exception If mocking the MVC fails.
+     */
+    @Test
+    void testAddEvidence200ValidWebLink() throws Exception {
+        List<WebLink> validWebLinks = List.of(new WebLink("https://www.google.com"), new WebLink("https://localhost:9000/"),
+                new WebLink("https://dbadmin.csse.canterbury.ac.nz/index.php?route=/sql&db=jth141_portfolio-test&table=web_link&pos=0"),
+                new WebLink("http://www.site.com:8008"), new WebLink("http://www.example.com/~product?id=1&page=2"));
+        when(evidenceService.addEvidence(any(Evidence.class))).thenReturn(true);
+        for (WebLink validWebLink : validWebLinks) {
+            Evidence evidence = new Evidence(0, 0, "test evidence", "test description", new Date());
+            evidence.addWebLink(validWebLink);
+            doCallRealMethod().when(evidenceService).validateEvidence(eq(evidence), any(Model.class));
+
+            mockMvc.perform(post("/add-evidence").flashAttr("evidence", evidence)).andExpect(status().isOk());
+            // TODO Add extra andExpect statements when the returned fragment is finalised
+        }
+        verify(evidenceService, times(validWebLinks.size())).addEvidence(any(Evidence.class));
+    }
+
+    /**
      * Tests adding evidence failing due to the evidence service failing to add the evidence.
      * @throws Exception If mocking the MVC fails.
      */
@@ -150,7 +159,8 @@ class EvidenceControllerTest {
         mockMvc.perform(post("/add-evidence")).andExpect(status().isBadRequest())
                 .andExpect(model().attribute(ADD_EVIDENCE_MODAL_FRAGMENT_TITLE_MESSAGE, "Title is required"))
                 .andExpect(model().attribute(ADD_EVIDENCE_MODAL_FRAGMENT_DESCRIPTION_MESSAGE, "Description is required"))
-                .andExpect(model().attribute(ADD_EVIDENCE_MODAL_FRAGMENT_DATE_MESSAGE, "Correctly formatted date is required"));
+                .andExpect(model().attribute(ADD_EVIDENCE_MODAL_FRAGMENT_DATE_MESSAGE, "Correctly formatted date is required"))
+                .andExpect(model().attributeDoesNotExist(ADD_EVIDENCE_MODAL_FRAGMENT_WEB_LINKS_MESSAGE));
 
         verify(evidenceService, times(0)).addEvidence(any(Evidence.class));
     }
@@ -169,7 +179,8 @@ class EvidenceControllerTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(model().attribute(ADD_EVIDENCE_MODAL_FRAGMENT_TITLE_MESSAGE, "Title must be less than 30 characters"))
                 .andExpect(model().attributeDoesNotExist(ADD_EVIDENCE_MODAL_FRAGMENT_DESCRIPTION_MESSAGE))
-                .andExpect(model().attributeDoesNotExist(ADD_EVIDENCE_MODAL_FRAGMENT_DATE_MESSAGE));
+                .andExpect(model().attributeDoesNotExist(ADD_EVIDENCE_MODAL_FRAGMENT_DATE_MESSAGE))
+                .andExpect(model().attributeDoesNotExist(ADD_EVIDENCE_MODAL_FRAGMENT_WEB_LINKS_MESSAGE));
 
         verify(evidenceService, times(0)).addEvidence(any(Evidence.class));
     }
@@ -188,7 +199,8 @@ class EvidenceControllerTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(model().attributeDoesNotExist(ADD_EVIDENCE_MODAL_FRAGMENT_TITLE_MESSAGE))
                 .andExpect(model().attribute(ADD_EVIDENCE_MODAL_FRAGMENT_DESCRIPTION_MESSAGE, "Description must be less than 250 characters"))
-                .andExpect(model().attributeDoesNotExist(ADD_EVIDENCE_MODAL_FRAGMENT_DATE_MESSAGE));
+                .andExpect(model().attributeDoesNotExist(ADD_EVIDENCE_MODAL_FRAGMENT_DATE_MESSAGE))
+                .andExpect(model().attributeDoesNotExist(ADD_EVIDENCE_MODAL_FRAGMENT_WEB_LINKS_MESSAGE));
 
         verify(evidenceService, times(0)).addEvidence(any(Evidence.class));
     }
@@ -206,7 +218,8 @@ class EvidenceControllerTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(model().attributeDoesNotExist(ADD_EVIDENCE_MODAL_FRAGMENT_TITLE_MESSAGE))
                 .andExpect(model().attributeDoesNotExist(ADD_EVIDENCE_MODAL_FRAGMENT_DESCRIPTION_MESSAGE))
-                .andExpect(model().attribute(ADD_EVIDENCE_MODAL_FRAGMENT_DATE_MESSAGE, "Correctly formatted date is required"));
+                .andExpect(model().attribute(ADD_EVIDENCE_MODAL_FRAGMENT_DATE_MESSAGE, "Correctly formatted date is required"))
+                .andExpect(model().attributeDoesNotExist(ADD_EVIDENCE_MODAL_FRAGMENT_WEB_LINKS_MESSAGE));
 
         verify(evidenceService, times(0)).addEvidence(any(Evidence.class));
     }
@@ -224,7 +237,8 @@ class EvidenceControllerTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(model().attribute(ADD_EVIDENCE_MODAL_FRAGMENT_TITLE_MESSAGE, "Title must be at least 2 characters"))
                 .andExpect(model().attributeDoesNotExist(ADD_EVIDENCE_MODAL_FRAGMENT_DESCRIPTION_MESSAGE))
-                .andExpect(model().attributeDoesNotExist(ADD_EVIDENCE_MODAL_FRAGMENT_DATE_MESSAGE));
+                .andExpect(model().attributeDoesNotExist(ADD_EVIDENCE_MODAL_FRAGMENT_DATE_MESSAGE))
+                .andExpect(model().attributeDoesNotExist(ADD_EVIDENCE_MODAL_FRAGMENT_WEB_LINKS_MESSAGE));
 
         verify(evidenceService, times(0)).addEvidence(any(Evidence.class));
     }
@@ -242,7 +256,8 @@ class EvidenceControllerTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(model().attributeDoesNotExist(ADD_EVIDENCE_MODAL_FRAGMENT_TITLE_MESSAGE))
                 .andExpect(model().attribute(ADD_EVIDENCE_MODAL_FRAGMENT_DESCRIPTION_MESSAGE, "Description must be at least 2 characters"))
-                .andExpect(model().attributeDoesNotExist(ADD_EVIDENCE_MODAL_FRAGMENT_DATE_MESSAGE));
+                .andExpect(model().attributeDoesNotExist(ADD_EVIDENCE_MODAL_FRAGMENT_DATE_MESSAGE))
+                .andExpect(model().attributeDoesNotExist(ADD_EVIDENCE_MODAL_FRAGMENT_WEB_LINKS_MESSAGE));
 
         verify(evidenceService, times(0)).addEvidence(any(Evidence.class));
     }
@@ -260,7 +275,8 @@ class EvidenceControllerTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(model().attribute(ADD_EVIDENCE_MODAL_FRAGMENT_TITLE_MESSAGE, "Title must contain at least one letter"))
                 .andExpect(model().attributeDoesNotExist(ADD_EVIDENCE_MODAL_FRAGMENT_DESCRIPTION_MESSAGE))
-                .andExpect(model().attributeDoesNotExist(ADD_EVIDENCE_MODAL_FRAGMENT_DATE_MESSAGE));
+                .andExpect(model().attributeDoesNotExist(ADD_EVIDENCE_MODAL_FRAGMENT_DATE_MESSAGE))
+                .andExpect(model().attributeDoesNotExist(ADD_EVIDENCE_MODAL_FRAGMENT_WEB_LINKS_MESSAGE));
 
         verify(evidenceService, times(0)).addEvidence(any(Evidence.class));
     }
@@ -271,14 +287,62 @@ class EvidenceControllerTest {
      */
     @Test
     void testAddEvidence400PunctuationDescription() throws Exception {
-        Evidence invalidEvidence = new Evidence(0 ,0, "test evidence", ".,!@#$%^&*';:", new Date());
+        Evidence invalidEvidence = new Evidence(0, 0, "test evidence", ".,!@#$%^&*';:", new Date());
         doCallRealMethod().when(evidenceService).validateEvidence(eq(invalidEvidence), any(Model.class));
 
         mockMvc.perform(post("/add-evidence").flashAttr("evidence", invalidEvidence))
                 .andExpect(status().isBadRequest())
                 .andExpect(model().attributeDoesNotExist(ADD_EVIDENCE_MODAL_FRAGMENT_TITLE_MESSAGE))
                 .andExpect(model().attribute(ADD_EVIDENCE_MODAL_FRAGMENT_DESCRIPTION_MESSAGE, "Description must contain at least one letter"))
-                .andExpect(model().attributeDoesNotExist(ADD_EVIDENCE_MODAL_FRAGMENT_DATE_MESSAGE));
+                .andExpect(model().attributeDoesNotExist(ADD_EVIDENCE_MODAL_FRAGMENT_DATE_MESSAGE))
+                .andExpect(model().attributeDoesNotExist(ADD_EVIDENCE_MODAL_FRAGMENT_WEB_LINKS_MESSAGE));
+
+        verify(evidenceService, times(0)).addEvidence(any(Evidence.class));
+    }
+
+    /**
+     * Tests adding evidence failing due to the evidence data having an invalid URL.
+     * @throws Exception If mocking the MVC fails.
+     */
+    @Test
+    void testAddEvidence400InvalidWebLink() throws Exception {
+        List<WebLink> invalidWebLinks = List.of(new WebLink(".,!@#$%^&*';:"), new WebLink("www.test.com"),
+                new WebLink("something.ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"),
+                new WebLink("mke.ccc"));
+        for (WebLink invalidWebLink: invalidWebLinks) {
+            System.err.println(invalidWebLink.getUrl());
+            Evidence invalidEvidence = new Evidence(0, 0, "test evidence", "test description", new Date());
+            invalidEvidence.addWebLink(invalidWebLink);
+            doCallRealMethod().when(evidenceService).validateEvidence(eq(invalidEvidence), any(Model.class));
+
+            mockMvc.perform(post("/add-evidence").flashAttr("evidence", invalidEvidence))
+                    .andExpect(status().isBadRequest())
+                    .andExpect(model().attributeDoesNotExist(ADD_EVIDENCE_MODAL_FRAGMENT_TITLE_MESSAGE))
+                    .andExpect(model().attributeDoesNotExist(ADD_EVIDENCE_MODAL_FRAGMENT_DESCRIPTION_MESSAGE))
+                    .andExpect(model().attributeDoesNotExist(ADD_EVIDENCE_MODAL_FRAGMENT_DATE_MESSAGE))
+                    .andExpect(model().attribute(ADD_EVIDENCE_MODAL_FRAGMENT_WEB_LINKS_MESSAGE, "Web links must be valid URLs"));
+        }
+        verify(evidenceService, times(0)).addEvidence(any(Evidence.class));
+    }
+
+    /**
+     * Tests adding evidence failing due to the evidence data having too many web links.
+     * @throws Exception If mocking the MVC fails.
+     */
+    @Test
+    void testAddEvidence400TooManyWebLinks() throws Exception {
+        Evidence invalidEvidence = new Evidence(0 ,0, "test evidence", "test description", new Date());
+        for (int i=0; i<11; i++) {
+            invalidEvidence.addWebLink(new WebLink("https://www.google.com"));
+        }
+        doCallRealMethod().when(evidenceService).validateEvidence(eq(invalidEvidence), any(Model.class));
+
+        mockMvc.perform(post("/add-evidence").flashAttr("evidence", invalidEvidence))
+                .andExpect(status().isBadRequest())
+                .andExpect(model().attributeDoesNotExist(ADD_EVIDENCE_MODAL_FRAGMENT_TITLE_MESSAGE))
+                .andExpect(model().attributeDoesNotExist(ADD_EVIDENCE_MODAL_FRAGMENT_DESCRIPTION_MESSAGE))
+                .andExpect(model().attributeDoesNotExist(ADD_EVIDENCE_MODAL_FRAGMENT_DATE_MESSAGE))
+                .andExpect(model().attribute(ADD_EVIDENCE_MODAL_FRAGMENT_WEB_LINKS_MESSAGE, "You can only have up to 10 web links"));
 
         verify(evidenceService, times(0)).addEvidence(any(Evidence.class));
     }

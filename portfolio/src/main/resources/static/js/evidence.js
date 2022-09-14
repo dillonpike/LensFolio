@@ -47,6 +47,7 @@ function addEvidence() {
         $('#evidenceModal').modal('toggle')
         showAlertToast("Evidence added successfully!");
         clearEvidenceModalFields();
+        $("#webLinkList").html(""); // clear web links
     }).fail((response) => {
         replaceEvidenceModalBody(response.responseText);
     })
@@ -57,11 +58,16 @@ function addEvidence() {
  * @param modalBodyResponse response with new modalBody to display (evidenceModalBody fragment)
  */
 function replaceEvidenceModalBody(modalBodyResponse) {
-    $("#evidenceModalBody").replaceWith(modalBodyResponse)
-    updateCharsLeft('evidenceTitle', 'evidenceTitleLength', 30)
-    updateCharsLeft('evidenceDescription', 'evidenceDescriptionLength', 250)
+    const webLinks = $("#webLinkList").children();
+    $("#evidenceModalBody").replaceWith(modalBodyResponse);
+    // Restore weblinks that were deleted when the modal was replaced
+    // Uses two duplicate jquery selectors since the element is replaced between each use
+    $("#webLinkList").html(webLinks);
+    updateCharsLeft('evidenceTitle', 'evidenceTitleLength', 30);
+    updateCharsLeft('evidenceDescription', 'evidenceDescriptionLength', 250);
     configureEvidenceDatePicker();
     setEvidenceDatePickerValues();
+    configureWebLinkInput();
 }
 
 /**
@@ -75,7 +81,7 @@ function replaceEvidenceModalBody(modalBodyResponse) {
  */
 function validateEvidenceTextInput(elementId, alertBanner, alertMessage, typeTextInput) {
     const input = document.getElementById(elementId).value;
-    const regex = /^[\p{N}\p{P}\p{S}\p{Zs}]{1,}$/u; // this regex use Unicode awareness regex, it matches with any sequence of characters that are number, punctuation, or whitespace. Supposedly it works with all languages
+    const regex = /^[\p{N}\p{P}\p{S}\p{Zs}]+$/u; // this regex use Unicode awareness regex, it matches with any sequence of characters that are number, punctuation, or whitespace. Supposedly it works with all languages
     if (regex.test(input) || input.length < 2) {
         document.getElementById(alertBanner).removeAttribute("hidden");
         document.getElementById(alertMessage).innerText = typeTextInput+" cannot only contains numbers, punctuation, and/or symbols. and must be at least 2 characters long.";

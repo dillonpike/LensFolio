@@ -38,6 +38,8 @@ public class EvidenceController {
 
     public static final String ADD_EVIDENCE_MODAL_FRAGMENT_DATE_MESSAGE = "evidenceDateAlertMessage";
 
+    public static final String ADD_EVIDENCE_MODAL_FRAGMENT_WEB_LINKS_MESSAGE = "evidenceWebLinksAlertMessage";
+
     /**
      * Method tries to add and sve the new evidence piece to the database
      * @param model Parameters sent to thymeleaf template to be rendered into HTML

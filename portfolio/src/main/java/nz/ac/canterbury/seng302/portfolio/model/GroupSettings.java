@@ -78,7 +78,7 @@ public class GroupSettings {
      * @param groupId Id of the group instance the group settings relate too.
      * @param repoServerUrl Repository url of the group.
      */
-    public GroupSettings(int repoId, String repoName, String repoApiKey, int groupId, String repoServerUrl) {
+    public GroupSettings(long repoId, String repoName, String repoApiKey, int groupId, String repoServerUrl) {
         this.repoId = repoId;
         this.repoName = repoName;
         this.repoApiKey = repoApiKey;
