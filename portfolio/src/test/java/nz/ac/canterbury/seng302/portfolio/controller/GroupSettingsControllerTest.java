@@ -1,5 +1,6 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
+import com.google.protobuf.Timestamp;
 import nz.ac.canterbury.seng302.portfolio.model.Group;
 import nz.ac.canterbury.seng302.portfolio.model.GroupSettings;
 import nz.ac.canterbury.seng302.portfolio.repository.GroupSettingsRepository;
@@ -101,7 +102,20 @@ class GroupSettingsControllerTest {
     @MockBean
     private GitLabApiService gitLabApiService; // needed to load application context
 
-
+    /**
+     * Mocked user response which contains the data of the user
+     */
+    private final UserResponse mockUser = UserResponse.newBuilder()
+            .setBio("default bio")
+            .setCreated(Timestamp.newBuilder().setSeconds(55))
+            .setEmail("hello@test.com")
+            .setFirstName("firsttestname")
+            .setLastName("lasttestname")
+            .setMiddleName("middlettestname")
+            .setNickname("niktestname")
+            .setPersonalPronouns("He/him")
+            .addRoles(UserRole.STUDENT)
+            .build();
 
     private static final Group testGroup = new Group("Test", "Test Group", 1);
 
@@ -153,6 +167,7 @@ class GroupSettingsControllerTest {
                 .when(groupService).getGroupDetails(testGroup.getGroupId());
 
         when(groupSettingsService.getGroupSettingsByGroupId(any(Integer.class))).thenReturn(testGroupSettings);
+        when(registerClientService.getUserData(any(Integer.class))).thenReturn(mockUser);
 
         GitLabApiException exception = new GitLabApiException("test", 404);
         doThrow(exception).when(repositoryApi).getBranches(any(Long.class));
@@ -173,7 +188,7 @@ class GroupSettingsControllerTest {
                 .setGroupId(testGroup.getGroupId()).setShortName(testGroup.getShortName())
                 .setLongName(testGroup.getLongName()).build())
                 .when(groupService).getGroupDetails(testGroup.getGroupId());
-
+        when(registerClientService.getUserData(any(Integer.class))).thenReturn(mockUser);
         when(groupSettingsService.getGroupSettingsByGroupId(any(Integer.class))).thenReturn(testGroupSettings);
         when(permissionService.isValidToModifyGroupSettingPage(any(Integer.class), any(Integer.class))).thenReturn(true);
         mockMvc.perform(get("/groupSettings").param("groupId", Integer.toString(testGroup.getGroupId())))
@@ -194,6 +209,7 @@ class GroupSettingsControllerTest {
                 .setGroupId(testGroup.getGroupId()).setShortName(testGroup.getShortName())
                 .setLongName(testGroup.getLongName()).build())
                 .when(groupService).getGroupDetails(testGroup.getGroupId());
+        when(registerClientService.getUserData(any(Integer.class))).thenReturn(mockUser);
 
         when(groupSettingsService.getGroupSettingsByGroupId(any(Integer.class))).thenReturn(testGroupSettings);
         when(permissionService.isValidToModifyGroupSettingPage(any(Integer.class), any(Integer.class))).thenReturn(false);
@@ -217,7 +233,7 @@ class GroupSettingsControllerTest {
                 .when(groupService).getGroupDetails(testGroup.getGroupId());
         doReturn(testGroupSettings)
                 .when(groupSettingsServiceSpy).getGroupSettingsByGroupId(any(Integer.class));
-//        when(gitLabApiService.checkGitLabToken(any(Integer.class), any(String.class))).thenReturn(true);
+        when(registerClientService.getUserData(any(Integer.class))).thenReturn(mockUser);
 
         mockMvc.perform(get("/groupSettings").param("groupId", Integer.toString(testGroup.getGroupId())))
                 .andExpect(status().isOk())
@@ -292,6 +308,8 @@ class GroupSettingsControllerTest {
                 .setLongName(testGroup.getLongName()).build())
                 .when(groupService).getGroupDetails(testGroup.getGroupId());
         when(gitLabApiService.getContributors(any(Integer.class))).thenThrow(exception);
+        when(registerClientService.getUserData(any(Integer.class))).thenReturn(mockUser);
+
         when(groupSettingsService.getGroupSettingsByGroupId(any(Integer.class))).thenReturn(testGroupSettings);
         mockMvc.perform(get("/groupSettings").param("groupId", Integer.toString(testGroup.getGroupId())))
                 .andExpect(status().isOk())
