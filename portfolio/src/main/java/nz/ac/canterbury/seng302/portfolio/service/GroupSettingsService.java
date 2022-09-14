@@ -131,8 +131,6 @@ public class GroupSettingsService {
         int maxRepoId = 2147483647;
         int maxRepoNameLength = 30;
         int maxRepoTokenLength = 50;
-        return repoId < maxRepoId &&
-                0 < repoName.length() && repoName.length() <= maxRepoNameLength &&
-                0 < repoToken.length() && repoToken.length() <= maxRepoTokenLength;
+        return repoId < maxRepoId && repoName.length() <= maxRepoNameLength && repoToken.length() <= maxRepoTokenLength;
     }
 }
