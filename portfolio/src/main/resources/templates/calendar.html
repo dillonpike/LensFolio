@@ -13,11 +13,54 @@
     <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js" integrity="sha512-iKDtgDyTHjAitUDdLljGhenhPwrbBfqTKWO1mkhSFH3A7blITC9MhYon6SjnMhp4o0rADGw9yAC6EW4t5a4K3g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
-    <script src="js/sprint.js"></script>
     <script src="js/banner.js"></script>
     <script src="webjars/jquery/3.6.0/dist/jquery.min.js"></script>
 
     <script th:inline="javascript">
+        let userId = [[${userId}]];
+        let userFirstName = [[${userFirstName}]];
+        let userLastName = [[${userLastName}]];
+        let username = [[${username}]];
+
+        /**
+         * Saves the given sprint in the database and displays the alert toast to notify the user.
+         */
+        function saveSprint(sprint) {
+            const data = {
+                id: sprint.id,
+                sprintStartDate: sprint.startStr,
+                sprintEndDate: sprint.endStr
+            }
+            $.post("update-sprint?" + new URLSearchParams(data)).done(function (response) {
+                if (response) {
+                    showAlertToast(`${sprint.title} updated`);
+                    stompClient.send("/webSocketGet/sprint-project-calendar-save", {}, JSON.stringify({
+                        'artefactName': sprint.title,
+                        'artefactId' : sprint.id,
+                        'userId': userId,
+                        'artefactType' : "sprint",
+                        'userFirstName': userFirstName,
+                        'userLastName': userLastName,
+                        'username': username
+                    }));
+                }
+            });
+        }
+
+        /**
+         * Calls the error toast display
+         */
+        function errorSprints(message) {
+            showAlertErrorToast(message);
+        }
+
+
+    </script>
+
+    <script th:inline="javascript">
+
+
+
         /*<![CDATA[*/
         const eventImage = 'images/event.svg';
         const deadlineImage = 'images/deadline.svg';
@@ -261,6 +304,7 @@
 <script src="webjars/fullcalendar/5.10.2/main.min.js"></script>
 
 <script>
+
     let stompClient = null;
     function connect() {
         let socket = new SockJS('mywebsockets');
@@ -276,8 +320,9 @@
             stompClient.subscribe('/webSocketGet/artefact-add', function (ignore) {
                 refreshEvents();
             });
-            stompClient.subscribe('/webSocketGet/sprint-project-details-save', function (ignore) {
+            stompClient.subscribe('/webSocketGet/sprint-project-details-save', function (response) {
                 refreshEvents();
+                showAlertToast(response.body);
             });
         });
     }
@@ -294,5 +339,6 @@
     }
     connect();
 </script>
+
 
 </html>

@@ -106,6 +106,7 @@
             document.getElementById('sprintForm').onsubmit = () => { return false };
             if ((await checkSprintDates()).trim().length === 0 &&
                 validateModalName('sprintName', 'sprintAlertBanner', 'sprintAlertMessage')) {
+                sendProjectSprint("Sprint");
                 document.getElementById('sprintForm').submit();
             } else {
                 document.getElementById('sprintForm').onsubmit = () => { validateSprint(); return false };

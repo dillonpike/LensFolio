@@ -105,6 +105,7 @@
             if ((await checkProjectDates()).trim().length === 0 &&
                 validateModalName('projectName', 'projectAlertBanner', 'projectAlertMessage')) {
                 document.getElementById('projectForm').onsubmit = () => { return false };
+                sendProjectSprint("Project");
                 document.getElementById('projectForm').submit();
             }
         }

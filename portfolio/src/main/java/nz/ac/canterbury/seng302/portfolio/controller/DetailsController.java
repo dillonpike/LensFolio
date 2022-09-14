@@ -235,6 +235,35 @@ public class DetailsController {
     }
 
     /**
+     * Tells the calendar that sprints or projects have been updated on the details page.
+     * Only sends a string because the calendar has no implementation to show the changes of the project and
+     * sprints other than reloading.
+     * @param message The message to send to the calendar
+     * @return The message to send to the calendar
+     */
+    @MessageMapping("/sprint-project-details-save")
+    @SendTo("/webSocketGet/sprint-project-details-save")
+    public String sprintProjectDetailsChange(String message) {
+        return message;
+    }
+
+    /**
+     * Tells the details page that a sprint has been updated.
+     * @param message The message to send to the details page containing the sprint.
+     * @return The message to send to the details page containing the sprint.
+     */
+    @MessageMapping("/sprint-project-calendar-save")
+    @SendTo("/webSocketGet/sprint-project-calendar-save")
+    public NotificationResponse sprintProjectCalendarChange(NotificationMessage message) {
+        NotificationResponse response = NotificationResponse.fromMessage(message, "save");
+        eventsToDisplay.add(response);
+        while (eventsToDisplay.size() > NUM_OF_TOASTS) {
+            eventsToDisplay.remove(0);
+        }
+        return response;
+    }
+
+    /**
      * Gets a list where each element is a list of events that is a part of the sprint from sprintList with the same
      * index.
      * @param sprintList List of sprints to get the events of.
