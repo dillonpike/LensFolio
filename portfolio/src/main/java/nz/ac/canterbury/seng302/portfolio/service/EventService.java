@@ -7,10 +7,15 @@ import nz.ac.canterbury.seng302.portfolio.repository.EventRepository;
 import org.hibernate.ObjectNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.ui.Model;
 
+import javax.ws.rs.NotAcceptableException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.regex.Pattern;
+
 
 /***
  * Contains methods for saving, deleting, updating and retrieving event objects to the database.
@@ -20,6 +25,10 @@ public class EventService {
 
     @Autowired
     private EventRepository eventRepository;
+
+    private static final String EVENT_NAME_ERROR_MESSAGE = "eventAlertMessage";
+
+    private static final String EVENT_DATE_ERROR_MESSAGE = "eventDateTimeAlertMessage";
 
     /**
      * Get list of all events
@@ -33,7 +42,7 @@ public class EventService {
      * Get event by Id
      * @param id id of event
      * @return event with the id that is the input
-     * @throws Exception If event can't be found
+     * @throws ObjectNotFoundException If event can't be found
      */
     public Event getEventById(Integer id) throws ObjectNotFoundException {
 
@@ -177,5 +186,43 @@ public class EventService {
      */
     public boolean validateEventEndDateInSprintDate(Event event, Sprint sprint) {
         return event.getEventEndDate().compareTo(sprint.getStartDate()) >= 0 && event.getEventEndDate().compareTo(sprint.getEndDate()) <= 0;
+    }
+
+    /**
+     * Validate an events fields to ensure they are valid.
+     * @param event Event to validate
+     * @param model Model to add errors to
+     * @throws NotAcceptableException If the event is not valid
+     */
+    public void validateEvent(Event event, Model model) throws NotAcceptableException {
+        Pattern regex = Pattern.compile("^[\\p{N}\\p{P}\\p{S}\\p{Zs}]+$");
+        try {
+            event.setEventName(event.getEventName().trim());
+        } catch (NullPointerException ignored) { // If the title or description is null, we don't need to do anything
+            // as the later if statements catch it anyway.
+        }
+        model.addAttribute("event", event);
+        boolean hasError = false;
+        if (event.getEventName() == null || event.getEventName().trim().isEmpty()) {
+            model.addAttribute(EVENT_NAME_ERROR_MESSAGE, "Event name cannot be empty");
+            hasError = true;
+        } else if (event.getEventName().length() < 2 || regex.matcher(event.getEventName()).matches()) {
+            model.addAttribute(EVENT_NAME_ERROR_MESSAGE, "Name must be at least 2 letters");
+            hasError = true;
+        } else if (event.getEventName().length() > 30) {
+            model.addAttribute(EVENT_NAME_ERROR_MESSAGE, "Name cannot be greater than 30 characters");
+            hasError = true;
+        }
+        if (event.getEventStartDate() == null || event.getEventStartDate().before(new Date(0)) || event.getEventEndDate().equals(new Date(0))) {
+            model.addAttribute(EVENT_DATE_ERROR_MESSAGE, "Correctly formatted dates is required");
+            hasError = true;
+        }
+        if (event.getEventEndDate() == null || event.getEventEndDate().before(new Date(0)) || event.getEventEndDate().equals(new Date(0))) {
+            model.addAttribute(EVENT_DATE_ERROR_MESSAGE, "Correctly formatted dates is required");
+            hasError = true;
+        }
+        if (hasError) {
+            throw new NotAcceptableException("Event fields have errors");
+        }
     }
 }

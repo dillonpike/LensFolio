@@ -7,6 +7,8 @@ import nz.ac.canterbury.seng302.portfolio.service.PermissionService;
 import nz.ac.canterbury.seng302.portfolio.service.UserAccountClientService;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import org.hibernate.ObjectNotFoundException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
@@ -15,12 +17,17 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
+import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.NotAcceptableException;
+
 
 /**
  * Controller receive HTTP GET, POST, PUT, DELETE calls for edit milestone
  */
 @Controller
 public class EditMilestoneController {
+
+    private static final Logger logger = LoggerFactory.getLogger(EditMilestoneController.class);
 
     @Autowired
     MilestoneService milestoneService;
@@ -47,18 +54,27 @@ public class EditMilestoneController {
             @PathVariable("id") Integer id,
             @ModelAttribute("milestone") Milestone milestone,
             @AuthenticationPrincipal AuthState principal,
-            Model model
+            Model model,
+            HttpServletResponse httpServletResponse
     ) throws ObjectNotFoundException {
         Integer userID = userAccountClientService.getUserIDFromAuthState(principal);
+
         elementService.addHeaderAttributes(model, userID);
-        if (permissionService.isValidToModify(userID)) {
-            Milestone newMilestone = milestoneService.getMilestoneById(id);
-            newMilestone.setMilestoneName(milestone.getMilestoneName());
-            newMilestone.setMilestoneDate(milestone.getMilestoneDate());
+        try {
+            milestoneService.validateMilestone(milestone, model);
+            if (permissionService.isValidToModify(userID)) {
+                Milestone newMilestone = milestoneService.getMilestoneById(id);
+                newMilestone.setMilestoneName(milestone.getMilestoneName());
+                newMilestone.setMilestoneDate(milestone.getMilestoneDate());
 
-            milestoneService.updateMilestone(newMilestone);
+                milestoneService.updateMilestone(newMilestone);
+            }
+        } catch (NotAcceptableException e) {
+            httpServletResponse.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            logger.error(String.format("Error saving milestone with id %d: %s", id, e.getMessage()));
+            return "fragments/milestoneModal::milestoneModalBody";
         }
-
-        return "redirect:/details";
+        httpServletResponse.setStatus(HttpServletResponse.SC_OK);
+        return "fragments/milestoneModal::milestoneModalBody";
     }
 }

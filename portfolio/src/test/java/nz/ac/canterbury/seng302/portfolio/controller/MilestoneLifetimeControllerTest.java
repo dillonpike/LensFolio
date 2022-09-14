@@ -79,8 +79,7 @@ class MilestoneLifetimeControllerTest {
         when(milestoneService.addMilestone(any(Milestone.class))).then(returnsFirstArg());
         when(permissionService.isValidToModify(any(Integer.class))).thenReturn(true);
         mockMvc.perform(post("/add-milestone").flashAttr("milestone", expectedMilestone))
-                .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/details"));
+                .andExpect(status().isOk());
 
         verify(milestoneService, times(1)).addMilestone(expectedMilestone);
     }

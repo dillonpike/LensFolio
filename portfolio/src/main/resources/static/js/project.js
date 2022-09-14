@@ -179,7 +179,7 @@ function milestoneModalSetup() {
 
         // Initial run of validation functions in case initial values are invalid
         validateModalDate('milestoneDate', 'milestoneModalButton', 'milestoneDateAlertBanner', 'milestoneDateAlertMessage')
-        updateCharsLeft('milestoneName', 'milestoneNameLength', 50)
+        updateCharsLeft('milestoneName', 'milestoneNameLength', 30)
         $('#' + modalButton.getAttribute("id")).prop('hidden', false);
     })
 }
@@ -224,7 +224,7 @@ function deadlineModalSetup() {
 
         // Initial run of validation functions in case initial values are invalid
         validateModalDateTime('deadlineDate', 'deadlineModalButton', 'deadlineDateAlertBanner', 'deadlineDateAlertMessage')
-        updateCharsLeft('deadlineName', 'deadlineNameLength', 50)
+        updateCharsLeft('deadlineName', 'deadlineNameLength', 30)
         $('#' + modalButton.getAttribute("id")).prop('hidden', false);
     })
 }
@@ -277,7 +277,14 @@ function eventModalSetup() {
 
         // Initial run of validation functions in case initial values are invalid
         validateModalDateTimeRange('eventStartDate', 'eventEndDate', 'eventModalButton', 'eventDateTimeAlertBanner', 'eventDateTimeAlertMessage')
-        updateCharsLeft('eventName', 'eventNameLength', 50)
+        updateCharsLeft('eventName', 'eventNameLength', 30)
         $('#' + modalButton.getAttribute("id")).prop('hidden', false);
     })
+
+    eventModal.addEventListener('hidden.bs.modal', function (ignoredEvent) {
+        $("#eventAlertMessage").val(null);
+        $("#eventAlertBanner").setAttribute("hidden", "true")
+        $("#eventDateTimeAlertMessage").val(null);
+        $("#eventDateTimeAlertBanner").setAttribute("hidden", "true")
+    });
 }

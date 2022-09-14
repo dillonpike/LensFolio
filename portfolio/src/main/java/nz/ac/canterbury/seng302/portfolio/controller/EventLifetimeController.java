@@ -1,16 +1,18 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
 import nz.ac.canterbury.seng302.portfolio.model.Event;
-import nz.ac.canterbury.seng302.portfolio.service.ElementService;
-import nz.ac.canterbury.seng302.portfolio.service.EventService;
-import nz.ac.canterbury.seng302.portfolio.service.PermissionService;
-import nz.ac.canterbury.seng302.portfolio.service.UserAccountClientService;
+import nz.ac.canterbury.seng302.portfolio.service.*;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+
+import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.NotAcceptableException;
 
 
 /**
@@ -18,6 +20,8 @@ import org.springframework.web.bind.annotation.*;
  */
 @Controller
 public class EventLifetimeController {
+
+    private static final Logger logger = LoggerFactory.getLogger(EventLifetimeController.class);
 
     @Autowired
     private EventService eventService;
@@ -39,14 +43,23 @@ public class EventLifetimeController {
     public String projectSave(
             @ModelAttribute("event") Event event,
             @AuthenticationPrincipal AuthState principal,
-            Model model
+            Model model,
+            HttpServletResponse httpServletResponse
     ) {
         Integer userID = userAccountClientService.getUserIDFromAuthState(principal);
         elementService.addHeaderAttributes(model, userID);
-        if (permissionService.isValidToModify(userID)) {
-            eventService.addEvent(event);
+        try {
+            eventService.validateEvent(event, model);
+            if (permissionService.isValidToModify(userID)) {
+                eventService.addEvent(event);
+            }
+        } catch (NotAcceptableException e) {
+            httpServletResponse.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            logger.error(String.format("Error adding event: %s", e.getMessage()));
+            return "fragments/eventModal::eventModalBody";
         }
-        return "redirect:/details";
+        httpServletResponse.setStatus(HttpServletResponse.SC_OK);
+        return "fragments/eventModal::eventModalBody";
     }
 
 

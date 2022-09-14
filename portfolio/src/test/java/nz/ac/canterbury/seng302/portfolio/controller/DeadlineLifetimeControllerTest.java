@@ -81,8 +81,7 @@ class DeadlineLifetimeControllerTest {
         when(permissionService.isValidToModify(any(Integer.class))).thenReturn(true);
 
         mockMvc.perform(post("/add-deadline").flashAttr("deadline", expectedDeadline))
-                .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/details"));
+                .andExpect(status().isOk());
 
         verify(deadlineService, times(1)).addDeadline(expectedDeadline);
     }

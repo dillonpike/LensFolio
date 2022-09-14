@@ -91,8 +91,7 @@ class EditDeadlineControllerTest {
 
         ArgumentCaptor<Deadline> deadlinesArgumentCaptor = ArgumentCaptor.forClass(Deadline.class);
         mockMvc.perform(post("/edit-deadline/{id}", newDeadline.getId()).flashAttr("deadline", newDeadline))
-                .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/details"));
+                .andExpect(status().isOk());
 
         Mockito.verify(deadlineService).updateDeadline(deadlinesArgumentCaptor.capture());
         Deadline addedDeadline = deadlinesArgumentCaptor.getValue();
