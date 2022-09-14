@@ -683,33 +683,4 @@ class GroupModelServerServiceTest {
         assertEquals(Set.of(users.get(0).getUserId(), users.get(1).getUserId()),
                 Set.of(response.getMembers(0).getId(), response.getMembers(1).getId()));
     }
-
-
-//    @Test
-//    void testGetPaginatedGroups() {
-//        GetPaginatedGroupsRequest request = GetPaginatedGroupsRequest
-//                .newBuilder()
-//                .build();
-//        List<GroupModel> groupModelList = new ArrayList<>();
-//        groupModelList.add(testGroup);
-//        groupModelList.add(testGroup1);
-//        groupModelList.add(testGroup2);
-//
-//        when(groupRepository.findAll()).thenReturn(groupModelList);
-//        groupModelServerService.getPaginatedGroups(request, paginatedGroupsResponseObserver);
-//
-//        // Checks it ran .onCompleted().
-//        verify(paginatedGroupsResponseObserver, times(1)).onCompleted();
-//        // Sets up captures to get the response.
-//        ArgumentCaptor<PaginatedGroupsResponse> captor = ArgumentCaptor.forClass(PaginatedGroupsResponse.class);
-//        // Checks it ran .onNext() and captor the response.
-//        verify(paginatedGroupsResponseObserver, times(1)).onNext(captor.capture());
-//        // Gets the value of the response from the captor.
-//        PaginatedGroupsResponse response = captor.getValue();
-//
-//        assertEquals(3, response.getGroupsCount());
-//
-//    } TODO:we need to fix this! this test is failing and break the pipeline
-
-
 }
