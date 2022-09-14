@@ -1,6 +1,3 @@
-
-
-
 /**
  * Checks that the evidence modal inputs have text entered in them, then submits the evidence adding form and adds
  * the new evidence to the page if the action was successful, otherwise updates the modal with error messages.
@@ -14,6 +11,11 @@ async function validateEvidence() {
         document.getElementById('evidenceForm').onsubmit = () => { return false };
         addEvidence()
         document.getElementById('evidenceForm').onsubmit = () => {validateEvidence(); return false}
+        /* Refresh the container after adding a piece of evidence*/
+        var url = "account?userId=" + document.getElementById('userId').value
+           setTimeout(function() {
+            $("#evidence").load(url+" #evidence>*","");
+           }, 10);
     }
 }
 
@@ -24,6 +26,7 @@ async function validateEvidence() {
 function addEvidence() {
 
     let dateValue = new Date(document.getElementById('evidenceDate').value);
+
     if (dateValue.toString() === "Invalid Date") {
         dateValue = new Date("01/01/1970");
     }

@@ -16,7 +16,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.List;
 import java.util.Objects;
@@ -83,7 +82,7 @@ public class GroupController {
      * @param groupId id of group to reload
      * @return Group page
      */
-    @RequestMapping("/groups/local")
+    @GetMapping("/groups/local")
     public String localRefresh(
             Model model,
             @RequestParam("groupId") int groupId,

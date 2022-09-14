@@ -1,6 +1,7 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
 import io.grpc.StatusRuntimeException;
+import java.util.List;
 import nz.ac.canterbury.seng302.portfolio.model.Evidence;
 import nz.ac.canterbury.seng302.portfolio.model.Project;
 import nz.ac.canterbury.seng302.portfolio.service.*;
@@ -33,6 +34,9 @@ public class AccountController {
 
     @Autowired
     private ElementService elementService;
+
+    @Autowired
+    private EvidenceService evidenceService;
 
     @Autowired
     private PhotoService photoService;
@@ -92,6 +96,9 @@ public class AccountController {
             Evidence evidence = new Evidence();
             model.addAttribute("evidence", evidence);
 
+            List<Evidence> evidenceList = evidenceService.getEvidences(userId);
+            model.addAttribute("evidences", evidenceList);
+
         } catch (StatusRuntimeException e) {
             model.addAttribute("loginMessage", "Error connecting to Identity Provider...");
             logger.error("Error while showing account page {}", e.getMessage());
@@ -116,7 +123,7 @@ public class AccountController {
      * @return Account page with user id
      */
     @PostMapping("/backToAccountPage")
-    public String editAccount(
+    public String moveToAccount(
             HttpServletRequest request,
             HttpServletResponse response,
             @ModelAttribute("userId") int userId,
@@ -125,6 +132,5 @@ public class AccountController {
         rm.addAttribute(USER_ID_ATTRIBUTE_NAME,userId);
         return "redirect:account";
     }
-
 
 }
