@@ -119,7 +119,7 @@ function validateRepoSetting(elementId, alertBanner, alertMessage) {
         document.getElementById(alertMessage).innerText = "Invalid Repository ID!";
         return false
     }
-    else if (token.toString().length < 20 && token.toString().length >= 1) {
+    else if (token.toString().trim().length < 20 && token.toString().length >= 1) {
         document.getElementById(alertBanner).hidden = false;
         document.getElementById(alertMessage).innerText = "Invalid Repository Token! Token length should be at least 20 characters.";
         return false
