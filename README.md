@@ -49,12 +49,12 @@ gradlew publishToMavenLocal
 *Note: The `gradle clean` step is usually only necessary if there have been changes since the last publishToMavenLocal.*
 
 ### 3 - Source to the env variable
-Before running the application you should source a file which contains the the variable about the credentials so that the application would be able to acces the database
+Before running the application you should source a file which contains variables for database credentials so that the application can access the database
 
-It is recommended to have the file named as ".env" and in that file you should write the variable as following:
+It is recommended to have the file named as ".env" and in that file you should add the following variables:
 ```
-export VARIABLE_NAME={VARIABLE_VALUE}
-export ANOTHE_VARIABLE_NAME={ANOTHER_VARIABLE_VALUE}
+export MARIADB_USERNAME={VALUE}
+export MARIADB_PASSWORD={VALUE}
 ```
 
 The following is how to sourve the .env file
