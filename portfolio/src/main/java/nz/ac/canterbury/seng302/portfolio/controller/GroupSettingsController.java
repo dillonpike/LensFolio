@@ -69,11 +69,12 @@ public class GroupSettingsController {
      * @param model group setting page model
      * @return group settings page
      */
-    @RequestMapping(value = "/groupSettings", method = { RequestMethod.GET, RequestMethod.POST })
+    @GetMapping("/groupSettings")
     public String groupSettings(
             @RequestParam(value = "groupId") int groupId,
             @AuthenticationPrincipal AuthState principal,
-            Model model) {
+            Model model
+    ) {
         Integer id = userAccountClientService.getUserIDFromAuthState(principal);
         elementService.addHeaderAttributes(model, id);
         UserResponse user = registerClientService.getUserData(id);
