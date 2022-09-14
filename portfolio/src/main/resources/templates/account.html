@@ -226,10 +226,12 @@
 <!--end the right-side profile card-->
 
   <div id="evidenceModal" th:replace="fragments/evidenceModal :: evidenceModal"></div>
+  <div th:replace="fragments/alertToast :: alertToast"></div>
 
 </body>
 <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha384-xBuQ/xzmlsLoJpyjoggmTEz8OWUFM0/RC5BsqQBDX2v5cMvDHcMakNTNrHIW2I5f" crossorigin="anonymous"></script>
 <script src="js/fineCrop.js"></script>
+<script src="js/banner.js"></script>
 <script src="js/evidence.js"></script>
 <script th:inline="javascript">
 
@@ -308,6 +310,7 @@
       return false
     }
     const dateInput = new Date(document.getElementById(elementId).value);
+
     return checkDate(dateInput, submitElementId, alertBanner, alertMessage)
   }
 
@@ -337,16 +340,26 @@
    * @returns {boolean} true if valid date and time, otherwise false
    */
   function checkDate(date, submitElementId, alertBanner, alertMessage) {
-    if (date < new Date(projectStartDate) || date > new Date(projectEndDate)) {
+    const projectStartDateObj = new Date(projectStartDate);
+    const projectEndDateObj = new Date(projectEndDate);
+    if (isNaN(date.getTime())) {
+      $('#' + submitElementId).prop('disabled', true);
+      document.getElementById(alertBanner).hidden = false;
+      document.getElementById(alertMessage).innerText = "Invalid date";
+      return false
+    } else if (date < projectStartDateObj || date > projectEndDateObj) {
       $('#' + submitElementId).prop('disabled', true);
       document.getElementById(alertBanner).hidden = false;
       document.getElementById(alertMessage).innerText = "Date must be within the project's date range (" +
-              projectStartDate + " - " + projectEndDate + ").";
-      return false;
+              projectStartDateObj.toLocaleDateString("en-us", {day: 'numeric', month: 'short', year: 'numeric'})
+              + " - " +
+              projectEndDateObj.toLocaleDateString("en-us", {day: 'numeric', month: 'short', year: 'numeric'})
+              + ").";
+      return false
     } else {
       $('#' + submitElementId).prop('disabled', false);
       document.getElementById(alertBanner).hidden = true;
-      return true;
+      return true
     }
   }
 
