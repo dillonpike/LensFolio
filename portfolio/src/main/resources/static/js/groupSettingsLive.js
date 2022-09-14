@@ -1,3 +1,13 @@
+/**
+ * Number of toasts generated and can be created at one time. Must be more or equal to NUM_OF_TOASTS in DetailsController.java.
+ * @type {number}
+ */
+const NUM_OF_TOASTS = 3;
+
+/**
+ * Stores the stomp client to connect to and send to for WebSockets/SockJS.
+ */
+let stompClient = null;
 
 
 /**
@@ -29,10 +39,11 @@ function connect() {
 }
 
 function updateSettingsDisplayed(groupId) {
-    console.log("worked!")
-    $.get('groupSettings?groupId='+groupId).done((result) => {
-        //TODO this need to be fixed as this currently doesn't work. It is assumed this will be fixed as part of the live_update_inside_settings_page
-        $(`html`).replaceWith(result)
+    $.get('groupSettings/refreshGroupSettings?groupId='+groupId).done((result) => {
+        showToast(groupShortName, ID, username, userFirstName, userLastName, false, "Group");
+        $('#groupSettingContainer').replaceWith(result)
+        initialiseCommitsList()
+
     })
 }
 
@@ -76,10 +87,53 @@ function sendIdRefresh(sendingGroupId) {
     }));
 }
 
+/**
+ * Function that is called when a message is sent to the endpoint. Shows the notification/toast if the message is full.
+ * Removes the notification/toast if 'hide' is true after delay.
+ * This function is used when the 'update' is that it is being edited, rather than saved.
+ * @param groupName Message that may or may not be empty.
+ * @param groupId Group id of the event being edited.
+ * @param username Username of the user making the change
+ * @param firstName First name of the user
+ * @param lastName Last name of the user
+ * @param hide Whether the toast should be hidden or not
+ * @param type they type of the artefact it is either Milestone, Deadline, or event
+ */
+function showToast(groupName, groupId, username, firstName, lastName, hide, type) {
+    let newNotification = new Notification(type, groupName, groupId, username, firstName, lastName, "save");
+    newNotification = addNotification(newNotification);
+    newNotification.show();
+    newNotification.hideTimed(SECONDS_TILL_HIDE);
+}
 
 /**
  * Initialises functions/injections
  */
 $(function () {
+
     connect();
+
+    // Generate list of HTML toasts.
+    for (let i = 0; i < NUM_OF_TOASTS; i++) {
+        let toastString = "#liveToast" + (i+1);
+        let popupTextString = "#popupText" + (i+1);
+        let toastTitleString = "#toastTitle" + (i+1);
+        listOfHTMLToasts.push({'toast':new bootstrap.Toast($(toastString)), 'text':$(popupTextString), 'title':$(toastTitleString)})
+    }
+
+    // Checks if there should be a live update, and shows a toast if needed.
+    for (let i = 0; i < NUM_OF_TOASTS; i++) {
+        let toastInformationString = "#toastInformation" + (i+1);
+        let toastArtefactNameString = "#toastArtefactName" + (i+1);
+        let toastArtefactIdString = "#toastArtefactId" + (i+1);
+        let toastUsernameString = "#toastUsername" + (i+1);
+        let toastFirstNameString = "#toastFirstName" + (i+1);
+        let toastLastNameString = "#toastLastName" + (i+1);
+        let toastAction = "#toastAction" + (i+1);
+        let artefactInformation = $(toastInformationString);
+        if (artefactInformation.text() !== "") {
+            showToastSave($(toastArtefactNameString).text(), $(toastArtefactIdString).text(), $(toastUsernameString).text(), $(toastFirstNameString).text(), $(toastLastNameString).text(), artefactInformation.text(), $(toastAction).text());
+        }
+    }
 });
+

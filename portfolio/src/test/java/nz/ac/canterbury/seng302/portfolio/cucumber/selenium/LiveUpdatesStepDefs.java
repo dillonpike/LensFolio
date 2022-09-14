@@ -7,9 +7,12 @@ import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import nz.ac.canterbury.seng302.portfolio.model.Event;
+import nz.ac.canterbury.seng302.portfolio.service.SprintService;
 import org.openqa.selenium.*;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.time.Duration;
 import java.time.LocalTime;
@@ -45,6 +48,8 @@ public class LiveUpdatesStepDefs {
     private final String mockEventName = "Test Event";
     private Event mockEvent = new Event(1,0,mockEventName, startEvent, endEvent);
     private int eventIdToUse = 1;
+
+    private static final Logger logger = LoggerFactory.getLogger(LiveUpdatesStepDefs.class);
 
     /**
      * Sets up for scenario by getting a web driver.
@@ -82,8 +87,8 @@ public class LiveUpdatesStepDefs {
             wait.until(ExpectedConditions.visibilityOfElementLocated(By.className("title-name")));
             eventIdToUse = Integer.parseInt(webDriver.findElement(By.id("event")).findElement(By.className("card")).getAttribute("value"));
         } else {
-            System.out.println("list was not empty");
-            System.out.println(parent.findElement(By.className("card")).getAttribute("value") + "< eventId");
+            logger.info("list was not empty");
+            logger.info(parent.findElement(By.className("card")).getAttribute("value") + "< eventId");
             eventIdToUse = Integer.parseInt(parent.findElement(By.className("card")).getAttribute("value"));
         }
     }

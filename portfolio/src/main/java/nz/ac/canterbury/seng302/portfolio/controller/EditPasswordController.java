@@ -65,9 +65,9 @@ public class EditPasswordController {
             model.addAttribute("monthsSinceAdded", DateUtility.getDateSinceAddedString(getUserByIdReply.getCreated()));
             model.addAttribute("userId", id);
             model.addAttribute("userImage", photoService.getPhotoPath(getUserByIdReply.getProfileImagePath(), id));
-        } catch(Exception e) {
+        } catch (Exception e) {
             model.addAttribute("loginMessage", "Error connecting to Identity Provider...");
-            e.printStackTrace();
+            logger.error("Error while showing edit password page {}", e.getMessage());
         }
         return "editPassword";
     }

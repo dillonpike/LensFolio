@@ -16,7 +16,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.List;
 import java.util.Objects;
@@ -83,7 +82,7 @@ public class GroupController {
      * @param groupId id of group to reload
      * @return Group page
      */
-    @RequestMapping("/groups/local")
+    @GetMapping("/groups/local")
     public String localRefresh(
             Model model,
             @RequestParam("groupId") int groupId,
@@ -163,19 +162,7 @@ public class GroupController {
         HttpServletResponse httpServletResponse
     ) {
         RemoveGroupMembersResponse response = groupService.removeMembersFromGroup(groupId, userIds);
-        if (response.getIsSuccess()) {
-            httpServletResponse.setStatus(HttpServletResponse.SC_OK);
-            if (Objects.equals(groupId, MEMBERS_WITHOUT_GROUP_ID)) {
-                groupService.addGroupListToModel(model);
-                return GROUP_LIST_FRAGMENT;
-            } else {
-                groupService.addGroupDetailToModel(model, groupId);
-                return GROUP_CARD_FRAGMENT;
-            }
-        } else {
-            httpServletResponse.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-        }
-        return null;
+        return returnGroupFragment(response.getIsSuccess(), httpServletResponse, groupId, model);
     }
 
     /**
@@ -221,19 +208,7 @@ public class GroupController {
             HttpServletResponse httpServletResponse
     ) {
         AddGroupMembersResponse response = groupService.addMemberToGroup(groupId, userIds);
-        if (response.getIsSuccess()) {
-            httpServletResponse.setStatus(HttpServletResponse.SC_OK);
-            if (Objects.equals(groupId, MEMBERS_WITHOUT_GROUP_ID)) {
-                groupService.addGroupListToModel(model);
-                return GROUP_LIST_FRAGMENT;
-            } else {
-                groupService.addGroupDetailToModel(model, groupId);
-                return GROUP_CARD_FRAGMENT;
-            }
-        } else {
-            httpServletResponse.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-        }
-        return null;
+        return returnGroupFragment(response.getIsSuccess(), httpServletResponse, groupId, model);
     }
 
     /**
@@ -268,6 +243,33 @@ public class GroupController {
 
         groupService.addGroupListToModel(model);
         return GROUP_LIST_FRAGMENT;
+    }
+
+    /**
+     * Returns a fragment of the group list if the response was successful and the group id is for the special
+     * non-members group. If the response was successful and the group id is for another group, a fragment of the group
+     * card is returned. If the response was unsuccessful, null is returned.
+     * @param responseSuccess whether a GRPC request and IDP operation was successful
+     * @param httpServletResponse for adding status codes to
+     * @param groupId id of group modified in GRPC request
+     * @param model model to add attributes to for Thymeleaf to inject into the HTML
+     * @return group list/card fragment if successful, otherwise null
+     */
+    private String returnGroupFragment(boolean responseSuccess, HttpServletResponse httpServletResponse, int groupId,
+                                       Model model) {
+        if (responseSuccess) {
+            httpServletResponse.setStatus(HttpServletResponse.SC_OK);
+            if (Objects.equals(groupId, MEMBERS_WITHOUT_GROUP_ID)) {
+                groupService.addGroupListToModel(model);
+                return GROUP_LIST_FRAGMENT;
+            } else {
+                groupService.addGroupDetailToModel(model, groupId);
+                return GROUP_CARD_FRAGMENT;
+            }
+        } else {
+            httpServletResponse.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+        }
+        return null;
     }
 
     /**

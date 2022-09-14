@@ -50,7 +50,7 @@ public class EditProjectController {
             @RequestParam(value="endDateString") String projectEndDate,
             @RequestParam(value="description") String projectDescription,
             Model model
-    ) throws Exception {
+    ) {
         Integer userID = userAccountClientService.getUserIDFromAuthState(principal);
         elementService.addHeaderAttributes(model, userID);
 

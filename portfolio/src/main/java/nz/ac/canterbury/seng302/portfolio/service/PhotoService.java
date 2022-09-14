@@ -49,7 +49,7 @@ public class PhotoService {
             paths = trueImagePath.split("/identityprovider");
             path = paths[1];
         } else { // The VM uses a shared folder currently so no additional saving is necessary.
-            paths = profileImagePath.split("/" + getApplicationLocation(dataSource));
+            paths = profileImagePath.split(String.format("/%s",getApplicationLocation(dataSource)));
             path = getApplicationLocation(dataSource) + paths[1];
         }
         return path;
@@ -65,7 +65,7 @@ public class PhotoService {
     public void savePhotoToPortfolio(String photoPath, int userId) {
         File imageFile;
         String directory = MessageFormat.format("{0}/{1}/{2}/public/",
-                PortfolioApplication.IMAGE_DIR, getApplicationLocation(dataSource), userId);
+                PortfolioApplication.getImageDir(), getApplicationLocation(dataSource), userId);
         try {
             if (!new File(directory).mkdirs()) { // Ensures folders are made.
                 logger.warn("Not all folders may have been created.");

@@ -1,6 +1,9 @@
 package nz.ac.canterbury.seng302.portfolio.service;
 
+import nz.ac.canterbury.seng302.portfolio.model.UserSorting;
+import nz.ac.canterbury.seng302.shared.identityprovider.PaginatedUsersResponse;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
+import org.hibernate.ObjectNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -21,6 +24,12 @@ public class ElementService {
 
     @Autowired
     private PhotoService photoService;
+
+    @Autowired
+    private UserAccountClientService userAccountClientService;
+
+    @Autowired
+    private UserSortingService userSortingService;
 
     private static final String UPDATE_STATE_ATTRIBUTE_NAME = "isUpdateSuccess";
 
@@ -86,6 +95,7 @@ public class ElementService {
         model.addAttribute("headerFullName", fullNameHeader);
         // Gets the dynamic image spring is hosting for that user or the default image.
         model.addAttribute("userImage", photoService.getPhotoPath(userData.getProfileImagePath(), userId));
+        model.addAttribute("userId", userId);
     }
 
     /**
@@ -123,5 +133,23 @@ public class ElementService {
             //If roleList contains 2(admin role), set user permission to admin
             return "admin";
         }
+    }
+
+    /**
+     * Adds all users in the application, as well as the currently logged-in user's saved sorting, to the model.
+     * @param model model from controller method that attributes will be added to
+     * @param id id of currently logged-in user
+     */
+    public void addUsersToModel(Model model, Integer id) {
+        PaginatedUsersResponse response = userAccountClientService.getAllUsers();
+        List<UserResponse> userResponseList = response.getUsersList();
+        model.addAttribute("users", userResponseList);
+        UserSorting userSorting;
+        try {
+            userSorting = userSortingService.getUserSortingById(id);
+        } catch (ObjectNotFoundException e) {
+            userSorting = new UserSorting(id);
+        }
+        model.addAttribute("userSorting", userSorting);
     }
 }

@@ -31,10 +31,12 @@ public class RegisterController {
     @Autowired
     private AuthenticateClientService authenticateClientService;
 
-    private static final String PASSWORD_PATTERN =
-            "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#&()–[{}]:;',.?/*~$^+=<>]).{8,20}$";
+    private static final Pattern NAME_PATTERN = Pattern.compile("[A-Za-z'-]{2,20}");
 
-    private static final Pattern pattern = Pattern.compile(PASSWORD_PATTERN);
+    private static final String PASS_PATTERN =
+            "^(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#&()–[{}]:;',.?/*~$^+=<>]).{8,20}$";
+
+    private static final Pattern pattern = Pattern.compile(PASS_PATTERN);
 
 
     String defaultUsername = "defaultUsername";
@@ -114,7 +116,6 @@ public class RegisterController {
         AuthenticateResponse loginReply;
         UserRegisterResponse registrationReply;
         String userBio = bio;
-        String userNickName = nickName;
         if (!isValid(password)) {
             addModelAttribute(rm, username, firstName, middleName, lastName, email);
             rm.addAttribute(defaultNickName, nickName);
@@ -131,11 +132,8 @@ public class RegisterController {
             return "redirect:register?passwordError";
         }
 
-        boolean firstNameMatchesPattern = Pattern.compile("[^A-Za-z]").matcher(firstName).find();
-        if (firstName.length() < 2) {
-            firstNameMatchesPattern = true;
-        }
-        if (firstNameMatchesPattern) {
+        boolean firstNameMatchesPattern = NAME_PATTERN.matcher(firstName).matches();
+        if (!firstNameMatchesPattern) {
             addModelAttribute(rm, username, firstName, middleName, lastName, email);
             rm.addAttribute(defaultNickName, nickName);
             rm.addAttribute(defaultPronouns, personalPronouns);
@@ -143,11 +141,8 @@ public class RegisterController {
             return "redirect:register?firstNameError";
         }
 
-        boolean lastNameMatchesPattern = Pattern.compile("[^A-Za-z]").matcher(lastName).find();
-        if (lastName.length() < 2) {
-            lastNameMatchesPattern = true;
-        }
-        if (lastNameMatchesPattern) {
+        boolean lastNameMatchesPattern = NAME_PATTERN.matcher(lastName).matches();
+        if (!lastNameMatchesPattern) {
             addModelAttribute(rm, username, firstName, middleName, lastName, email);
             rm.addAttribute(defaultNickName, nickName);
             rm.addAttribute(defaultPronouns, personalPronouns);
@@ -159,7 +154,7 @@ public class RegisterController {
             userBio = "Default Bio";
         }
 
-        if (userNickName.length() > 50) {
+        if (nickName.length() > 50) {
             addModelAttribute(rm, username, firstName, middleName, lastName, email);
             rm.addAttribute(defaultBio, bio);
             rm.addAttribute(defaultPronouns, personalPronouns);

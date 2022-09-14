@@ -12,10 +12,24 @@ public class PortfolioApplication {
     /**
      * Pathway being used to store dynamic images. This can be used by other controllers.
      */
-    public static String IMAGE_DIR;
+    private static String imageDir;
+
+    /**
+     * Runs the portfolio and sets the image path.
+     * @param args none currently used
+     * @throws IOException when an error occurs when getting the image path
+     */
     public static void main(String[] args) throws IOException {
         // Sets up the pathway being used by the dynamic images.
-        IMAGE_DIR = new File(".").getCanonicalPath();
+        imageDir = new File(".").getCanonicalPath();
         SpringApplication.run(PortfolioApplication.class, args);
+    }
+
+    /**
+     * Returns the pathway used to store dynamic images.
+     * @return pathway used to store dynamic images
+     */
+    public static String getImageDir() {
+        return imageDir;
     }
 }

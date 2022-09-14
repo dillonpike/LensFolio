@@ -20,8 +20,9 @@
 
 <header th:replace="fragments/header"></header>
 
-<div class="container" style="width:60%">
+<div class="container" style="width:60%; padding-bottom:20px">
   <h1>Search Users</h1>
+  <h6 style="padding-bottom: 20px">Select a user to view their evidence. </h6>
   <div class="alert alert-warning alert-dismissible fade show" role="alert" id="alertBanner" th:if="${isUpdateSuccess != null}">
     <div style="display: flex; justify-content: space-between;flex-direction: row; align-items: center">
       <strong th:text="${updateMessage}"></strong>
@@ -117,6 +118,7 @@
    * @param userId id of user whose evidence page to redirect to
    */
   function redirectToEvidence(userId) {
+    localStorage.setItem('tab', 'profile-tab');
     window.location.href = "account?userId=" + userId;
   }
 

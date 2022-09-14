@@ -8,11 +8,12 @@ import org.gitlab4j.api.models.Contributor;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockedConstruction;
-import org.mockito.Spy;
+import org.junit.jupiter.params.provider.EnumSource;
+import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.ui.ExtendedModelMap;
+import org.springframework.ui.Model;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -36,7 +37,7 @@ class GitLabApiServiceTest {
     private GitLabApiService gitLabApiService;
 
     @Spy
-    private GroupSettings testGroupSettings = new GroupSettings(12345, "test repo", "kjbfdsouoih321312ewln", 1);
+    private GroupSettings testGroupSettings = new GroupSettings(12345, "test repo", "kjbfdsouoih321312ewln", 1, "https://eng-git.canterbury.ac.nz");
 
     @Mock
     private GitLabApi gitLabApi;
@@ -189,29 +190,64 @@ class GitLabApiServiceTest {
      * @throws GitLabApiException if an error occurs when calling the GitLab API
      */
     @Test
-    void testCheckGitLabTokenValid() throws GitLabApiException {
+    void testCheckGitLabTokenValidWhenRepositoryNotFound() throws GitLabApiException {
         int repoId = 12345;
         MockedConstruction<GitLabApi> mockedConstruction = mockConstruction(GitLabApi.class, (mock, context) ->
-            when(mock.getRepositoryApi()).thenReturn(repositoryApi));
-        when(repositoryApi.getBranches(Integer.toString(repoId))).thenReturn(null);
+                when(mock.getRepositoryApi()).thenReturn(repositoryApi));
+        when(repositoryApi.getBranches(Integer.toString(repoId))).thenThrow(new GitLabApiException("test", 404));
+        ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
+        ArgumentCaptor<String> captor1 = ArgumentCaptor.forClass(String.class);
+        Model model = mock(Model.class);
+        gitLabApiService.checkGitLabToken(model, testGroupSettings.getRepoId(),testGroupSettings.getRepoApiKey(),testGroupSettings.getRepoUrl());
+        verify(model).addAttribute(captor.capture(),captor1.capture());
 
-        assertTrue(gitLabApiService.checkGitLabToken(repoId, "testToken"));
+        assertEquals("groupSettingsAlertMessage", captor.getValue());
+        assertEquals("Repository not found", captor1.getValue());
         mockedConstruction.close();
     }
 
     /**
-     * Checks that the checkGitLabToken method returns false when the repo id and token cannot be used to get
-     * information from the GitLab API.
-     * @throws GitLabApiException if an error occurs when calling the GitLab API
+     * Check if checkGitLabToken send groupSettingsAlertMessage with "Invalid API Key" when 401 is thrown
+     * @throws GitLabApiException 401 is thrown
      */
     @Test
-    void testCheckGitLabTokenInvalid() throws GitLabApiException {
+    void testCheckGitLabTokenValidWhenInvalidAPIKey() throws GitLabApiException {
         int repoId = 12345;
         MockedConstruction<GitLabApi> mockedConstruction = mockConstruction(GitLabApi.class, (mock, context) ->
-            when(mock.getRepositoryApi()).thenReturn(repositoryApi));
-        when(repositoryApi.getBranches(Integer.toString(repoId))).thenThrow(GitLabApiException.class);
+                when(mock.getRepositoryApi()).thenReturn(repositoryApi));
+        when(repositoryApi.getBranches(Integer.toString(repoId))).thenThrow(new GitLabApiException("test", 401));
+        ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
+        ArgumentCaptor<String> captor1 = ArgumentCaptor.forClass(String.class);
+        Model model = mock(Model.class);
+        gitLabApiService.checkGitLabToken(model, testGroupSettings.getRepoId(),testGroupSettings.getRepoApiKey(),testGroupSettings.getRepoUrl());
+        verify(model).addAttribute(captor.capture(),captor1.capture());
 
-        assertFalse(gitLabApiService.checkGitLabToken(repoId, "testToken"));
+        assertEquals("groupSettingsAlertMessage", captor.getValue());
+        assertEquals("Invalid API key", captor1.getValue());
         mockedConstruction.close();
     }
+
+    /**
+     * Check if checkGitLabToken send groupSettingsAlertMessage with "Invalid Repository Server URL" when 500 is thrown
+     * @throws GitLabApiException 500 is thrown
+     */
+    @Test
+    void testCheckGitLabTokenValidWhenInvalidRepositoryServerURL() throws GitLabApiException {
+        int repoId = 12345;
+        MockedConstruction<GitLabApi> mockedConstruction = mockConstruction(GitLabApi.class, (mock, context) ->
+                when(mock.getRepositoryApi()).thenReturn(repositoryApi));
+        when(repositoryApi.getBranches(Integer.toString(repoId))).thenThrow(new GitLabApiException("test", 500));
+        ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
+        ArgumentCaptor<String> captor1 = ArgumentCaptor.forClass(String.class);
+        Model model = mock(Model.class);
+        gitLabApiService.checkGitLabToken(model, testGroupSettings.getRepoId(),testGroupSettings.getRepoApiKey(),testGroupSettings.getRepoUrl());
+        verify(model).addAttribute(captor.capture(),captor1.capture());
+
+        assertEquals("groupSettingsAlertMessage", captor.getValue());
+        assertEquals("Invalid Repository Server URL", captor1.getValue());
+        mockedConstruction.close();
+    }
+
+
+
 }

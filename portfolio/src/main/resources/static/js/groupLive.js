@@ -19,6 +19,7 @@ let stompClient = null;
 function connect() {
     let socket = new SockJS('mywebsockets');
     stompClient = Stomp.over(socket);
+    stompClient.debug = null;
     stompClient.connect({}, function (frame) {
         stompClient.subscribe('/webSocketGet/group-being-edited', function (eventResponseArg) {
             const eventResponse = JSON.parse(eventResponseArg.body);

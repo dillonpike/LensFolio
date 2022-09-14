@@ -30,7 +30,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class CalendarRestControllerTest {
 
     @Autowired
-    private MockMvc mockMvc;
+    private MockMvc mockMvc = MockMvcBuilders.standaloneSetup(CalendarController.class).build();
 
     @MockBean
     private SprintService sprintService;
@@ -40,11 +40,6 @@ class CalendarRestControllerTest {
      */
     @MockBean
     private UserAccountClientService userAccountClientService;
-
-    @Before
-    public void setup() {
-        mockMvc = MockMvcBuilders.standaloneSetup(CalendarController.class).build();
-    }
 
     /**
      * Tests that the rest controller returns a response with a no content success status code and a payload of true

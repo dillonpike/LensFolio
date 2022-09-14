@@ -1,5 +1,6 @@
 package nz.ac.canterbury.seng302.portfolio.utility;
 
+
 /**
  * Helper functions for additional functionality of the application.
  */
@@ -24,4 +25,5 @@ public class GeneralUtility {
         }
         return "dev";
     }
+
 }

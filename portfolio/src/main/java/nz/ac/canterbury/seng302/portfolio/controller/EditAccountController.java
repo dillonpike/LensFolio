@@ -251,7 +251,7 @@ public class EditAccountController {
         } else {
 
             String directory = MessageFormat.format("{0}/{1}/{2}/",
-                    PortfolioApplication.IMAGE_DIR, getApplicationLocation(dataSource), userId);
+                    PortfolioApplication.getImageDir(), getApplicationLocation(dataSource), userId);
             String filePath = directory + "/UploadedFile";
             File imageFile = new File(filePath); // Saves image locally so the file can be streamed to the IDP.
             if (!new File(directory).mkdirs()) { // Ensures folders are made.
@@ -262,7 +262,6 @@ public class EditAccountController {
             )
             {
                 fos.write(multipartFile.getBytes());
-                fos.close();
                 if (registerClientService.uploadUserProfilePhoto(userId, new File(filePath))) { // Saves image on IDP.
                     rm.addFlashAttribute(UPDATE_CHECK_ID, true);
                     rm.addFlashAttribute("reloadImage", true);

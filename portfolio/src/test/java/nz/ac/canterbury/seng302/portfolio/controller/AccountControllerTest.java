@@ -1,15 +1,14 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
 import com.google.protobuf.Timestamp;
-import nz.ac.canterbury.seng302.portfolio.service.ElementService;
-import nz.ac.canterbury.seng302.portfolio.service.PhotoService;
-import nz.ac.canterbury.seng302.portfolio.service.RegisterClientService;
-import nz.ac.canterbury.seng302.portfolio.service.UserAccountClientService;
+import nz.ac.canterbury.seng302.portfolio.model.Project;
+import nz.ac.canterbury.seng302.portfolio.service.*;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import nz.ac.canterbury.seng302.shared.identityprovider.ClaimDTO;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserRole;
 import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
@@ -23,6 +22,9 @@ import org.springframework.security.web.authentication.preauth.PreAuthenticatedA
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+
+import java.util.Date;
+
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -51,7 +53,7 @@ class AccountControllerTest {
     /**
      * Mocked user response which contains the data of the user
      */
-    private UserResponse mockUser = UserResponse.newBuilder()
+    private final UserResponse mockUser = UserResponse.newBuilder()
             .setBio("default bio")
             .setCreated(Timestamp.newBuilder().setSeconds(55))
             .setEmail("hello@test.com")
@@ -63,9 +65,14 @@ class AccountControllerTest {
             .addRoles(UserRole.STUDENT)
             .build();
 
+    /**
+     * Mocked project
+     */
+    private Project mockProject = new Project("test project", "test description", new Date(), new Date());
+
 
     @Autowired
-    private MockMvc mockMvc;
+    private MockMvc mockMvc = MockMvcBuilders.standaloneSetup(AccountController.class).build();
 
     @MockBean
     private RegisterClientService registerClientService;
@@ -79,10 +86,11 @@ class AccountControllerTest {
     @MockBean
     private PhotoService photoService;
 
-    @Before
-    public void setup() {
-        mockMvc = MockMvcBuilders.standaloneSetup(AccountController.class).build();
-    }
+    @MockBean
+    private ProjectService projectService;
+
+    @MockBean
+    private EvidenceService evidenceService;
 
     /**
      * unit testing to test the get method when calling "/account"
@@ -96,6 +104,7 @@ class AccountControllerTest {
         SecurityContextHolder.setContext(mockedSecurityContext);
         when(userAccountClientService.getUserIDFromAuthState(any(AuthState.class))).thenReturn(1);
         when(registerClientService.getUserData(1)).thenReturn(mockUser);
+        when(projectService.getProjectById(0)).thenReturn(mockProject);
 
         String firstName = mockUser.getFirstName();
         String middleName = mockUser.getMiddleName();
@@ -120,7 +129,8 @@ class AccountControllerTest {
                 .andExpect(model().attribute("username", username))
                 .andExpect(model().attribute("email", email))
                 .andExpect(model().attribute("personalPronouns", personalPronouns))
-                .andExpect(model().attribute("bio", bio));
+                .andExpect(model().attribute("bio", bio))
+                .andExpect(model().attribute("project", mockProject));
     }
 
 }

@@ -2,12 +2,7 @@ package nz.ac.canterbury.seng302.portfolio.controller.rest;
 
 import nz.ac.canterbury.seng302.portfolio.service.SprintService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
-import javax.servlet.http.HttpServletResponse;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * Handles REST requests for the calendar page.
@@ -29,7 +24,7 @@ public class CalendarRestController {
      * @param sprintEndDate new end date
      * @return true if the update is successful, otherwise false
      */
-    @RequestMapping(value="/update-sprint", method=RequestMethod.POST)
+    @PostMapping(value="/update-sprint")
     public boolean updateSprintDates(@RequestParam(value="id") Integer id,
                                      @RequestParam(value="sprintStartDate") String sprintStartDate,
                                      @RequestParam(value="sprintEndDate") String sprintEndDate) {

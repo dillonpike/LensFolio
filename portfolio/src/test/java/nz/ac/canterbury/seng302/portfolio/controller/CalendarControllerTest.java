@@ -53,7 +53,7 @@ class CalendarControllerTest {
             .build();
 
     @Autowired
-    private MockMvc mockMvc;
+    private MockMvc mockMvc = MockMvcBuilders.standaloneSetup(CalendarController.class).build();
 
     @MockBean
     private SprintService sprintService;
@@ -75,11 +75,6 @@ class CalendarControllerTest {
 
     @MockBean
     private UserAccountClientService userAccountClientService;
-
-    @Before
-    public void setup() {
-        mockMvc = MockMvcBuilders.standaloneSetup(CalendarController.class).build();
-    }
 
     /**
      * unit testing to test the get method when calling "/calendar"

@@ -59,7 +59,7 @@ class DetailsControllerTest {
             .build();
 
     @Autowired
-    private MockMvc mockMvc;
+    private MockMvc mockMvc = MockMvcBuilders.standaloneSetup(AccountController.class).build();
 
     @MockBean
     private ProjectService projectService;
@@ -89,13 +89,8 @@ class DetailsControllerTest {
 
     private UserResponse userResponse;
 
-    private int USER_ID = 1;
-    private String USERNAME = "Username";
-
-    @Before
-    public void setup() {
-        mockMvc = MockMvcBuilders.standaloneSetup(AccountController.class).build();
-    }
+    private final int USER_ID = 1;
+    private final String USERNAME = "Username";
 
     /***
      * Test to check if project page return 200 status code when send GET method
