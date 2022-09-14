@@ -121,7 +121,7 @@ function validateRepoSetting(elementId, alertBanner, alertMessage) {
     }
     else if (token.toString().trim().length < 20 && token.toString().length >= 1) {
         document.getElementById(alertBanner).hidden = false;
-        document.getElementById(alertMessage).innerText = "Invalid Repository Token! Token length should be at least 20 characters.";
+        document.getElementById(alertMessage).innerText = "Invalid Repository Token!";
         return false
     }
     else if (serverUrl.toString().length >= 1 && !isValidUrl(serverUrl)) {
