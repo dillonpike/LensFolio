@@ -160,7 +160,15 @@
                             <div class="evidence-description" th:text="${evidence.getDescription}"></div>
                             <div class="evidence-weblink-title" th:if="${!evidence.getWebLinks().isEmpty()}">Weblinks:</div>
                             <div th:each="webLink, meta: ${evidence.getWebLinks()}">
-                              <a th:href="${webLink.getUrl()}" target="_blank" th:text="${webLink.getUrl()}"></a>
+                              <div th:if="${webLink.getFormattedUrl()} != 'InvalidURL'" class="chip" th:id="'weblinkurlDisplay' + ${meta}" style="display: inline-block;padding: 0 12px 0 15px;height: fit-content;font-size: 16px;line-height: 30px;border-radius: 25px;background-color: #f1f1f1f1;margin: 0 10px 10px 0;" data-toggle="tooltip" data-bs-placement="right" th:title="${webLink.getUrl()}">
+                                <div class="d-flex justify-content-between flex-row align-items-center">
+                                  <i th:class="${webLink.isSecure()} ? 'bi bi-lock' : 'bi bi-unlock'"></i>
+                                  <span style="margin-right: 10px; margin-left: 10px" th:text="${webLink.getFormattedUrl()}"></span>
+                                  <a th:href="${webLink.getUrl()}" target="_blank">
+                                    <i class="bi bi-box-arrow-up-right"></i>
+                                  </a>
+                                </div>
+                              </div>
                             </div>
                           </div>
                           <script th:inline="javascript">
@@ -173,7 +181,7 @@
                         </div>
 
                         <!--Buttons for editing and deleting, for future use!!-->
-                        <div>
+                        <div hidden>
                           <div class="button-divider">
                             <div class="dropdown" th:if="${isAuthorised} == true">
                               <button class="btn btn-default " type="button" id="evidenceActions" data-bs-toggle="dropdown" aria-expanded="false" >
@@ -224,6 +232,8 @@
 <script src="js/fineCrop.js"></script>
 <script src="js/evidence.js"></script>
 <script th:inline="javascript">
+
+
 
   /*<![CDATA[*/
   let projectEndDate = /*[[${project.getEndDate()}]]*/ "Error";
