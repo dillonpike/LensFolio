@@ -6,6 +6,7 @@ import nz.ac.canterbury.seng302.portfolio.model.GroupSettings;
 import nz.ac.canterbury.seng302.portfolio.service.*;
 import nz.ac.canterbury.seng302.portfolio.utility.ToastUtility;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
+import nz.ac.canterbury.seng302.shared.identityprovider.GroupDetailsResponse;
 import nz.ac.canterbury.seng302.shared.identityprovider.ModifyGroupDetailsResponse;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 import org.gitlab4j.api.GitLabApiException;
@@ -69,7 +70,7 @@ public class GroupSettingsController {
      * @param model group setting page model
      * @return group settings page
      */
-    @RequestMapping("/groupSettings")
+    @GetMapping("/groupSettings")
     public String groupSettings(
             @RequestParam(value = "groupId") int groupId,
             @AuthenticationPrincipal AuthState principal,
@@ -225,15 +226,6 @@ public class GroupSettingsController {
 
         rm.addAttribute(GROUP_ID, groupId);
         model.addAttribute(GROUP_ID, groupId);
-
-        repoName = repoName.trim();
-        repoToken = repoToken.trim();
-        if (!groupSettingsService.isValidGroupSettings((int) repoId, repoName, repoToken)) {
-            model.addAttribute(GROUP_SETTING_ALERT_MESSAGE, "Please enter valid repository settings");
-            httpServletResponse.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            return "groupSettings::groupSettingsAlertBanner";
-        }
-
         ModifyGroupDetailsResponse groupResponse = groupService.editGroupDetails(groupId, shortName, longName);
 
         // First, we check the response from the server to see if edit the group long name is successful
@@ -260,6 +252,26 @@ public class GroupSettingsController {
         httpServletResponse.setStatus(HttpServletResponse.SC_OK);
         model.addAttribute("successMessage", "Save changed");
         return "groupSettings::groupSetting";
+    }
+
+    /**
+     * Method to get group's members
+     * @param model Parameters sent to thymeleaf template to be rendered into HTML
+     * @param groupId id of group to reload
+     * @return Group page
+     */
+    @GetMapping("/getGroupMembers")
+    public String getGroupMembers(
+            Model model,
+            @RequestParam("groupId") int groupId,
+            @AuthenticationPrincipal AuthState principal
+
+    )
+    {
+        GroupDetailsResponse groupDetailsResponse = groupService.getGroupDetails(groupId);
+        List<UserResponse> members = groupDetailsResponse.getMembersList();
+        model.addAttribute("members", members);
+        return "groupSettings::table_refresh";
     }
 
     /**
@@ -299,6 +311,18 @@ public class GroupSettingsController {
     @MessageMapping("/save-group-settings")
     @SendTo("/webSocketGet/group-settings-saved")
     public NotificationGroup refreshGroupSettings(NotificationGroup notificationGroup) {
+        return notificationGroup;
+    }
+
+    /**
+     * This method maps @MessageMapping endpoint to the @SendTo endpoint.
+     * Called when a groups long name is updated outside the group settings page so that it can be reloaded.
+     * @param notificationGroup NotificationGroup that holds information about the groups being updated.
+     * @return returns an NotificationResponse that holds information about the groups being updated.
+     */
+    @MessageMapping("/outside-save-group-settings")
+    @SendTo("/webSocketGet/outside-group-settings-saved")
+    public NotificationGroup refreshGroupSettingsOutside(NotificationGroup notificationGroup) {
         return notificationGroup;
     }
 }
