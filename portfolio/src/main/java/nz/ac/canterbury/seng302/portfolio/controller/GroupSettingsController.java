@@ -73,7 +73,8 @@ public class GroupSettingsController {
     public String groupSettings(
             @RequestParam(value = "groupId") int groupId,
             @AuthenticationPrincipal AuthState principal,
-            Model model) {
+            Model model
+    ) {
         Integer id = userAccountClientService.getUserIDFromAuthState(principal);
         elementService.addHeaderAttributes(model, id);
         UserResponse user = registerClientService.getUserData(id);
@@ -298,7 +299,6 @@ public class GroupSettingsController {
     @MessageMapping("/save-group-settings")
     @SendTo("/webSocketGet/group-settings-saved")
     public NotificationGroup refreshGroupSettings(NotificationGroup notificationGroup) {
-        System.out.println("helo");
         return notificationGroup;
     }
 }
