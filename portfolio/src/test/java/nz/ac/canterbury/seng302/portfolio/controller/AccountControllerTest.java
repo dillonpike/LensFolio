@@ -89,6 +89,9 @@ class AccountControllerTest {
     @MockBean
     private ProjectService projectService;
 
+    @MockBean
+    private EvidenceService evidenceService;
+
     /**
      * unit testing to test the get method when calling "/account"
      * Expect to return 200 status code and account page with some user's information in the model

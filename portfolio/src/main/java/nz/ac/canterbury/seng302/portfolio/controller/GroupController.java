@@ -16,7 +16,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.List;
 import java.util.Objects;
@@ -83,7 +82,7 @@ public class GroupController {
      * @param groupId id of group to reload
      * @return Group page
      */
-    @RequestMapping("/groups/local")
+    @GetMapping("/groups/local")
     public String localRefresh(
             Model model,
             @RequestParam("groupId") int groupId,
@@ -348,5 +347,16 @@ public class GroupController {
     public NotificationGroup changeGroupMembersWebsocket(NotificationGroup message) {
         return message;
     }
+
+    /**
+     * This method maps @MessageMapping endpoint to the @SendTo endpoint.
+     * Called when a groups long name is updated within the group settings page.
+     * @param message NotificationMessage that holds information about the groups being updated.
+     * @return returns an NotificationResponse that holds information about the groups being updated.
+     */
+    @MessageMapping("/save-group-settings-outside")
+    @SendTo("/webSocketGet/saved-group-settings-outside")
+    public NotificationGroup changeGroupSettingsWebsocket(NotificationGroup message) {
+        return message; }
 
 }

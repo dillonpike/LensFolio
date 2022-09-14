@@ -1,6 +1,7 @@
 package nz.ac.canterbury.seng302.portfolio.model;
 
 import javax.persistence.*;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -108,8 +109,15 @@ public class Evidence {
         this.description = description;
     }
 
-    public Date getDate() {
-        return date;
+    public Date getDate() { return date; }
+
+    /**
+     * Returns evidence date as a string in the following format: 26 September 2022
+     * @return formatted evidence date string
+     */
+    public String getDateString() {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd MMMM yyyy");
+        return dateFormat.format(date);
     }
 
     public void setDate(Date date) {

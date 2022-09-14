@@ -34,13 +34,13 @@
                             </div>
                         </div>
 
-                        <div class="alert alert-danger alert-dismissible fade show" role="alert" id="evidenceDateAlertBanner" hidden>
-                            <span id="evidenceDateAlertMessage" data-test-id="alertMessage"></span>
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert" id="evidenceDateAlertBanner" th:hidden="${evidenceDateAlertMessage==null}">
+                            <span id="evidenceDateAlertMessage" data-test-id="alertMessage" th:text="${evidenceDateAlertMessage}"></span>
                             <button type="button" class="btn-close" onclick="document.getElementById('evidenceDateAlertBanner').hidden = true" aria-label="Close"></button>
                         </div>
                         <div class="mb-3">
                             <label for="evidenceDate" class="col-form-label">Date(*):</label>
-                            <button type="button" id="questionToolTip" class="btn" style="margin: 0; padding: 0" data-toggle="tooltip" data-bs-placement="right" title="This date should indicate the day that the evidence took place. ">
+                            <button type="button" id="questionToolTip" class="btn" style="margin: 0; padding: 0" data-bs-toggle="tooltip" data-bs-placement="right" title="This date should indicate the day that the evidence took place. You can only select a date that is within the project's start and end dates. ">
                                 <span class="bi bi-question-circle"></span>
                             </button>
                             <div class="input-group" id="evidenceDateInput" data-td-target-input="nearest" data-td-target-toggle="nearest">
@@ -103,7 +103,7 @@
         /**
          * Adds a web link to the list of web links.
          */
-        function addWebLinks(){
+        function addWebLinks() {
 
             const urlString = document.getElementById("evidenceWeblink").value;
             //validate
@@ -138,13 +138,12 @@
                     updateCharsLeft('evidenceWeblink', 'evidenceWebLinkLength', 250);
                     //add to list
                     webLinksList.push(urlString);
+                    document.getElementById("evidenceWebLinksAlertBanner").setAttribute("hidden", "true");
                 } else {
                     $("#evidenceWebLinksAlertMessage").text("You can only add up to " + MAX_NUM_WEBLINKS + " web links.");
                     document.getElementById("evidenceWebLinksAlertBanner").removeAttribute("hidden");
                 }
             }
-
-
         }
 
         /**
@@ -166,18 +165,43 @@
 
         /**
          * Method to use regex to validate a URL String
-         * inspired by https://www.freecodecamp.org/news/check-if-a-javascript-string-is-a-url/#:~:text=You%20can%20use%20the%20URLConstructor,given%20URL%20is%20not%20valid.
+         * regex slightly modified from:
+         * https://stackoverflow.com/questions/60621028/validate-url-only-http-or-https-at-the-beginning-of-the-string
          * @param urlString the url string to validate
          * @returns {boolean} true if valid, false otherwise
          */
         function isValidUrl(urlString) {
-            const urlPattern = new RegExp('^(https?:\\/\\/)?'+ // validate protocol
-                '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|'+ // validate domain name
-                '((\\d{1,3}\\.){3}\\d{1,3}))'+ // validate OR ip (v4) address
-                '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*'+ // validate port and path
-                '(\\?[;&a-z\\d%_.~+=-]*)?'+ // validate query string
-                '(\\#[-a-z\\d_]*)?$','i'); // validate fragment locator
-            return !!urlPattern.test(urlString);
+            return urlString.match(/^(http(s)?:\/\/)[\w.-]+(?:\.[\w\.-]+)*[\w\-\._~:/?#[\]@!\$&'\(\)\*\+,;=.]+$/)
         }
+
+        /**
+         * Configures the web link input so that it adds a web link rather than submitting the form if the user
+         * presses the enter key in the web link input field and has something typed in.
+         */
+        function configureWebLinkInput() {
+            const webLinkInput = document.getElementById("evidenceWeblink");
+            webLinkInput.addEventListener("keydown", function (e) {
+                if (e.code === "Enter" && webLinkInput.value.trim() !== "") {
+                    e.preventDefault();
+                    addWebLinks();
+                }
+            });
+        }
+
+        configureWebLinkInput();
+
+        document.getElementById("evidenceModal").addEventListener("hidden.bs.modal", function () {
+            document.getElementById("evidenceModalButton").classList.add("disabled");
+            document.getElementById("evidenceTitleAlertBanner").hidden = true;
+            document.getElementById("evidenceDescriptionAlertBanner").hidden = true;
+            document.getElementById("evidenceDateAlertBanner").hidden = true;
+            document.getElementById("evidenceWebLinksAlertBanner").hidden = true;
+            webLinksList = [];
+            $("#webLinkList").empty();
+            updateCharsLeft('evidenceTitle', 'evidenceTitleLength', 250);
+            updateCharsLeft('evidenceDescription', 'evidenceDescriptionLength', 250);
+            updateCharsLeft('evidenceWeblink', 'evidenceWebLinkLength', 250);
+        });
+
     </script>
 </div>

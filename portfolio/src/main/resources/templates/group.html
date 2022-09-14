@@ -103,7 +103,7 @@
                     </div>
                     <h4 id="longGroupName" th:text="${groupLongName}"></h4>
                     <div class="collapse">
-                        <div class="hstack gap-3 pb-2" th:if="${currentUserRole != 'student'}">
+                        <div class="hstack gap-3 pb-2" th:if="${currentUserRole != 'student'}" id="groupOption">
                             <span>Copy Users To </span>
                             <select class="form-select input-sm" aria-label="Default select example" id="groupDropdownList">
                                 <option th:each="copyToGroup : ${groupList}" th:if="${group?.getGroupId() != copyToGroup.getGroupId()}" th:value="${copyToGroup.getGroupId()}" th:text="${copyToGroup.getShortName()}"></option>
@@ -156,7 +156,7 @@
 
 <script th:inline="javascript">
     /**
-     * Sends the message that a group is being updated, and sends the events names with it.
+     * Sends the message that a group is being updated, and sends the groups names with it.
      */
     function sendName(artefactName, artefactId,userId, userFirstName, userLastName, username, artefactType) {
         stompClient.send("/webSocketPost/editing-group", {}, JSON.stringify({
@@ -167,6 +167,13 @@
             'userFirstName': userFirstName,
             'userLastName': userLastName,
             'username': username
+        }));
+    }
+
+    function sendUpdatedSettings(groupId) {
+        stompClient.send("/webSocketPost/save-group-settings", {}, JSON.stringify({
+        'sendingGroupId': groupId,
+        'receivingGroupId' : groupId
         }));
     }
 
@@ -316,6 +323,7 @@
                     addGroupReload(selectedArtefactName, selectedArtefactId, userId, userFirstName, userLastName, username, "Group");
                 } else {
                     sendNameReload(selectedArtefactName, selectedArtefactId, userId, userFirstName, userLastName, username, "Group");
+                    sendUpdatedSettings(selectedArtefactId);
                 }
             }
         })
@@ -419,7 +427,6 @@
             options.collapse('hide')
         }
     });
-
 </script>
 
 
