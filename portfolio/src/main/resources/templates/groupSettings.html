@@ -61,12 +61,12 @@
 <!-- #object.nullSafe test if an object is null and then returns the provided value if it is.
         This used because during testing isRepoExist is null value and cause problems
         when comparing it to the boolean value of isValidToModify-->
-<div class="container" id="groupSettingContainer" th:fragment="groupSetting"  th:style="${#objects.nullSafe(isRepoExist,false) && isValidToModify} ? '' : 'width: 750px;'">
+<div class="container" id="groupSettingContainer" th:fragment="groupSetting"  th:style="${#objects.nullSafe(isRepoExist,false)} ? '' : 'width: 750px;'">
     <div class="row">
         <!-- #object.nullSafe test if an object is null and then returns the provided value if it is.
              This used because during testing isRepoExist is null value and cause problems
              when comparing it to the boolean value of isValidToModify-->
-        <div th:class="${#objects.nullSafe(isRepoExist,false) && isValidToModify} ? 'col-12 col-md-6 ps-lg-1-6 ps-xl-5 vstack gap-3' : 'ps-lg-1-6 ps-xl-5 vstack gap-3'">
+        <div th:class="${#objects.nullSafe(isRepoExist,false)} ? 'col-12 col-md-6 ps-lg-1-6 ps-xl-5 vstack gap-3' : 'ps-lg-1-6 ps-xl-5 vstack gap-3'">
             <div class="card shadow" th:fragment="groupSettingsRefresh" id="groupSettingsRefresh">
                 <div class="text-start mb-1-6">
                     <div class="hstack gap-3">
@@ -97,57 +97,59 @@
                             <input type="hidden" th:value="${groupShortName}" name="groupShortName" id="groupShortName" th:name="shortName">
                         </div>
                         <br>
-                        <h4 id="repositorySetting" class="mx-3">Repository Settings</h4>
-                        <div th:fragment="groupRepoAlertBanner" class="alert alert-danger alert-dismissible fade show mx-3" role="alert" id="groupRepoAlertBanner" th:hidden="${groupRepoAlertMessage==null}">
-                            <span id="groupRepoAlertMessage" data-test-id="alertMessage" th:text="${groupRepoAlertMessage}"></span>
-                            <button type="button" class="btn-close" onclick="document.getElementById('groupRepoAlertBanner').hidden = true" aria-label="Close"></button>
-                        </div>
-                        <div th:fragment="groupSettingsAlertBanner" class="alert alert-danger alert-dismissible fade show mx-3" role="alert" id="groupSettingsAlertBanner" th:if="${isValidToModify}" th:hidden="${groupSettingsAlertMessage==null}">
-                            <span id="groupSettingsAlertMessage" data-test-id="alertMessage" th:text="${groupSettingsAlertMessage}"></span>
-                        </div>
-                        <div class="mb-3 mx-3">
-                            <label for="repoName" class="col-form-label">Repository Name:</label>
-                            <input onkeyup="updateCharsLeft('repoName', 'repoNameLength', 30)" maxlength="30"
-                                   type="text" class="form-control" id="repoName" th:name="repoName" th:value="${repoName}" disabled>
-                            <div class="name-length-message">
-                                <span id="repoNameLength"></span>
+                        <div th:if="${isValidToModify}">
+                            <h4 id="repositorySetting" class="mx-3">Repository Settings</h4>
+                            <div th:fragment="groupRepoAlertBanner" class="alert alert-danger alert-dismissible fade show mx-3" role="alert" id="groupRepoAlertBanner" th:hidden="${groupRepoAlertMessage==null}">
+                                <span id="groupRepoAlertMessage" data-test-id="alertMessage" th:text="${groupRepoAlertMessage}"></span>
+                                <button type="button" class="btn-close" onclick="document.getElementById('groupRepoAlertBanner').hidden = true" aria-label="Close"></button>
                             </div>
-                        </div>
-                        <div class="mb-3 mx-3">
-                            <label for="repoId" class="col-form-label">Repository ID:</label>
-                            <input onkeyup="updateCharsLeft('repoId', 'repoIdLength', 9)" maxlength="9"
-                                   type="text" class="form-control" id="repoId" th:name="repoId" th:value="${repoId}" th:style="${isConnectionSuccessful} ? '' : 'border-style: solid; border-color: red;'" disabled>
-                            <div class="name-length-message">
-                                <span id="repoIdLength"></span>
+                            <div th:fragment="groupSettingsAlertBanner" class="alert alert-danger alert-dismissible fade show mx-3" role="alert" id="groupSettingsAlertBanner" th:if="${isValidToModify}" th:hidden="${groupSettingsAlertMessage==null}">
+                                <span id="groupSettingsAlertMessage" data-test-id="alertMessage" th:text="${groupSettingsAlertMessage}"></span>
                             </div>
-                        </div>
-                        <div class="mb-3 mx-3">
-                            <label for="repoToken" class="col-form-label">Repository Access Token:</label>
-                            <input onkeyup="updateCharsLeft('repoToken', 'repoTokenLength', 40)" maxlength="40" type="text"
-                                   class="form-control" id="repoToken" th:name="repoToken" th:value="${repoApiKey}" th:style="${isConnectionSuccessful} ? '' : 'border-style: solid; border-color: red;'" disabled>
-                            <div class="name-length-message">
-                                <span id="repoTokenLength"></span>
+                            <div class="mb-3 mx-3">
+                                <label for="repoName" class="col-form-label">Repository Name:</label>
+                                <input onkeyup="updateCharsLeft('repoName', 'repoNameLength', 30)" maxlength="30"
+                                       type="text" class="form-control" id="repoName" th:name="repoName" th:value="${repoName}" disabled>
+                                <div class="name-length-message">
+                                    <span id="repoNameLength"></span>
+                                </div>
                             </div>
-                        </div>
-                        <div class="mb-3 mx-3">
-                            <div class="hstack gap-2">
-                                <label for="repoUrl" class="col-form-label">Repository Server URL:</label>
-                                <button type="button" id="questionToolTip" class="btn" style="margin: 0; padding: 0" data-toggle="tooltip" data-bs-placement="right" title="The URL could be your Gitlab Server. For example: https://eng-git.canterbury.ac.nz">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-question-circle" viewBox="0 0 16 16">
-                                        <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
-                                        <path d="M5.255 5.786a.237.237 0 0 0 .241.247h.825c.138 0 .248-.113.266-.25.09-.656.54-1.134 1.342-1.134.686 0 1.314.343 1.314 1.168 0 .635-.374.927-.965 1.371-.673.489-1.206 1.06-1.168 1.987l.003.217a.25.25 0 0 0 .25.246h.811a.25.25 0 0 0 .25-.25v-.105c0-.718.273-.927 1.01-1.486.609-.463 1.244-.977 1.244-2.056 0-1.511-1.276-2.241-2.673-2.241-1.267 0-2.655.59-2.75 2.286zm1.557 5.763c0 .533.425.927 1.01.927.609 0 1.028-.394 1.028-.927 0-.552-.42-.94-1.029-.94-.584 0-1.009.388-1.009.94z"/>
-                                    </svg>
-                                </button>
+                            <div class="mb-3 mx-3">
+                                <label for="repoId" class="col-form-label">Repository ID:</label>
+                                <input onkeyup="updateCharsLeft('repoId', 'repoIdLength', 9)" maxlength="9"
+                                       type="text" class="form-control" id="repoId" th:name="repoId" th:value="${repoId}" th:style="${isConnectionSuccessful} ? '' : 'border-style: solid; border-color: red;'" disabled>
+                                <div class="name-length-message">
+                                    <span id="repoIdLength"></span>
+                                </div>
                             </div>
-                            <input onkeyup="updateCharsLeft('repoUrl', 'repoServerUrlLength', 100)" maxlength="100" type="text"
-                                   class="form-control" id="repoUrl" th:name="repoUrl" th:value="${repoServerUrl}" disabled>
-                            <div class="name-length-message">
-                                <span id="repoServerUrlLength"></span>
+                            <div class="mb-3 mx-3">
+                                <label for="repoToken" class="col-form-label">Repository Access Token:</label>
+                                <input onkeyup="updateCharsLeft('repoToken', 'repoTokenLength', 40)" maxlength="40" type="text"
+                                       class="form-control" id="repoToken" th:name="repoToken" th:value="${repoApiKey}" th:style="${isConnectionSuccessful} ? '' : 'border-style: solid; border-color: red;'" disabled>
+                                <div class="name-length-message">
+                                    <span id="repoTokenLength"></span>
+                                </div>
                             </div>
+                            <div class="mb-3 mx-3">
+                                <div class="hstack gap-2">
+                                    <label for="repoUrl" class="col-form-label">Repository Server URL:</label>
+                                    <button type="button" id="questionToolTip" class="btn" style="margin: 0; padding: 0" data-toggle="tooltip" data-bs-placement="right" title="The URL could be your Gitlab Server. For example: https://eng-git.canterbury.ac.nz">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-question-circle" viewBox="0 0 16 16">
+                                            <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+                                            <path d="M5.255 5.786a.237.237 0 0 0 .241.247h.825c.138 0 .248-.113.266-.25.09-.656.54-1.134 1.342-1.134.686 0 1.314.343 1.314 1.168 0 .635-.374.927-.965 1.371-.673.489-1.206 1.06-1.168 1.987l.003.217a.25.25 0 0 0 .25.246h.811a.25.25 0 0 0 .25-.25v-.105c0-.718.273-.927 1.01-1.486.609-.463 1.244-.977 1.244-2.056 0-1.511-1.276-2.241-2.673-2.241-1.267 0-2.655.59-2.75 2.286zm1.557 5.763c0 .533.425.927 1.01.927.609 0 1.028-.394 1.028-.927 0-.552-.42-.94-1.029-.94-.584 0-1.009.388-1.009.94z"/>
+                                        </svg>
+                                    </button>
+                                </div>
+                                <input onkeyup="updateCharsLeft('repoUrl', 'repoServerUrlLength', 100)" maxlength="100" type="text"
+                                       class="form-control" id="repoUrl" th:name="repoUrl" th:value="${repoServerUrl}" disabled>
+                                <div class="name-length-message">
+                                    <span id="repoServerUrlLength"></span>
+                                </div>
+                            </div>
+                            <input type="hidden" th:value="${groupId}" name="groupId" id="groupId" th:name="groupId" maxlength="10">
+                            <input type="hidden" th:value="${groupSettingsId}" name="groupSettingsId" id="groupSettingsId" th:name="groupSettingsId">
+                            <br>
                         </div>
-                        <input type="hidden" th:value="${groupId}" name="groupId" id="groupId" th:name="groupId" maxlength="10">
-                        <input type="hidden" th:value="${groupSettingsId}" name="groupSettingsId" id="groupSettingsId" th:name="groupSettingsId">
-                        <br>
                         <div class="hstack gap-3">
                             <button type="button" id="cancelButton" class="btn btn-danger ms-auto my-3" th:attr="onclick=|stopEditing('${groupId}')|" hidden>Cancel</button>
                             <button type="submit" id="saveButton" class="btn btn-success mx-3" hidden>Save</button>
@@ -193,7 +195,7 @@
         <!-- #object.nullSafe test if an object is null and then returns the provided value if it is.
         This used because during testing isRepoExist is null value and cause problems
         when comparing it to the boolean value of isValidToModify-->
-        <div id="rightSide" class="col-6 col-md-6 sticky-md-top vstack gap-3" th:if="${#objects.nullSafe(isRepoExist,false) && isValidToModify}">
+        <div id="rightSide" class="col-6 col-md-6 sticky-md-top vstack gap-3" th:if="${#objects.nullSafe(isRepoExist,false)}">
             <div class="card shadow" style="padding: 10px">
                 <div class="d-flex flex-row justify-content-between">
                     <div class="d-flex flex-row justify-content-start">
@@ -352,8 +354,8 @@
         })
 
     }
-    inputValidateCheck()
     initialiseCommitsList()
+    inputValidateCheck()
 
 
     /**
