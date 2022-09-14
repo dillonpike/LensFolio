@@ -41,6 +41,7 @@
         </div>
     </div>
     <script src="js/datepicker.js"></script>
+    <script src="js/textValidation.js"></script>
     <script type="text/javascript">
 
         /**
@@ -49,6 +50,7 @@
         async function validateMilestone() {
             if (validateModalDate('milestoneDate', 'submitMilestoneButton', 'milestoneDateAlertBanner', 'milestoneDateAlertMessage') && // "submitMilestoneButton" may be the wrong id?
                 validateModalName('milestoneName', 'milestoneAlertBanner', 'milestoneAlertMessage')) {
+                removeInvalidCharacters('milestoneName');
                 document.getElementById('milestoneForm').onsubmit = () => { return false };
                 document.getElementById('milestoneForm').submit();
                 sendSavedLiveNotificationRequest('Milestone');
@@ -56,5 +58,7 @@
         }
 
         milestoneDatePicker = configureDateTimePicker('milestoneDateInput');
+
+        disallowInvalidCharacters('milestoneName');
     </script>
 </div>

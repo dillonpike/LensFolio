@@ -83,6 +83,7 @@
         </div>
     </div>
     <script src="js/datepicker.js"></script>
+    <script src="js/textValidation.js"></script>
     <script type="text/javascript">
         const MAX_NUM_WEBLINKS = 10;
         let tooltip = null;
@@ -189,5 +190,9 @@
         }
 
         configureWebLinkInput();
+
+        disallowInvalidCharacters('evidenceTitle');
+        disallowInvalidCharacters('evidenceDescription');
+        disallowInvalidCharacters('evidenceWeblink');
     </script>
 </div>
