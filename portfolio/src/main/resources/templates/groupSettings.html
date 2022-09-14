@@ -209,14 +209,14 @@
                     <div class="d-flex flex-row justify-content-around">
                         <div>
                             <label for="branchNamesDropdown">Branch Name</label>
-                            <select id="branchNamesDropdown" class="dropDownSelect selectpicker" data-live-search="true" >
+                            <select id="branchNamesDropdown" onchange="updateCommitList()"  class="dropDownSelect selectpicker" data-live-search="true" >
                                 <option value="All Branches">All Branches</option>
                                 <option th:each="branchName: ${branchesName}" th:text="${branchName}" th:value="${branchName}"></option>
                             </select>
                         </div>
                         <div>
                             <label for="nameDropdown">Author Name</label>
-                            <select id="nameDropdown" class="dropDownSelect selectpicker" data-live-search="true" >
+                            <select id="nameDropdown" onchange="updateCommitList()" class="dropDownSelect selectpicker" data-live-search="true" >
                                 <option value="All Users">All Users</option>
                                 <option th:each="contributor: ${repositoryContributors}" th:text="${contributor.getName() + ' ('+contributor.getEmail()+')'}" th:value="${contributor.getEmail()}"></option>
                             </select>
@@ -249,13 +249,14 @@
                     </div>
                     <script th:inline="javascript">
                         /**
-                         * Update the commit list when the selected branch name is updated
+                         * Update the commit list when either the selected branch name or the selected user is updated
                          */
-                        $("#branchNamesDropdown").on("change", function () {
+                        function updateCommitList() {
+                            console.log("filterCommitsOption clicked");
                             updatingCommitsList()
                             const data = {
                                 groupId: ID,
-                                branchName: $(this).val(),
+                                branchName: $("#branchNamesDropdown").val(),
                                 userEmail: $("#nameDropdown").val()
                             }
                             $.get('repository-commits?' + new URLSearchParams(data)).done((result) => {
@@ -263,26 +264,7 @@
                                 finishUpdatingCommitsList()
                                 $('.dropDownSelect').selectpicker();
                             })
-
-                        });
-
-                        /**
-                         * Update the commit list when the selected user is updated
-                         */
-                        $("#nameDropdown").on("change", function () {
-                            updatingCommitsList()
-                            const data = {
-                                groupId: ID,
-                                branchName: $("#branchNamesDropdown").val(),
-                                userEmail: $(this).val()
-                            }
-                            $.get('repository-commits?' + new URLSearchParams(data)).done((result) => {
-                                $(`#commitsListRefresh`).replaceWith(result)
-                                finishUpdatingCommitsList()
-                                $('.dropDownSelect').selectpicker();
-                            })
-
-                        });
+                        }
                     </script>
                 </div>
             </div>
@@ -293,12 +275,6 @@
 <script src="js/groupSettingsLive.js"></script>
 
 <script th:inline="javascript">
-
-    // $("#groupSettingForm").submit(() => {
-    //     $.post("saveGroupSettings").done((ignore) => {
-    //         sendIdRefresh($("#groupId").val());
-    //     });
-    // })
 
     /*<![CDATA[*/
     const ID = /*[[${groupId}]]*/ "-1";
