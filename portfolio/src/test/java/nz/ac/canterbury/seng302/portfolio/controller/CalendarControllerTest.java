@@ -1,11 +1,14 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
+import com.google.protobuf.Timestamp;
 import nz.ac.canterbury.seng302.portfolio.model.Milestone;
 import nz.ac.canterbury.seng302.portfolio.model.Project;
 import nz.ac.canterbury.seng302.portfolio.model.Sprint;
 import nz.ac.canterbury.seng302.portfolio.service.*;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import nz.ac.canterbury.seng302.shared.identityprovider.ClaimDTO;
+import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
+import nz.ac.canterbury.seng302.shared.identityprovider.UserRole;
 import org.junit.Before;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -52,6 +55,22 @@ class CalendarControllerTest {
             .setName("validtesttoken")
             .build();
 
+    /**
+     * Mocked user response which contains the data of the user
+     */
+    private final UserResponse mockUser = UserResponse.newBuilder()
+        .setBio("default bio")
+        .setCreated(Timestamp.newBuilder().setSeconds(55))
+        .setEmail("hello@test.com")
+        .setFirstName("firsttestname")
+        .setLastName("lasttestname")
+        .setMiddleName("middlettestname")
+        .setNickname("niktestname")
+        .setPersonalPronouns("He/him")
+        .addRoles(UserRole.STUDENT)
+        .build();
+
+
     @Autowired
     private MockMvc mockMvc = MockMvcBuilders.standaloneSetup(CalendarController.class).build();
 
@@ -75,6 +94,9 @@ class CalendarControllerTest {
 
     @MockBean
     private UserAccountClientService userAccountClientService;
+
+    @MockBean
+    private RegisterClientService registerClientService;
 
     /**
      * unit testing to test the get method when calling "/calendar"
@@ -121,6 +143,8 @@ class CalendarControllerTest {
         when(userAccountClientService.getUserIDFromAuthState(any(AuthState.class))).thenReturn(1);
         when(sprintService.getAllSprintsOrdered()).thenReturn(sprints);
         when(projectService.getProjectById(any(Integer.class))).thenReturn(project);
+        when(registerClientService.getUserData(any(Integer.class))).thenReturn(mockUser);
+
 
         mockMvc.perform(get("/calendar"))
                 .andExpect(status().isOk()) // Whether to return the status "200 OK"
