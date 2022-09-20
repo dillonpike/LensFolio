@@ -5,7 +5,7 @@ import nz.ac.canterbury.seng302.portfolio.model.Group;
 import nz.ac.canterbury.seng302.portfolio.service.*;
 import nz.ac.canterbury.seng302.shared.identityprovider.*;
 import nz.ac.canterbury.seng302.shared.util.ValidationError;
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
@@ -20,6 +20,11 @@ import org.springframework.security.web.authentication.preauth.PreAuthenticatedA
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
+
+import java.util.Collections;
+import java.util.List;
 
 import static org.mockito.Mockito.*;
 import static org.mockito.Mockito.doReturn;
@@ -47,6 +52,7 @@ class GroupControllerTest {
             .setNickname("niktestname")
             .setPersonalPronouns("He/him")
             .addRoles(UserRole.STUDENT)
+            .setId(1)
             .build();
 
 
@@ -87,17 +93,24 @@ class GroupControllerTest {
     private final Group testGroup = new Group("Test", "Test Group", 1);
 
     /**
-     * Test GET request for group page at initial stage.
-     * @throws Exception Can be caused during mocking the MVC system.
+     * Set up the mock security context
      */
-    @Test
-    void testShowGroupPage() throws Exception {
+    @BeforeEach
+    void setup() {
         SecurityContext mockedSecurityContext = Mockito.mock(SecurityContext.class);
         when(mockedSecurityContext.getAuthentication()).thenReturn(new PreAuthenticatedAuthenticationToken(validAuthState, ""));
         SecurityContextHolder.setContext(mockedSecurityContext);
 
         when(userAccountClientService.getUserIDFromAuthState(any(AuthState.class))).thenReturn(1);
         when(registerClientService.getUserData(1)).thenReturn(mockUser);
+    }
+
+    /**
+     * Test GET request for group page at initial stage.
+     * @throws Exception Can be caused during mocking the MVC system.
+     */
+    @Test
+    void testShowGroupPage() throws Exception {
 
         GroupDetailsResponse groupDetailsResponse = GroupDetailsResponse.newBuilder().setGroupId(testGroup.getGroupId())
                 .setShortName(testGroup.getShortName()).setLongName(testGroup.getLongName()).build();
@@ -118,9 +131,6 @@ class GroupControllerTest {
      */
     @Test
     void testDeleteExistingGroup() throws Exception {
-        SecurityContext mockedSecurityContext = Mockito.mock(SecurityContext.class);
-        when(mockedSecurityContext.getAuthentication()).thenReturn(new PreAuthenticatedAuthenticationToken(validAuthState, ""));
-        SecurityContextHolder.setContext(mockedSecurityContext);
 
         int expectedGroupId = 1;
         doReturn(DeleteGroupResponse.newBuilder().setIsSuccess(true).build())
@@ -138,9 +148,6 @@ class GroupControllerTest {
      */
     @Test
     void testDeleteNonExistingGroup() throws Exception {
-        SecurityContext mockedSecurityContext = Mockito.mock(SecurityContext.class);
-        when(mockedSecurityContext.getAuthentication()).thenReturn(new PreAuthenticatedAuthenticationToken(validAuthState, ""));
-        SecurityContextHolder.setContext(mockedSecurityContext);
 
         int expectedGroupId = 1;
         doReturn(DeleteGroupResponse.newBuilder().setIsSuccess(false).build())
@@ -158,9 +165,6 @@ class GroupControllerTest {
      */
     @Test
     void testEditExistingGroup() throws Exception {
-        SecurityContext mockedSecurityContext = Mockito.mock(SecurityContext.class);
-        when(mockedSecurityContext.getAuthentication()).thenReturn(new PreAuthenticatedAuthenticationToken(validAuthState, ""));
-        SecurityContextHolder.setContext(mockedSecurityContext);
 
         int expectedGroupId = 1;
         Group group = new Group();
@@ -190,9 +194,6 @@ class GroupControllerTest {
      */
     @Test
     void testEditNonExistingGroup() throws Exception {
-        SecurityContext mockedSecurityContext = Mockito.mock(SecurityContext.class);
-        when(mockedSecurityContext.getAuthentication()).thenReturn(new PreAuthenticatedAuthenticationToken(validAuthState, ""));
-        SecurityContextHolder.setContext(mockedSecurityContext);
 
         int expectedGroupId = 1;
         Group group = new Group();
@@ -218,9 +219,6 @@ class GroupControllerTest {
      */
     @Test
     void testEditExistingGroupWithInvalidShortName() throws Exception {
-        SecurityContext mockedSecurityContext = Mockito.mock(SecurityContext.class);
-        when(mockedSecurityContext.getAuthentication()).thenReturn(new PreAuthenticatedAuthenticationToken(validAuthState, ""));
-        SecurityContextHolder.setContext(mockedSecurityContext);
 
         int expectedGroupId = 1;
         Group group = new Group();
@@ -248,9 +246,6 @@ class GroupControllerTest {
      */
     @Test
     void testEditExistingGroupWithInvalidLongName() throws Exception {
-        SecurityContext mockedSecurityContext = Mockito.mock(SecurityContext.class);
-        when(mockedSecurityContext.getAuthentication()).thenReturn(new PreAuthenticatedAuthenticationToken(validAuthState, ""));
-        SecurityContextHolder.setContext(mockedSecurityContext);
 
         int expectedGroupId = 1;
         Group group = new Group();
@@ -270,5 +265,41 @@ class GroupControllerTest {
                 .andExpect(view().name("fragments/groupModal::groupModalBody"));
 
         verify(groupService, times(1)).editGroupDetails(expectedGroupId, group.getShortName(), group.getLongName());
+    }
+
+    /**
+     * Test that when a POST call is made to edit a group of a given invalid id, that the controller returns an un-successful value.
+     * @throws Exception    Can be caused during mocking the MVC system.
+     */
+    @Test
+    void testRemovingUserFromGroup() throws Exception {
+
+        int groupId = 5;
+        Group group = new Group();
+        group.setShortName("New-group");
+        group.setLongName("My mock group"); // 67 CHARACTERS
+        group.setGroupId(groupId);
+
+        group.addMember(mockUser.getId());
+
+        List<Integer> groupMembers = Collections.singletonList(mockUser.getId());
+
+        when(elementService.getUserHighestRole(mockUser)).thenReturn("student");
+        RemoveGroupMembersResponse response = RemoveGroupMembersResponse.newBuilder().setIsSuccess(true).build();
+        GroupDetailsResponse groupResponse = GroupDetailsResponse.newBuilder().setGroupId(groupId).setMembers(0, mockUser).build();
+
+        doReturn(groupResponse).when(groupService).getGroupDetails(groupId);
+        doReturn(response).when(groupService).removeMembersFromGroup(groupId, groupMembers);
+
+
+        MultiValueMap<String, String> parameters = new LinkedMultiValueMap<>();
+        parameters.add("groupId", String.valueOf(groupId));
+        parameters.add("userIds", String.valueOf(mockUser.getId()));
+
+        mockMvc.perform(post("/remove-users").params(parameters))
+                .andExpect(status().isOk())
+                .andExpect(view().name("fragments/groupModal::groupModalBody"));
+
+        verify(groupService, times(1)).removeMembersFromGroup(groupId, groupMembers);
     }
 }
