@@ -84,6 +84,7 @@
     </div>
     <script src="js/datepicker.js"></script>
     <script src="js/textValidation.js"></script>
+    <script src="js/evidence.js"></script>
     <script type="text/javascript">
         const MAX_NUM_WEBLINKS = 10;
         let tooltip = null;
@@ -191,8 +192,8 @@
 
         configureWebLinkInput();
 
-        disallowInvalidCharacters('evidenceTitle');
-        disallowInvalidCharacters('evidenceDescription');
+        disallowEmojiCharacters('evidenceTitle');
+        disallowEmojiCharacters('evidenceDescription');
         disallowInvalidCharacters('evidenceWeblink');
 
         document.getElementById("evidenceModal").addEventListener("hidden.bs.modal", function () {
