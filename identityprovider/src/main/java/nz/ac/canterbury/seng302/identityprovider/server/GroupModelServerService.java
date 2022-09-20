@@ -243,6 +243,8 @@ public class GroupModelServerService extends GroupsServiceGrpc.GroupsServiceImpl
             // This is done as it assumes there's no returned issues with adding the user to the teachers group.
             // If roles are not being added or users not being added to the group correctly, check logs.
             isSuccess = true;
+        } else if (request.getUserIdsList().isEmpty()) {
+            isSuccess = false;
         } else {
             isSuccess = groupModelService.addUsersToGroup(users, request.getGroupId());
         }
@@ -313,12 +315,14 @@ public class GroupModelServerService extends GroupsServiceGrpc.GroupsServiceImpl
         RemoveGroupMembersResponse.Builder reply = RemoveGroupMembersResponse.newBuilder();
         Iterable<UserModel> users = userModelService.getUsersByIds(request.getUserIdsList());
         boolean isSuccess = false;
-        if (request.getGroupId() == (TEACHERS_GROUP_ID)) {
+        if (request.getUserIdsList().isEmpty()) {
+            isSuccess = false;
+        } else if (request.getGroupId() == (TEACHERS_GROUP_ID)) {
             checkUsersNotInTeachersGroup(users);
             // This is done as it assumes there's no returned issues with removing the user from the teachers group.
             // If roles are not being removed or users not being removed to the group correctly, check logs.
             isSuccess = true;
-        } else {
+        } else{
             try {
                 isSuccess = groupModelService.removeUsersFromGroup(users, request.getGroupId());
             } catch (InvalidAttributesException e) {

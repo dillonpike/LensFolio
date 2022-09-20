@@ -207,7 +207,8 @@ function copyUsers() {
     const groupName = $( "#groupDropdownList option:selected" ).text()
     const data = {
         groupId: document.getElementById('groupDropdownList').value,
-        userIds: userTable.rows('.selected').data().toArray().map(row => row.DT_RowId)
+        userIds: userTable.rows('.selected').data().toArray().map(row => row.DT_RowId),
+        currentGroupId: originGroupId
     }
     $.post('copy-users' + "?" + new URLSearchParams(data)).done((result) => {
         if (data.groupId === '1') {
