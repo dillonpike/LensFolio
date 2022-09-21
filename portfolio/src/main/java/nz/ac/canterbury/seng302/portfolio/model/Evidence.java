@@ -57,6 +57,15 @@ public class Evidence {
     private Set<WebLink> webLinks = new HashSet<>();
 
     /**
+     * The user ids of users that have high fived this piece of evidence.
+     */
+    @ElementCollection
+    @CollectionTable(name="users_high_fived_evidence", joinColumns=@JoinColumn(name="evidence_id"))
+    @Column(name="user_id")
+    private Set<Integer> highFiveIds = new HashSet<>();
+
+
+    /**
      * Empty constructor for JPA.
      */
     public Evidence() {}
@@ -179,5 +188,29 @@ public class Evidence {
      */
     public void removeWebLink(WebLink webLink) {
         this.webLinks.remove(webLink);
+    }
+
+    /**
+     * Gets the user ids of users that have high fived this piece of evidence.
+     * @return Set of user ids.
+     */
+    public Set<Integer> getHighFiveIds() {
+        return highFiveIds;
+    }
+
+    /**
+     * Adds a user id to the set of user ids of users that have high fived this piece of evidence.
+     * @param userId User id to add.
+     */
+    public void addHighFiveId(int userId) {
+        highFiveIds.add(userId);
+    }
+
+    /**
+     * Removes a user id from the set of user ids of users that have high fived this piece of evidence.
+     * @param userId User id to remove.
+     */
+    public void removeHighFiveId(int userId) {
+        highFiveIds.remove(userId);
     }
 }
