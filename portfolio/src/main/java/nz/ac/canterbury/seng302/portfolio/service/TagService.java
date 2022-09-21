@@ -2,6 +2,7 @@ package nz.ac.canterbury.seng302.portfolio.service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import nz.ac.canterbury.seng302.portfolio.model.Evidence;
 import nz.ac.canterbury.seng302.portfolio.model.Tag;
 import nz.ac.canterbury.seng302.portfolio.repository.EvidenceRepository;
@@ -44,8 +45,14 @@ public class TagService {
    * @param evidenceId id for piece of evidence
    * @return List of tags.
    */
-  public List<Tag> getTags(int evidenceId) {
-    return tagRepository.findByEvidenceId(evidenceId);
+  public Set<Tag> getTags(int evidenceId) {
+    Optional<Evidence> evidence = evidenceRepository.findById(evidenceId);
+    Set<Tag> tags = null;
+    if (evidence.isPresent()) {
+      Evidence evidence1 = evidence.get();
+      tags = evidence1.getTags();
+    }
+    return tags;
   }
 
   /**
@@ -61,9 +68,10 @@ public class TagService {
     }
   }
 
+  //TODO: Discuss if we want this!
   /**
    * Remove tags from the database that aren't connected to any pieces of evidence.
-   */
+   *//*
   public void removeTagsWithNoEvidence() {
     List<Tag> tags = tagRepository.findAll();
     for (Tag tag : tags) {
@@ -73,6 +81,6 @@ public class TagService {
         removeTag(tagId);
       }
     }
-  }
+  }*/
 
 }

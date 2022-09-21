@@ -10,6 +10,7 @@ import static org.mockito.Mockito.when;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 import nz.ac.canterbury.seng302.portfolio.model.Evidence;
 import nz.ac.canterbury.seng302.portfolio.model.Tag;
 import nz.ac.canterbury.seng302.portfolio.repository.EvidenceRepository;
@@ -72,20 +73,5 @@ class TagServiceTest {
     assertEquals(actualTags.size(), testTags.size());
     verify(tagRepository, times(1)).findAll();
   }
-
-  /**
-   * Tests that the getTags(int evidenceId) method returns all tags for a piece of evidence.
-   * Implement this when tags are a part of evidences.
-   */
-
-  @Test
-  void getTags() {
-    when(tagRepository.findByEvidenceId(1)).thenReturn(testTags);
-
-    List<Tag> actualTags = tagService.getTags(1);
-
-    assertEquals(4, actualTags.size());
-  }
-
 
 }
