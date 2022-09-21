@@ -59,6 +59,7 @@ public class EvidenceService {
     public void validateEvidence(Evidence evidence, Model model) throws NotAcceptableException {
         Pattern regex = Pattern.compile("^[\\p{N}\\p{P}\\p{S}\\p{Zs}]+$");
         Pattern webLinkRegex = Pattern.compile("^(http(s)?://)[\\w.-]+(?:\\.[\\w\\\\.-]+)*[\\w\\-\\\\._~:/?#\\[\\]@!$&'()*+,;=]+$");
+        Pattern emojiRegex = Pattern.compile("[^\\p{L}\\p{M}\\p{N}\\p{P}\\p{Z}\\p{Cf}\\p{Cs}\\s]");
         int maxNumWebLinks = 10;
         try {
             evidence.setTitle(evidence.getTitle().trim());
@@ -79,7 +80,11 @@ public class EvidenceService {
         } else if (regex.matcher(evidence.getTitle()).matches()) {
             model.addAttribute(ADD_EVIDENCE_MODAL_FRAGMENT_TITLE_MESSAGE, "Title must contain at least one letter");
             hasError = true;
+        } else if(emojiRegex.matcher(evidence.getTitle()).find()) {
+            model.addAttribute(ADD_EVIDENCE_MODAL_FRAGMENT_TITLE_MESSAGE, "Title must not contain emojis");
+            hasError = true;
         }
+
         if (evidence.getDescription() == null || evidence.getDescription().isEmpty()) {
             model.addAttribute(ADD_EVIDENCE_MODAL_FRAGMENT_DESCRIPTION_MESSAGE, "Description is required");
             hasError = true;
@@ -91,6 +96,9 @@ public class EvidenceService {
             hasError = true;
         } else if (regex.matcher(evidence.getDescription()).matches()) {
             model.addAttribute(ADD_EVIDENCE_MODAL_FRAGMENT_DESCRIPTION_MESSAGE, "Description must contain at least one letter");
+            hasError = true;
+        } else if (emojiRegex.matcher(evidence.getDescription()).find()) {
+            model.addAttribute(ADD_EVIDENCE_MODAL_FRAGMENT_DESCRIPTION_MESSAGE, "Description must not contain emojis");
             hasError = true;
         }
         if (evidence.getDate() == null || evidence.getDate().before(new Date(0))) {

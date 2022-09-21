@@ -9,8 +9,6 @@ async function validateEvidence() {
     const dateValid = validateModalDate('evidenceDate', 'milestoneModalButton', 'evidenceDateAlertBanner', 'evidenceDateAlertMessage')
     if (titleValid && descriptionValid && dateValid) {
         document.getElementById('evidenceForm').onsubmit = () => { return false };
-        removeInvalidCharacters('evidenceTitle');
-        removeInvalidCharacters('evidenceDescription');
         removeInvalidCharacters('evidenceWeblink');
         addEvidence()
         document.getElementById('evidenceForm').onsubmit = () => {validateEvidence(); return false}
@@ -42,6 +40,7 @@ function addEvidence() {
         userId: document.getElementById('userId').value,
         webLinks: webLinksList
     }
+
 
     $.post(document.getElementById('evidenceForm').action + "?" + new URLSearchParams(data)).done((result) => {
         replaceEvidenceModalBody(result);
@@ -123,4 +122,18 @@ function clearEvidenceModalFields() {
     $("#evidenceDescriptionAlertBanner").attr("hidden", "hidden");
     $("#evidenceDateAlertBanner").attr("hidden", "hidden");
     $("#evidenceWebLinksAlertBanner").attr("hidden", "hidden");
+}
+
+/**
+ * Validate the input so that the user cannot input emoji
+ * @param elementId the ID of the input element
+ */
+function disallowEmojiCharacters(elementId){
+    const input = document.getElementById(elementId);
+    const emojiRegex = /\p{Emoji_Presentation}/gu
+    input.addEventListener('input', function() {
+        if (emojiRegex.test(input.value)) {
+            input.value = input.value.replace(emojiRegex, '');
+        }
+    }, false);
 }
