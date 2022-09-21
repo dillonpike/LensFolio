@@ -74,6 +74,26 @@
                             </div>
 
                         </div>
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert" id="evidenceSkillTagsAlertBanner" th:hidden="${evidenceSkillTagsAlertMessage==null}">
+                            <span id="evidenceSkillTagsAlertMessage" data-test-id="alertMessage" th:text="${evidenceSkillTagsAlertMessage}"></span>
+                            <button type="button" class="btn-close" onclick="document.getElementById('evidenceSkillTagsAlertBanner').hidden = true" aria-label="Close"></button>
+                        </div>
+                        <div class="mb-3">
+                            <label for="evidenceSkillTag" class="col-form-label">Skill Tags:</label>
+                            <div class="input-group mb-3">
+                                <input id="evidenceSkillTag" onkeyup="{updateCharsLeft('evidenceSkillTag', 'evidenceSkillTagLength', 50);isEvidenceInputFieldFilled()}"
+                                       maxlength="250" type="url" class="form-control" placeholder="Verbal Communication" aria-label="Add Skill Tag"
+                                       aria-describedby="button-addon3" name="evidenceSkillTag">
+                                <button class="btn btn-outline-secondary" type="button" id="button-addon3" onclick="addSkillTags()">Add</button>
+                            </div>
+                            <div class="name-length-message">
+                                <span id="evidenceSkillTagLength"></span>
+                            </div>
+                            <div id="skillTagList">
+
+                            </div>
+
+                        </div>
                     </div>
                     <div class="modal-footer">
                         <button class="btn btn-primary disabled" id="evidenceModalButton" type="submit">Add Evidence</button>
@@ -86,6 +106,8 @@
     <script src="js/textValidation.js"></script>
     <script type="text/javascript">
         const MAX_NUM_WEBLINKS = 10;
+        const MAX_NUM_SKILLTAGS = 30;
+
         let tooltip = null;
         /**
          * Sets up date picker and tooltip for evidence date input. Runs in the modal html.
@@ -190,6 +212,80 @@
         }
 
         configureWebLinkInput();
+
+        let skillTagsList = [];
+        let skillTagId = 1;
+
+        /**
+         * Adds a skill tag to the list of skill tags.
+         */
+        function addSkillTags() {
+
+            const urlString = document.getElementById("evidenceSkillTag").value;
+            //validate
+
+                if (skillTagsList.length < MAX_NUM_SKILLTAGS) {
+                    let displayUrlString = "";
+                    displayUrlString = urlString.replaceAll(" ", "_");
+                    if (displayUrlString.length > 30) {
+                        displayUrlString = displayUrlString.substring(0, 29) + "...";
+                    }
+
+
+                    $("#skillTagList").append(`<div class="chip" id='skillTag${skillTagId}' style="display: inline-block;padding: 0 12px 0 15px;height: fit-content;font-size: 16px;line-height: 30px;border-radius: 25px;background-color: #f1f1f1f1;margin: 0 10px 10px 0;" data-toggle="tooltip" data-bs-placement="right" title="${urlString}">
+                                <div class="d-flex justify-content-between flex-row align-items-center">
+                                    <span style="margin-right: 10px">${displayUrlString}</span>
+                                    <button onclick="removeSkillTag('skillTag${skillTagId}')" type="button" class="btn-close" aria-label="Close"></button>
+                                </div>
+                            </div>`);
+                    skillTagId += 1;
+
+                    $('[data-toggle="tooltip"]').tooltip();
+
+                    $("#evidenceSkillTag").val("");
+                    updateCharsLeft('evidenceSkillTag', 'evidenceSkillTagLength', 250);
+                    //add to list
+                    skillTagsList.push(urlString);
+                    document.getElementById("evidenceSkillTagsAlertBanner").setAttribute("hidden", "true");
+                } else {
+                    $("#evidenceSkillTagsAlertMessage").text("You can only add up to " + MAX_NUM_SKILLTAGS + " skill tags.");
+                    document.getElementById("evidenceSkillTagsAlertBanner").removeAttribute("hidden");
+                }
+        }
+
+        /**
+         * Removes a skill tag from the list of skill tags.
+         * @param id the id of the skill tag to remove
+         */
+        function removeSkillTag(id) {
+            let urlHTML = $("#" + id);
+            let urlString = urlHTML.attr("data-bs-original-title");
+            for (let i = 0; i < skillTagsList.length; i++) {
+                if (skillTagsList[i] === urlString) {
+                    skillTagsList.splice(i, 1);
+                    break;
+                }
+            }
+            urlHTML.tooltip('dispose');
+            urlHTML.remove();
+        }
+
+
+        /**
+         * Configures the web link input so that it adds a web link rather than submitting the form if the user
+         * presses the enter key in the web link input field and has something typed in.
+         */
+        function configureSkillTagInput() {
+            const skillTagInput = document.getElementById("evidenceSkillTag");
+            skillTagInput.addEventListener("keydown", function (e) {
+                if (e.code === "Enter" && skillTagInput.value.trim() !== "") {
+                    e.preventDefault();
+                    addSkillTags();
+                }
+            });
+        }
+
+        configureSkillTagInput();
 
         disallowInvalidCharacters('evidenceTitle');
         disallowInvalidCharacters('evidenceDescription');

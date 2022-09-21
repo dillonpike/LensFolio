@@ -12,6 +12,7 @@ async function validateEvidence() {
         removeInvalidCharacters('evidenceTitle');
         removeInvalidCharacters('evidenceDescription');
         removeInvalidCharacters('evidenceWeblink');
+        removeInvalidCharacters('evidenceSkillTag');
         addEvidence()
         document.getElementById('evidenceForm').onsubmit = () => {validateEvidence(); return false}
         /* Refresh the container after adding a piece of evidence*/
@@ -51,6 +52,7 @@ function addEvidence() {
         showAlertToast("Evidence added successfully!");
         clearEvidenceModalFields();
         $("#webLinkList").html(""); // clear web links
+        $("#skillTagList").html(""); // clear skill tags
     }).fail((response) => {
         replaceEvidenceModalBody(response.responseText);
     })
@@ -66,6 +68,11 @@ function replaceEvidenceModalBody(modalBodyResponse) {
     // Restore weblinks that were deleted when the modal was replaced
     // Uses two duplicate jquery selectors since the element is replaced between each use
     $("#webLinkList").html(webLinks);
+    const skillTags = $("#skillTagList").children();
+        $("#evidenceModalBody").replaceWith(modalBodyResponse);
+        // Restore skilltags that were deleted when the modal was replaced
+        // Uses two duplicate jquery selectors since the element is replaced between each use
+        $("#skillTagList").html(skillTags);
     updateCharsLeft('evidenceTitle', 'evidenceTitleLength', 30);
     updateCharsLeft('evidenceDescription', 'evidenceDescriptionLength', 250);
     configureEvidenceDatePicker();
@@ -117,8 +124,10 @@ function clearEvidenceModalFields() {
     document.getElementById('evidenceTitle').value = "";
     document.getElementById('evidenceDescription').value = "";
     document.getElementById('evidenceWeblink').value = "";
+    document.getElementById('evidenceSkillTag').value = "";
     evidenceDatePicker.dates.setValue(tempusDominus.DateTime.convert(new Date()));
     webLinksList = [];
+    skillTagsList = [];
     $("#evidenceTitleAlertBanner").attr("hidden", "hidden");
     $("#evidenceDescriptionAlertBanner").attr("hidden", "hidden");
     $("#evidenceDateAlertBanner").attr("hidden", "hidden");
