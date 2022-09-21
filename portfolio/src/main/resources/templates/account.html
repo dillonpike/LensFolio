@@ -181,10 +181,15 @@
                         </div>
 
                         <!--Buttons for editing and deleting, for future use!!-->
-                        <div hidden>
+                        <div class="d-flex">
+                          <div class="button-divider">
+                            <button class="btn btn-default" type="button" th:id="'highFiveBtn' + ${evidence.getEvidenceId}" th:attr="onclick=|switchIcon('${evidence.getEvidenceId}')|" style="outline: none; box-shadow: none;">
+                              <i class="bi bi-star" th:id="'star' + ${evidence.getEvidenceId}"></i>
+                            </button>
+                          </div>
                           <div class="button-divider">
                             <div class="dropdown" th:if="${isAuthorised} == true">
-                              <button class="btn btn-default " type="button" id="evidenceActions" data-bs-toggle="dropdown" aria-expanded="false" >
+                              <button class="btn btn-default " type="button" id="evidenceActions" data-bs-toggle="dropdown" aria-expanded="false">
                                 <i class='bi bi-gear-fill'></i>
                               </button>
 
@@ -205,11 +210,9 @@
                                   </a>
                                 </li>
                               </ul>
-
                             </div>
                           </div>
                         </div>
-
                       </div>
                     </div>
                   </div>
@@ -234,7 +237,6 @@
 <script src="js/banner.js"></script>
 <script src="js/evidence.js"></script>
 <script th:inline="javascript">
-
 
 
   /*<![CDATA[*/
@@ -399,6 +401,17 @@
    */
   function getTab() {
     return localStorage.getItem('tab')
+  }
+
+  function switchIcon(id) {
+    const imgID = "#star" + id
+    const icon =  $(imgID);
+    if (icon.hasClass("bi-star")) {
+      icon.addClass("bi-star-fill").removeClass("bi-star");
+    } else {
+      icon.addClass("bi-star").removeClass("bi-star-fill");
+    }
+
   }
 
   // Set the current tab selected to what is in session storage, if it is not null.
