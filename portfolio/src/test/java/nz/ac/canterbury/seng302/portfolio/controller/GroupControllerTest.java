@@ -1,6 +1,7 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
 import com.google.protobuf.Timestamp;
+import nz.ac.canterbury.seng302.portfolio.model.Deadline;
 import nz.ac.canterbury.seng302.portfolio.model.Group;
 import nz.ac.canterbury.seng302.portfolio.service.*;
 import nz.ac.canterbury.seng302.shared.identityprovider.*;
@@ -8,6 +9,7 @@ import nz.ac.canterbury.seng302.shared.util.ValidationError;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -26,6 +28,7 @@ import org.springframework.util.MultiValueMap;
 import java.util.Collections;
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 import static org.mockito.Mockito.doReturn;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -268,8 +271,8 @@ class GroupControllerTest {
     }
 
     /**
-     * Test that when a POST call is made to edit a group of a given invalid id, that the controller returns an un-successful value.
-     * @throws Exception    Can be caused during mocking the MVC system.
+     * Tests removing a user from a group POST controller endpoint. The user is removed successfully.
+     * @throws Exception Can be caused during mocking the MVC system.
      */
     @Test
     void testRemovingUserFromGroup() throws Exception {
@@ -277,16 +280,16 @@ class GroupControllerTest {
         int groupId = 5;
         Group group = new Group();
         group.setShortName("New-group");
-        group.setLongName("My mock group"); // 67 CHARACTERS
+        group.setLongName("My mock group");
         group.setGroupId(groupId);
 
         group.addMember(mockUser.getId());
 
         List<Integer> groupMembers = Collections.singletonList(mockUser.getId());
 
-        when(elementService.getUserHighestRole(mockUser)).thenReturn("student");
+        when(elementService.getUserHighestRole(mockUser)).thenReturn("admin");
         RemoveGroupMembersResponse response = RemoveGroupMembersResponse.newBuilder().setIsSuccess(true).build();
-        GroupDetailsResponse groupResponse = GroupDetailsResponse.newBuilder().setGroupId(groupId).setMembers(0, mockUser).build();
+        GroupDetailsResponse groupResponse = GroupDetailsResponse.newBuilder().setGroupId(groupId).addMembers(mockUser).build();
 
         doReturn(groupResponse).when(groupService).getGroupDetails(groupId);
         doReturn(response).when(groupService).removeMembersFromGroup(groupId, groupMembers);
@@ -298,7 +301,42 @@ class GroupControllerTest {
 
         mockMvc.perform(post("/remove-users").params(parameters))
                 .andExpect(status().isOk())
-                .andExpect(view().name("fragments/groupModal::groupModalBody"));
+                .andExpect(view().name("group::groupCard"));
+
+        verify(groupService, times(1)).removeMembersFromGroup(groupId, groupMembers);
+    }
+
+    /**
+     * Tests removing a user from a group POST controller endpoint. The user is not removed.
+     * @throws Exception Can be caused during mocking the MVC system.
+     */
+    @Test
+    void testRemovingUserFromGroupFail() throws Exception {
+
+        int groupId = 5;
+        Group group = new Group();
+        group.setShortName("New-group");
+        group.setLongName("My mock group");
+        group.setGroupId(groupId);
+
+        group.addMember(mockUser.getId());
+
+        List<Integer> groupMembers = Collections.singletonList(mockUser.getId());
+
+        when(elementService.getUserHighestRole(mockUser)).thenReturn("admin");
+        RemoveGroupMembersResponse response = RemoveGroupMembersResponse.newBuilder().setIsSuccess(false).build();
+        GroupDetailsResponse groupResponse = GroupDetailsResponse.newBuilder().setGroupId(groupId).addMembers(mockUser).build();
+
+        doReturn(groupResponse).when(groupService).getGroupDetails(groupId);
+        doReturn(response).when(groupService).removeMembersFromGroup(groupId, groupMembers);
+
+
+        MultiValueMap<String, String> parameters = new LinkedMultiValueMap<>();
+        parameters.add("groupId", String.valueOf(groupId));
+        parameters.add("userIds", String.valueOf(mockUser.getId()));
+
+        mockMvc.perform(post("/remove-users").params(parameters))
+                .andExpect(status().is4xxClientError());
 
         verify(groupService, times(1)).removeMembersFromGroup(groupId, groupMembers);
     }
