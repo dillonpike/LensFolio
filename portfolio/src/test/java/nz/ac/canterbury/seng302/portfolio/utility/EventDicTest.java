@@ -58,8 +58,9 @@ class EventDicTest {
         dictionary.add(event);
 
         String JSON = dictionary.makeJSON();
+        String timeAndDate = event.getEndDateString() + " " + event.getEventEndTime();
         while (calStart.compareTo(calEnd) <= 0) {
-            Assertions.assertTrue(JSON.contains("{title: '1', start: '"+calStart.getTime().toInstant()+"', type: 'Event', description: '<strong>Events:</strong><br>- Test-Event &amp; &lt;br&gt;'},"));
+            Assertions.assertTrue(JSON.contains("{title: '1', start: '"+calStart.getTime().toInstant()+"', type: 'Event', description: '<strong>Events:</strong><br>- Test-Event &amp; &lt;br&gt;<br>"+timeAndDate+"'},"));
             calStart.add(Calendar.DATE, 1);
         }
     }
@@ -76,7 +77,8 @@ class EventDicTest {
         Deadline deadline = new Deadline(-1, "Test-Deadline & <br>", testDate);
         dictionary.add(deadline);
         String testDateString = updateDateString(deadline.getDeadlineDate());
-        String expectJSON = "{title: '1', start: '"+testDateString+"', type: 'Deadline', description: '<strong>Deadlines:</strong><br>- Test-Deadline &amp; &lt;br&gt;'},";
+        String timeString1 = deadline.getDeadlineTimeString12Hour();
+        String expectJSON = "{title: '1', start: '"+testDateString+"', type: 'Deadline', description: '<strong>Deadlines:</strong><br>- Test-Deadline &amp; &lt;br&gt;<br>"+ timeString1 + "'},";
         Assertions.assertEquals(expectJSON, dictionary.makeJSON());
     }
 
@@ -112,7 +114,8 @@ class EventDicTest {
         ArrayList<String> events = new ArrayList<>();
 
         String deadlineDateString = updateDateString(deadline.getDeadlineDate());
-        events.add("{title: '1', start: '"+deadlineDateString+"', type: 'Deadline', description: '<strong>Deadlines:</strong><br>- Test-Deadline &amp; &lt;br&gt;'},");
+        String timeString1 = deadline.getDeadlineTimeString12Hour();
+        events.add("{title: '1', start: '"+deadlineDateString+"', type: 'Deadline', description: '<strong>Deadlines:</strong><br>- Test-Deadline &amp; &lt;br&gt;<br>"+timeString1+"'},");
         String milestoneDateString = updateDateString(milestone.getMilestoneDate());
         events.add("{title: '1', start: '"+milestoneDateString+"', type: 'Milestone', description: '<strong>Milestones:</strong><br>- Test-Milestone &amp; &lt;br&gt;'},");
 
@@ -123,7 +126,8 @@ class EventDicTest {
         cal.set(Calendar.SECOND,0);
         cal.set(Calendar.MILLISECOND, 0);
         Instant eventDate = cal.toInstant();
-        events.add("{title: '1', start: '"+eventDate+"', type: 'Event', description: '<strong>Events:</strong><br>- Test-Event &amp; &lt;br&gt;'},");
+        String timeAndDate = event.getEndDateString() + " " + event.getEventEndTime();
+        events.add("{title: '1', start: '"+eventDate+"', type: 'Event', description: '<strong>Events:</strong><br>- Test-Event &amp; &lt;br&gt;<br>"+timeAndDate+"'},");
 
         String JSON = dictionary.makeJSON();
 
@@ -155,8 +159,10 @@ class EventDicTest {
         dictionary.add(deadline1);
         dictionary.add(deadline2);
         String testDateString = updateDateString(deadline1.getDeadlineDate());
+        String timeString1 = deadline1.getDeadlineTimeString12Hour();
+        String timeString2 = deadline2.getDeadlineTimeString12Hour();
         // Title is 2 as there are 2 deadlines added.
-        String expectJSON = "{title: '2', start: '"+testDateString+"', type: 'Deadline', description: '<strong>Deadlines:</strong><br>- Test-Deadline-1<br>- Test-Deadline-2'},";
+        String expectJSON = "{title: '2', start: '"+testDateString+"', type: 'Deadline', description: '<strong>Deadlines:</strong><br>- Test-Deadline-1<br>"+timeString1+"<br>- Test-Deadline-2<br>"+timeString2+"'},";
         Assertions.assertEquals(expectJSON, dictionary.makeJSON());
     }
 

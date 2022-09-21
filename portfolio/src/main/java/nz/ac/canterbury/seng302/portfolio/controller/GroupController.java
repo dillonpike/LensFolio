@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 
 import java.util.List;
 import java.util.Objects;
+
 import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletResponse;
 
@@ -47,6 +48,8 @@ public class GroupController {
     private static final String GROUP_LIST_FRAGMENT = "group::groupList";
 
     private static final Integer MEMBERS_WITHOUT_GROUP_ID = 1;
+
+    private static final Integer TEACHERS_GROUP_ID = 2;
 
     /**
      * Get method for group page to display group list and group detail
@@ -151,16 +154,29 @@ public class GroupController {
 
     /**
      * Submits a request to the identity provider to delete the group with the given id from the database. Adds a
-     * variable to the model indicating whether or not this was successful.
+     *      * variable to the model indicating whether or not this was successful.
+     * @param groupId Group id of the group having users removed.
+     * @param userIds A list of user ids to remove from the group.
+     * @param model Parameters sent to thymeleaf template to be rendered into HTML
      * @param httpServletResponse for adding status codes to
+     * @param principal for getting the current user
+     * @return return a fragment of the group page
      */
     @PostMapping("/remove-users")
     public String removeUsers(
         @RequestParam("groupId") Integer groupId,
         @RequestParam("userIds") List<Integer> userIds,
         Model model,
-        HttpServletResponse httpServletResponse
+        HttpServletResponse httpServletResponse,
+        @AuthenticationPrincipal AuthState principal
     ) {
+        Integer userId = userAccountClientService.getUserIDFromAuthState(principal);
+        UserResponse currentUser = registerClientService.getUserData(userId);
+        if (Objects.equals(groupId, TEACHERS_GROUP_ID)
+                && !elementService.getUserHighestRole(currentUser).equals("admin")
+        ) {
+            userIds.remove(userId);
+        }
         RemoveGroupMembersResponse response = groupService.removeMembersFromGroup(groupId, userIds);
         return returnGroupFragment(response.getIsSuccess(), httpServletResponse, groupId, model);
     }
@@ -204,9 +220,26 @@ public class GroupController {
     public String moveUsers(
             @RequestParam("groupId") Integer groupId,
             @RequestParam("userIds") List<Integer> userIds,
+            @RequestParam("currentGroupId") Integer currentGroupId,
             Model model,
-            HttpServletResponse httpServletResponse
+            HttpServletResponse httpServletResponse,
+            @AuthenticationPrincipal AuthState principal
     ) {
+        Integer userId = userAccountClientService.getUserIDFromAuthState(principal);
+        UserResponse currentUser = registerClientService.getUserData(userId);
+        List<UserResponse> listOfTeachers = groupService.getGroupDetails(TEACHERS_GROUP_ID).getMembersList();
+        List<Integer> listOfTeacherIds = listOfTeachers.stream().map(UserResponse::getId).toList();
+        if ((   (
+                Objects.equals(groupId, MEMBERS_WITHOUT_GROUP_ID) &&
+                Objects.equals(currentGroupId, TEACHERS_GROUP_ID)
+            ) ||
+                Objects.equals(groupId, MEMBERS_WITHOUT_GROUP_ID) &&
+                listOfTeacherIds.contains(userId)
+        ) &&
+                !elementService.getUserHighestRole(currentUser).equals("admin")
+        ) {
+            userIds.remove(userId);
+        }
         AddGroupMembersResponse response = groupService.addMemberToGroup(groupId, userIds);
         return returnGroupFragment(response.getIsSuccess(), httpServletResponse, groupId, model);
     }

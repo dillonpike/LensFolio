@@ -52,7 +52,7 @@ public class EventDic {
 
         // Uses EventTypes costume hashCode() to hash based on type and date.
         String eventData = datesToEvents.get(new EventTypes("Deadline", deadline.getDeadlineDateString()));
-        String description = "<strong>Deadlines:</strong><br>- " + HtmlUtils.htmlEscape(deadline.getDeadlineName());
+        String description = "<strong>Deadlines:</strong><br>- " + HtmlUtils.htmlEscape(deadline.getDeadlineName()) + "<br>" + HtmlUtils.htmlEscape(deadline.getDeadlineTimeString12Hour());
         StringBuilder eventObject = new StringBuilder();
 
         String date = updateDateString(deadline.getDeadlineDate());
@@ -62,7 +62,7 @@ public class EventDic {
         } else {
             try {
                 amount += Integer.parseInt(eventData.split("'")[1]);
-                description = eventData.split("'")[7] + MESSAGE_BR + HtmlUtils.htmlEscape(deadline.getDeadlineName());
+                description = eventData.split("'")[7] + MESSAGE_BR + HtmlUtils.htmlEscape(deadline.getDeadlineName()) + "<br>" + HtmlUtils.htmlEscape(deadline.getDeadlineTimeString12Hour());
             } catch (Exception ignore) {
                 // Current uses -1 to represent error. May want to change this to a thrown error.
                 amount = -1;
@@ -99,14 +99,14 @@ public class EventDic {
             Instant date = current.getTime().toInstant();
             // Uses EventTypes costume hashCode() to hash based on type and date.
             String eventData = datesToEvents.get(new EventTypes("Event", Project.dateToString(Date.from(date))));
-            String description = "<strong>Events:</strong><br>- " + HtmlUtils.htmlEscape(event.getEventName());
+            String description = "<strong>Events:</strong><br>- " + HtmlUtils.htmlEscape(event.getEventName()) + "<br>" + HtmlUtils.htmlEscape(event.getEndDateString()) + " " +HtmlUtils.htmlEscape(event.getEventEndTime());
             StringBuilder eventObject = new StringBuilder();
             if (eventData == null) {
                 eventObject.append(MESSAGE_TITLE).append(amount).append(MESSAGE_START).append(date).append("', type: 'Event").append(MESSAGE_DESCRIPTION).append(description).append("'},");
             } else {
                 try {
                     amount += Integer.parseInt(eventData.split("'")[1]);
-                    description = eventData.split("'")[7] + MESSAGE_BR + HtmlUtils.htmlEscape(event.getEventName());
+                    description = eventData.split("'")[7] + MESSAGE_BR + HtmlUtils.htmlEscape(event.getEventName()) + "<br>" + HtmlUtils.htmlEscape(event.getEndDateString()) + " " +HtmlUtils.htmlEscape(event.getEventEndTime());
                 } catch (Exception ignore) {
                     // Current uses -1 to represent error. May want to change this to a thrown error.
                     amount = -1;

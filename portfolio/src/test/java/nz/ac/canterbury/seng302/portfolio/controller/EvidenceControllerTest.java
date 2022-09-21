@@ -346,4 +346,24 @@ class EvidenceControllerTest {
 
         verify(evidenceService, times(0)).addEvidence(any(Evidence.class));
     }
+
+
+    /**
+     * Tests adding the evidence failing due to the evidence title and description have emojis
+     * @throws Exception If mocking the MVC fails.
+     */
+    @Test
+    void testAddEvidence400TitleAndDescriptionHasEmojiCharacters() throws Exception {
+        Evidence evidence = new Evidence(0, 0, "\uD83D\uDC7B\uD83D\uDC7B\uD83D\uDC7B\uD83D\uDC7Bsdsadad", "\uD83D\uDC7B\uD83D\uDC7B\uD83D\uDC7B\uD83D\uDC7Bsdsadad", new Date());
+        evidence.addWebLink(new WebLink("https://www.google.com"));
+        doCallRealMethod().when(evidenceService).validateEvidence(eq(evidence), any(Model.class));
+
+        mockMvc.perform(post("/add-evidence").flashAttr("evidence", evidence))
+                .andExpect(status().isBadRequest())
+                .andExpect(model().attributeDoesNotExist(ADD_EVIDENCE_MODAL_FRAGMENT_WEB_LINKS_MESSAGE))
+                .andExpect(model().attributeDoesNotExist(ADD_EVIDENCE_MODAL_FRAGMENT_DATE_MESSAGE))
+                .andExpect(model().attribute(ADD_EVIDENCE_MODAL_FRAGMENT_TITLE_MESSAGE, "Title must not contain emojis"))
+                .andExpect(model().attribute(ADD_EVIDENCE_MODAL_FRAGMENT_DESCRIPTION_MESSAGE, "Description must not contain emojis"));
+        verify(evidenceService, times(0)).addEvidence(any(Evidence.class));
+    }
 }
