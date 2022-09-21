@@ -41,7 +41,6 @@ function addEvidence() {
         webLinks: webLinksList
     }
 
-    console.log(data);
 
     $.post(document.getElementById('evidenceForm').action + "?" + new URLSearchParams(data)).done((result) => {
         replaceEvidenceModalBody(result);
@@ -134,7 +133,6 @@ function disallowEmojiCharacters(elementId){
     const emojiRegex = /\p{Emoji_Presentation}/gu
     input.addEventListener('input', function() {
         if (emojiRegex.test(input.value)) {
-            console.log("emoji detected")
             input.value = input.value.replace(emojiRegex, '');
         }
     }, false);
