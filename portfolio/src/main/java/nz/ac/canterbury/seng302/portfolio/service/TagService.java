@@ -36,7 +36,7 @@ public class TagService {
    * @return List of tags.
    */
   public List<Tag> getAllTags() {
-    return tagRepository.findAllOrdered();
+    return tagRepository.findAll();
   }
 
   /**
@@ -65,7 +65,7 @@ public class TagService {
    * Remove tags from the database that aren't connected to any pieces of evidence.
    */
   public void removeTagsWithNoEvidence() {
-    List<Tag> tags = tagRepository.findAllOrdered();
+    List<Tag> tags = tagRepository.findAll();
     for (Tag tag : tags) {
       int tagId = tag.getTagId();
       List<Evidence> evidences = evidenceRepository.findAllByTagId(tagId);
