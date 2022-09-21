@@ -6,6 +6,7 @@ import nz.ac.canterbury.seng302.portfolio.utility.EventDic;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import nz.ac.canterbury.seng302.shared.identityprovider.ClaimDTO;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
+import org.apache.http.HttpException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
@@ -155,6 +156,48 @@ public class CalendarController {
         return calendar.getTime();
     }
 
+    private void setCalendarData(Model model, AuthState principal) throws HttpException {
+        List<Sprint> sprints;
+        List<Event> events;
+        List<Deadline> deadlines;
+        List<Milestone> milestones;
+        try {
+            sprints = sprintService.getAllSprintsOrdered();
+            events = eventService.getAllEventsOrderedStartDate();
+            deadlines = deadlineService.getAllDeadlinesOrdered();
+            milestones = milestoneService.getAllMilestonesOrdered();
+        } catch (Exception e) {
+            throw new HttpException("500InternalServer");
+        }
+        String calendarEvents = sprintListToJSON(sprints) + eventsToDisplay(deadlines, events, milestones);
+        model.addAttribute("events", calendarEvents);
+        Project project;
+        try {
+            project = projectService.getProjectById(0);
+        } catch (Exception e) {
+            throw new HttpException("404NotFound");
+        }
+        Date endDate = SprintLifetimeController.getUpdatedDate(project.getEndDate(), 1, 0);
+        model.addAttribute("startDate", project.getStartDate());
+        model.addAttribute("endDate", endDate);
+        model.addAttribute("trueEndDate", project.getEndDate());
+        model.addAttribute("projectName", project.getName());
+        model.addAttribute("projectStartDateString", project.getStartDateString());
+        model.addAttribute("projectEndDateString", project.getEndDateString());
+        model.addAttribute("fullStartDate", getStartMonths(project.getStartDate()));
+        model.addAttribute("fullEndDate", getEndMonths(endDate));
+
+
+        String role = principal.getClaimsList().stream()
+                .filter(claim -> claim.getType().equals("role"))
+                .findFirst()
+                .map(ClaimDTO::getValue)
+                .orElse("NOT FOUND");
+
+
+        model.addAttribute("currentUserRole", role);
+    }
+
 
     /***
      * GET request method, followed by the request URL(../calendar)
@@ -166,10 +209,6 @@ public class CalendarController {
     public String calendarPage(
             Model model,
             @AuthenticationPrincipal AuthState principal) {
-        List<Sprint> sprints;
-        List<Event> events;
-        List<Deadline> deadlines;
-        List<Milestone> milestones;
         Integer id = userAccountClientService.getUserIDFromAuthState(principal);
         elementService.addHeaderAttributes(model, id);
         model.addAttribute("userId", id);
@@ -179,43 +218,24 @@ public class CalendarController {
         model.addAttribute("userFirstName", user.getFirstName());
         model.addAttribute("userLastName", user.getLastName());
         try {
-            sprints = sprintService.getAllSprintsOrdered();
-            events = eventService.getAllEventsOrderedStartDate();
-            deadlines = deadlineService.getAllDeadlinesOrdered();
-            milestones = milestoneService.getAllMilestonesOrdered();
-        } catch (Exception e) {
-            return "500InternalServer";
+            setCalendarData(model, principal);
+        } catch (HttpException e) {
+            return e.getMessage();
         }
-        String calendarEvents = sprintListToJSON(sprints) + eventsToDisplay(deadlines, events, milestones);
-        model.addAttribute("events", calendarEvents);
-
-        Project project;
-        try {
-            project = projectService.getProjectById(0);
-        } catch (Exception e) {
-            return "404NotFound";
-        }
-        Date endDate = SprintLifetimeController.getUpdatedDate(project.getEndDate(), 1, 0);
-        model.addAttribute("startDate", project.getStartDate());
-        model.addAttribute("endDate", endDate);
-        model.addAttribute("trueEndDate", project.getEndDate());
-
-        model.addAttribute("fullStartDate", getStartMonths(project.getStartDate()));
-        model.addAttribute("fullEndDate", getEndMonths(endDate));
-
-        model.addAttribute("projectName", project.getName());
-        model.addAttribute("projectStartDateString", project.getStartDateString());
-        model.addAttribute("projectEndDateString", project.getEndDateString());
-
-        String role = principal.getClaimsList().stream()
-                .filter(claim -> claim.getType().equals("role"))
-                .findFirst()
-                .map(ClaimDTO::getValue)
-                .orElse("NOT FOUND");
-
-
-        model.addAttribute("currentUserRole", role);
         return "calendar";
+    }
+
+    @GetMapping("/update-calendar")
+    public String updateCalendarPage(
+            Model model,
+            @AuthenticationPrincipal AuthState principal) {
+        try {
+            setCalendarData(model, principal);
+        } catch (HttpException e) {
+            return e.getMessage();
+        }
+
+        return "calendar::calendar_body";
     }
 
 
