@@ -37,6 +37,17 @@ public class EvidenceService {
     }
 
     /**
+     * This function returns all evidences based on the tagId.
+     * @param tagId the ID of a tag we want all pieces of evidence for.
+     * @return List of evidences.
+     */
+    public List<Evidence> getTaggedEvidences(int tagId) {
+        List<Evidence> listEvidences = evidenceRepository.findAllByTagId(tagId);
+        return listEvidences.stream().sorted((o1, o2)->o2.getDate().
+            compareTo(o1.getDate())).toList();
+    }
+
+    /**
      * Save a new evidence piece to the database.
      * @param newEvidence New evidence piece to be saved.
      * @return Whether the evidence was successfully saved.

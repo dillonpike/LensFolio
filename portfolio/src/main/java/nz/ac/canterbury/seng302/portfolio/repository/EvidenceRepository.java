@@ -12,4 +12,6 @@ public interface EvidenceRepository  extends CrudRepository<Evidence, Integer> {
     Set<Evidence> findByUserId(Long userId);
 
     List<Evidence> findAllByUserId(int userId);
+    List<Evidence> findAllByTagId(int tagId);
+
 }
