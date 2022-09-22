@@ -107,7 +107,7 @@
     <script src="js/evidence.js"></script>
     <script type="text/javascript">
         const MAX_NUM_WEBLINKS = 10;
-        const MAX_NUM_SKILLTAGS = 30;
+        const MAX_NUM_SKILLTAGS = 10;
 
         let tooltip = null;
         /**
@@ -215,7 +215,7 @@
         configureWebLinkInput();
 
         let skillTagsList = [];
-        let skillTagId = 1;
+        let tagId = 1;
 
         /**
          * Adds a skill tag to the list of skill tags.
@@ -233,13 +233,13 @@
                     }
 
 
-                    $("#skillTagList").append(`<div class="chip" id='skillTag${skillTagId}' style="display: inline-block;padding: 0 12px 0 15px;height: fit-content;font-size: 16px;line-height: 30px;border-radius: 25px;background-color: #f1f1f1f1;margin: 0 10px 10px 0;" data-toggle="tooltip" data-bs-placement="right" title="${urlString}">
+                    $("#skillTagList").append(`<div class="chip" id='tagName{tagId}' style="display: inline-block;padding: 0 12px 0 15px;height: fit-content;font-size: 16px;line-height: 30px;border-radius: 25px;background-color: #f1f1f1f1;margin: 0 10px 10px 0;" data-toggle="tooltip" data-bs-placement="right" title="${urlString}">
                                 <div class="d-flex justify-content-between flex-row align-items-center">
                                     <span style="margin-right: 10px">${displayUrlString}</span>
-                                    <button onclick="removeSkillTag('skillTag${skillTagId}')" type="button" class="btn-close" aria-label="Close"></button>
+                                    <button onclick="removeSkillTag('tagName{tagId}')" type="button" class="btn-close" aria-label="Close"></button>
                                 </div>
                             </div>`);
-                    skillTagId += 1;
+                    tagId += 1;
 
                     $('[data-toggle="tooltip"]').tooltip();
 
@@ -300,9 +300,13 @@
             document.getElementById("evidenceWebLinksAlertBanner").hidden = true;
             webLinksList = [];
             $("#webLinkList").empty();
+            document.getElementById("evidenceSkillTagsAlertBanner").hidden = true;
+            skillTagsList = [];
+            $("#skillTagList").empty();
             updateCharsLeft('evidenceTitle', 'evidenceTitleLength', 250);
             updateCharsLeft('evidenceDescription', 'evidenceDescriptionLength', 250);
             updateCharsLeft('evidenceWeblink', 'evidenceWebLinkLength', 250);
+            updateCharsLeft('evidenceSkillTag', 'evidenceSkillTagLength', 250);
         });
 
     </script>

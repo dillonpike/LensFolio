@@ -125,6 +125,15 @@ public class Evidence {
     }
 
     /**
+     * FOR JAVASCRIPT USE ONLY. Please use addSkillTags() and removeSkillTags() instead.
+     * Sets the tags associated with this evidence.
+     * @param tags new set of tags.
+     */
+    public void setTags(Set<Tag> tags) {
+        this.tags = tags;
+    }
+
+    /**
      * Gets a set of tags corresponding to the evidence.
      * @return Set of Tags.
      */
