@@ -2,6 +2,7 @@ package nz.ac.canterbury.seng302.portfolio.service;
 
 
 import nz.ac.canterbury.seng302.portfolio.model.Evidence;
+import nz.ac.canterbury.seng302.portfolio.model.Tag;
 import nz.ac.canterbury.seng302.portfolio.model.WebLink;
 import nz.ac.canterbury.seng302.portfolio.repository.EvidenceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +15,7 @@ import java.util.Date;
 import static nz.ac.canterbury.seng302.portfolio.controller.EvidenceController.*;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.regex.Pattern;
 
 /**
@@ -24,6 +26,9 @@ public class EvidenceService {
 
     @Autowired
     private EvidenceRepository evidenceRepository;
+
+    @Autowired
+    private TagService tagService;
 
     /**
      * This function returns all evidences based on the userId.
@@ -119,6 +124,51 @@ public class EvidenceService {
         if (hasError) {
             throw new NotAcceptableException("Evidence fields have errors");
         }
+    }
+
+    /**
+     * Checks to ensure that if a piece of evidence has a user attached to it.
+     * @param evidenceId    The evidence being checked.
+     * @param userId        The user that needs to be attached to the evidence.
+     * @return  Boolean on is the user is part of the evidence.
+     */
+    private boolean isUserAttached(int evidenceId, int userId){
+        Optional<Evidence> sOptional = evidenceRepository.findById(evidenceId);
+        boolean exists = false;
+
+        if (sOptional.isPresent()) {
+            Evidence evidence = sOptional.get();
+            if (evidence.getUserId() == userId) {
+                exists = true;
+            }
+        }
+
+        return exists;
+    }
+
+    /**
+     * Gets all pieces of evidences that have a certain skill and also orders them in reveres chronological order.
+     * @param skillId   The skill that needs to be attached to the evidence.
+     * @return      List of evidence with a given skill.
+     */
+    public List<Evidence> getEvidencesWithSkill(int skillId) throws NullPointerException{
+        Tag tag = tagService.getTag(skillId);
+        return tag.getEvidence().stream().sorted((o1, o2)->o2.getDate().
+                compareTo(o1.getDate())).toList();
+    }
+
+    /**
+     * Gets all pieces of evidences that have a certain skill and user attached to it
+     * and also orders them in reveres chronological order.
+     * @param userId    The user that needs to be attached to the evidence.
+     * @param skillId   The skill that needs to be attached to the evidence.
+     * @return      List of evidence with a given skill and user attached.
+     */
+    public List<Evidence> getEvidencesWithSkillAndUser(int userId, int skillId) throws NullPointerException{
+
+        Tag tag = tagService.getTag(skillId);
+        return tag.getEvidence().stream().filter(evidence -> isUserAttached(evidence.getEvidenceId(), userId)).sorted((o1, o2)->o2.getDate().
+                compareTo(o1.getDate())).toList();
     }
 
 }
