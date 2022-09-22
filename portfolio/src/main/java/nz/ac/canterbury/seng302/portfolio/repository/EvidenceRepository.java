@@ -10,6 +10,5 @@ import java.util.Set;
 public interface EvidenceRepository  extends CrudRepository<Evidence, Integer> {
     Optional<Evidence> findById(int id);
     Set<Evidence> findByUserId(Long userId);
-
     List<Evidence> findAllByUserId(int userId);
 }
