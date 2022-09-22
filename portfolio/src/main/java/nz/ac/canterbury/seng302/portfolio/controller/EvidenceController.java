@@ -85,11 +85,11 @@ public class EvidenceController {
 
     /**
      * Method to display the main page for viewing skill specific pieces of evidence.
-     * @param model
-     * @param principal
-     * @param userId
-     * @param skillId
-     * @return
+     * @param model         Parameters sent to thymeleaf template to be rendered into HTML.
+     * @param principal     Used for authentication of a user.
+     * @param userId        The id of the current user.
+     * @param skillId       The id of the current skill being searched for.
+     * @return              redirect user to evidence tab, or keep up modal if there are errors.
      */
     @GetMapping("/evidence-skills")
     public String evidenceSkillPage(
