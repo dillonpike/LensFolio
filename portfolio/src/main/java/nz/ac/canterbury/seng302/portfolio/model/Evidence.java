@@ -129,8 +129,12 @@ public class Evidence {
      * Sets the tags associated with this evidence.
      * @param tags new set of tags.
      */
-    public void setTags(Set<Tag> tags) {
-        this.tags = tags;
+    public void setTags(Set<String> tags) {
+        Set<Tag> finalTags = new HashSet<>();
+        for (String tag : tags) {
+            finalTags.add(new Tag(tag));
+        }
+        this.tags = finalTags;
     }
 
     /**
