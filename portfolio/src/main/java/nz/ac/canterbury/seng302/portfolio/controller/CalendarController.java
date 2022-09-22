@@ -156,6 +156,10 @@ public class CalendarController {
         return calendar.getTime();
     }
 
+    /**
+     * This method is used to set all the data needed for calendar view.
+     * @throws HttpException The http exception thrown if the something fails.
+     */
     private void setCalendarData(Model model, AuthState principal) throws HttpException {
         List<Sprint> sprints;
         List<Event> events;
@@ -225,6 +229,12 @@ public class CalendarController {
         return "calendar";
     }
 
+    /**
+     * This method is used to update calendar data. It is called when user made any update on project page that might affect the calendar.
+     * @param model The model to be updated.
+     * @param principal Authentication state of the user.
+     * @return the fragment of the calendar to be updated inside calendar page.
+     */
     @GetMapping("/update-calendar")
     public String updateCalendarPage(
             Model model,
