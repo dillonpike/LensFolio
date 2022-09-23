@@ -248,7 +248,7 @@
   /*<![CDATA[*/
   let projectEndDate = /*[[${project.getEndDate()}]]*/ "Error";
   let projectStartDate = /*[[${project.getStartDate()}]]*/ "Error";
-  /*]]>*/
+
 
   $(function () {
     $('[data-bs-toggle="popover"]').popover()
@@ -422,6 +422,8 @@
     const icon =  $(imgID);
     if (icon.hasClass("bi-star")) {
       icon.addClass("bi-star-fill").removeClass("bi-star");
+
+      sendHighFivedNotfication();
     } else {
       icon.addClass("bi-star").removeClass("bi-star-fill");
     }
@@ -444,6 +446,17 @@
   if (tabToSet) {
     document.getElementById(tabToSet).click();
   }
+
+  function sendHighFivedNotfication() {
+    console.log("it actually works!")
+
+    stompClient.send("/webSocketPost/high-fived-evidence", {}, JSON.stringify({
+      'sendingUserId': /*[[${userId}]]*/ null,
+      'receivingUserId': /*[[${viewedUserId}]]*/ null
+    }));
+  }
+
+  /*]]>*/
 
 </script>
 </html>

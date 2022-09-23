@@ -3,6 +3,8 @@ package nz.ac.canterbury.seng302.portfolio.controller;
 import io.grpc.StatusRuntimeException;
 import java.util.List;
 import nz.ac.canterbury.seng302.portfolio.model.Evidence;
+import nz.ac.canterbury.seng302.portfolio.model.NotificationGroup;
+import nz.ac.canterbury.seng302.portfolio.model.NotificationHighFive;
 import nz.ac.canterbury.seng302.portfolio.model.Project;
 import nz.ac.canterbury.seng302.portfolio.service.*;
 import nz.ac.canterbury.seng302.portfolio.utility.DateUtility;
@@ -11,6 +13,8 @@ import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -75,6 +79,7 @@ public class AccountController {
                 return "404NotFound";
             }
             elementService.addRoles(model, getUserByIdReply);
+            model.addAttribute("viewedUserId", userId);
             model.addAttribute("firstName", getUserByIdReply.getFirstName());
             model.addAttribute("lastName", getUserByIdReply.getLastName());
             model.addAttribute("username", getUserByIdReply.getUsername());
@@ -131,6 +136,13 @@ public class AccountController {
     ) {
         rm.addAttribute(USER_ID_ATTRIBUTE_NAME,userId);
         return "redirect:account";
+    }
+
+
+    @MessageMapping("/high-fived-evidence")
+    @SendTo("/webSocketGet/notification-of-highfive")
+    public NotificationHighFive refreshGroupSettingsOutside(NotificationHighFive notificationHighFive) {
+        return notificationHighFive;
     }
 
 }
