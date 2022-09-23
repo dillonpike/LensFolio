@@ -422,7 +422,7 @@
     const icon =  $(imgID);
     if (icon.hasClass("bi-star")) {
       icon.addClass("bi-star-fill").removeClass("bi-star");
-      sendHighFivedNotfication(id);
+      sendHighFivedNotfication(id); // Send notification that post was liked.
     } else {
       icon.addClass("bi-star").removeClass("bi-star-fill");
     }
@@ -450,6 +450,10 @@
   let stompClient = Stomp.over(socket);
   stompClient.debug = null;
 
+  /**
+   * Used to send a notification that a piece of evidence was highfived to the controller.
+   * @param id    The ID of the evidnce that was highfived.
+   */
   function sendHighFivedNotfication(id) {
     const title = $("#evidence-title-" + id).text();
     stompClient.send("/webSocketPost/high-fived-evidence", {}, JSON.stringify({
@@ -460,7 +464,6 @@
       'receivingUserId': /*[[${viewedUserId}]]*/ null
     }));
   }
-
   /*]]>*/
 
 </script>

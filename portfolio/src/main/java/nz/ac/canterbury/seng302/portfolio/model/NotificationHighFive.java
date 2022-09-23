@@ -1,7 +1,13 @@
 package nz.ac.canterbury.seng302.portfolio.model;
 
+/**
+ * This class is used to store the parameters of the JSON list as it is passed through message mapping to the controller.
+ */
 public class NotificationHighFive {
 
+    /**
+     * This class should not be able to be created other than through the Javascript message mapping system.
+     */
     private NotificationHighFive() {}
 
     private int sendingUserId;

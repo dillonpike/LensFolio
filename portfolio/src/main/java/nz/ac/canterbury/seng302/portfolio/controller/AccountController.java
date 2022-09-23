@@ -138,7 +138,12 @@ public class AccountController {
         return "redirect:account";
     }
 
-
+    /***
+     * Used to handle the interaction between a piece of evidence being highfived
+     * and the notification being shown through the header.
+     *
+     * @return Send a notification to the header to display a highfive notification.
+     */
     @MessageMapping("/high-fived-evidence")
     @SendTo("/webSocketGet/notification-of-highfive")
     public NotificationHighFive refreshGroupSettingsOutside(NotificationHighFive notificationHighFive) {
