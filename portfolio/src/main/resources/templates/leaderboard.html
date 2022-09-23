@@ -33,12 +33,12 @@
             </tr>
             </thead>
             <tbody>
-            <tr id="rows"  th:each="user, meta : ${users}" th:id="${user.Id}">
-                <td th:text="${meta.index + 1}"></td>
-                <td th:text="${user.FirstName}"></td>
-                <td th:text="${user.LastName}"></td>
-                <td th:text="${user.username}"></td>
-                <td th:text="1"></td>
+            <tr id="rows"  th:each="leaderboardEntry : ${leaderboardEntries}" th:id="${leaderboardEntry.getUserId()}">
+                <td th:text="${leaderboardEntry.getRank()}"></td>
+                <td th:text="${leaderboardEntry.getFirstName()}"></td>
+                <td th:text="${leaderboardEntry.getLastName()}"></td>
+                <td th:text="${leaderboardEntry.getUsername()}"></td>
+                <td th:text="${leaderboardEntry.getScore()}"></td>
             </tr>
             </tbody>
         </table>
