@@ -6,8 +6,37 @@ public class NotificationHighFive {
 
     private int sendingUserId;
 
-    // TODO Change to a list as multiple users can be connected to one.
     private int receivingUserId;
+
+    private String sendingUserFullName;
+
+    private String sendingEvidenceTitle;
+
+    private int sendingEvidenceId;
+
+    public int getSendingEvidenceId() {
+        return sendingEvidenceId;
+    }
+
+    public void setSendingEvidenceId(int sendingEvidenceId) {
+        this.sendingEvidenceId = sendingEvidenceId;
+    }
+
+    public String getSendingUserFullName() {
+        return sendingUserFullName;
+    }
+
+    public String getSendingEvidenceTitle() {
+        return sendingEvidenceTitle;
+    }
+
+    public void setSendingEvidenceTitle(String sendingEvidenceTitle) {
+        this.sendingEvidenceTitle = sendingEvidenceTitle;
+    }
+
+    public void setSendingUserFullName(String sendingUserFullName) {
+        this.sendingUserFullName = sendingUserFullName;
+    }
 
     public int getSendingUserId() {
         return sendingUserId;

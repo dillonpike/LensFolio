@@ -73,7 +73,12 @@ class Notification {
         } else {
             this.titleName = "Activity";
         }
-        this.id = type.toLowerCase() + "_" + username + "_" + id;
+
+        if (type === HIGHFIVETYPE) {
+            this.id = type.toLowerCase() + "_" + id;
+        } else {
+            this.id = type.toLowerCase() + "_" + username + "_" + id;
+        }
         this.id_number = id;
         this.action = action;
     }
@@ -140,7 +145,7 @@ class Notification {
                 this.bodyText = "'" + this.name + "' has been deleted by " + this.firstName + " " + this.lastName + " (" + this.username + ").";
                 break;
             case HIGHFIVEACTION:
-                this.bodyText = "'" + this.name + "' has been high fived by " + this.firstName + " " + this.lastName + " (" + this.username + ").";
+                this.bodyText = "'" + this.name + "' has been high fived by " + this.username + ".";
                 break;
             default:
                 this.bodyText = "'" + this.name + "' has been changed by " + this.firstName + " " + this.lastName + " (" + this.username + ").";
@@ -219,25 +224,12 @@ Notification.prototype.toString = function () {
 
 
 /**
- * Holds a list of Notification objects that are, or have been active. Can only be as long as listOfHTMLToasts.
- * @type {[Notification]}
- */
-let listOfNotifications = [];
-
-/**
- * List of html toast object pairs that hold a Bootstrap toast object, a body text variable and a title text variable.
- * These can be assigned to Notification objects to display them.
- * @type {[{'toast', 'text', 'title'}]}
- */
-let listOfHTMLToasts = [];
-
-/**
  * Adds Notification objects to the listOfNotifications list if it is new, otherwise updates the existing notification.
  * Then reassigns the toast html objects to the new list.
  * @param newNotification New toast object to add/update to the list.
  * @returns {Notification} updated toast if it already existed, otherwise, returns the parameter 'newToast'.
  */
-function addNotification(newNotification) {
+function addNotification(newNotification, listOfNotifications, listOfHTMLToasts) {
     let returnedNotification = newNotification;
 
     let notificationExists = false;
@@ -259,14 +251,14 @@ function addNotification(newNotification) {
             listOfNotifications.shift();
         }
     }
-    reorderNotifications();
+    reorderNotifications(listOfNotifications, listOfHTMLToasts);
     return returnedNotification;
 }
 
 /**
  * Reassigns toast html objects to the toast objects that are active at the moment (in the list 'listOfToasts')
  */
-function reorderNotifications() {
+function reorderNotifications(listOfNotifications, listOfHTMLToasts) {
     let count = 0;
     for (let item in listOfHTMLToasts) {
         listOfHTMLToasts[count].toast.hide();

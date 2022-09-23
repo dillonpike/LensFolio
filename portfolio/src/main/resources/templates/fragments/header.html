@@ -16,13 +16,6 @@
                 <strong class="me-auto" th:id="${#ids.seq('toastTitleHighfive')}"></strong>
             </div>
             <div class="toast-body" th:id="${#ids.seq('popupTextHighfive')}"></div>
-            <div th:id="${#ids.seq('toastInformation')}" th:text="${toast.getArtefactInformation()}" hidden="true"></div>
-            <div th:id="${#ids.seq('toastArtefactName')}" th:text="${toast.getArtefactName()}" hidden="true"></div>
-            <div th:id="${#ids.seq('toastArtefactId')}" th:text="${toast.getArtefactId()}" hidden="true"></div>
-            <div th:id="${#ids.seq('toastUsername')}" th:text="${toast.getUsername()}" hidden="true"></div>
-            <div th:id="${#ids.seq('toastFirstName')}" th:text="${toast.getUserFirstName()}" hidden="true"></div>
-            <div th:id="${#ids.seq('toastLastName')}" th:text="${toast.getUserLastName()}" hidden="true"></div>
-            <div th:id="${#ids.seq('toastAction')}" th:text="${toast.getAction()}" hidden="true"></div>
         </div>
     </div>
 </div>
@@ -119,7 +112,20 @@
     }
     /*]]>*/
 
-    function connect() {
+    /**
+     * Holds a list of Notification objects that are, or have been active. Can only be as long as listOfHTMLToasts.
+     * @type {[Notification]}
+     */
+    let listOfNotificationsHeader = [];
+
+    /**
+     * List of html toast object pairs that hold a Bootstrap toast object, a body text variable and a title text variable.
+     * These can be assigned to Notification objects to display them.
+     * @type {[{'toast', 'text', 'title'}]}
+     */
+    let listOfHTMLToastsHeader = [];
+
+    function connectHeader() {
         let socket = new SockJS('mywebsockets');
         stompClientHeader = Stomp.over(socket);
         stompClientHeader.debug = null;
@@ -127,15 +133,21 @@
             stompClientHeader.subscribe('/webSocketGet/notification-of-highfive', function (HighFivedResponseArg) {
                 const highFivedResponse = JSON.parse(HighFivedResponseArg.body);
                 if (highFivedResponse.receivingUserId == /*[[${userId}]]*/ null) {
-                    showHighFiveToast(highFivedResponse.sendingUserId, highFivedResponse.receivingUserId);
+                    showHighFiveToast(
+                        highFivedResponse.sendingUserId,
+                        highFivedResponse.receivingUserId,
+                        highFivedResponse.sendingUserFullName,
+                        highFivedResponse.sendingEvidenceTitle,
+                        highFivedResponse.sendingEvidenceId
+                    );
                 }
             });
         });
     }
 
-    function showHighFiveToast(userId, viewedUserId) {
-        let newNotification = new Notification("HighFive", "Your evidence", 1, "username", "firstName", "lastName", "highfive");
-        newNotification = addNotification(newNotification);
+    function showHighFiveToast(userId, viewedUserId, fullName, title, evidenceId) {
+        let newNotification = new Notification("HighFive", title, evidenceId, fullName, "", "", "highfive");
+        newNotification = addNotification(newNotification, listOfNotificationsHeader, listOfHTMLToastsHeader);
         newNotification.show();
         newNotification.hideTimed(15);
     }
@@ -147,12 +159,12 @@
             let toastString = "#liveToastHighfive" + (i+1);
             let popupTextString = "#popupTextHighfive" + (i+1);
             let toastTitleString = "#toastTitleHighfive" + (i+1);
-            listOfHTMLToasts.push({'toast':new bootstrap.Toast($(toastString)), 'text':$(popupTextString), 'title':$(toastTitleString)})
+            listOfHTMLToastsHeader.push({'toast':new bootstrap.Toast($(toastString)), 'text':$(popupTextString), 'title':$(toastTitleString)})
         }
     }
     $(function() {
         generateHtmlToasts();
-        connect();
+        connectHeader();
     })
 
 </script>

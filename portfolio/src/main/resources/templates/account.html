@@ -149,7 +149,7 @@
                       <div class="detail-block">
                         <div class="evidence-info-block" th:if="${evidence}">
                           <button th:id="evidenceDropdown + (${meta.index} + 1)" class="btn" type="button" data-bs-toggle="collapse" th:attr="data-bs-target='#collapseEvidence' + ${evidence.getEvidenceId()}, aria-controls='collapseEvidence' + ${evidence.getEvidenceId()}, onClick='changeIcon(evidenceArrow' + (${meta.index} + 1) + ')'" aria-expanded="false" style="outline: none; box-shadow: none;">
-                            <span class="evidence-title" th:text="${evidence.getTitle}"></span>
+                            <span class="evidence-title" th:text="${evidence.getTitle}" th:id="'evidence-title-' + ${evidence.getEvidenceId}"></span>
                             <svg th:id="evidenceArrow + (${meta.index} + 1)" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-caret-left-fill" viewBox="0 0 16 16">
                               <path d="m3.86 8.753 5.482 4.796c.646.566 1.658.106 1.658-.753V3.204a1 1 0 0 0-1.659-.753l-5.48 4.796a1 1 0 0 0 0 1.506z"/>
                             </svg>
@@ -422,7 +422,7 @@
     const icon =  $(imgID);
     if (icon.hasClass("bi-star")) {
       icon.addClass("bi-star-fill").removeClass("bi-star");
-      sendHighFivedNotfication();
+      sendHighFivedNotfication(id);
     } else {
       icon.addClass("bi-star").removeClass("bi-star-fill");
     }
@@ -450,9 +450,13 @@
   let stompClient = Stomp.over(socket);
   stompClient.debug = null;
 
-  function sendHighFivedNotfication() {
+  function sendHighFivedNotfication(id) {
+    const title = $("#evidence-title-" + id).text();
     stompClient.send("/webSocketPost/high-fived-evidence", {}, JSON.stringify({
       'sendingUserId': /*[[${userId}]]*/ null,
+      'sendingUserFullName': /*[[${headerFullName}]]*/ null,
+      'sendingEvidenceTitle': title,
+      'sendingEvidenceId': id,
       'receivingUserId': /*[[${viewedUserId}]]*/ null
     }));
   }
