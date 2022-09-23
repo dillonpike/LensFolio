@@ -181,6 +181,9 @@ class Notification {
         this.toast.hide();
     }
 
+    /**
+     * Resets the notification so it doesn't contain any old data.
+     */
     resetToast() {
         this.highfivers = [];
         this.username = "";
