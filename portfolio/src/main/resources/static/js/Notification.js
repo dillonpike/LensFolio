@@ -5,12 +5,14 @@ const EVENTTYPE = "Event";
 const DEADLINETYPE = "Deadline";
 const MILESTONETYPE = "Milestone";
 const GROUPTYPE = "Group";
+const HIGHFIVETYPE = "HighFive"
 
 
 const ADDACTION = "add";
 const SAVEACTION = "save";
 const EDITACTION = "edit";
 const DELETEACTION = "delete";
+const HIGHFIVEACTION = "highfive"
 
 
 /**
@@ -66,6 +68,8 @@ class Notification {
             this.titleName = "Milestone Activity";
         } else if (type === GROUPTYPE) {
             this.titleName = "Group Activity";
+        } else if (type === HIGHFIVETYPE) {
+            this.titleName = "High Five Activity";
         } else {
             this.titleName = "Activity";
         }
@@ -123,20 +127,23 @@ class Notification {
         this.isWaitingToBeHidden = false;
         this.selectedDate = (new Date(Date.now())).valueOf();
         switch(this.action){
-          case SAVEACTION:
-              this.bodyText = "'" + this.name + "' has been updated by " + this.firstName + " " + this.lastName + " (" + this.username + ").";
-              break;
-          case EDITACTION:
-              this.bodyText = "'" + this.name + "' is being edited by " + this.firstName + " " + this.lastName + " (" + this.username + ").";
-              break;
-          case ADDACTION:
-              this.bodyText = this.firstName + " " + this.lastName + " (" + this.username + ") has added a new " + this.type.toLowerCase() + "."
-              break;
-          case DELETEACTION:
-              this.bodyText = "'" + this.name + "' has been deleted by " + this.firstName + " " + this.lastName + " (" + this.username + ").";
-              break;
-          default:
-              this.bodyText = "'" + this.name + "' has been changed by " + this.firstName + " " + this.lastName + " (" + this.username + ").";
+            case SAVEACTION:
+                this.bodyText = "'" + this.name + "' has been updated by " + this.firstName + " " + this.lastName + " (" + this.username + ").";
+                break;
+            case EDITACTION:
+                this.bodyText = "'" + this.name + "' is being edited by " + this.firstName + " " + this.lastName + " (" + this.username + ").";
+                break;
+            case ADDACTION:
+                this.bodyText = this.firstName + " " + this.lastName + " (" + this.username + ") has added a new " + this.type.toLowerCase() + "."
+                break;
+            case DELETEACTION:
+                this.bodyText = "'" + this.name + "' has been deleted by " + this.firstName + " " + this.lastName + " (" + this.username + ").";
+                break;
+            case HIGHFIVEACTION:
+                this.bodyText = "'" + this.name + "' has been high fived by " + this.firstName + " " + this.lastName + " (" + this.username + ").";
+                break;
+            default:
+                this.bodyText = "'" + this.name + "' has been changed by " + this.firstName + " " + this.lastName + " (" + this.username + ").";
 
 
         }
