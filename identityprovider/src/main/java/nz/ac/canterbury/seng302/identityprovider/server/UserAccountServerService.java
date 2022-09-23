@@ -134,6 +134,7 @@ public class UserAccountServerService extends UserAccountServiceGrpc.UserAccount
                 }
 
                 reply
+                        .setId(request.getId())
                         .setEmail(user.getEmail())
                         .setFirstName(user.getFirstName())
                         .setLastName(user.getLastName())

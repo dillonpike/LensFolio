@@ -2,6 +2,7 @@ package nz.ac.canterbury.seng302.portfolio.service;
 
 
 import nz.ac.canterbury.seng302.portfolio.model.Evidence;
+import nz.ac.canterbury.seng302.portfolio.model.HighFivers;
 import nz.ac.canterbury.seng302.portfolio.model.WebLink;
 import nz.ac.canterbury.seng302.portfolio.repository.EvidenceRepository;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
@@ -9,12 +10,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 
+import javax.naming.directory.InvalidAttributesException;
 import javax.ws.rs.NotAcceptableException;
+import java.util.ArrayList;
 import java.util.Date;
 
 import static nz.ac.canterbury.seng302.portfolio.controller.EvidenceController.*;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.regex.Pattern;
 
 /**
@@ -130,7 +134,21 @@ public class EvidenceService {
      * @param evidence evidence to get high fivers of
      * @return list of all users that have high fived the piece of evidence
      */
-    public List<UserResponse> getHighFivers(Evidence evidence) {
-        return evidence.getHighFiverIds().stream().map(registerClientService::getUserData).toList();
+    public List<HighFivers> getHighFivers(Integer evidenceId) throws InvalidAttributesException {
+        Optional<Evidence> evidenceOptional = evidenceRepository.findById(evidenceId);
+        if (evidenceOptional.isPresent()) {
+            Evidence evidence = evidenceOptional.get();
+            List<HighFivers> highFivers = new ArrayList<>();
+            for(Integer userID : evidence.getHighFiverIds()){
+                UserResponse userResponse = registerClientService.getUserData(userID);
+                String name = userResponse.getFirstName() + " " + userResponse.getLastName();
+                highFivers.add(new HighFivers(name, userID));
+            }
+
+            return highFivers;
+        } else {
+            throw new InvalidAttributesException("User does not exist ");
+        }
+
     }
 }

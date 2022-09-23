@@ -77,7 +77,7 @@ public class RegisterClientService {
      */
     public UserResponse getUserData(final int userId) {
         GetUserByIdRequest response = GetUserByIdRequest.newBuilder().setId(userId).build();
-        return userAccountStub.getUserAccountById(response);
+        return  userAccountStub.getUserAccountById(response);
     }
 
     /**

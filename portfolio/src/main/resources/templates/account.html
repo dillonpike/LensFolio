@@ -189,7 +189,7 @@
                           </div>
                           <div class="button-divider">
                             <button class="btn btn-default" type="button" th:id="'UserList' + ${evidence.getEvidenceId}" th:attr="onclick=|togglePopover('${evidence.getEvidenceId}')|" style="outline: none; box-shadow: none;"
-                                    data-bs-toggle="popover" data-bs-placement="bottom" title="User List:" data-bs-content="No HighFive Yet" data-bs-html="true">
+                                    data-bs-toggle="popover" data-bs-placement="bottom" title="User List:" data-bs-content='<div class="spinner-border" role="status"><span class="sr-only"></span></div>' data-bs-html="true">
                               <i class="bi bi-people"></i>
                             </button>
                           </div>
@@ -434,9 +434,34 @@
    * @param id  ID of the popover to toggle being displayed.
    */
   function togglePopover(id) {
-    const popOverID = "#UserList" + id
-    const popOver =  $(popOverID);
-    popOver.attr("data-bs-content", "User-1-" + id + "<br/>" + "User-2-" + id)
+    let popOverContent = "";
+    $.get('get-high-fivers?evidenceId='+id).done((result) => {
+      for (let i = 0; i < result.length; i++) {
+        if(i === result.length - 1){
+          popOverContent += `<span>${result[i].name}</span>`
+        } else {
+          popOverContent += `<span>${result[i].name}</span><br/>`
+        }
+
+      }
+      const popOverID = "#UserList" + id
+      const popOver =  $(popOverID);
+      console.log(popOverContent);
+      // popOver.removeAttr("data-bs-content");
+      // popOver.attr("data-bs-content", "bhjhkjhkhkhk")
+      popOver.popover({
+        html: true,
+        sanitize: false,
+        content: function () {
+          return popOverContent;
+
+
+        }
+      });
+    })
+
+
+
   }
 
   // Set the current tab selected to what is in session storage, if it is not null.
