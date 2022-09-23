@@ -38,7 +38,7 @@ public class Tag {
     }
 
     public void setTagName(String tagName) {
-        this.tagName = tagName;
+        this.tagName = tagName.replaceAll(" ", "_").trim();
     }
 
     public int getTagId() {

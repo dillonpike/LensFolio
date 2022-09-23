@@ -118,7 +118,7 @@ public class EvidenceService {
                 break;
             }
         }
-        /*if (evidence.getTags().size() > maxNumSkillTags) {
+        if (evidence.getTags().size() > maxNumSkillTags) {
             model.addAttribute(ADD_EVIDENCE_MODAL_FRAGMENT_SKILL_TAGS_MESSAGE, "You can only have up to 10 skill tags");
             hasError = true;
         }
@@ -128,7 +128,7 @@ public class EvidenceService {
                 hasError = true;
                 break;
             }
-        }*/
+        }
         if (hasError) {
             throw new NotAcceptableException("Evidence fields have errors");
         }

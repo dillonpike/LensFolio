@@ -227,11 +227,10 @@
 
                 if (skillTagsList.length < MAX_NUM_SKILLTAGS) {
                     let displayUrlString = "";
-                    displayUrlString = urlString.replaceAll(" ", "_");
+                    displayUrlString = urlString.replaceAll(" ", "_").trim();
                     if (displayUrlString.length > 30) {
                         displayUrlString = displayUrlString.substring(0, 29) + "...";
                     }
-
 
                     $("#skillTagList").append(`<div class="chip" id='tagName{tagId}' style="display: inline-block;padding: 0 12px 0 15px;height: fit-content;font-size: 16px;line-height: 30px;border-radius: 25px;background-color: #f1f1f1f1;margin: 0 10px 10px 0;" data-toggle="tooltip" data-bs-placement="right" title="${urlString}">
                                 <div class="d-flex justify-content-between flex-row align-items-center">
@@ -246,7 +245,7 @@
                     $("#evidenceSkillTag").val("");
                     updateCharsLeft('evidenceSkillTag', 'evidenceSkillTagLength', 250);
                     //add to list
-                    skillTagsList.push(urlString);
+                    skillTagsList.push(displayUrlString);
                     document.getElementById("evidenceSkillTagsAlertBanner").setAttribute("hidden", "true");
                 } else {
                     $("#evidenceSkillTagsAlertMessage").text("You can only add up to " + MAX_NUM_SKILLTAGS + " skill tags.");
