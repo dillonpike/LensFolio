@@ -13,6 +13,7 @@ const SAVEACTION = "save";
 const EDITACTION = "edit";
 const DELETEACTION = "delete";
 const HIGHFIVEACTION = "highfive"
+const HIGHFIVEUPDATEACTION = "highfiveUpdate"
 
 
 /**
@@ -43,6 +44,7 @@ class Notification {
     username = "";
     firstName = "";
     lastName = "";
+    highfivers = [];
 
     /**
      * Default constructor.
@@ -60,6 +62,7 @@ class Notification {
         this.firstName = firstName;
         this.lastName = lastName;
         this.type = type;
+        this.highfivers = [];
         if (type === EVENTTYPE) {
             this.titleName = "Event Activity";
         } else if (type === DEADLINETYPE) {
@@ -108,6 +111,10 @@ class Notification {
         return this.action;
     }
 
+    get numOfHighFivers() {
+        return this.numOfHighfivers;
+    }
+
     set username(username) {
         this.username = username;
     }
@@ -123,6 +130,12 @@ class Notification {
     set action(action) {
         this.action = action;
     }
+
+    set numOfHighFivers(numOfHighFivers) {
+        this.numOfHighfivers = numOfHighFivers;
+    }
+
+
 
     /**
      * Shows the notification with the assigned toast with the correct message and title.
@@ -147,6 +160,9 @@ class Notification {
             case HIGHFIVEACTION:
                 this.bodyText = "'" + this.name + "' has been high fived by " + this.username + ".";
                 break;
+            case HIGHFIVEUPDATEACTION:
+                this.bodyText = "'" + this.name + "' has been high fived by " + this.username + " and " + (this.highfivers.length - 2) + " other users.";
+                break;
             default:
                 this.bodyText = "'" + this.name + "' has been changed by " + this.firstName + " " + this.lastName + " (" + this.username + ").";
 
@@ -165,6 +181,12 @@ class Notification {
         this.toast.hide();
     }
 
+    resetToast() {
+        this.highfivers = [];
+        this.username = "";
+        this.action = HIGHFIVEACTION;
+    }
+
     /**
      * Hides the notification after a timer.
      * @param timeInSeconds Time in seconds for the notification to hide after. Should be equal to 1 or above
@@ -178,6 +200,7 @@ class Notification {
         setTimeout((function (notification) {
             let currentTime = (new Date(Date.now())).valueOf();
             if (currentTime >= notification.selectedDate + ((timeInSeconds * 1000) - 500) && notification.isWaitingToBeHidden) {
+                notification.resetToast();
                 notification.hide();
             }
         }), timeInSeconds * 1000, this);
@@ -206,9 +229,19 @@ class Notification {
      * @returns {Notification} Returns its updated self.
      */
     updateNotification(newNotification) {
-        this.name = newNotification.name;
-        this.action = newNotification.action;
-
+        if (((this.action === HIGHFIVEACTION) || (this.action === HIGHFIVEUPDATEACTION))
+            && !(this.highfivers.includes(newNotification.username))) {
+            if (this.highfivers.length === 1) {
+                this.username += ", " + newNotification.username
+                this.highfivers.push(newNotification.username);
+            } else if (this.highfivers.length >= 2) {
+                this.action = HIGHFIVEUPDATEACTION
+                this.highfivers.push(newNotification.username);
+            } else {
+                this.username = newNotification.username
+                this.highfivers.push(newNotification.username);
+            }
+        }
         return this;
     }
 }
