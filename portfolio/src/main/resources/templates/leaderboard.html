@@ -4,7 +4,9 @@
     <meta charset="UTF-8">
     <title>Leaderboard</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <link th:href="@{css/leaderboard.css}" rel="stylesheet" />
     <link th:href="@{css/group.css}" rel="stylesheet" />
+
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" crossorigin="anonymous">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
@@ -44,7 +46,15 @@
         </table>
         <!--Must have in line script here-->
         <script>
-            leaderboardTable = $('table').DataTable({searching: false, paging: true, info: false, select: false});
+            leaderboardTable = $('table').DataTable({searching: false, paging: true, info: false, select: false, sort: false,
+                'rowCallback': function(row, data) {
+                    const rankToColour = {'1': 'gold', '2': 'silver', '3': 'bronze'}
+                    if (data[0] in rankToColour) {
+                        $(row).addClass(rankToColour[data[0]])
+                    }
+                }
+            });
+
         </script>
     </div>
 </div>
