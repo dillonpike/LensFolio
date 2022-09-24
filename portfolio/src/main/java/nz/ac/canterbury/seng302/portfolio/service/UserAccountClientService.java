@@ -54,7 +54,7 @@ public class UserAccountClientService {
      */
     public List<UserResponse> getStudentUsers() {
         return getAllUsers().getUsersList().stream()
-                .filter(user -> user.getRolesList().stream().map(UserRole::getNumber).toList().contains(0))
+                .filter(user -> user.getRolesList().contains(UserRole.STUDENT))
                 .toList();
     }
 
