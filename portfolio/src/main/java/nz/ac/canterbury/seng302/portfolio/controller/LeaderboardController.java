@@ -32,7 +32,7 @@ public class LeaderboardController {
     ) {
         Integer id = userAccountClientService.getUserIDFromAuthState(principal);
         elementService.addHeaderAttributes(model, id);
-        List<LeaderboardEntry> leaderboardEntries = leaderboardService.getLeaderboardEntries(userAccountClientService.getAllUsers().getUsersList());
+        List<LeaderboardEntry> leaderboardEntries = leaderboardService.getLeaderboardEntries(userAccountClientService.getStudentUsers());
         model.addAttribute("leaderboardEntries", leaderboardEntries);
 
         return "leaderboard";
