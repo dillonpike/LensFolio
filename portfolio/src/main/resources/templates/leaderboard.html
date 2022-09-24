@@ -24,7 +24,7 @@
 <div class="container" id="leaderboardTableContainer">
     <h1>Leaderboard</h1>
     <div id="leaderboardTable" th:fragment="leaderboardTable">
-        <table class="table table-striped table-bordered display" id="table" >
+        <table class="table table-striped table-bordered display table-hover" id="table" >
             <thead class="table-dark" id="headTable">
             <tr>
                 <th id="rankColumn">Rank</th>
@@ -35,7 +35,8 @@
             </tr>
             </thead>
             <tbody>
-            <tr id="rows"  th:each="leaderboardEntry : ${leaderboardEntries}" th:id="${leaderboardEntry.getUserId()}">
+            <tr id="rows"  th:each="leaderboardEntry : ${leaderboardEntries}" th:id="${leaderboardEntry.getUserId()}"
+                th:attr="onclick='redirectToEvidence(' + ${leaderboardEntry.getUserId()} + ')'" style="cursor: pointer">
                 <td th:text="${leaderboardEntry.getRank()}"></td>
                 <td th:text="${leaderboardEntry.getFirstName()}"></td>
                 <td th:text="${leaderboardEntry.getLastName()}"></td>
@@ -59,4 +60,5 @@
     </div>
 </div>
 </body>
+<script src="js/redirect.js"></script>
 </html>
