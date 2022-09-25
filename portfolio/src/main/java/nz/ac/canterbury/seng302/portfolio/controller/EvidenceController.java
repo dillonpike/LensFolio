@@ -108,17 +108,20 @@ public class EvidenceController {
         Integer id = userAccountClientService.getUserIDFromAuthState(principal);
         elementService.addHeaderAttributes(model, id);
 
-        List<Evidence> evidenceList = null;
-        Tag skillTag = null;
+        List<Evidence> evidenceList;
+        Tag skillTag;
 
         try {
             evidenceList = evidenceService.getEvidencesWithSkill(skillId);
             skillTag = tagService.getTag(skillId);
+            if (skillTag == null) {
+                throw new NullPointerException("Invalid Tag Id");
+            }
         } catch (NullPointerException e) {
-            return "account";
+            return "redirect:account?userId=" + id;
         }
 
-        model.addAttribute("evidencesExists", (evidenceList == null));
+        model.addAttribute("evidencesExists", ((evidenceList != null) && (!evidenceList.isEmpty())));
         model.addAttribute("evidences", evidenceList);
         model.addAttribute("skillTag", skillTag);
 
@@ -131,20 +134,21 @@ public class EvidenceController {
     public String membersWithoutAGroupCard(
             Model model,
             @RequestParam(value = "userId") int userId,
+            @RequestParam(value = "viewedUserId") int viewedUserId,
             @RequestParam(value = "listAll") boolean listAll,
             @RequestParam(value = "skillId") int skillId
     ) {
-        List<Evidence> evidenceList = null;
+        List<Evidence> evidenceList;
         try {
             if (listAll) {
                 evidenceList = evidenceService.getEvidencesWithSkill(skillId);
             } else {
-                evidenceList = evidenceService.getEvidencesWithSkillAndUser(userId, skillId);
+                evidenceList = evidenceService.getEvidencesWithSkillAndUser(viewedUserId, skillId);
             }
         } catch (NullPointerException e) {
-            return "account";
+            return "redirect:account?userId=" + userId;
         }
-        model.addAttribute("evidencesExists", (evidenceList == null));
+        model.addAttribute("evidencesExists",  ((evidenceList != null) && (!evidenceList.isEmpty())));
         model.addAttribute("evidences", evidenceList);
 
         return "evidence::evidenceList";
