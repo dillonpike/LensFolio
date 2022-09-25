@@ -2,6 +2,7 @@ package nz.ac.canterbury.seng302.portfolio.controller;
 
 import nz.ac.canterbury.seng302.portfolio.model.Evidence;
 import nz.ac.canterbury.seng302.portfolio.model.Tag;
+import nz.ac.canterbury.seng302.portfolio.service.ElementService;
 import nz.ac.canterbury.seng302.portfolio.service.EvidenceService;
 import nz.ac.canterbury.seng302.portfolio.service.TagService;
 import nz.ac.canterbury.seng302.portfolio.service.UserAccountClientService;
@@ -34,6 +35,9 @@ public class EvidenceController {
 
     @Autowired
     private TagService tagService;
+
+    @Autowired
+    private ElementService elementService;
 
     @Autowired
     private UserAccountClientService userAccountClientService;
@@ -101,21 +105,49 @@ public class EvidenceController {
             @RequestParam(value = "userId") int userId,
             @RequestParam(value = "skillId") int skillId
     ) {
+        Integer id = userAccountClientService.getUserIDFromAuthState(principal);
+        elementService.addHeaderAttributes(model, id);
+
         List<Evidence> evidenceList = null;
         Tag skillTag = null;
 
         try {
-            evidenceList = evidenceService.getEvidencesWithSkillAndUser(userId, skillId);
+            evidenceList = evidenceService.getEvidencesWithSkill(skillId);
             skillTag = tagService.getTag(skillId);
         } catch (NullPointerException e) {
-            logger.info("No Skills found");
+            return "account";
         }
 
         model.addAttribute("evidencesExists", (evidenceList == null));
-        model.addAttribute("tagExists", (evidenceList == null));
         model.addAttribute("evidences", evidenceList);
         model.addAttribute("skillTag", skillTag);
+
+        model.addAttribute("viewedUserId", userId);
+        model.addAttribute("skillId", skillId);
         return "evidence";
     }
 
+    @GetMapping("/switch-evidence-list")
+    public String membersWithoutAGroupCard(
+            Model model,
+            @AuthenticationPrincipal AuthState principal,
+            @RequestParam(value = "userId") int userId,
+            @RequestParam(value = "listAll") boolean listAll,
+            @RequestParam(value = "skillId") int skillId
+    ) {
+        List<Evidence> evidenceList = null;
+        try {
+            if (listAll) {
+                evidenceList = evidenceService.getEvidencesWithSkill(skillId);
+            } else {
+                evidenceList = evidenceService.getEvidencesWithSkillAndUser(userId, skillId);
+            }
+        } catch (NullPointerException e) {
+            return "account";
+        }
+        model.addAttribute("evidencesExists", (evidenceList == null));
+        model.addAttribute("evidences", evidenceList);
+
+        return "evidence::evidenceList";
+    }
 }
