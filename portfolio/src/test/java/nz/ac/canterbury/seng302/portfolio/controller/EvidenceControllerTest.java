@@ -3,9 +3,7 @@ package nz.ac.canterbury.seng302.portfolio.controller;
 import com.google.protobuf.Timestamp;
 import nz.ac.canterbury.seng302.portfolio.model.Evidence;
 import nz.ac.canterbury.seng302.portfolio.model.WebLink;
-import nz.ac.canterbury.seng302.portfolio.service.EvidenceService;
-import nz.ac.canterbury.seng302.portfolio.service.RegisterClientService;
-import nz.ac.canterbury.seng302.portfolio.service.UserAccountClientService;
+import nz.ac.canterbury.seng302.portfolio.service.*;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import nz.ac.canterbury.seng302.shared.identityprovider.ClaimDTO;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
@@ -49,6 +47,12 @@ class EvidenceControllerTest {
 
     @MockBean
     private EvidenceService evidenceService;
+
+    @MockBean
+    private TagService tagService;
+
+    @MockBean
+    private ElementService elementService;
 
     @MockBean
     private UserAccountClientService userAccountClientService; // needed to load application context
