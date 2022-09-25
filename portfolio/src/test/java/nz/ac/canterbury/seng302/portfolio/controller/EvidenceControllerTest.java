@@ -2,9 +2,11 @@ package nz.ac.canterbury.seng302.portfolio.controller;
 
 import com.google.protobuf.Timestamp;
 import nz.ac.canterbury.seng302.portfolio.model.Evidence;
+import nz.ac.canterbury.seng302.portfolio.model.Tag;
 import nz.ac.canterbury.seng302.portfolio.model.WebLink;
 import nz.ac.canterbury.seng302.portfolio.service.EvidenceService;
 import nz.ac.canterbury.seng302.portfolio.service.RegisterClientService;
+import nz.ac.canterbury.seng302.portfolio.service.TagService;
 import nz.ac.canterbury.seng302.portfolio.service.UserAccountClientService;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import nz.ac.canterbury.seng302.shared.identityprovider.ClaimDTO;
@@ -32,9 +34,9 @@ import java.util.List;
 import static nz.ac.canterbury.seng302.portfolio.controller.EvidenceController.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 /**
  * Tests for the evidence controller.
@@ -49,6 +51,9 @@ class EvidenceControllerTest {
 
     @MockBean
     private EvidenceService evidenceService;
+
+    @MockBean
+    private TagService tagService;
 
     @MockBean
     private UserAccountClientService userAccountClientService; // needed to load application context
@@ -365,5 +370,21 @@ class EvidenceControllerTest {
                 .andExpect(model().attribute(ADD_EVIDENCE_MODAL_FRAGMENT_TITLE_MESSAGE, "Title must not contain emojis"))
                 .andExpect(model().attribute(ADD_EVIDENCE_MODAL_FRAGMENT_DESCRIPTION_MESSAGE, "Description must not contain emojis"));
         verify(evidenceService, times(0)).addEvidence(any(Evidence.class));
+    }
+
+    /**
+     * Tests that the get skills endpoint returns a list of skill ids and names.
+     * @throws Exception If mocking the MVC fails.
+     */
+    @Test
+    void testGetSkills() throws Exception {
+        List<Tag> skills = List.of(new Tag("test skill 1"), new Tag("test skill 2"));
+        int userId = 5;
+        when(tagService.getTagsFromUserId(userId)).thenReturn(skills);
+
+        mockMvc.perform(get("/get-skills").param("userId", String.valueOf(userId)))
+                .andExpect(status().isOk())
+                .andExpect(content().string(String.format("[[\"%s\",\"%s\"],[\"%s\",\"%s\"]]",
+                        skills.get(0).getTagId(), skills.get(1).getTagId(), skills.get(0).getTagName(), skills.get(1).getTagName())));
     }
 }

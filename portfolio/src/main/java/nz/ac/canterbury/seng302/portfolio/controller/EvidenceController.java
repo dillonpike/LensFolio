@@ -48,10 +48,10 @@ public class EvidenceController {
     public static final String ADD_EVIDENCE_MODAL_FRAGMENT_SKILL_TAGS_MESSAGE = "evidenceSkillTagsAlertMessage";
 
     /**
-     * Method tries to add and sve the new evidence piece to the database
+     * Method tries to add and sve the new evidence piece to the database.
      * @param model Parameters sent to thymeleaf template to be rendered into HTML
      * @param httpServletResponse for adding status codes to
-     * @return redirect user to evidence tab, or keep up modal if there are errors.
+     * @return redirect user to evidence tab, or keep up modal if there are errors
      */
     @PostMapping("/add-evidence")
     public String addEvidence(
@@ -85,14 +85,15 @@ public class EvidenceController {
     }
 
     /**
-     * Returns list of tag names used by the user
+     * Returns a list of the ids and names of skills used by the user.
      * @param userId user id of the user
      * @return set of tag names
      */
     @GetMapping("/get-skills")
     @ResponseBody
     public List<List<String>> getSkills(@RequestParam("userId") int userId) {
-        return List.of(tagService.getTagsFromUserId(userId).stream().map(tag -> String.valueOf(tag.getTagId())).toList(),
-                tagService.getTagsFromUserId(userId).stream().map(Tag::getTagName).toList());
+        List<Tag> skills = tagService.getTagsFromUserId(userId);
+        return List.of(skills.stream().map(tag -> String.valueOf(tag.getTagId())).toList(),
+                skills.stream().map(Tag::getTagName).toList());
     }
 }
