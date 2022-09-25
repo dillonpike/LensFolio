@@ -259,22 +259,22 @@
          * @param id the id of the skill tag to remove
          */
         function removeSkillTag(id) {
-            let urlHTML = $("#" + id);
-            let urlString = urlHTML.attr("data-bs-original-title");
+            let tagHTML = $("#" + id);
+            let tagString = tagHTML.attr("data-bs-original-title");
             for (let i = 0; i < skillTagsList.length; i++) {
-                if (skillTagsList[i] === urlString) {
+                if (skillTagsList[i] === tagString) {
                     skillTagsList.splice(i, 1);
                     break;
                 }
             }
-            urlHTML.tooltip('dispose');
-            urlHTML.remove();
+            tagHTML.tooltip('dispose');
+            tagHTML.remove();
         }
 
 
         /**
-         * Configures the web link input so that it adds a web link rather than submitting the form if the user
-         * presses the enter key in the web link input field and has something typed in.
+         * Configures the skill tag input so that it adds a skill tag rather than submitting the form if the user
+         * presses the enter key in the skill tag input field and has something typed in.
          */
         function configureSkillTagInput() {
             const skillTagInput = document.getElementById("evidenceSkillTag");

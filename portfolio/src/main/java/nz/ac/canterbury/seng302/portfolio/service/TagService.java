@@ -10,6 +10,9 @@ import nz.ac.canterbury.seng302.portfolio.repository.TagRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+/**
+ * Contains methods for saving, deleting, and retrieving tag objects to the database.
+ */
 @Service
 public class TagService {
 
@@ -61,12 +64,15 @@ public class TagService {
    * Remove a tag from the database.
    * @param tagId Id of the tag being removed
    */
-  public void removeTag(int tagId) {
+  public boolean removeTag(int tagId) {
     Optional<Tag> sOptional = tagRepository.findById(tagId);
 
     if (sOptional.isPresent()) {
       Tag tag = sOptional.get();
       tagRepository.deleteById(tag.getTagId());
+      return true;
+    } else {
+      return false;
     }
   }
 

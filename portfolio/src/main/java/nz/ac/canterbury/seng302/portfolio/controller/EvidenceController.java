@@ -1,10 +1,11 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
 import nz.ac.canterbury.seng302.portfolio.model.Evidence;
+import nz.ac.canterbury.seng302.portfolio.model.Tag;
 import nz.ac.canterbury.seng302.portfolio.service.EvidenceService;
+import nz.ac.canterbury.seng302.portfolio.service.TagService;
 import nz.ac.canterbury.seng302.portfolio.service.UserAccountClientService;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
-import org.apache.juli.logging.Log;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +17,6 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.NotAcceptableException;
 import java.util.List;
@@ -31,6 +31,9 @@ public class EvidenceController {
 
     @Autowired
     private EvidenceService evidenceService;
+
+    @Autowired
+    private TagService tagService;
 
     @Autowired
     private UserAccountClientService userAccountClientService;
@@ -99,14 +102,19 @@ public class EvidenceController {
             @RequestParam(value = "skillId") int skillId
     ) {
         List<Evidence> evidenceList = null;
+        Tag skillTag = null;
 
         try {
             evidenceList = evidenceService.getEvidencesWithSkillAndUser(userId, skillId);
+            skillTag = tagService.getTag(skillId);
         } catch (NullPointerException e) {
             logger.info("No Skills found");
         }
 
+        model.addAttribute("evidencesExists", (evidenceList == null));
+        model.addAttribute("tagExists", (evidenceList == null));
         model.addAttribute("evidences", evidenceList);
+        model.addAttribute("skillTag", skillTag);
         return "evidence";
     }
 

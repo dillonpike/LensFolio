@@ -50,6 +50,14 @@ public class Tag {
     }
 
     /**
+     * Returns the tag name with spaces instead of the default "_".
+     * @return The name of the tag with spaces.
+     */
+    public String getSpacedTagName() {
+        return tagName.replace("_", " ");
+    }
+
+    /**
      * Returns the evidence pieces with this tag.
      * @return Set of Evidence objects with this tag.
     */

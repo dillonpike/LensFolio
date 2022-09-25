@@ -5,6 +5,7 @@ import nz.ac.canterbury.seng302.portfolio.model.Evidence;
 import nz.ac.canterbury.seng302.portfolio.model.Tag;
 import nz.ac.canterbury.seng302.portfolio.model.WebLink;
 import nz.ac.canterbury.seng302.portfolio.repository.EvidenceRepository;
+import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
@@ -29,6 +30,9 @@ public class EvidenceService {
 
     @Autowired
     private TagService tagService;
+
+    @Autowired
+    private RegisterClientService registerClientService;
 
     /**
      * This function returns all evidences based on the userId.
@@ -126,6 +130,14 @@ public class EvidenceService {
         }
     }
 
+    /**
+     * Returns a list of all users that have high fived the piece of evidence.
+     * @param evidence evidence to get high fivers of
+     * @return list of all users that have high fived the piece of evidence
+     */
+    public List<UserResponse> getHighFivers(Evidence evidence) {
+        return evidence.getHighFiverIds().stream().map(registerClientService::getUserData).toList();
+    }
     /**
      * Checks to ensure that if a piece of evidence has a user attached to it.
      * @param evidenceId    The evidence being checked.
