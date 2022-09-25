@@ -130,7 +130,6 @@ public class EvidenceController {
     @GetMapping("/switch-evidence-list")
     public String membersWithoutAGroupCard(
             Model model,
-            @AuthenticationPrincipal AuthState principal,
             @RequestParam(value = "userId") int userId,
             @RequestParam(value = "listAll") boolean listAll,
             @RequestParam(value = "skillId") int skillId
