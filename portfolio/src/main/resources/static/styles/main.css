@@ -577,3 +577,9 @@ body{
 .name-length-message {
     min-height: 24px;
 }
+
+.ui-autocomplete {
+    position: absolute;
+    cursor: default;
+    z-index:1061 !important;
+}
