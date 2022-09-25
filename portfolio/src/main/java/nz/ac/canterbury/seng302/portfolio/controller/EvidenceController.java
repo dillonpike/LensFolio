@@ -1,7 +1,9 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
 import nz.ac.canterbury.seng302.portfolio.model.Evidence;
+import nz.ac.canterbury.seng302.portfolio.model.Tag;
 import nz.ac.canterbury.seng302.portfolio.service.EvidenceService;
+import nz.ac.canterbury.seng302.portfolio.service.TagService;
 import nz.ac.canterbury.seng302.portfolio.service.UserAccountClientService;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import org.slf4j.Logger;
@@ -10,11 +12,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.NotAcceptableException;
+import java.util.List;
 
 /**
  * Controller for evidence endpoints.
@@ -26,6 +28,9 @@ public class EvidenceController {
 
     @Autowired
     private EvidenceService evidenceService;
+
+    @Autowired
+    private TagService tagService;
 
     @Autowired
     private UserAccountClientService userAccountClientService;
@@ -77,5 +82,17 @@ public class EvidenceController {
         }
 
 
+    }
+
+    /**
+     * Returns list of tag names used by the user
+     * @param userId user id of the user
+     * @return set of tag names
+     */
+    @GetMapping("/get-skills")
+    @ResponseBody
+    public List<List<String>> getSkills(@RequestParam("userId") int userId) {
+        return List.of(tagService.getTagsFromUserId(userId).stream().map(tag -> String.valueOf(tag.getTagId())).toList(),
+                tagService.getTagsFromUserId(userId).stream().map(Tag::getTagName).toList());
     }
 }

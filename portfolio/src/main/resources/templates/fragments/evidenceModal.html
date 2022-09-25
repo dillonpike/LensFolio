@@ -81,7 +81,7 @@
                                 <label for="evidenceSkillTag" class="col-form-label">Skill Tags:</label>
                                 <div class="input-group mb-3">
                                     <input id="evidenceSkillTag" onkeyup="{updateCharsLeft('evidenceSkillTag', 'evidenceSkillTagLength', 50);isEvidenceInputFieldFilled()}"
-                                           maxlength="250" type="url" class="form-control" placeholder="Verbal Communication" aria-label="Add Skill Tag"
+                                           maxlength="250" type="text" class="form-control" placeholder="Verbal Communication" aria-label="Add Skill Tag"
                                            aria-describedby="button-addon3" name="evidenceSkillTag">
                                     <button class="btn btn-outline-secondary" type="button" id="button-addon3" onclick="addSkillTags()">Add</button>
                                 </div>
@@ -311,34 +311,16 @@
             updateCharsLeft('evidenceSkillTag', 'evidenceSkillTagLength', 250);
         });
 
-        $( function() {
-            var availableTags = [
-                "ActionScript",
-                "AppleScript",
-                "Asp",
-                "BASIC",
-                "C",
-                "C++",
-                "Clojure",
-                "COBOL",
-                "ColdFusion",
-                "Erlang",
-                "Fortran",
-                "Groovy",
-                "Haskell",
-                "Java",
-                "JavaScript",
-                "Lisp",
-                "Perl",
-                "PHP",
-                "Python",
-                "Ruby",
-                "Scala",
-                "Scheme"
-            ];
-            $( "#evidenceSkillTag" ).autocomplete({
-                source: availableTags,
-            });
-        } );
+        document.getElementById("evidenceModal").addEventListener("show.bs.modal", function () {
+            $( function() {
+                let userId = $("#userId").val();
+                $.get("get-skills?" + new URLSearchParams({userId: userId})).done((result) => {
+                    $( "#evidenceSkillTag" ).autocomplete({
+                        source: result[1]
+                    });
+                });
+            } );
+        });
+
     </script>
 </div>

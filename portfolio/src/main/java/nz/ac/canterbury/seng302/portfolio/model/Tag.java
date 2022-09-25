@@ -58,4 +58,8 @@ public class Tag {
         return evidenceWithTag;
     }
 
+    public String toString() {
+        return tagName;
+    }
+
 }
