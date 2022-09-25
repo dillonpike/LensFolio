@@ -77,7 +77,6 @@ public class TagService {
      * @return list of tags the user has used
      */
     public List<Tag> getTagsFromUserId(int userId) {
-
         List<Evidence> evidenceList = evidenceRepository.findAllByUserId(userId);
         Set<Tag> allTags = new HashSet<>();
 
