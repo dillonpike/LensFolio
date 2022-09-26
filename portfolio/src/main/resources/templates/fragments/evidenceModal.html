@@ -105,6 +105,8 @@
     <script src="js/datepicker.js"></script>
     <script src="js/textValidation.js"></script>
     <script src="js/evidence.js"></script>
+    <script src="js/helper.js"></script>
+    <script src="js/tags.js"></script>
     <script type="text/javascript">
         const MAX_NUM_WEBLINKS = 10;
         const MAX_NUM_SKILLTAGS = 10;
@@ -222,38 +224,38 @@
          */
         function addSkillTags() {
 
-            const urlString = document.getElementById("evidenceSkillTag").value;
+            let tagString = document.getElementById("evidenceSkillTag").value;
             //validate
 
-                if (skillTagsList.length < MAX_NUM_SKILLTAGS) {
-                    let displayUrlString = "";
-                    displayUrlString = urlString.replaceAll(" ", "_").trim();
-                    if (displayUrlString.length > 30) {
-                        displayUrlString = displayUrlString.substring(0, 29) + "...";
-                    }
-
-                    $("#skillTagList").append(`<div class="chip" id='tagName{tagId}' style="display: inline-block;padding: 0 12px 0 15px;height: fit-content;font-size: 16px;line-height: 30px;border-radius: 25px;background-color: #f1f1f1f1;margin: 0 10px 10px 0;" data-toggle="tooltip" data-bs-placement="right" title="${urlString}">
-                                <div class="d-flex justify-content-between flex-row align-items-center">
-                                    <span style="margin-right: 10px">${displayUrlString}</span>
-                                    <button onclick="removeSkillTag('tagName${tagId}')" type="button" class="btn-close" aria-label="Close"></button>
-                                </div>
-                            </div>`);
-                    tagId += 1;
-
-                    $('[data-toggle="tooltip"]').tooltip();
-
-                    updateCharsLeft('evidenceSkillTag', 'evidenceSkillTagLength', 250);
-                    //add to list
-                    skillTagsList.push(displayUrlString);
-                    document.getElementById("evidenceSkillTagsAlertBanner").setAttribute("hidden", "true");
-                    setTimeout(function () {
-                        $("#evidenceSkillTag").val("");
-                    }, 0);
-
-                } else {
-                    $("#evidenceSkillTagsAlertMessage").text("You can only add up to " + MAX_NUM_SKILLTAGS + " skill tags.");
-                    document.getElementById("evidenceSkillTagsAlertBanner").removeAttribute("hidden");
+            if (skillTagsList.length < MAX_NUM_SKILLTAGS) {
+                tagString = tagString.replaceAll(" ", "_").trim();
+                if (tagString.length > 30) {
+                    tagString = tagString.substring(0, 29) + "...";
                 }
+                tagString = conformTagCasing(tagString, usersCurrentTags);
+
+                $("#skillTagList").append(`<div class="chip" id='tagName{tagId}' style="display: inline-block;padding: 0 12px 0 15px;height: fit-content;font-size: 16px;line-height: 30px;border-radius: 25px;background-color: #f1f1f1f1;margin: 0 10px 10px 0;" data-toggle="tooltip" data-bs-placement="right" title="${tagString}">
+                            <div class="d-flex justify-content-between flex-row align-items-center">
+                                <span style="margin-right: 10px">${tagString}</span>
+                                <button onclick="removeSkillTag('tagName${tagId}')" type="button" class="btn-close" aria-label="Close"></button>
+                            </div>
+                        </div>`);
+                tagId += 1;
+
+                $('[data-toggle="tooltip"]').tooltip();
+
+                updateCharsLeft('evidenceSkillTag', 'evidenceSkillTagLength', 250);
+                //add to list
+                skillTagsList.push(tagString);
+                document.getElementById("evidenceSkillTagsAlertBanner").setAttribute("hidden", "true");
+                setTimeout(function () {
+                    $("#evidenceSkillTag").val("");
+                }, 0);
+
+            } else {
+                $("#evidenceSkillTagsAlertMessage").text("You can only add up to " + MAX_NUM_SKILLTAGS + " skill tags.");
+                document.getElementById("evidenceSkillTagsAlertBanner").removeAttribute("hidden");
+            }
         }
 
         /**
@@ -261,16 +263,16 @@
          * @param id the id of the skill tag to remove
          */
         function removeSkillTag(id) {
-            let urlHTML = $("#" + id);
-            let urlString = urlHTML.attr("data-bs-original-title");
+            let tagHTML = $("#" + id);
+            let tagString = tagHTML.attr("data-bs-original-title");
             for (let i = 0; i < skillTagsList.length; i++) {
-                if (skillTagsList[i] === urlString) {
+                if (skillTagsList[i] === tagString) {
                     skillTagsList.splice(i, 1);
                     break;
                 }
             }
-            urlHTML.tooltip('dispose');
-            urlHTML.remove();
+            tagHTML.tooltip('dispose');
+            tagHTML.remove();
         }
 
 
@@ -311,15 +313,15 @@
             updateCharsLeft('evidenceSkillTag', 'evidenceSkillTagLength', 250);
         });
 
+        let usersCurrentTags = [];
         document.getElementById("evidenceModal").addEventListener("show.bs.modal", function () {
-            $( function() {
-                let userId = $("#userId").val();
-                $.get("get-skills?" + new URLSearchParams({userId: userId})).done((result) => {
-                    $( "#evidenceSkillTag" ).autocomplete({
-                        source: result[1]
-                    });
+            let userId = $("#userId").val();
+            $.get("get-skills?" + new URLSearchParams({userId: userId})).done((result) => {
+                usersCurrentTags = zip(result).map((tag) => {return {id: tag[0], name: tag[1]}})
+                $( "#evidenceSkillTag" ).autocomplete({
+                    source: result[1]
                 });
-            } );
+            });
         });
 
     </script>
