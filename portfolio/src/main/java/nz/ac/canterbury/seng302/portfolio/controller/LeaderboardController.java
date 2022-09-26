@@ -15,6 +15,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Controller for the leaderboard
+ */
 @Controller
 public class LeaderboardController {
 
@@ -27,6 +30,12 @@ public class LeaderboardController {
     @Autowired
     private ElementService elementService;
 
+    /**
+     * Method to receive GET method for group page to display leaderboard entries to leaderboard page
+     * @param model Parameters sent to thymeleaf template to be rendered into HTML
+     * @param principal The user's authentication state
+     * @return leader board page
+     */
     @GetMapping("/leaderboard")
     public String showLeaderboardPage(
             Model model,
