@@ -1,10 +1,7 @@
 package nz.ac.canterbury.seng302.portfolio.service;
 
 import net.devh.boot.grpc.client.inject.GrpcClient;
-import nz.ac.canterbury.seng302.shared.identityprovider.ModifyRoleOfUserRequest;
-import nz.ac.canterbury.seng302.shared.identityprovider.UserAccountServiceGrpc;
-import nz.ac.canterbury.seng302.shared.identityprovider.UserRole;
-import nz.ac.canterbury.seng302.shared.identityprovider.UserRoleChangeResponse;
+import nz.ac.canterbury.seng302.shared.identityprovider.*;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -15,6 +12,8 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
+
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -53,7 +52,7 @@ class UserAccountClientServiceTest {
         ModifyRoleOfUserRequest req = ModifyRoleOfUserRequest.newBuilder().setUserId(1).setRole(UserRole.STUDENT).build();
         when(userAccountServiceBlockingStub.removeRoleFromUser(req)).thenReturn(response);
         UserRoleChangeResponse actual = userAccountClientService.deleteRoleFromUser(1,UserRole.STUDENT);
-        Assertions.assertEquals(true, actual.getIsSuccess());
+        assertTrue(actual.getIsSuccess());
         Mockito.verify(userAccountServiceBlockingStub).removeRoleFromUser(req);
     }
 
@@ -67,7 +66,24 @@ class UserAccountClientServiceTest {
         ModifyRoleOfUserRequest req = ModifyRoleOfUserRequest.newBuilder().setUserId(1).setRole(UserRole.STUDENT).build();
         when(userAccountServiceBlockingStub.addRoleToUser(req)).thenReturn(response);
         UserRoleChangeResponse actual = userAccountClientService.addRoleToUser(1,UserRole.STUDENT);
-        Assertions.assertEquals(true, actual.getIsSuccess());
+        assertTrue(actual.getIsSuccess());
         Mockito.verify(userAccountServiceBlockingStub).addRoleToUser(req);
+    }
+
+    /**
+     * Tests that the getStudentUsers method returns only users with the student role.
+     */
+    @Test
+    void callGetStudentUsers_expectStudentUsersToBeReturned() {
+        PaginatedUsersResponse response = PaginatedUsersResponse.newBuilder()
+                .addUsers(UserResponse.newBuilder().setId(0).addRoles(UserRole.STUDENT))
+                .addUsers(UserResponse.newBuilder().setId(1).addRoles(UserRole.TEACHER))
+                .addUsers(UserResponse.newBuilder().setId(2).addRoles(UserRole.COURSE_ADMINISTRATOR))
+                .addUsers(UserResponse.newBuilder().setId(3).addRoles(UserRole.COURSE_ADMINISTRATOR).addRoles(UserRole.STUDENT))
+                .build();
+        when(userAccountServiceBlockingStub.getPaginatedUsers(any(GetPaginatedUsersRequest.class))).thenReturn(response);
+        List<Integer> actualStudentIds = userAccountClientService.getStudentUsers().stream().map(UserResponse::getId).toList();
+        List<Integer> expectedStudentIds = List.of(0, 3);
+        assertEquals(expectedStudentIds, actualStudentIds);
     }
 }
