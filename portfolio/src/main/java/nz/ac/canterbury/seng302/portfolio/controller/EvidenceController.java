@@ -52,6 +52,8 @@ public class EvidenceController {
 
     public static final String ADD_EVIDENCE_MODAL_FRAGMENT_WEB_LINKS_MESSAGE = "evidenceWebLinksAlertMessage";
 
+    public static final String ADD_EVIDENCE_MODAL_FRAGMENT_SKILL_TAGS_MESSAGE = "evidenceSkillTagsAlertMessage";
+
     /**
      * Method tries to add and sve the new evidence piece to the database
      * @param model Parameters sent to thymeleaf template to be rendered into HTML
@@ -67,7 +69,6 @@ public class EvidenceController {
     ) {
         try {
             evidenceService.validateEvidence(evidence, model);
-
             boolean wasAdded = evidenceService.addEvidence(evidence);
             if (wasAdded) {
                 // * Add the evidence to the model *
