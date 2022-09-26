@@ -2,9 +2,8 @@ package nz.ac.canterbury.seng302.portfolio.model;
 
 import javax.persistence.*;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -63,6 +62,9 @@ public class Evidence {
     @CollectionTable(name="users_high_fived_evidence", joinColumns=@JoinColumn(name="evidence_id"))
     @Column(name="user_id")
     private Set<Integer> highFiverIds = new HashSet<>();
+
+    @Transient
+    private List<HighFivers> highFivers = new ArrayList<>();
 
 
     /**
@@ -212,5 +214,28 @@ public class Evidence {
      */
     public void removeHighFiverId(int userId) {
         highFiverIds.remove(userId);
+    }
+
+    /**
+     * Set list of HighFivers Object to piece of evidence
+     * @param highFivers the list of HighFivers object that relates to piece of evidence
+     */
+    public void setHighFivers(List<HighFivers> highFivers) {
+        this.highFivers = highFivers;
+    }
+
+    /**
+     * Add an HighFivers Object to piece of evidence
+     * @param highFiver an HighFivers object
+     */
+    public void addHighFivers(HighFivers highFiver) {
+        this.highFivers.add(highFiver);
+    }
+
+    /**
+     * returns list of users that have given a High Five to a piece of evidence
+     */
+    public List<HighFivers> getHighFivers() {
+        return highFivers;
     }
 }
