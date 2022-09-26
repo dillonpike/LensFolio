@@ -4,6 +4,7 @@ import nz.ac.canterbury.seng302.portfolio.model.LeaderboardEntry;
 import nz.ac.canterbury.seng302.portfolio.service.ElementService;
 import nz.ac.canterbury.seng302.portfolio.service.LeaderboardService;
 import nz.ac.canterbury.seng302.portfolio.service.UserAccountClientService;
+import nz.ac.canterbury.seng302.portfolio.utility.ToastUtility;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Controller
@@ -20,7 +22,7 @@ public class LeaderboardController {
     private UserAccountClientService userAccountClientService;
 
     @Autowired
-    LeaderboardService leaderboardService;
+    private LeaderboardService leaderboardService;
 
     @Autowired
     private ElementService elementService;
@@ -34,7 +36,7 @@ public class LeaderboardController {
         elementService.addHeaderAttributes(model, id);
         List<LeaderboardEntry> leaderboardEntries = leaderboardService.getLeaderboardEntries(userAccountClientService.getStudentUsers());
         model.addAttribute("leaderboardEntries", leaderboardEntries);
-
+        ToastUtility.addToastsToModel(model, new ArrayList<>(), 3);
         return "leaderboard";
     }
 }

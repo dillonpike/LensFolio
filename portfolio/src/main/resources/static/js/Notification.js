@@ -5,12 +5,14 @@ const EVENTTYPE = "Event";
 const DEADLINETYPE = "Deadline";
 const MILESTONETYPE = "Milestone";
 const GROUPTYPE = "Group";
+const EVIDENCETYPE = "Evidence";
 
 
 const ADDACTION = "add";
 const SAVEACTION = "save";
 const EDITACTION = "edit";
 const DELETEACTION = "delete";
+const ADDEVIDENCEACTION = "addEvidence";
 
 
 /**
@@ -66,6 +68,8 @@ class Notification {
             this.titleName = "Milestone Activity";
         } else if (type === GROUPTYPE) {
             this.titleName = "Group Activity";
+        } else if (type === EVIDENCETYPE) {
+            this.titleName = "Evidence Activity";
         } else {
             this.titleName = "Activity";
         }
@@ -134,6 +138,9 @@ class Notification {
               break;
           case DELETEACTION:
               this.bodyText = "'" + this.name + "' has been deleted by " + this.firstName + " " + this.lastName + " (" + this.username + ").";
+              break;
+          case ADDEVIDENCEACTION:
+              this.bodyText = this.firstName + " " + this.lastName + " (" + this.username + ") has added a piece of evidence. Updating table...";
               break;
           default:
               this.bodyText = "'" + this.name + "' has been changed by " + this.firstName + " " + this.lastName + " (" + this.username + ").";
