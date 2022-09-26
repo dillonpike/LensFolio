@@ -38,7 +38,7 @@ public class Tag {
     }
 
     public void setTagName(String tagName) {
-        this.tagName = tagName;
+        this.tagName = tagName.trim().replaceAll(" ", "_");
     }
 
     public int getTagId() {
@@ -53,7 +53,9 @@ public class Tag {
      * Returns the evidence pieces with this tag.
      * @return Set of Evidence objects with this tag.
     */
+
     public Set<Evidence> getEvidence() {
         return evidenceWithTag;
     }
+
 }
