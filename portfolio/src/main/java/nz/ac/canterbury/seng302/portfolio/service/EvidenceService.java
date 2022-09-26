@@ -121,6 +121,8 @@ public class EvidenceService {
         if (evidence.getTags().size() > maxNumSkillTags) {
             model.addAttribute(ADD_EVIDENCE_MODAL_FRAGMENT_SKILL_TAGS_MESSAGE, "You can only have up to 10 skill tags");
             hasError = true;
+        } else {
+            hasError = false;
         }
         for (Tag tag : evidence.getTags()) {
             if (tag.getTagName().length() < 1) {

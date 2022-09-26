@@ -42,9 +42,6 @@ function addEvidence() {
         tags: skillTagsList
     }
 
-    console.log(webLinksList)
-    console.log(skillTagsList)
-
     $.post(document.getElementById('evidenceForm').action + "?" + new URLSearchParams(data)).done((result) => {
         replaceEvidenceModalBody(result);
         let messageAlert = $("evidenceTitleAlertBanner");

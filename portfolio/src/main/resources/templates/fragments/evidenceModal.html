@@ -81,7 +81,7 @@
                                 <label for="evidenceSkillTag" class="col-form-label">Skill Tags:</label>
                                 <div class="input-group mb-3">
                                     <input id="evidenceSkillTag" onkeyup="{updateCharsLeft('evidenceSkillTag', 'evidenceSkillTagLength', 50);isEvidenceInputFieldFilled()}"
-                                           maxlength="250" type="url" class="form-control" placeholder="Verbal Communication" aria-label="Add Skill Tag"
+                                           maxlength="30" type="text" class="form-control" placeholder="Verbal Communication" aria-label="Add Skill Tag"
                                            aria-describedby="button-addon3" name="evidenceSkillTag">
                                     <button class="btn btn-outline-secondary" type="button" id="button-addon3" onclick="addSkillTags()">Add</button>
                                 </div>
@@ -222,20 +222,20 @@
          */
         function addSkillTags() {
 
-            const urlString = document.getElementById("evidenceSkillTag").value;
+            const skillString = document.getElementById("evidenceSkillTag").value;
             //validate
 
                 if (skillTagsList.length < MAX_NUM_SKILLTAGS) {
-                    let displayUrlString = "";
-                    displayUrlString = urlString.replaceAll(" ", "_").trim();
-                    if (displayUrlString.length > 30) {
-                        displayUrlString = displayUrlString.substring(0, 29) + "...";
+                    let displaySkillString = "";
+                    displaySkillString = skillString.trim().replaceAll(" ", "_");
+                    if (displaySkillString.length > 30) {
+                        displaySkillString = displaySkillString.substring(0, 29) + "...";
                     }
 
-                    $("#skillTagList").append(`<div class="chip" id='tagName{tagId}' style="display: inline-block;padding: 0 12px 0 15px;height: fit-content;font-size: 16px;line-height: 30px;border-radius: 25px;background-color: #f1f1f1f1;margin: 0 10px 10px 0;" data-toggle="tooltip" data-bs-placement="right" title="${urlString}">
+                    $("#skillTagList").append(`<div class="chip" id='skillTag${tagId}' style="display: inline-block;padding: 0 12px 0 15px;height: fit-content;font-size: 16px;line-height: 30px;border-radius: 25px;background-color: #f1f1f1f1;margin: 0 10px 10px 0;" data-toggle="tooltip" data-bs-placement="right" title="${skillString}">
                                 <div class="d-flex justify-content-between flex-row align-items-center">
-                                    <span style="margin-right: 10px">${displayUrlString}</span>
-                                    <button onclick="removeSkillTag('tagName{tagId}')" type="button" class="btn-close" aria-label="Close"></button>
+                                    <span style="margin-right: 10px">${displaySkillString}</span>
+                                    <button onclick="removeSkillTag('skillTag${tagId}')" type="button" class="btn-close" aria-label="Close"></button>
                                 </div>
                             </div>`);
                     tagId += 1;
@@ -245,7 +245,7 @@
                     $("#evidenceSkillTag").val("");
                     updateCharsLeft('evidenceSkillTag', 'evidenceSkillTagLength', 250);
                     //add to list
-                    skillTagsList.push(displayUrlString);
+                    skillTagsList.push(displaySkillString);
                     document.getElementById("evidenceSkillTagsAlertBanner").setAttribute("hidden", "true");
                 } else {
                     $("#evidenceSkillTagsAlertMessage").text("You can only add up to " + MAX_NUM_SKILLTAGS + " skill tags.");
@@ -258,16 +258,16 @@
          * @param id the id of the skill tag to remove
          */
         function removeSkillTag(id) {
-            let urlHTML = $("#" + id);
-            let urlString = urlHTML.attr("data-bs-original-title");
+            let skillHTML = $("#" + id);
+            let skillString = skillHTML.attr("data-bs-original-title");
             for (let i = 0; i < skillTagsList.length; i++) {
-                if (skillTagsList[i] === urlString) {
+                if (skillTagsList[i] === skillString) {
                     skillTagsList.splice(i, 1);
                     break;
                 }
             }
-            urlHTML.tooltip('dispose');
-            urlHTML.remove();
+            skillHTML.tooltip('dispose');
+            skillHTML.remove();
         }
 
 
