@@ -89,9 +89,8 @@ public class LeaderboardEntry implements Comparable<LeaderboardEntry> {
     @Override
     public boolean equals(Object newLeaderboardEntry)
     {
-        if (!(newLeaderboardEntry instanceof LeaderboardEntry))
+        if (!(newLeaderboardEntry instanceof LeaderboardEntry leaderboardEntry))
             return false;
-        LeaderboardEntry leaderboardEntry = (LeaderboardEntry) newLeaderboardEntry;
         return leaderboardEntry.username.equals(this.username) &&
                 leaderboardEntry.firstName.equals(this.firstName) &&
                 leaderboardEntry.lastName.equals(this.lastName) &&
