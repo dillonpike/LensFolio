@@ -16,12 +16,13 @@ let stompClient = null;
 function connect() {
     let socket = new SockJS('mywebsockets');
     stompClient = Stomp.over(socket);
-    // stompClient.debug = null;
+    stompClient.debug = null;
     stompClient.connect({}, function () {
         stompClient.subscribe('/webSocketGet/evidence-added', function (eventResponseArg) {
             console.log("Received notification!")
-            const eventResponse = JSON.parse(eventResponseArg.body);
-            showLeaderboardUpdateToast(eventResponse.type, eventResponse.artefactName, eventResponse.artefactId, eventResponse.username);
+            const eventResponse = JSON.parse(eventResponseArg.body)
+            showLeaderboardUpdateToast(eventResponse.artefactType, eventResponse.artefactName, eventResponse.artefactId,
+                eventResponse.username, eventResponse.userFirstName, eventResponse.userLastName);
         });
     });
 }
@@ -37,8 +38,17 @@ $(function() {
     connect();
 })
 
-function showLeaderboardUpdateToast(type, evidenceName, evidenceId, userFullName) {
-    let newNotification = new Notification(type, evidenceName, evidenceId, userFullName, "", "", ADDACTION);
+/**
+ * Creates a notification and displays it to the user in a toast.
+ * @param type type of notification
+ * @param evidenceName name of evidence
+ * @param evidenceId id of evidence
+ * @param username username of user who added evidence
+ * @param firstName first name of user who added evidence
+ * @param lastName last name of user who added evidence
+ */
+function showLeaderboardUpdateToast(type, evidenceName, evidenceId, username, firstName, lastName) {
+    let newNotification = new Notification(type, evidenceName, evidenceId, username, firstName, lastName, ADDEVIDENCEACTION);
     newNotification = addNotification(newNotification);
     newNotification.show();
     newNotification.hideTimed(SECONDS_TILL_HIDE);
