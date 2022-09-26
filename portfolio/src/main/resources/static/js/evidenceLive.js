@@ -1,3 +1,7 @@
+/**
+ * Stores the stomp client to connect to and send to for WebSockets/SockJS.
+ */
+let stompClient = null;
 
 /**
  * Connects the stomp client to the setup websocket endpoint.
@@ -7,24 +11,24 @@ function connect() {
     let socket = new SockJS('mywebsockets');
     stompClient = Stomp.over(socket);
     stompClient.debug = null;
-    stompClient.connect({}, function () {
-        stompClient.subscribe('/webSocketGet/evidence-added', function (eventResponseArg) {
-            console.log("Received notification!")
-            // const eventResponse = JSON.parse(eventResponseArg.body);
-            // showLeaderboardUpdateToast(eventResponse.type, eventResponse.artefactName, eventResponse.artefactId, eventResponse.username);
-        });
-    });
 }
 
-
+/**
+ * Sends a notification to the websocket endpoint to notify the server that a new piece of evidence has been added.
+ * This is so other users' pages can be updated.
+ */
 function sendAddEvidenceNotification() {
-    console.log("Helllllloo?")
-    stompClient.send("/webSocketSend/evidence-add", {}, JSON.stringify({
+    stompClient.send("/webSocketPost/evidence-add", {}, JSON.stringify({
         'artefactName': $("#evidenceTitle").val(),
         'artefactId': 1,
-        'username': $("#username").val(),
+        'userId': 1,
+        'username': $("#username").text(),
         'userFirstName': $("#firstName").val(),
-        'userLastName': $("#lastName").val(),
+        'userLastName': $("#lastNameInput").val(),
         'artefactType': "Evidence"
     }));
 }
+
+$(function() {
+    connect();
+})
