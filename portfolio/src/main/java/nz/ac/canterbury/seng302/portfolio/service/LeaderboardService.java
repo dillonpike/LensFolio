@@ -37,7 +37,7 @@ public class LeaderboardService {
      * if two user have the same number of evidence, they will have the same rank
      * @param leaderboardEntries List of LeaderboardEntry
      */
-    private void setRanks(List<LeaderboardEntry> leaderboardEntries) {
+    void setRanks(List<LeaderboardEntry> leaderboardEntries) {
         Collections.sort(leaderboardEntries);
         for (int i = 1; i < leaderboardEntries.size(); i++) {
             if (leaderboardEntries.get(i).getScore() == leaderboardEntries.get(i - 1).getScore()) {
