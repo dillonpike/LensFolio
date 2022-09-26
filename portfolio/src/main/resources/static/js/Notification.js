@@ -13,6 +13,7 @@ const SAVEACTION = "save";
 const EDITACTION = "edit";
 const DELETEACTION = "delete";
 const ADDEVIDENCEACTION = "addEvidence";
+const UPDATELEADERBOARDACTION = "updateLeaderboard";
 
 
 /**
@@ -140,14 +141,14 @@ class Notification {
               this.bodyText = "'" + this.name + "' has been deleted by " + this.firstName + " " + this.lastName + " (" + this.username + ").";
               break;
           case ADDEVIDENCEACTION:
-              this.bodyText = this.firstName + " " + this.lastName + " (" + this.username + ") has added a piece of evidence. Updating table...";
+              this.bodyText = this.firstName + " " + this.lastName + " (" + this.username + ") has added a piece of evidence. Updating leaderboard...";
+              break;
+          case UPDATELEADERBOARDACTION:
+              this.bodyText = this.firstName + " " + this.lastName + " (" + this.username + ") has added a piece of evidence. Updated leaderboard!";
               break;
           default:
               this.bodyText = "'" + this.name + "' has been changed by " + this.firstName + " " + this.lastName + " (" + this.username + ").";
-
-
         }
-
 
         this.toastBodyTextVar.text(this.bodyText);
         this.toastTitleTextVar.text(this.titleName);

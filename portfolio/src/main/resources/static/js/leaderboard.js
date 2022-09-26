@@ -13,15 +13,20 @@ function configureLeaderboardTable() {
 }
 
 /**
- * Loads in an updated table from the controller and keeps the user on the same page.
+ * Loads in an updated table from the controller, keeps the user on the same page, and updates the notification to
+ * inform the user when the table has updated.
+ * @param notification the notification to update
  */
-function updateLeaderboard() {
+function updateLeaderboard(notification) {
     const leaderboardTable = $('table').DataTable();
     const page = leaderboardTable.page();
     const url = "/leaderboard-table";
     $("#leaderboardTable").load(url + " #leaderboardTable>*", "", function () {
         configureLeaderboardTable();
         $('table').DataTable().page(page).draw('page');
+        notification.action = UPDATELEADERBOARDACTION;
+        notification.show();
+        notification.hideTimed(SECONDS_TILL_HIDE);
     });
 }
 
