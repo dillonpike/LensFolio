@@ -440,7 +440,7 @@
     console.log(evidenceId);
     if ($(popoverID).attr('aria-describedby') !== undefined) {
       console.log(popoverID);
-      $(popoverID).popover("dispose");
+      $(popoverID).popover("toggle");
     } else {
       $.get('get-high-fivers?evidenceId='+evidenceId).done((result) => {
         console.log("hellooo");
@@ -452,30 +452,11 @@
           }
         }
         $(popoverID).attr("data-bs-content", popOverContent);
-        $(popoverID).popover("show");
+        $(popoverID).popover("toggle");
       })
     }
   });
 
-
-  // function togglePopover(id) {
-  //   console.log("togglePopover called");
-  //   let popOverContent = "";
-  //   const popOverID = "#UserList" + id
-  //   const popOver =  $(popOverID);
-  //
-  //
-  //   $.get('get-high-fivers?evidenceId='+id).done((result) => {
-  //     for (let i = 0; i < result.length; i++) {
-  //       if(i === result.length - 1){
-  //         popOverContent += `<span>${result[i].name}</span>`
-  //       } else {
-  //         popOverContent += `<span>${result[i].name}</span><br/>`
-  //       }
-  //     }
-  //     popOver.attr("data-bs-content", popOverContent);
-  //   })
-  // }
 
   // Set the current tab selected to what is in session storage, if it is not null.
   let tabToSet = getTab();
