@@ -3,6 +3,7 @@ package nz.ac.canterbury.seng302.portfolio.controller;
 import nz.ac.canterbury.seng302.portfolio.model.LeaderboardEntry;
 import nz.ac.canterbury.seng302.portfolio.service.*;
 import nz.ac.canterbury.seng302.shared.identityprovider.*;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -59,6 +60,10 @@ class LeaderboardControllerTest {
     @MockBean
     private ElementService elementService;
 
+    private static List<UserResponse> usersList;
+
+    private static List<LeaderboardEntry> leaderboardEntries;
+
     /**
      * Build the mockMvc object and mock security contexts.
      */
@@ -67,6 +72,25 @@ class LeaderboardControllerTest {
         SecurityContext mockedSecurityContext = Mockito.mock(SecurityContext.class);
         when(mockedSecurityContext.getAuthentication()).thenReturn(new PreAuthenticatedAuthenticationToken(validAuthState, ""));
         SecurityContextHolder.setContext(mockedSecurityContext);
+
+        when(userAccountClientService.getStudentUsers()).thenReturn(usersList);
+        when(userAccountClientService.getUserIDFromAuthState(any(AuthState.class))).thenReturn(1);
+        doNothing().when(elementService).addHeaderAttributes(any(), anyInt());
+        when(leaderboardService.getLeaderboardEntries(usersList)).thenReturn(leaderboardEntries);
+    }
+
+    /**
+     * Set up a list of users and list of leaderboard entries for testing.
+     */
+    @BeforeAll
+    static void setUpData() {
+        PaginatedUsersResponse response = PaginatedUsersResponse.newBuilder()
+                .addUsers(UserResponse.newBuilder().setId(0).addRoles(UserRole.STUDENT))
+                .addUsers(UserResponse.newBuilder().setId(1).addRoles(UserRole.STUDENT))
+                .addUsers(UserResponse.newBuilder().setId(2).addRoles(UserRole.STUDENT))
+                .build();
+        usersList = response.getUsersList();
+        leaderboardEntries = List.of(new LeaderboardEntry("", "", "", 1, 1, 1));
     }
 
     /**
@@ -75,20 +99,18 @@ class LeaderboardControllerTest {
      */
     @Test
     void showLeaderboardPage() throws Exception {
-        PaginatedUsersResponse response = PaginatedUsersResponse.newBuilder()
-                .addUsers(UserResponse.newBuilder().setId(0).addRoles(UserRole.STUDENT))
-                .addUsers(UserResponse.newBuilder().setId(1).addRoles(UserRole.STUDENT))
-                .addUsers(UserResponse.newBuilder().setId(2).addRoles(UserRole.STUDENT))
-                .build();
-        List<UserResponse> usersList = response.getUsersList();
-        List<LeaderboardEntry> leaderboardEntries = List.of(new LeaderboardEntry("", "", "", 1, 1, 1));
-
-        when(userAccountClientService.getStudentUsers()).thenReturn(usersList);
-        when(userAccountClientService.getUserIDFromAuthState(any(AuthState.class))).thenReturn(1);
-        doNothing().when(elementService).addHeaderAttributes(any(), anyInt());
-        when(leaderboardService.getLeaderboardEntries(usersList)).thenReturn(leaderboardEntries);
-
         mockMvc.perform(get("/leaderboard"))
+                .andExpect(status().isOk())
+                .andExpect(model().attribute("leaderboardEntries", leaderboardEntries));
+    }
+
+    /**
+     * Tests the endpoint that returns the leaderboard table.
+     * @throws Exception if the request fails
+     */
+    @Test
+    void leaderboardTable() throws Exception {
+        mockMvc.perform(get("/leaderboard-table"))
                 .andExpect(status().isOk())
                 .andExpect(model().attribute("leaderboardEntries", leaderboardEntries));
     }

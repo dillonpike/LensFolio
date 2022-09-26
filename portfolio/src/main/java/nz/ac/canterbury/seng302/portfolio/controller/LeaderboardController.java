@@ -42,8 +42,7 @@ public class LeaderboardController {
 
     @GetMapping("/leaderboard-table")
     public String leaderboardTable(
-            Model model,
-            @AuthenticationPrincipal AuthState principal
+            Model model
     ) {
         List<LeaderboardEntry> leaderboardEntries = leaderboardService.getLeaderboardEntries(userAccountClientService.getStudentUsers());
         model.addAttribute("leaderboardEntries", leaderboardEntries);
