@@ -62,22 +62,14 @@
             </tr>
             </tbody>
         </table>
-        <!--Must have in line script here-->
-        <script>
-            leaderboardTable = $('table').DataTable({searching: false, paging: true, info: false, select: false, sort: false,
-                'rowCallback': function(row, data) {
-                    const rankToColour = {'1': 'gold', '2': 'silver', '3': 'bronze'}
-                    if (data[0] in rankToColour) {
-                        $(row).addClass(rankToColour[data[0]])
-                    }
-                }
-            });
-
-        </script>
     </div>
 </div>
 </body>
 <script src="js/redirect.js"></script>
 <script src="js/Notification.js"></script>
+<script src="js/leaderboard.js"></script>
 <script src="js/leaderboardLive.js"></script>
+<script>
+    configureLeaderboardTable();
+</script>
 </html>

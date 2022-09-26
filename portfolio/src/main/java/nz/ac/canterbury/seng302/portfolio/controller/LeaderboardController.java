@@ -39,4 +39,14 @@ public class LeaderboardController {
         ToastUtility.addToastsToModel(model, new ArrayList<>(), 3);
         return "leaderboard";
     }
+
+    @GetMapping("/leaderboard-table")
+    public String leaderboardTable(
+            Model model,
+            @AuthenticationPrincipal AuthState principal
+    ) {
+        List<LeaderboardEntry> leaderboardEntries = leaderboardService.getLeaderboardEntries(userAccountClientService.getStudentUsers());
+        model.addAttribute("leaderboardEntries", leaderboardEntries);
+        return "leaderboard::leaderboardTable";
+    }
 }

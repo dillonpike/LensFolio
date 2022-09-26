@@ -19,10 +19,10 @@ function connect() {
     stompClient.debug = null;
     stompClient.connect({}, function () {
         stompClient.subscribe('/webSocketGet/evidence-added', function (eventResponseArg) {
-            console.log("Received notification!")
             const eventResponse = JSON.parse(eventResponseArg.body)
             showLeaderboardUpdateToast(eventResponse.artefactType, eventResponse.artefactName, eventResponse.artefactId,
                 eventResponse.username, eventResponse.userFirstName, eventResponse.userLastName);
+            updateLeaderboard();
         });
     });
 }
