@@ -133,6 +133,11 @@ public class EvidenceService {
                 hasError = true;
                 break;
             }
+            if (emojiRegex.matcher(tag.getTagName()).find()) {
+                model.addAttribute(ADD_EVIDENCE_MODAL_FRAGMENT_SKILL_TAGS_MESSAGE, "Tags must not contain emojis");
+                hasError = true;
+                break;
+            }
         }
         if (hasError) {
             throw new NotAcceptableException("Evidence fields have errors");
