@@ -20,7 +20,7 @@ public class LeaderboardController {
     private UserAccountClientService userAccountClientService;
 
     @Autowired
-    LeaderboardService leaderboardService;
+    private LeaderboardService leaderboardService;
 
     @Autowired
     private ElementService elementService;
