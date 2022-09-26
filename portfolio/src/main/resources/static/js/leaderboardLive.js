@@ -20,9 +20,9 @@ function connect() {
     stompClient.connect({}, function () {
         stompClient.subscribe('/webSocketGet/evidence-added', function (eventResponseArg) {
             const eventResponse = JSON.parse(eventResponseArg.body)
-            showLeaderboardUpdateToast(eventResponse.artefactType, eventResponse.artefactName, eventResponse.artefactId,
+            const notification = showLeaderboardUpdateToast(eventResponse.artefactType, eventResponse.artefactName, eventResponse.artefactId,
                 eventResponse.username, eventResponse.userFirstName, eventResponse.userLastName);
-            updateLeaderboard();
+            updateLeaderboard(notification);
         });
     });
 }
@@ -52,4 +52,5 @@ function showLeaderboardUpdateToast(type, evidenceName, evidenceId, username, fi
     newNotification = addNotification(newNotification);
     newNotification.show();
     newNotification.hideTimed(SECONDS_TILL_HIDE);
+    return newNotification;
 }
