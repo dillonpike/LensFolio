@@ -6,6 +6,7 @@ import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
@@ -68,6 +69,9 @@ public class EvidenceDeletionStepDefs {
         }
     }
 
+    /**
+     * Click on the delete button for the piece of evidence.
+     */
     @When("I click on the delete icon")
     public void iClickOnTheDeleteIcon() {
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("evidenceActions")));
@@ -77,14 +81,35 @@ public class EvidenceDeletionStepDefs {
         evidenceName = webDriver.findElement(By.className("evidence-title")).getText();
     }
 
+    /**
+     * The delete evidence modal is showing.
+     */
     @Then("a delete evidence prompt is presented")
     public void aDeleteEvidencePromptIsPresented() {
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("deleteModal")));
     }
 
+    /**
+     * Checks that the title of the evidence is shown.
+     */
     @Then("the title of the piece of evidence should appear on the prompt")
     public void theTitleOfThePieceOfEvidenceShouldAppearOnThePrompt() {
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("deleteModal")));
         assertTrue(webDriver.findElement(By.id("deleteModal")).findElement(By.tagName("label")).getText().contains(evidenceName));
+    }
+
+    @When("I click away from the delete evidence prompt")
+    public void iClickAwayFromTheDeleteEvidencePrompt() {
+        new Actions(webDriver).moveToElement(webDriver.findElement(By.id("uploadPreview"))).click().perform();
+    }
+
+    @When("I click the x button on the delete evidence prompt")
+    public void iClickTheXButtonOnTheDeleteEvidencePrompt() {
+        webDriver.findElement(By.id("deleteModalCloseButton")).click();
+    }
+
+    @Then("the delete evidence prompt is closed")
+    public void theDeleteEvidencePromptIsClosed() {
+        wait.until(ExpectedConditions.invisibilityOfElementLocated(By.id("deleteModal")));
     }
 }
