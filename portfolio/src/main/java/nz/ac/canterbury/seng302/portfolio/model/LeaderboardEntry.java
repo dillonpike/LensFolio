@@ -80,4 +80,24 @@ public class LeaderboardEntry implements Comparable<LeaderboardEntry> {
         }
         return this.score < leaderboardEntry.getScore() ? 1 : -1;
     }
+
+    /**
+     * Method to override the equal method for LeaderboardEntry
+     * @param newLeaderboardEntry  the LeaderboardEntry to compare to
+     * @return true if the LeaderboardEntries are equal, false otherwise
+     */
+    @Override
+    public boolean equals(Object newLeaderboardEntry)
+    {
+        if (!(newLeaderboardEntry instanceof LeaderboardEntry))
+            return false;
+        LeaderboardEntry leaderboardEntry = (LeaderboardEntry) newLeaderboardEntry;
+        return leaderboardEntry.username.equals(this.username) &&
+                leaderboardEntry.firstName.equals(this.firstName) &&
+                leaderboardEntry.lastName.equals(this.lastName) &&
+                leaderboardEntry.score == this.score &&
+                leaderboardEntry.rank == this.rank;
+    }
+
+
 }
