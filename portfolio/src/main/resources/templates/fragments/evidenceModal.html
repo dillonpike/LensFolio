@@ -290,6 +290,7 @@
         disallowEmojiCharacters('evidenceTitle');
         disallowEmojiCharacters('evidenceDescription');
         disallowInvalidCharacters('evidenceWeblink');
+        disallowEmojiCharacters('evidenceSkillTag');
 
         document.getElementById("evidenceModal").addEventListener("hidden.bs.modal", function () {
             document.getElementById("evidenceModalButton").classList.add("disabled");
