@@ -161,7 +161,7 @@ class Notification {
                 this.bodyText = "'" + this.name + "' has been high fived by " + this.username + ".";
                 break;
             case HIGHFIVEUPDATEACTION:
-                this.bodyText = "'" + this.name + "' has been high fived by " + this.username + " and " + (this.highfivers.length - 2) + " other users.";
+                this.bodyText = "'" + this.name + "' has been high fived by " + this.username + " and " + (this.highfivers.length - 2) + " other user(s).";
                 break;
             default:
                 this.bodyText = "'" + this.name + "' has been changed by " + this.firstName + " " + this.lastName + " (" + this.username + ").";
@@ -261,8 +261,10 @@ Notification.prototype.toString = function () {
 
 /**
  * Adds Notification objects to the listOfNotifications list if it is new, otherwise updates the existing notification.
- * Then reassigns the toast html objects to the new list.
+ * Then reassigns the Bootstrap toast html objects to the new list.
  * @param newNotification New toast object to add/update to the list.
+ * @param listOfNotifications List of Notification objects to add/update the new notification to.
+ * @param listOfHTMLToasts List of HTML Bootstrap toast objects to assign to the list of Notification objects.
  * @returns {Notification} updated toast if it already existed, otherwise, returns the parameter 'newToast'.
  */
 function addNotification(newNotification, listOfNotifications, listOfHTMLToasts) {
