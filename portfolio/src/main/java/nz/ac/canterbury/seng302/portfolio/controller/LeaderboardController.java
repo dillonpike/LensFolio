@@ -49,6 +49,11 @@ public class LeaderboardController {
         return "leaderboard";
     }
 
+    /**
+     * Method to receive GET method for group page to partial refresh leaderboard table to leaderboard page
+     * @param model Parameters sent to thymeleaf template to be rendered into HTML
+     * @return leaderboard table
+     */
     @GetMapping("/leaderboard-table")
     public String leaderboardTable(
             Model model
