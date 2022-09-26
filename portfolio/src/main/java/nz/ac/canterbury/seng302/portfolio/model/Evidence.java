@@ -57,6 +57,15 @@ public class Evidence {
     private Set<WebLink> webLinks = new HashSet<>();
 
     /**
+     * The user ids of users that have high fived this piece of evidence.
+     */
+    @ElementCollection
+    @CollectionTable(name="users_high_fived_evidence", joinColumns=@JoinColumn(name="evidence_id"))
+    @Column(name="user_id")
+    private Set<Integer> highFiverIds = new HashSet<>();
+
+
+    /**
      * Empty constructor for JPA.
      */
     public Evidence() {}
@@ -125,6 +134,19 @@ public class Evidence {
     }
 
     /**
+     * FOR JAVASCRIPT USE ONLY. Please use addSkillTags() and removeSkillTags() instead.
+     * Sets the tags associated with this evidence.
+     * @param tags new set of tags.
+     */
+    public void setTags(Set<String> tags) {
+        Set<Tag> finalTags = new HashSet<>();
+        for (String tag : tags) {
+            finalTags.add(new Tag(tag));
+        }
+        this.tags = finalTags;
+    }
+
+    /**
      * Gets a set of tags corresponding to the evidence.
      * @return Set of Tags.
      */
@@ -179,5 +201,29 @@ public class Evidence {
      */
     public void removeWebLink(WebLink webLink) {
         this.webLinks.remove(webLink);
+    }
+
+    /**
+     * Gets the user ids of users that have high fived this piece of evidence.
+     * @return Set of user ids.
+     */
+    public Set<Integer> getHighFiverIds() {
+        return highFiverIds;
+    }
+
+    /**
+     * Adds a user id to the set of user ids of users that have high fived this piece of evidence.
+     * @param userId User id to add.
+     */
+    public void addHighFiverId(int userId) {
+        highFiverIds.add(userId);
+    }
+
+    /**
+     * Removes a user id from the set of user ids of users that have high fived this piece of evidence.
+     * @param userId User id to remove.
+     */
+    public void removeHighFiverId(int userId) {
+        highFiverIds.remove(userId);
     }
 }

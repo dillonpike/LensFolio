@@ -170,6 +170,16 @@
                                 </div>
                               </div>
                             </div>
+
+                            <div class="evidence-skillTag-title" th:if="${!evidence.getTags().isEmpty()}">Skill Tags:</div>
+                            <div th:each="skillTag, meta: ${evidence.getTags()}">
+                              <div th:if="${skillTag.getTagName()} != 'InvalidTag'" class="chip" th:id="'skillTagDisplay' + ${meta}" style="display: inline-block;padding: 0 12px 0 15px;height: fit-content;font-size: 16px;line-height: 30px;border-radius: 25px;background-color: #f1f1f1f1;margin: 0 10px 10px 0;" data-toggle="tooltip" data-bs-placement="right" th:title="${skillTag.getTagName()}">
+                                <div class="d-flex justify-content-between flex-row align-items-center">
+                                  <span style="margin-right: 10px; margin-left: 10px" th:text="${skillTag.getTagName()}"></span>
+                                </div>
+                              </div>
+                            </div>
+
                           </div>
                           <script th:inline="javascript">
                             buttonId = /*[['evidenceDropdown' + (${meta.index} + 1)]]*/ null;
@@ -180,7 +190,7 @@
 
                         </div>
 
-                        <!--Buttons for editing and deleting, for future use!!-->
+                        <!--Buttons for deleting-->
                         <div class="d-flex">
                           <div class="button-divider">
                             <button class="btn btn-default" type="button" th:id="'highFiveBtn' + ${evidence.getEvidenceId}" th:attr="onclick=|switchIcon('${evidence.getEvidenceId}')|" style="outline: none; box-shadow: none;">
@@ -199,17 +209,10 @@
                                 <i class='bi bi-gear-fill'></i>
                               </button>
 
-                              <!--Edit and delete buttons for the future-->
+                              <!--Delete button for evidence-->
                               <ul class="dropdown-menu" aria-labelledby="evidenceDropdownButton" style="z-index: 3000">
                                 <li>
-                                  <a class="button-link" data-bs-toggle="modal" data-bs-target="#evidenceModal" data-bs-type="edit">
-                                    <button id="editEvidenceButton" class="dropdown-item" type="button">
-                                      <span class='bi bi-pencil'></span> <i>Edit</i>
-                                    </button>
-                                  </a>
-                                </li>
-                                <li>
-                                  <a class="button-link" data-bs-toggle="modal" data-bs-target="#deleteModal" th:data-bs-name="${evidence.getTitle}" data-bs-type="evidence">
+                                  <a id="deleteEvidenceDisplayButton" class="button-link" data-bs-toggle="modal" data-bs-target="#deleteModal" th:data-bs-name="${evidence.getTitle}" data-bs-type="evidence">
                                     <button class="dropdown-item delete-artefact-button" type="button">
                                       <span class='bi bi-trash' style='color: red'></span> <i style='color: red'>Delete</i>
                                     </button>
@@ -236,13 +239,17 @@
 
   <div id="evidenceModal" th:replace="fragments/evidenceModal :: evidenceModal"></div>
   <div th:replace="fragments/alertToast :: alertToast"></div>
+  <div id="deleteModal" th:replace="fragments/deleteModalProject :: deleteModal"></div>
 
 </body>
 <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha384-xBuQ/xzmlsLoJpyjoggmTEz8OWUFM0/RC5BsqQBDX2v5cMvDHcMakNTNrHIW2I5f" crossorigin="anonymous"></script>
 <script src="js/fineCrop.js"></script>
 <script src="js/banner.js"></script>
 <script src="js/evidence.js"></script>
+<script src="js/account.js"></script>
 <script th:inline="javascript">
+
+  deleteModalSetup();
 
 
   /*<![CDATA[*/
