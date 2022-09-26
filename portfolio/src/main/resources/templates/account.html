@@ -199,15 +199,8 @@
                                 <i class='bi bi-gear-fill'></i>
                               </button>
 
-                              <!--Edit and delete buttons for the future-->
+                              <!--Delete button for evidence-->
                               <ul class="dropdown-menu" aria-labelledby="evidenceDropdownButton" style="z-index: 3000">
-                                <li>
-                                  <a class="button-link" data-bs-toggle="modal" data-bs-target="#evidenceModal" data-bs-type="edit">
-                                    <button id="editEvidenceButton" class="dropdown-item" type="button">
-                                      <span class='bi bi-pencil'></span> <i>Edit</i>
-                                    </button>
-                                  </a>
-                                </li>
                                 <li>
                                   <a class="button-link" data-bs-toggle="modal" data-bs-target="#deleteModal" th:data-bs-name="${evidence.getTitle}" data-bs-type="evidence">
                                     <button class="dropdown-item delete-artefact-button" type="button">
@@ -236,13 +229,17 @@
 
   <div id="evidenceModal" th:replace="fragments/evidenceModal :: evidenceModal"></div>
   <div th:replace="fragments/alertToast :: alertToast"></div>
+  <div id="deleteModal" th:replace="fragments/deleteModalProject :: deleteModal"></div>
 
 </body>
 <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha384-xBuQ/xzmlsLoJpyjoggmTEz8OWUFM0/RC5BsqQBDX2v5cMvDHcMakNTNrHIW2I5f" crossorigin="anonymous"></script>
 <script src="js/fineCrop.js"></script>
 <script src="js/banner.js"></script>
 <script src="js/evidence.js"></script>
+<script src="js/account.js"></script>
 <script th:inline="javascript">
+
+  deleteModalSetup();
 
 
   /*<![CDATA[*/
