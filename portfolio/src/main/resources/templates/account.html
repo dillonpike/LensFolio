@@ -439,7 +439,11 @@
     document.location.href = "account?userId=" + id;
   }
 
-
+  // Set the current tab selected to what is in session storage, if it is not null.
+  let tabToSet = getTab();
+  if (tabToSet) {
+    document.getElementById(tabToSet).click();
+  }
 
 </script>
 </html>
