@@ -6,6 +6,9 @@ import org.springframework.data.repository.CrudRepository;
 
 import java.util.Optional;
 
+/**
+ * Repository of Tag objects.
+ */
 public interface TagRepository extends CrudRepository<Tag, Integer> {
     Optional<Tag> findById(int id);
     List<Tag> findAll();

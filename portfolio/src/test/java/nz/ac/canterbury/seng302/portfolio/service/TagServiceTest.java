@@ -3,6 +3,8 @@ package nz.ac.canterbury.seng302.portfolio.service;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -10,6 +12,7 @@ import static org.mockito.Mockito.when;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import nz.ac.canterbury.seng302.portfolio.model.Evidence;
 import nz.ac.canterbury.seng302.portfolio.model.Tag;
@@ -59,6 +62,11 @@ class TagServiceTest {
 
     /* When evidence has sections for tags, add the tags above to the piece of evidence */
     Evidence evidence1 = new Evidence(0, 1, "testEvidence1", "testEvidence1", new Date(100));
+    evidenceRepository.save(evidence1);
+    evidence1.addTag(tag1);
+    evidence1.addTag(tag2);
+    evidence1.addTag(tag3);
+    evidence1.addTag(tag4);
   }
 
   /**
@@ -74,4 +82,17 @@ class TagServiceTest {
     verify(tagRepository, times(1)).findAll();
   }
 
+  /**
+   * Tests that the getTag(int tagId) method returns specific tag.
+   */
+  @Test
+  void removeTag() {
+    Tag tag = testTags.get(1);
+    int tagId = tag.getTagId();
+    doReturn(Optional.of(tag)).when(tagRepository).findById(tagId);
+    doNothing().when(tagRepository).deleteById(tagId);
+    boolean success = tagService.removeTag(tagId);
+    assertTrue(success);
+    verify(tagRepository).deleteById(tagId);
+  }
 }
