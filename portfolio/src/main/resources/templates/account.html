@@ -202,7 +202,7 @@
                               <!--Delete button for evidence-->
                               <ul class="dropdown-menu" aria-labelledby="evidenceDropdownButton" style="z-index: 3000">
                                 <li>
-                                  <a class="button-link" data-bs-toggle="modal" data-bs-target="#deleteModal" th:data-bs-name="${evidence.getTitle}" data-bs-type="evidence">
+                                  <a id="deleteEvidenceDisplayButton" class="button-link" data-bs-toggle="modal" data-bs-target="#deleteModal" th:data-bs-name="${evidence.getTitle}" data-bs-type="evidence">
                                     <button class="dropdown-item delete-artefact-button" type="button">
                                       <span class='bi bi-trash' style='color: red'></span> <i style='color: red'>Delete</i>
                                     </button>
