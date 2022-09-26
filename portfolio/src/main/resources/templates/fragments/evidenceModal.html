@@ -81,7 +81,7 @@
                                 <label for="evidenceSkillTag" class="col-form-label">Skill Tags:</label>
                                 <div class="input-group mb-3">
                                     <input id="evidenceSkillTag" onkeyup="{updateCharsLeft('evidenceSkillTag', 'evidenceSkillTagLength', 50);isEvidenceInputFieldFilled()}"
-                                           maxlength="30" type="text" class="form-control" placeholder="Verbal Communication" aria-label="Add Skill Tag"
+                                           maxlength="50" type="text" class="form-control" placeholder="Verbal Communication" aria-label="Add Skill Tag"
                                            aria-describedby="button-addon3" name="evidenceSkillTag">
                                     <button class="btn btn-outline-secondary" type="button" id="button-addon3" onclick="addSkillTags()">Add</button>
                                 </div>
@@ -221,10 +221,12 @@
          * Adds a skill tag to the list of skill tags.
          */
         function addSkillTags() {
-
             const skillString = document.getElementById("evidenceSkillTag").value;
             //validate
-
+            if (!isValidSkillTag(skillString)) {
+                $("#evidenceSkillTagsAlertMessage").text("Please enter a valid skill tag.");
+                document.getElementById("evidenceSkillTagsAlertBanner").removeAttribute("hidden");
+            } else {
                 if (skillTagsList.length < MAX_NUM_SKILLTAGS) {
                     let displaySkillString = "";
                     displaySkillString = skillString.trim().replaceAll(" ", "_");
@@ -251,6 +253,7 @@
                     $("#evidenceSkillTagsAlertMessage").text("You can only add up to " + MAX_NUM_SKILLTAGS + " skill tags.");
                     document.getElementById("evidenceSkillTagsAlertBanner").removeAttribute("hidden");
                 }
+            }
         }
 
         /**
@@ -268,6 +271,15 @@
             }
             skillHTML.tooltip('dispose');
             skillHTML.remove();
+        }
+
+        /**
+         * Method to validate a skill tag String
+         * @param skillString the skill tag string to validate
+         * @returns {boolean} true if valid, false otherwise
+         */
+        function isValidSkillTag(skillString) {
+            return skillString.trim().length > 0 && skillString.trim().length <= 50;
         }
 
 
