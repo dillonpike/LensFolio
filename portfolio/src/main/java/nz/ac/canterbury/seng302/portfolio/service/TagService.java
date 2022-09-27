@@ -92,7 +92,6 @@ public class TagService {
             Set<Tag> tags = evidence.getTags();
             allTags.addAll(tags);
         }
-
         return allTags.stream().toList();
     }
 
