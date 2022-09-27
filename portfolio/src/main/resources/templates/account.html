@@ -251,6 +251,7 @@
 <script src="js/banner.js"></script>
 <script src="js/evidence.js"></script>
 <script src="js/account.js"></script>
+<script src="js/redirect.js"></script>
 <script th:inline="javascript">
 
   deleteModalSetup();
@@ -446,14 +447,7 @@
     document.location.href = "account?userId=" + id;
   }
 
-  /**
-   * redirect to skill page
-   * @param userId current user ID (note: it is not necessarily the user that logged in)
-   * @param skillId the id of a skill
-   */
-  function redirectToSkillsPage(userId, skillId) {
-    window.location.href = "evidence-skills?userId="+userId+"&skillId="+skillId;
-  }
+
 
   // Set the current tab selected to what is in session storage, if it is not null.
   let tabToSet = getTab();
