@@ -8,7 +8,8 @@ function configureLeaderboardTable() {
             if (data[0] in rankToColour) {
                 $(row).addClass(rankToColour[data[0]])
             }
-        }
+        },
+        dom: '<"top"i>rt<"bottom"pl>'
     });
 }
 
