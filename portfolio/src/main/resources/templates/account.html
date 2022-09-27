@@ -454,10 +454,6 @@
     document.getElementById(tabToSet).click();
   }
 
-  let socket = new SockJS('mywebsockets');
-  let stompClient = Stomp.over(socket);
-  stompClient.debug = null;
-
   /**
    * Used to send a notification that a piece of evidence was highfived to the controller.
    * @param id    The ID of the evidnce that was highfived.
