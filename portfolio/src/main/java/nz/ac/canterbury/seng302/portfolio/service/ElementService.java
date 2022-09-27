@@ -1,6 +1,8 @@
 package nz.ac.canterbury.seng302.portfolio.service;
 
+import nz.ac.canterbury.seng302.portfolio.controller.DetailsController;
 import nz.ac.canterbury.seng302.portfolio.model.UserSorting;
+import nz.ac.canterbury.seng302.portfolio.utility.ToastUtility;
 import nz.ac.canterbury.seng302.shared.identityprovider.PaginatedUsersResponse;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 import org.hibernate.ObjectNotFoundException;
@@ -96,6 +98,7 @@ public class ElementService {
         // Gets the dynamic image spring is hosting for that user or the default image.
         model.addAttribute("userImage", photoService.getPhotoPath(userData.getProfileImagePath(), userId));
         model.addAttribute("userId", userId);
+        ToastUtility.addToastsToModel(model, new ArrayList<>(), DetailsController.NUM_OF_TOASTS);
     }
 
     /**
