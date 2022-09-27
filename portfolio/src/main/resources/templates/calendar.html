@@ -342,7 +342,6 @@
      * Refresh the DOM after some delay, to account for the saving function completing.
      */
     function refreshEvents() {
-        console.log("refreshing events");
         const date = calendar.getDate();
         localStorage.setItem("currentDate", date);
         setTimeout(() => {

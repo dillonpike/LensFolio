@@ -2,6 +2,7 @@ package nz.ac.canterbury.seng302.portfolio.service;
 
 import java.util.Optional;
 import nz.ac.canterbury.seng302.portfolio.model.Evidence;
+import nz.ac.canterbury.seng302.portfolio.model.HighFivers;
 import nz.ac.canterbury.seng302.portfolio.repository.EvidenceRepository;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 import org.junit.jupiter.api.BeforeEach;
@@ -96,16 +97,22 @@ class EvidenceServiceTest {
      */
     @Test
     void testGetHighFiversOfEvidence() {
-        List<UserResponse> expectedUsers = new ArrayList<>();
+        List<HighFivers> expectedUsers = new ArrayList<>();
         Evidence testEvidence = new Evidence();
         int numUsers = 3;
         for (int i = 0; i < numUsers; i++) {
-            expectedUsers.add(UserResponse.newBuilder().setId(i).setFirstName("First name " + i).setLastName("Last name " + i).build());
-            when(registerClientService.getUserData(expectedUsers.get(i).getId())).thenReturn(expectedUsers.get(i));
+            String firstName = "First name" + i;
+            String lastName = "Last name" + i;
+            UserResponse userResponse = UserResponse.newBuilder().setId(i).setFirstName(firstName).setLastName(lastName).build();
+            expectedUsers.add(new HighFivers(firstName + " " + lastName, i));
+            when(registerClientService.getUserData(i)).thenReturn(userResponse);
             testEvidence.addHighFiverId(i);
         }
-        List<UserResponse> actualUsers = evidenceService.getHighFivers(testEvidence);
-        assertEquals(expectedUsers, actualUsers);
+        List<HighFivers> actualUsers = evidenceService.getHighFivers(testEvidence);
+        for(int i=0; i < actualUsers.size(); i++){
+            assertEquals(expectedUsers.get(i).getUserId(), actualUsers.get(i).getUserId());
+            assertEquals(expectedUsers.get(i).getName(), actualUsers.get(i).getName());
+        }
     }
 
     /**
@@ -113,10 +120,9 @@ class EvidenceServiceTest {
      */
     @Test
     void testGetHighFiversOfEvidenceWhenNoHighFivers() {
-        List<UserResponse> expectedUsers = new ArrayList<>();
         Evidence testEvidence = new Evidence();
-        List<UserResponse> actualUsers = evidenceService.getHighFivers(testEvidence);
-        assertEquals(expectedUsers, actualUsers);
+        List<HighFivers> actualUsers = evidenceService.getHighFivers(testEvidence);
+        assertEquals(0, actualUsers.size());
     }
 
     /**

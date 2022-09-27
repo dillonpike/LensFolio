@@ -97,6 +97,9 @@ public class AccountController {
             model.addAttribute("evidence", evidence);
 
             List<Evidence> evidenceList = evidenceService.getEvidences(userId);
+            for (Evidence eachEvidence:evidenceList) {
+                eachEvidence.setHighFivers(evidenceService.getHighFivers(eachEvidence));
+            }
             model.addAttribute("evidences", evidenceList);
 
         } catch (StatusRuntimeException e) {
