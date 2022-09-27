@@ -18,6 +18,7 @@ function connect() {
  * This is so other users' pages can be updated.
  */
 function sendAddEvidenceNotification() {
+    const type = roles.includes("STUDENT") ? 'studentEvidence' : 'nonStudentEvidence';
     stompClient.send("/webSocketPost/evidence-add", {}, JSON.stringify({
         'artefactName': $("#evidenceTitle").val(),
         'artefactId': 1,
@@ -25,7 +26,7 @@ function sendAddEvidenceNotification() {
         'username': $("#username").text(),
         'userFirstName': $("#firstName").val(),
         'userLastName': $("#lastNameInput").val(),
-        'artefactType': "Evidence"
+        'artefactType': type
     }));
 }
 
