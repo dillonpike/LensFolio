@@ -20,9 +20,11 @@ function connect() {
     stompClient.connect({}, function () {
         stompClient.subscribe('/webSocketGet/evidence-added', function (eventResponseArg) {
             const eventResponse = JSON.parse(eventResponseArg.body)
-            const notification = showLeaderboardUpdateToast(eventResponse.artefactType, eventResponse.artefactName, eventResponse.artefactId,
-                eventResponse.username, eventResponse.userFirstName, eventResponse.userLastName);
-            updateLeaderboard(notification);
+            if (eventResponse.artefactType === "studentEvidence") {
+                const notification = showLeaderboardUpdateToast("Evidence", eventResponse.artefactName, eventResponse.artefactId,
+                    eventResponse.username, eventResponse.userFirstName, eventResponse.userLastName);
+                updateLeaderboard(notification);
+            }
         });
     });
 }
