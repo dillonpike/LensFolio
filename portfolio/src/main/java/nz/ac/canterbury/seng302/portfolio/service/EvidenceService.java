@@ -11,19 +11,16 @@ import nz.ac.canterbury.seng302.portfolio.model.Tag;
 import nz.ac.canterbury.seng302.portfolio.model.WebLink;
 import nz.ac.canterbury.seng302.portfolio.repository.EvidenceRepository;
 import nz.ac.canterbury.seng302.portfolio.repository.HighFiversRepository;
-import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 
 import javax.ws.rs.NotAcceptableException;
-import java.util.ArrayList;
 import java.util.Date;
 
 import static nz.ac.canterbury.seng302.portfolio.controller.EvidenceController.*;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.regex.Pattern;
 
 /**
@@ -62,6 +59,8 @@ public class EvidenceService {
             evidence.setTags(new HashSet<>());
             Set<WebLink> webLinks = Set.copyOf(evidence.getWebLinks());
             evidence.setWebLinks(new HashSet<>());
+            Set<HighFivers> highFivers = Set.copyOf(evidence.getHighFivers());
+            evidence.setHighFivers(new HashSet<>());
             evidenceRepository.save(evidence);
 
             evidenceRepository.deleteById(evidence.getEvidenceId());
@@ -76,6 +75,7 @@ public class EvidenceService {
                     emptyEvidence.addTag(tag);
                 }
                 emptyEvidence.setWebLinks(webLinks);
+                emptyEvidence.setHighFivers(highFivers);
                 evidenceRepository.save(emptyEvidence);
                 return false;
             }
