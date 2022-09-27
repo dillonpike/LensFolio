@@ -17,6 +17,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -105,10 +106,9 @@ class EvidenceServiceTest {
             String lastName = "Last name" + i;
             UserResponse userResponse = UserResponse.newBuilder().setId(i).setFirstName(firstName).setLastName(lastName).build();
             expectedUsers.add(new HighFivers(firstName + " " + lastName, i));
-            when(registerClientService.getUserData(i)).thenReturn(userResponse);
             testEvidence.addHighFiverId(i);
         }
-        List<HighFivers> actualUsers = evidenceService.getHighFivers(testEvidence);
+        List<HighFivers> actualUsers = testEvidence.getHighFivers().stream().toList();
         for(int i=0; i < actualUsers.size(); i++){
             assertEquals(expectedUsers.get(i).getUserId(), actualUsers.get(i).getUserId());
             assertEquals(expectedUsers.get(i).getName(), actualUsers.get(i).getName());
@@ -121,7 +121,7 @@ class EvidenceServiceTest {
     @Test
     void testGetHighFiversOfEvidenceWhenNoHighFivers() {
         Evidence testEvidence = new Evidence();
-        List<HighFivers> actualUsers = evidenceService.getHighFivers(testEvidence);
+        Set<HighFivers> actualUsers = testEvidence.getHighFivers();
         assertEquals(0, actualUsers.size());
     }
 

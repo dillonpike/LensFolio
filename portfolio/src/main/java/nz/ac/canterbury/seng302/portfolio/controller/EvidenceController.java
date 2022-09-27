@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.NotAcceptableException;
@@ -123,6 +124,62 @@ public class EvidenceController {
         }
         /* Return the name of the Thymeleaf template */
         return "redirect:/account";
+    }
+
+    @PostMapping("saveHighFiveEvidence")
+    public String saveHighFiveEvidence(
+            @RequestParam("evidenceId") int evidenceId,
+            @RequestParam("userId") int userId,
+            @RequestParam("userName") String userName,
+            Model model,
+            HttpServletResponse httpServletResponse,
+            @AuthenticationPrincipal AuthState principal
+    ) {
+        try {
+            boolean wasHighFived = evidenceService.saveHighFiveEvidence(evidenceId, userId, userName);
+            if (wasHighFived) {
+                // * Add the evidence to the model *
+                // * Maybe add something to the model to make sure the evidence tab is shown? *
+                httpServletResponse.setStatus(HttpServletResponse.SC_OK);
+                return "account::evidence"; // * return some sort of evidence fragment? *
+            } else {
+                httpServletResponse.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                return "account::evidence";
+            }
+
+        } catch (NotAcceptableException e) {
+            httpServletResponse.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            logger.error("Attributes of evidence not formatted correctly. Not high-fiving evidence. ");
+            return "account::evidence";
+        }
+    }
+
+    @PostMapping("removeHighFiveEvidence")
+    public String removeHighFiveEvidence(
+            @RequestParam("evidenceId") int evidenceId,
+            @RequestParam("userId") int userId,
+            @RequestParam("userName") String userName,
+            Model model,
+            HttpServletResponse httpServletResponse,
+            @AuthenticationPrincipal AuthState principal
+    ) {
+        try {
+            boolean wasRemoved = evidenceService.saveHighFiveEvidence(evidenceId, userId, userName);
+            if (wasRemoved) {
+                // * Add the evidence to the model *
+                // * Maybe add something to the model to make sure the evidence tab is shown? *
+                httpServletResponse.setStatus(HttpServletResponse.SC_OK);
+                return "account::evidence"; // * return some sort of evidence fragment? *
+            } else {
+                httpServletResponse.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                return "account::evidence";
+            }
+
+        } catch (NotAcceptableException e) {
+            httpServletResponse.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            logger.error("Attributes of evidence not formatted correctly. Not high-fiving evidence. ");
+            return "account::evidence";
+        }
     }
 
     /**

@@ -98,7 +98,7 @@ public class AccountController {
 
             List<Evidence> evidenceList = evidenceService.getEvidences(userId);
             for (Evidence eachEvidence:evidenceList) {
-                eachEvidence.setHighFivers(evidenceService.getHighFivers(eachEvidence));
+                eachEvidence.setHighFivers(eachEvidence.getHighFivers());
             }
             model.addAttribute("evidences", evidenceList);
 
