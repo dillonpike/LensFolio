@@ -59,6 +59,14 @@
                                     </div>
                                 </div>
                             </div>
+                            <div class="evidence-skillTag-title" th:if="${!evidence.getTags().isEmpty()}">Skill Tags:</div>
+                            <div th:each="skillTag, meta: ${evidence.getTags()}">
+                                <div th:if="${skillTag.getTagName()} != 'InvalidTag'" class="chip" th:id="'skillTagDisplay' + ${meta}" style="display: inline-block;padding: 0 12px 0 15px;height: fit-content;font-size: 16px;line-height: 30px;border-radius: 25px;background-color: #f1f1f1f1;margin: 0 10px 10px 0;" data-toggle="tooltip" data-bs-placement="right" th:title="${skillTag.getTagName()}">
+                                    <div class="d-flex justify-content-between flex-row align-items-center">
+                                        <span style="margin-right: 10px; margin-left: 10px" th:text="${skillTag.getTagName()}"></span>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                         <script th:inline="javascript">
                             buttonId = /*[['evidenceDropdown' + (${meta.index} + 1)]]*/ null;

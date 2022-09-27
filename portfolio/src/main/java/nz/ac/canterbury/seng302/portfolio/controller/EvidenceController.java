@@ -3,6 +3,8 @@ package nz.ac.canterbury.seng302.portfolio.controller;
 import nz.ac.canterbury.seng302.portfolio.model.Evidence;
 import nz.ac.canterbury.seng302.portfolio.model.Tag;
 import nz.ac.canterbury.seng302.portfolio.service.ElementService;
+import nz.ac.canterbury.seng302.portfolio.model.NotificationMessage;
+import nz.ac.canterbury.seng302.portfolio.model.NotificationResponse;
 import nz.ac.canterbury.seng302.portfolio.service.EvidenceService;
 import nz.ac.canterbury.seng302.portfolio.service.TagService;
 import nz.ac.canterbury.seng302.portfolio.service.UserAccountClientService;
@@ -10,6 +12,8 @@ import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -87,8 +91,6 @@ public class EvidenceController {
             logger.error("Attributes of evidence not formatted correctly. Not adding evidence. ");
             return ADD_EVIDENCE_MODAL_FRAGMENT;
         }
-
-
     }
 
     /**
@@ -149,9 +151,21 @@ public class EvidenceController {
         } catch (NullPointerException e) {
             return "redirect:account?userId=" + userId;
         }
-        model.addAttribute("evidencesExists",  ((evidenceList != null) && (!evidenceList.isEmpty())));
+        model.addAttribute("evidencesExists", ((evidenceList != null) && (!evidenceList.isEmpty())));
         model.addAttribute("evidences", evidenceList);
 
         return "evidence::evidenceList";
+    }
+
+    /**
+     * This method maps @MessageMapping endpoint to the @SendTo endpoint. Called when something is sent to
+     * the MessageMapping endpoint. This is triggered when a user adds a piece of evidence.
+     * @param message Information about the added piece of evidence.
+     * @return Returns the message given.
+     */
+    @MessageMapping("/evidence-add")
+    @SendTo("/webSocketGet/evidence-added")
+    public NotificationResponse evidenceAddNotification(NotificationMessage message) {
+        return NotificationResponse.fromMessage(message, "add");
     }
 }

@@ -3,6 +3,8 @@ package nz.ac.canterbury.seng302.portfolio.service;
 
 import nz.ac.canterbury.seng302.portfolio.model.Evidence;
 import nz.ac.canterbury.seng302.portfolio.model.Tag;
+import nz.ac.canterbury.seng302.portfolio.model.HighFivers;
+import nz.ac.canterbury.seng302.portfolio.model.Tag;
 import nz.ac.canterbury.seng302.portfolio.model.WebLink;
 import nz.ac.canterbury.seng302.portfolio.repository.EvidenceRepository;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
@@ -11,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 
 import javax.ws.rs.NotAcceptableException;
+import java.util.ArrayList;
 import java.util.Date;
 
 import static nz.ac.canterbury.seng302.portfolio.controller.EvidenceController.*;
@@ -137,6 +140,11 @@ public class EvidenceService {
                 hasError = true;
                 break;
             }
+            if (emojiRegex.matcher(tag.getTagName()).find()) {
+                model.addAttribute(ADD_EVIDENCE_MODAL_FRAGMENT_SKILL_TAGS_MESSAGE, "Tags must not contain emojis");
+                hasError = true;
+                break;
+            }
         }
         if (hasError) {
             throw new NotAcceptableException("Evidence fields have errors");
@@ -148,8 +156,14 @@ public class EvidenceService {
      * @param evidence evidence to get high fivers of
      * @return list of all users that have high fived the piece of evidence
      */
-    public List<UserResponse> getHighFivers(Evidence evidence) {
-        return evidence.getHighFiverIds().stream().map(registerClientService::getUserData).toList();
+    public List<HighFivers> getHighFivers(Evidence evidence) {
+        List<HighFivers> highFivers = new ArrayList<>();
+        for(Integer userID : evidence.getHighFiverIds()){
+            UserResponse userResponse = registerClientService.getUserData(userID);
+            String name = userResponse.getFirstName() + " " + userResponse.getLastName();
+            highFivers.add(new HighFivers(name, userID));
+        }
+        return highFivers;
     }
     /**
      * Checks to ensure that if a piece of evidence has a user attached to it.

@@ -32,7 +32,7 @@
           <div class="card-body p-1-9 p-xl-5">
             <div class="mb-4">
               <h3 class="h4 mb-0" th:text="${fullName}"></h3>
-              <span class="text-primary mb-3" th:text="${username}"></span>
+              <span id="username" class="text-primary mb-3" th:text="${username}"></span>
               <div style="display: flex; flex-direction: row">
                 <p> Member since: </p>
                 <p  th:text="${dateAdded}" style="margin-left: 5px"></p>
@@ -190,7 +190,7 @@
 
                         </div>
 
-                        <!--Buttons for editing and deleting, for future use!!-->
+                        <!--Buttons for deleting-->
                         <div class="d-flex">
                           <div class="button-divider">
                             <button class="btn btn-default" type="button" th:id="'highFiveBtn' + ${evidence.getEvidenceId}" th:attr="onclick=|switchIcon('${evidence.getEvidenceId}')|" style="outline: none; box-shadow: none;">
@@ -198,10 +198,14 @@
                             </button>
                           </div>
                           <div class="button-divider">
-                            <button class="btn btn-default" type="button" th:id="'UserList' + ${evidence.getEvidenceId}" th:attr="onclick=|togglePopover('${evidence.getEvidenceId}')|" style="outline: none; box-shadow: none;"
-                                    data-bs-toggle="popover" data-bs-placement="bottom" title="User List:" data-bs-content="No HighFive Yet" data-bs-html="true">
+                            <button class="btn btn-default dropdown" type="button" data-bs-toggle="dropdown" th:id="'UserList' + ${evidence.getEvidenceId}">
                               <i class="bi bi-people"></i>
                             </button>
+                            <ul class="dropdown-menu">
+                              <li><h6 class="dropdown-header">High fived by:</h6></li>
+                              <li th:if="${evidence.getHighFivers().isEmpty()}"><a class="dropdown-item">No one high five this evidence yet!</a></li>
+                              <li th:each="person:${evidence.getHighFivers()}" style="cursor: pointer"><a class="dropdown-item" th:attr="onclick='redirectToAnotherUserPage(' + ${person.getUserId()} + ')'" th:text="${person.getName()}"></a></li>
+                            </ul>
                           </div>
                           <div class="button-divider">
                             <div class="dropdown" th:if="${isAuthorised} == true">
@@ -209,17 +213,10 @@
                                 <i class='bi bi-gear-fill'></i>
                               </button>
 
-                              <!--Edit and delete buttons for the future-->
+                              <!--Delete button for evidence-->
                               <ul class="dropdown-menu" aria-labelledby="evidenceDropdownButton" style="z-index: 3000">
                                 <li>
-                                  <a class="button-link" data-bs-toggle="modal" data-bs-target="#evidenceModal" data-bs-type="edit">
-                                    <button id="editEvidenceButton" class="dropdown-item" type="button">
-                                      <span class='bi bi-pencil'></span> <i>Edit</i>
-                                    </button>
-                                  </a>
-                                </li>
-                                <li>
-                                  <a class="button-link" data-bs-toggle="modal" data-bs-target="#deleteModal" th:data-bs-name="${evidence.getTitle}" data-bs-type="evidence">
+                                  <a id="deleteEvidenceDisplayButton" class="button-link" data-bs-toggle="modal" data-bs-target="#deleteModal" th:data-bs-name="${evidence.getTitle}" data-bs-type="evidence">
                                     <button class="dropdown-item delete-artefact-button" type="button">
                                       <span class='bi bi-trash' style='color: red'></span> <i style='color: red'>Delete</i>
                                     </button>
@@ -246,13 +243,17 @@
 
   <div id="evidenceModal" th:replace="fragments/evidenceModal :: evidenceModal"></div>
   <div th:replace="fragments/alertToast :: alertToast"></div>
+  <div id="deleteModal" th:replace="fragments/deleteModalProject :: deleteModal"></div>
 
 </body>
 <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha384-xBuQ/xzmlsLoJpyjoggmTEz8OWUFM0/RC5BsqQBDX2v5cMvDHcMakNTNrHIW2I5f" crossorigin="anonymous"></script>
 <script src="js/fineCrop.js"></script>
 <script src="js/banner.js"></script>
 <script src="js/evidence.js"></script>
+<script src="js/account.js"></script>
 <script th:inline="javascript">
+
+  deleteModalSetup();
 
 
   /*<![CDATA[*/
@@ -438,15 +439,11 @@
   }
 
   /**
-   * This function will toggle the state of a popover list which shows all the users that have like a certain piece of evidence.
-   * As these popovers use HTML it is important that if data is being used from the controllers it is first escaped.
-   * LOGIC STILL NEEDS TO BE CONNECT TO THIS FUNCTION!
-   * @param id  ID of the popover to toggle being displayed.
+   * This function redirects the page to profile page of user with id specified in the parameter
+   * @param id the id of a user
    */
-  function togglePopover(id) {
-    const popOverID = "#UserList" + id
-    const popOver =  $(popOverID);
-    popOver.attr("data-bs-content", "User-1-" + id + "<br/>" + "User-2-" + id)
+  function redirectToAnotherUserPage(id) {
+    document.location.href = "account?userId=" + id;
   }
 
   /**
