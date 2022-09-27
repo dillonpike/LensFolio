@@ -130,7 +130,8 @@ class EvidenceServiceTest {
     }
 
     /**
-     * Tests that
+     * Tests that when the method is passed both a valid skill with a valid user attached to the evidence within tag class that
+     * the evidence is returned.
      */
     @Test
     void testGetEvidenceWithSkillAndUserWithValidUserAndSkill() {
@@ -150,7 +151,7 @@ class EvidenceServiceTest {
         when(evidenceRepository.findById(evidenceId)).thenReturn(optionalEvidence);
 
         try {
-            List<Evidence> actualEvidences = evidenceService.getEvidencesWithSkillAndUser(evidenceId, userId);
+            List<Evidence> actualEvidences = evidenceService.getEvidencesWithSkillAndUser(tagId, userId);
             ArrayList<Evidence> expectedEvidences = new ArrayList<>();
             expectedEvidences.add(testEvidence);
             assertEquals(expectedEvidences, actualEvidences);
@@ -160,10 +161,33 @@ class EvidenceServiceTest {
     }
 
     /**
-     * Tests that
+     * Tests that when the method is passed both an invalid skill with a valid/invalid user attached to the evidence within tag class that
+     * the evidence is not returned. It should also throw a NullPointerException.
+     * When the user is valid as it is attached evidence which is stored in the tag it will still produce a NullPointerException.
      */
     @Test
     void testGetEvidenceWithSkillAndUserWithInvalidUserAndSkill() {
+        int tagId = 1;
+        int userId = 1;
+
+        when(tagService.getTag(tagId)).thenReturn(null); // Invalid Tag
+
+        try {
+            evidenceService.getEvidencesWithSkillAndUser(tagId, userId);
+            fail(); // It is expected to throw a NullPointerException.
+        } catch (Exception e) {
+            if (!(e instanceof NullPointerException)) {
+                fail();
+            }
+        }
+    }
+
+    /**
+     * Tests that when the method is passed both a valid skill but the user attached to the evidences
+     * are not the same as the ones being searched for that an empty list is returned.
+     */
+    @Test
+    void testGetEvidenceWithSkillAndUserWithInvalidUserAndValidSkill() {
         int tagId = 1;
         int evidenceId = 1;
         int userId = 1;
@@ -174,31 +198,60 @@ class EvidenceServiceTest {
 
         Tag validTag = new Tag("Valid_Tag", tagId);
         validTag.addEvidence(testEvidence);
-        when(tagService.getTag(tagId)).thenReturn(null); // Invalid Tag
+        when(tagService.getTag(tagId)).thenReturn(validTag);
 
         try {
             evidenceService.getEvidencesWithSkillAndUser(evidenceId, userId);
+            List<Evidence> actualEvidences = evidenceService.getEvidencesWithSkillAndUser(tagId, userId);
+            ArrayList<Evidence> expectedEvidences = new ArrayList<>();
+            assertEquals(expectedEvidences, actualEvidences);
+        } catch (NullPointerException e) {
+            fail();
+        }
+    }
+
+    /**
+     * Tests that when searching just for evidences with a certain tag that if the tag is valid all evidences attached are returned.
+     */
+    @Test
+    void testGetEvidenceWithSkillWithValidSkill() {
+        int tagId = 1;
+        int evidenceId = 1;
+
+        Evidence testEvidence = new Evidence();
+        testEvidence.setEvidenceId(evidenceId);
+
+        Tag validTag = new Tag("Valid_Tag", tagId);
+        validTag.addEvidence(testEvidence);
+        when(tagService.getTag(tagId)).thenReturn(validTag);
+
+        try {
+            List<Evidence> actualEvidences = evidenceService.getEvidencesWithSkill(tagId);
+            ArrayList<Evidence> expectedEvidences = new ArrayList<>();
+            expectedEvidences.add(testEvidence);
+            assertEquals(expectedEvidences, actualEvidences);
+        } catch (NullPointerException e) {
+            fail();
+        }
+    }
+
+    /**
+     * Tests that when searching just for evidences with a certain tag that if the tag does not exist that a NullPointerException is thrown.
+     */
+    @Test
+    void testGetEvidenceWithSkillWithInvalidSkill() {
+        int tagId = 1;
+
+        when(tagService.getTag(tagId)).thenReturn(null);
+
+        try {
+            evidenceService.getEvidencesWithSkill(tagId);
+            fail(); // It is expected to throw a NullPointerException.
         } catch (Exception e) {
             if (!(e instanceof NullPointerException)) {
                 fail();
             }
         }
-    }
-
-    /**
-     * Tests that
-     */
-    @Test
-    void testGetEvidenceWithSkillAndUserWithInvalidUserAndValidSkill() {
-
-    }
-
-    /**
-     * Tests that
-     */
-    @Test
-    void testGetEvidenceWithSkillAndUserWithValidUserAndInvalidSkill() {
-
     }
 
 }

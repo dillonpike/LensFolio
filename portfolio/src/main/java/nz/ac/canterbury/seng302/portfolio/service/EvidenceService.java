@@ -4,7 +4,6 @@ package nz.ac.canterbury.seng302.portfolio.service;
 import nz.ac.canterbury.seng302.portfolio.model.Evidence;
 import nz.ac.canterbury.seng302.portfolio.model.Tag;
 import nz.ac.canterbury.seng302.portfolio.model.HighFivers;
-import nz.ac.canterbury.seng302.portfolio.model.Tag;
 import nz.ac.canterbury.seng302.portfolio.model.WebLink;
 import nz.ac.canterbury.seng302.portfolio.repository.EvidenceRepository;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
@@ -188,7 +187,7 @@ public class EvidenceService {
     /**
      * Gets all pieces of evidences that have a certain skill and also orders them in reveres chronological order.
      * @param skillId   The skill that needs to be attached to the evidence.
-     * @return      List of evidence with a given skill.
+     * @return          List of evidence with a given skill.
      */
     public List<Evidence> getEvidencesWithSkill(int skillId) throws NullPointerException{
         Tag tag = tagService.getTag(skillId);
@@ -201,7 +200,7 @@ public class EvidenceService {
      * and also orders them in reveres chronological order.
      * @param userId    The user that needs to be attached to the evidence.
      * @param skillId   The skill that needs to be attached to the evidence.
-     * @return      List of evidence with a given skill and user attached.
+     * @return          List of evidence with a given skill and user attached.
      */
     public List<Evidence> getEvidencesWithSkillAndUser(int userId, int skillId) throws NullPointerException{
 
