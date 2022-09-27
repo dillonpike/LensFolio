@@ -5,6 +5,7 @@ const EVENTTYPE = "Event";
 const DEADLINETYPE = "Deadline";
 const MILESTONETYPE = "Milestone";
 const GROUPTYPE = "Group";
+const HIGHFIVETYPE = "HighFive"
 const EVIDENCETYPE = "Evidence";
 const ROLETYPE = "Role";
 
@@ -13,6 +14,8 @@ const ADDACTION = "add";
 const SAVEACTION = "save";
 const EDITACTION = "edit";
 const DELETEACTION = "delete";
+const HIGHFIVEACTION = "highfive"
+const HIGHFIVEUPDATEACTION = "highfiveUpdate"
 const ADDEVIDENCEACTION = "addEvidence";
 const UPDATELEADERBOARDACTION = "updateLeaderboard";
 const DELETEROLEACTION = "deleteRole";
@@ -47,6 +50,7 @@ class Notification {
     username = "";
     firstName = "";
     lastName = "";
+    highfivers = [];
 
     /**
      * Default constructor.
@@ -64,6 +68,7 @@ class Notification {
         this.firstName = firstName;
         this.lastName = lastName;
         this.type = type;
+        this.highfivers = [];
         if (type === EVENTTYPE) {
             this.titleName = "Event Activity";
         } else if (type === DEADLINETYPE) {
@@ -72,6 +77,8 @@ class Notification {
             this.titleName = "Milestone Activity";
         } else if (type === GROUPTYPE) {
             this.titleName = "Group Activity";
+        } else if (type === HIGHFIVETYPE) {
+            this.titleName = "High Five Activity";
         } else if (type === EVIDENCETYPE) {
             this.titleName = "Evidence Activity";
         } else if (type === ROLETYPE) {
@@ -80,7 +87,12 @@ class Notification {
         else {
             this.titleName = "Activity";
         }
-        this.id = type.toLowerCase() + "_" + username + "_" + id;
+
+        if (type === HIGHFIVETYPE) {
+            this.id = type.toLowerCase() + "_" + id;
+        } else {
+            this.id = type.toLowerCase() + "_" + username + "_" + id;
+        }
         this.id_number = id;
         this.action = action;
     }
@@ -110,6 +122,10 @@ class Notification {
         return this.action;
     }
 
+    get numOfHighFivers() {
+        return this.numOfHighfivers;
+    }
+
     set username(username) {
         this.username = username;
     }
@@ -125,6 +141,12 @@ class Notification {
     set action(action) {
         this.action = action;
     }
+
+    set numOfHighFivers(numOfHighFivers) {
+        this.numOfHighfivers = numOfHighFivers;
+    }
+
+
 
     /**
      * Shows the notification with the assigned toast with the correct message and title.
@@ -158,6 +180,12 @@ class Notification {
           case ADDROLEACTION:
                 this.bodyText = this.firstName + " " + this.lastName + " (" + this.username + ") has been added to a student role. Updating leaderboard...";
                 break;
+          case HIGHFIVEACTION:
+                this.bodyText = "'" + this.name + "' has been high fived by " + this.username + ".";
+                break;
+          case HIGHFIVEUPDATEACTION:
+                this.bodyText = "'" + this.name + "' has been high fived by " + this.username + " and " + (this.highfivers.length - 2) + " other user(s).";
+                break;
           default:
               this.bodyText = "'" + this.name + "' has been changed by " + this.firstName + " " + this.lastName + " (" + this.username + ").";
         }
@@ -174,6 +202,15 @@ class Notification {
     }
 
     /**
+     * Resets the notification so it doesn't contain any old data.
+     */
+    resetToast() {
+        this.highfivers = [];
+        this.username = "";
+        this.action = HIGHFIVEACTION;
+    }
+
+    /**
      * Hides the notification after a timer.
      * @param timeInSeconds Time in seconds for the notification to hide after. Should be equal to 1 or above
      */
@@ -186,6 +223,7 @@ class Notification {
         setTimeout((function (notification) {
             let currentTime = (new Date(Date.now())).valueOf();
             if (currentTime >= notification.selectedDate + ((timeInSeconds * 1000) - 500) && notification.isWaitingToBeHidden) {
+                notification.resetToast();
                 notification.hide();
             }
         }), timeInSeconds * 1000, this);
@@ -214,9 +252,19 @@ class Notification {
      * @returns {Notification} Returns its updated self.
      */
     updateNotification(newNotification) {
-        this.name = newNotification.name;
-        this.action = newNotification.action;
-
+        if (((this.action === HIGHFIVEACTION) || (this.action === HIGHFIVEUPDATEACTION))
+            && !(this.highfivers.includes(newNotification.username))) {
+            if (this.highfivers.length === 1) {
+                this.username += ", " + newNotification.username
+                this.highfivers.push(newNotification.username);
+            } else if (this.highfivers.length >= 2) {
+                this.action = HIGHFIVEUPDATEACTION
+                this.highfivers.push(newNotification.username);
+            } else {
+                this.username = newNotification.username
+                this.highfivers.push(newNotification.username);
+            }
+        }
         return this;
     }
 }
@@ -232,25 +280,14 @@ Notification.prototype.toString = function () {
 
 
 /**
- * Holds a list of Notification objects that are, or have been active. Can only be as long as listOfHTMLToasts.
- * @type {[Notification]}
- */
-let listOfNotifications = [];
-
-/**
- * List of html toast object pairs that hold a Bootstrap toast object, a body text variable and a title text variable.
- * These can be assigned to Notification objects to display them.
- * @type {[{'toast', 'text', 'title'}]}
- */
-let listOfHTMLToasts = [];
-
-/**
  * Adds Notification objects to the listOfNotifications list if it is new, otherwise updates the existing notification.
- * Then reassigns the toast html objects to the new list.
+ * Then reassigns the Bootstrap toast html objects to the new list.
  * @param newNotification New toast object to add/update to the list.
+ * @param listOfNotifications List of Notification objects to add/update the new notification to.
+ * @param listOfHTMLToasts List of HTML Bootstrap toast objects to assign to the list of Notification objects.
  * @returns {Notification} updated toast if it already existed, otherwise, returns the parameter 'newToast'.
  */
-function addNotification(newNotification) {
+function addNotification(newNotification, listOfNotifications, listOfHTMLToasts) {
     let returnedNotification = newNotification;
 
     let notificationExists = false;
@@ -272,14 +309,14 @@ function addNotification(newNotification) {
             listOfNotifications.shift();
         }
     }
-    reorderNotifications();
+    reorderNotifications(listOfNotifications, listOfHTMLToasts);
     return returnedNotification;
 }
 
 /**
  * Reassigns toast html objects to the toast objects that are active at the moment (in the list 'listOfToasts')
  */
-function reorderNotifications() {
+function reorderNotifications(listOfNotifications, listOfHTMLToasts) {
     let count = 0;
     for (let item in listOfHTMLToasts) {
         listOfHTMLToasts[count].toast.hide();

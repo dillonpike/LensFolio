@@ -13,6 +13,19 @@ const NUM_OF_TOASTS = 3;
 let stompClient = null;
 
 /**
+ * Holds a list of Notification objects that are, or have been active. Can only be as long as listOfHTMLToasts.
+ * @type {[Notification]}
+ */
+let listOfNotifications = [];
+
+/**
+ * List of html toast object pairs that hold a Bootstrap toast object, a body text variable and a title text variable.
+ * These can be assigned to Notification objects to display them.
+ * @type {[{'toast', 'text', 'title'}]}
+ */
+let listOfHTMLToasts = [];
+
+/**
  * Connects the stomp client to the setup websocket endpoint.
  * Then subscribes methods to the required endpoints.
  */
@@ -71,7 +84,7 @@ function connect() {
  */
 function showToast(groupName, groupId, username, firstName, lastName, hide, type) {
     let newNotification = new Notification(type, groupName, groupId, username, firstName, lastName, "edit");
-    newNotification = addNotification(newNotification);
+    newNotification = addNotification(newNotification, listOfNotifications, listOfHTMLToasts);
     if (!hide) {
         newNotification.show();
     } else {
@@ -92,7 +105,7 @@ function showToast(groupName, groupId, username, firstName, lastName, hide, type
  */
 function showToastSave(groupName, groupId, username, firstName, lastName, type, action) {
     let newNotification = new Notification(type, groupName, groupId, username, firstName, lastName, action);
-    newNotification = addNotification(newNotification);
+    newNotification = addNotification(newNotification, listOfNotifications, listOfHTMLToasts);
     newNotification.show();
     newNotification.hideTimed(SECONDS_TILL_HIDE);
 }
