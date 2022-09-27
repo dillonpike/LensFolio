@@ -41,10 +41,24 @@ function deleteModalSetup() {
             modalTitle.innerText = `Delete Evidence`;
             modalBodyLabel.textContent = `Are you sure you want to delete the evidence piece '${name}'?`;
             modalButton.innerHTML = `Delete`;
-            modalLink.href = `delete-evidence/${id}`;
-        }
 
-    })
+            $("#deleteModalButton").on('click', function (ignore) {
+              $.ajax({
+                      url: `delete-evidence/${id}`,
+                      type: 'POST',
+                      success: function() {
+                          $('#deleteModal').modal('toggle')
+                          var url = "account?userId=" + document.getElementById('userId').value
+                              setTimeout(function() {
+                                  $("#evidence").load(url+" #evidence>*","");
+                              }, 10);
+                      },
+                      error: function() {
+                          document.getElementById('deleteModalButton').onclick = buttonFunction;
+                      }
+                  })
+              });
+        }})
 
 
 }

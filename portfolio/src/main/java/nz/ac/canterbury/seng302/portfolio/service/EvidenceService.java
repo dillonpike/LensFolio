@@ -11,6 +11,7 @@ import nz.ac.canterbury.seng302.portfolio.model.Tag;
 import nz.ac.canterbury.seng302.portfolio.model.WebLink;
 import nz.ac.canterbury.seng302.portfolio.repository.EvidenceRepository;
 import nz.ac.canterbury.seng302.portfolio.repository.HighFiversRepository;
+import nz.ac.canterbury.seng302.portfolio.repository.TagRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
@@ -31,6 +32,9 @@ public class EvidenceService {
 
     @Autowired
     private EvidenceRepository evidenceRepository;
+
+    @Autowired
+    private TagRepository tagRepository;
 
     @Autowired
     private HighFiversRepository highFiversRepository;
@@ -54,25 +58,41 @@ public class EvidenceService {
         Optional<Evidence> sOptional = evidenceRepository.findById(id);
         if (sOptional.isPresent()) {
             Evidence evidence = sOptional.get();
+            Set<Tag> tags = null;
+            Set<WebLink> webLinks = null;
+            Set<HighFivers> highFivers = null;
 
-            Set<Tag> tags = Set.copyOf(evidence.getTags());
-            evidence.setTags(new HashSet<>());
-            Set<WebLink> webLinks = Set.copyOf(evidence.getWebLinks());
-            evidence.setWebLinks(new HashSet<>());
-            Set<HighFivers> highFivers = Set.copyOf(evidence.getHighFivers());
-            evidence.setHighFivers(new HashSet<>());
-            evidenceRepository.save(evidence);
+            if (!evidence.getTags().isEmpty()) {
+                tags = Set.copyOf(evidence.getTags());
+                for (Tag tag : tags) {
+                    evidence.removeTag(tag);
+                    tag.getEvidence().remove(evidence);
+                    tagRepository.save(tag);
+                }
+            }
 
-            evidenceRepository.deleteById(evidence.getEvidenceId());
+            if (!evidence.getWebLinks().isEmpty()) {
+                webLinks = Set.copyOf(evidence.getWebLinks());
+                evidence.setWebLinks(new HashSet<>());
+            }
 
-            // Check to see if the user was deleted
+            if (!evidence.getHighFivers().isEmpty()) {
+                highFivers = Set.copyOf(evidence.getHighFivers());
+                evidence.setHighFivers(new HashSet<>());
+            }
+
+            evidenceRepository.delete(evidenceRepository.save(evidence));
+
+            // Check to see if the evidence was deleted
             Optional<Evidence> evidenceStillThere = evidenceRepository.findById(id);
             if (evidenceStillThere.isPresent()) {
                 // Add the users back since deleting the group did not work
                 Evidence emptyEvidence = evidenceStillThere.get();
-                List<Tag> tagList = new ArrayList<>(tags);
-                for (Tag tag : tagList) {
-                    emptyEvidence.addTag(tag);
+                if (tags != null) {
+                    List<Tag> tagList = new ArrayList<>(tags);
+                    for (Tag tag : tagList) {
+                        emptyEvidence.addTag(tag);
+                    }
                 }
                 emptyEvidence.setWebLinks(webLinks);
                 emptyEvidence.setHighFivers(highFivers);
@@ -197,7 +217,7 @@ public class EvidenceService {
             }
             HighFivers newHighFiver = highFiversRepository.save(new HighFivers(userName, userId));
             evidence.addHighFivers(newHighFiver);
-            Evidence evidence1 = evidenceRepository.save(evidence);
+            evidenceRepository.save(evidence);
             return true;
         } else {
             return false;

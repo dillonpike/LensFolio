@@ -58,4 +58,8 @@ public class Tag {
         return evidenceWithTag;
     }
 
+    public void setEvidence(Set<Evidence> evidence) {
+        this.evidenceWithTag = evidence;
+    }
+
 }

@@ -16,7 +16,6 @@ import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -102,7 +101,7 @@ public class EvidenceController {
      * @param model Parameters sent to thymeleaf template to be rendered into HTML
      * @return project detail page
      */
-    @GetMapping("/delete-evidence/{id}")
+    @PostMapping("/delete-evidence/{id}")
     public String evidenceRemove(@PathVariable("id") Integer id,
         HttpServletResponse httpServletResponse, @AuthenticationPrincipal AuthState principal,
         Model model) {
@@ -119,7 +118,7 @@ public class EvidenceController {
                 String errorMessage = "Evidence Not Deleted. Saving Error Occurred.";
                 model.addAttribute(DELETE_EVIDENCE_MODAL_FRAGMENT_TITLE_MESSAGE, errorMessage);
                 httpServletResponse.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-                return DELETE_EVIDENCE_MODAL_FRAGMENT;
+                return "redirect:/account?userId=" + userID;
             }
         }
         /* Return the name of the Thymeleaf template */

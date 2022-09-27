@@ -106,7 +106,7 @@ class EvidenceServiceTest {
             String lastName = "Last name" + i;
             UserResponse userResponse = UserResponse.newBuilder().setId(i).setFirstName(firstName).setLastName(lastName).build();
             expectedUsers.add(new HighFivers(firstName + " " + lastName, i));
-            testEvidence.addHighFiverId(i);
+            testEvidence.addHighFivers(new HighFivers(firstName + " " + lastName, i));
         }
         List<HighFivers> actualUsers = testEvidence.getHighFivers().stream().toList();
         for(int i=0; i < actualUsers.size(); i++){
@@ -132,11 +132,7 @@ class EvidenceServiceTest {
     void testRemoveEvidence() {
         Evidence evidence = testEvidences.get(0);
         when(evidenceRepository.findById(any(Integer.class))).thenReturn(Optional.of(evidence)).thenReturn(Optional.empty());
-        System.out.println("jhgjhg");
-
-        System.out.println(evidenceRepository.findById(evidence.getEvidenceId()));
         boolean success = evidenceService.removeEvidence(evidence.getEvidenceId());
         assertTrue(success);
-        verify(evidenceRepository).deleteById(evidence.getEvidenceId());
     }
 }
