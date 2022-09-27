@@ -83,10 +83,10 @@ class TagServiceTest {
   }
 
   /**
-   * Tests that the getTag(int tagId) method returns specific tag.
+   * Tests that the removeTag(int tagId) method removes a specific tag.
    */
   @Test
-  void removeTag() {
+  void testRemoveTag() {
     Tag tag = testTags.get(1);
     int tagId = tag.getTagId();
     doReturn(Optional.of(tag)).when(tagRepository).findById(tagId);

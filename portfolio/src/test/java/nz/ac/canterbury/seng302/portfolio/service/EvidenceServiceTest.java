@@ -1,6 +1,9 @@
 package nz.ac.canterbury.seng302.portfolio.service;
 
+import java.util.Optional;
 import nz.ac.canterbury.seng302.portfolio.model.Evidence;
+import nz.ac.canterbury.seng302.portfolio.model.Sprint;
+import nz.ac.canterbury.seng302.portfolio.model.Tag;
 import nz.ac.canterbury.seng302.portfolio.repository.EvidenceRepository;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 import org.junit.jupiter.api.BeforeEach;
@@ -118,4 +121,18 @@ class EvidenceServiceTest {
         assertEquals(expectedUsers, actualUsers);
     }
 
+    /**
+     * Tests that the removeEvidence(int evidenceId) method removes specific evidence.
+     */
+    @Test
+    void testRemoveEvidence() {
+        Evidence evidence = testEvidences.get(0);
+        when(evidenceRepository.findById(any(Integer.class))).thenReturn(Optional.of(evidence)).thenReturn(Optional.empty());
+        System.out.println("jhgjhg");
+
+        System.out.println(evidenceRepository.findById(evidence.getEvidenceId()));
+        boolean success = evidenceService.removeEvidence(evidence.getEvidenceId());
+        assertTrue(success);
+        verify(evidenceRepository).deleteById(evidence.getEvidenceId());
+    }
 }
