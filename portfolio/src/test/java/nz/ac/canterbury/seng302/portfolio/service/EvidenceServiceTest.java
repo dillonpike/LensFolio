@@ -2,6 +2,7 @@ package nz.ac.canterbury.seng302.portfolio.service;
 
 import nz.ac.canterbury.seng302.portfolio.model.Evidence;
 import nz.ac.canterbury.seng302.portfolio.model.HighFivers;
+import nz.ac.canterbury.seng302.portfolio.model.Tag;
 import nz.ac.canterbury.seng302.portfolio.repository.EvidenceRepository;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 import org.junit.jupiter.api.BeforeEach;
@@ -16,6 +17,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -29,6 +31,9 @@ import static org.mockito.Mockito.*;
 class EvidenceServiceTest {
     @Mock
     private EvidenceRepository evidenceRepository;
+
+    @Mock
+    private TagService tagService;
 
     @Mock
     private RegisterClientService registerClientService;
@@ -122,6 +127,78 @@ class EvidenceServiceTest {
         Evidence testEvidence = new Evidence();
         List<HighFivers> actualUsers = evidenceService.getHighFivers(testEvidence);
         assertEquals(0, actualUsers.size());
+    }
+
+    /**
+     * Tests that
+     */
+    @Test
+    void testGetEvidenceWithSkillAndUserWithValidUserAndSkill() {
+        int tagId = 1;
+        int evidenceId = 1;
+        int userId = 1;
+
+        Evidence testEvidence = new Evidence();
+        testEvidence.setEvidenceId(evidenceId);
+        testEvidence.setUserId(userId);
+
+        Tag validTag = new Tag("Valid_Tag", tagId);
+        validTag.addEvidence(testEvidence);
+        when(tagService.getTag(tagId)).thenReturn(validTag);
+
+        Optional<Evidence> optionalEvidence = Optional.of(testEvidence);
+        when(evidenceRepository.findById(evidenceId)).thenReturn(optionalEvidence);
+
+        try {
+            List<Evidence> actualEvidences = evidenceService.getEvidencesWithSkillAndUser(evidenceId, userId);
+            ArrayList<Evidence> expectedEvidences = new ArrayList<>();
+            expectedEvidences.add(testEvidence);
+            assertEquals(expectedEvidences, actualEvidences);
+        } catch (NullPointerException e) {
+            fail();
+        }
+    }
+
+    /**
+     * Tests that
+     */
+    @Test
+    void testGetEvidenceWithSkillAndUserWithInvalidUserAndSkill() {
+        int tagId = 1;
+        int evidenceId = 1;
+        int userId = 1;
+
+        Evidence testEvidence = new Evidence();
+        testEvidence.setEvidenceId(evidenceId);
+        testEvidence.setUserId(2); // Not the same as the userId being searched for.
+
+        Tag validTag = new Tag("Valid_Tag", tagId);
+        validTag.addEvidence(testEvidence);
+        when(tagService.getTag(tagId)).thenReturn(null); // Invalid Tag
+
+        try {
+            evidenceService.getEvidencesWithSkillAndUser(evidenceId, userId);
+        } catch (Exception e) {
+            if (!(e instanceof NullPointerException)) {
+                fail();
+            }
+        }
+    }
+
+    /**
+     * Tests that
+     */
+    @Test
+    void testGetEvidenceWithSkillAndUserWithInvalidUserAndValidSkill() {
+
+    }
+
+    /**
+     * Tests that
+     */
+    @Test
+    void testGetEvidenceWithSkillAndUserWithValidUserAndInvalidSkill() {
+
     }
 
 }
