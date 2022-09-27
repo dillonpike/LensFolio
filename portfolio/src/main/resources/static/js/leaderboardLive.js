@@ -24,6 +24,12 @@ function connect() {
                 eventResponse.username, eventResponse.userFirstName, eventResponse.userLastName);
             updateLeaderboard(notification);
         });
+        stompClient.subscribe('/webSocketGet/delete-student-role', function (eventResponseArg) {
+            const eventResponse = JSON.parse(eventResponseArg.body)
+            const notification = showLeaderboardUpdateToast(eventResponse.artefactType, eventResponse.artefactName, eventResponse.artefactId,
+                eventResponse.username, eventResponse.userFirstName, eventResponse.userLastName);
+            updateLeaderboard(notification);
+        });
     });
 }
 

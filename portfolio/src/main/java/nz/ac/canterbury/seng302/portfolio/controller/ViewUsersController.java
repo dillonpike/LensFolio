@@ -166,5 +166,17 @@ public class ViewUsersController {
         return new NotificationResponse(message.getUsername());
     }
 
+    /**
+     * This method maps @MessageMapping endpoint to the @SendTo endpoint. Called when something is sent to
+     * the MessageMapping endpoint. This is triggered when a user adds a piece of evidence.
+     * @param message Information about the added piece of evidence.
+     * @return Returns the message given.
+     */
+    @MessageMapping("/delete-student-role")
+    @SendTo("/webSocketGet/delete-student-role")
+    public NotificationResponse deleteStudentRoleNotification(NotificationMessage message) {
+        return NotificationResponse.fromMessage(message, "addRole");
+    }
+
 
 }

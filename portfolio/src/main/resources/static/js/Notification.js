@@ -6,6 +6,7 @@ const DEADLINETYPE = "Deadline";
 const MILESTONETYPE = "Milestone";
 const GROUPTYPE = "Group";
 const EVIDENCETYPE = "Evidence";
+const ROLETYPE = "Role";
 
 
 const ADDACTION = "add";
@@ -14,6 +15,8 @@ const EDITACTION = "edit";
 const DELETEACTION = "delete";
 const ADDEVIDENCEACTION = "addEvidence";
 const UPDATELEADERBOARDACTION = "updateLeaderboard";
+const DELETEROLEACTION = "deleteRole";
+const ADDROLEACTION = "addRole";
 
 
 /**
@@ -71,7 +74,10 @@ class Notification {
             this.titleName = "Group Activity";
         } else if (type === EVIDENCETYPE) {
             this.titleName = "Evidence Activity";
-        } else {
+        } else if (type === ROLETYPE) {
+            this.titleName = "Role Activity";
+        }
+        else {
             this.titleName = "Activity";
         }
         this.id = type.toLowerCase() + "_" + username + "_" + id;
@@ -146,6 +152,12 @@ class Notification {
           case UPDATELEADERBOARDACTION:
               this.bodyText = this.firstName + " " + this.lastName + " (" + this.username + ") has added a piece of evidence. Updated leaderboard!";
               break;
+          case DELETEROLEACTION:
+                this.bodyText = this.firstName + " " + this.lastName + " (" + this.username + ") has been removed from a student role. Updating leaderboard...";
+                break;
+          case ADDROLEACTION:
+                this.bodyText = this.firstName + " " + this.lastName + " (" + this.username + ") has been added to a student role. Updating leaderboard...";
+                break;
           default:
               this.bodyText = "'" + this.name + "' has been changed by " + this.firstName + " " + this.lastName + " (" + this.username + ").";
         }
