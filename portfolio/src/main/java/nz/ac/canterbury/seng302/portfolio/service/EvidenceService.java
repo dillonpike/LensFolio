@@ -6,6 +6,7 @@ import nz.ac.canterbury.seng302.portfolio.model.HighFivers;
 import nz.ac.canterbury.seng302.portfolio.model.Tag;
 import nz.ac.canterbury.seng302.portfolio.model.WebLink;
 import nz.ac.canterbury.seng302.portfolio.repository.EvidenceRepository;
+import nz.ac.canterbury.seng302.portfolio.repository.HighFiversRepository;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,6 +19,7 @@ import java.util.Date;
 import static nz.ac.canterbury.seng302.portfolio.controller.EvidenceController.*;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.regex.Pattern;
 
 /**
@@ -30,7 +32,7 @@ public class EvidenceService {
     private EvidenceRepository evidenceRepository;
 
     @Autowired
-    private RegisterClientService registerClientService;
+    private HighFiversRepository highFiversRepository;
 
     /**
      * This function returns all evidences based on the userId.
@@ -146,18 +148,19 @@ public class EvidenceService {
         }
     }
 
-    /**
-     * Returns a list of all users that have high fived the piece of evidence.
-     * @param evidence evidence to get high fivers of
-     * @return list of all users that have high fived the piece of evidence
-     */
-    public List<HighFivers> getHighFivers(Evidence evidence) {
-        List<HighFivers> highFivers = new ArrayList<>();
-        for(Integer userID : evidence.getHighFiverIds()){
-            UserResponse userResponse = registerClientService.getUserData(userID);
-            String name = userResponse.getFirstName() + " " + userResponse.getLastName();
-            highFivers.add(new HighFivers(name, userID));
+    public boolean saveHighFiveEvidence(int evidenceId, int userId, String userName) {
+        Optional<Evidence> evidenceOptional = evidenceRepository.findById(evidenceId);
+        if (evidenceOptional.isPresent()) {
+            Evidence evidence = evidenceOptional.get();
+            if (evidence.getHighFiverIds().contains(userId)) {
+                return false;
+            }
+            HighFivers newHighFiver = highFiversRepository.save(new HighFivers(userName, userId));
+            evidence.addHighFivers(newHighFiver);
+            Evidence evidence1 = evidenceRepository.save(evidence);
+            return true;
+        } else {
+            return false;
         }
-        return highFivers;
     }
 }

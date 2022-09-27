@@ -135,7 +135,7 @@
                   </div>
                 </form>
               </div>
-              <div class="tab-pane-Evidence fade" id="evidence" role="tabpanel" aria-labelledby="user-evidence-tab">
+              <div class="tab-pane-Evidence fade" id="evidence" role="tabpanel" aria-labelledby="user-evidence-tab" th:fragment="evidence">
                 <div class="text-start mb-1-6 mt-3">
                   <div style="display: flex; flex-direction: row; justify-content: space-between; align-content: center;">
                     <h2 class="h1 mb-0 fs-1">Evidence</h2>
@@ -433,9 +433,37 @@
     const icon =  $(imgID);
     if (icon.hasClass("bi-star")) {
       icon.addClass("bi-star-fill").removeClass("bi-star");
+      saveHighFived(id);
     } else {
       icon.addClass("bi-star").removeClass("bi-star-fill");
+      saveUnHighFived(id);
     }
+  }
+
+  function saveHighFived(evidenceId) {
+    let userId = document.getElementById("userId").value;
+    let userName = $("#firstName").val() + " " + $("#lastNameInput").val();
+    const data = {
+      evidenceId: evidenceId,
+      userId: userId,
+      userName: userName
+    }
+    $.post("/saveHighFiveEvidence?" + new URLSearchParams(data)).done(function (result) {
+      $("#evidence").replaceWith(result);
+    });
+  }
+
+  function saveUnHighFived(evidenceId) {
+    let userId = document.getElementById("userId").value;
+    let userName = $("#firstName").val() + " " + $("#lastNameInput").val();
+    const data = {
+      evidenceId: evidenceId,
+      userId: userId,
+      userName: userName
+    }
+    $.post("/removeHighFiveEvidence?" + new URLSearchParams(data)).done(function (result) {
+      console.log(result);
+    });
   }
 
   /**
