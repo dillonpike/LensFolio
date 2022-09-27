@@ -1,12 +1,16 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
 import nz.ac.canterbury.seng302.portfolio.model.Evidence;
+import nz.ac.canterbury.seng302.portfolio.model.NotificationMessage;
+import nz.ac.canterbury.seng302.portfolio.model.NotificationResponse;
 import nz.ac.canterbury.seng302.portfolio.service.EvidenceService;
 import nz.ac.canterbury.seng302.portfolio.service.UserAccountClientService;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -40,6 +44,8 @@ public class EvidenceController {
 
     public static final String ADD_EVIDENCE_MODAL_FRAGMENT_WEB_LINKS_MESSAGE = "evidenceWebLinksAlertMessage";
 
+    public static final String ADD_EVIDENCE_MODAL_FRAGMENT_SKILL_TAGS_MESSAGE = "evidenceSkillTagsAlertMessage";
+
     /**
      * Method tries to add and sve the new evidence piece to the database
      * @param model Parameters sent to thymeleaf template to be rendered into HTML
@@ -55,7 +61,6 @@ public class EvidenceController {
     ) {
         try {
             evidenceService.validateEvidence(evidence, model);
-
             boolean wasAdded = evidenceService.addEvidence(evidence);
             if (wasAdded) {
                 // * Add the evidence to the model *
@@ -74,7 +79,17 @@ public class EvidenceController {
             logger.error("Attributes of evidence not formatted correctly. Not adding evidence. ");
             return ADD_EVIDENCE_MODAL_FRAGMENT;
         }
+    }
 
-
+    /**
+     * This method maps @MessageMapping endpoint to the @SendTo endpoint. Called when something is sent to
+     * the MessageMapping endpoint. This is triggered when a user adds a piece of evidence.
+     * @param message Information about the added piece of evidence.
+     * @return Returns the message given.
+     */
+    @MessageMapping("/evidence-add")
+    @SendTo("/webSocketGet/evidence-added")
+    public NotificationResponse evidenceAddNotification(NotificationMessage message) {
+        return NotificationResponse.fromMessage(message, "add");
     }
 }

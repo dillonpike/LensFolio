@@ -4,6 +4,8 @@ import net.devh.boot.grpc.client.inject.GrpcClient;
 import nz.ac.canterbury.seng302.shared.identityprovider.*;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class UserAccountClientService {
 
@@ -44,6 +46,16 @@ public class UserAccountClientService {
         GetPaginatedUsersRequest response = GetPaginatedUsersRequest.newBuilder()
                 .build();
         return userAccountStub.getPaginatedUsers(response);
+    }
+
+    /**
+     * Returns all users with the student role.
+     * @return all users with the student role
+     */
+    public List<UserResponse> getStudentUsers() {
+        return getAllUsers().getUsersList().stream()
+                .filter(user -> user.getRolesList().contains(UserRole.STUDENT))
+                .toList();
     }
 
     public UserRoleChangeResponse addRoleToUser(int userId, UserRole role) {

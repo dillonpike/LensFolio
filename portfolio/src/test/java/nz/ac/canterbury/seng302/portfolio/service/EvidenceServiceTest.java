@@ -1,7 +1,9 @@
 package nz.ac.canterbury.seng302.portfolio.service;
 
 import nz.ac.canterbury.seng302.portfolio.model.Evidence;
+import nz.ac.canterbury.seng302.portfolio.model.HighFivers;
 import nz.ac.canterbury.seng302.portfolio.repository.EvidenceRepository;
+import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -27,6 +29,9 @@ import static org.mockito.Mockito.*;
 class EvidenceServiceTest {
     @Mock
     private EvidenceRepository evidenceRepository;
+
+    @Mock
+    private RegisterClientService registerClientService;
 
     @InjectMocks
     private EvidenceService evidenceService;
@@ -85,4 +90,38 @@ class EvidenceServiceTest {
         when(evidenceRepository.save(any(Evidence.class))).thenThrow(new MockitoException("Mockito exception"));
         assertFalse(evidenceService.addEvidence(testEvidences.get(0)));
     }
+
+    /**
+     * Tests that the correct user responses are given when fetching the users who have high fived a piece of evidence.
+     */
+    @Test
+    void testGetHighFiversOfEvidence() {
+        List<HighFivers> expectedUsers = new ArrayList<>();
+        Evidence testEvidence = new Evidence();
+        int numUsers = 3;
+        for (int i = 0; i < numUsers; i++) {
+            String firstName = "First name" + i;
+            String lastName = "Last name" + i;
+            UserResponse userResponse = UserResponse.newBuilder().setId(i).setFirstName(firstName).setLastName(lastName).build();
+            expectedUsers.add(new HighFivers(firstName + " " + lastName, i));
+            when(registerClientService.getUserData(i)).thenReturn(userResponse);
+            testEvidence.addHighFiverId(i);
+        }
+        List<HighFivers> actualUsers = evidenceService.getHighFivers(testEvidence);
+        for(int i=0; i < actualUsers.size(); i++){
+            assertEquals(expectedUsers.get(i).getUserId(), actualUsers.get(i).getUserId());
+            assertEquals(expectedUsers.get(i).getName(), actualUsers.get(i).getName());
+        }
+    }
+
+    /**
+     * Tests that no user responses are returned when no users have high fived a piece of evidence.
+     */
+    @Test
+    void testGetHighFiversOfEvidenceWhenNoHighFivers() {
+        Evidence testEvidence = new Evidence();
+        List<HighFivers> actualUsers = evidenceService.getHighFivers(testEvidence);
+        assertEquals(0, actualUsers.size());
+    }
+
 }

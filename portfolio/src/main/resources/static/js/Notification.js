@@ -6,6 +6,7 @@ const DEADLINETYPE = "Deadline";
 const MILESTONETYPE = "Milestone";
 const GROUPTYPE = "Group";
 const HIGHFIVETYPE = "HighFive"
+const EVIDENCETYPE = "Evidence";
 
 
 const ADDACTION = "add";
@@ -14,6 +15,8 @@ const EDITACTION = "edit";
 const DELETEACTION = "delete";
 const HIGHFIVEACTION = "highfive"
 const HIGHFIVEUPDATEACTION = "highfiveUpdate"
+const ADDEVIDENCEACTION = "addEvidence";
+const UPDATELEADERBOARDACTION = "updateLeaderboard";
 
 
 /**
@@ -73,6 +76,8 @@ class Notification {
             this.titleName = "Group Activity";
         } else if (type === HIGHFIVETYPE) {
             this.titleName = "High Five Activity";
+        } else if (type === EVIDENCETYPE) {
+            this.titleName = "Evidence Activity";
         } else {
             this.titleName = "Activity";
         }
@@ -163,12 +168,17 @@ class Notification {
             case HIGHFIVEUPDATEACTION:
                 this.bodyText = "'" + this.name + "' has been high fived by " + this.username + " and " + (this.highfivers.length - 2) + " other user(s).";
                 break;
+            case ADDEVIDENCEACTION:
+                this.bodyText = this.firstName + " " + this.lastName + " (" + this.username + ") has added a piece of evidence. Updating leaderboard...";
+                break;
+            case UPDATELEADERBOARDACTION:
+                this.bodyText = this.firstName + " " + this.lastName + " (" + this.username + ") has added a piece of evidence. Updated leaderboard!";
+                break;
             default:
                 this.bodyText = "'" + this.name + "' has been changed by " + this.firstName + " " + this.lastName + " (" + this.username + ").";
 
 
         }
-
 
         this.toastBodyTextVar.text(this.bodyText);
         this.toastTitleTextVar.text(this.titleName);

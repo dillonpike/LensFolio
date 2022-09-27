@@ -2,9 +2,8 @@ package nz.ac.canterbury.seng302.portfolio.model;
 
 import javax.persistence.*;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -55,6 +54,18 @@ public class Evidence {
             @JoinColumn(name = "weblink_id")
     )
     private Set<WebLink> webLinks = new HashSet<>();
+
+    /**
+     * The user ids of users that have high fived this piece of evidence.
+     */
+    @ElementCollection
+    @CollectionTable(name="users_high_fived_evidence", joinColumns=@JoinColumn(name="evidence_id"))
+    @Column(name="user_id")
+    private Set<Integer> highFiverIds = new HashSet<>();
+
+    @Transient
+    private List<HighFivers> highFivers = new ArrayList<>();
+
 
     /**
      * Empty constructor for JPA.
@@ -125,6 +136,19 @@ public class Evidence {
     }
 
     /**
+     * FOR JAVASCRIPT USE ONLY. Please use addSkillTags() and removeSkillTags() instead.
+     * Sets the tags associated with this evidence.
+     * @param tags new set of tags.
+     */
+    public void setTags(Set<String> tags) {
+        Set<Tag> finalTags = new HashSet<>();
+        for (String tag : tags) {
+            finalTags.add(new Tag(tag));
+        }
+        this.tags = finalTags;
+    }
+
+    /**
      * Gets a set of tags corresponding to the evidence.
      * @return Set of Tags.
      */
@@ -179,5 +203,52 @@ public class Evidence {
      */
     public void removeWebLink(WebLink webLink) {
         this.webLinks.remove(webLink);
+    }
+
+    /**
+     * Gets the user ids of users that have high fived this piece of evidence.
+     * @return Set of user ids.
+     */
+    public Set<Integer> getHighFiverIds() {
+        return highFiverIds;
+    }
+
+    /**
+     * Adds a user id to the set of user ids of users that have high fived this piece of evidence.
+     * @param userId User id to add.
+     */
+    public void addHighFiverId(int userId) {
+        highFiverIds.add(userId);
+    }
+
+    /**
+     * Removes a user id from the set of user ids of users that have high fived this piece of evidence.
+     * @param userId User id to remove.
+     */
+    public void removeHighFiverId(int userId) {
+        highFiverIds.remove(userId);
+    }
+
+    /**
+     * Set list of HighFivers Object to piece of evidence
+     * @param highFivers the list of HighFivers object that relates to piece of evidence
+     */
+    public void setHighFivers(List<HighFivers> highFivers) {
+        this.highFivers = highFivers;
+    }
+
+    /**
+     * Add an HighFivers Object to piece of evidence
+     * @param highFiver an HighFivers object
+     */
+    public void addHighFivers(HighFivers highFiver) {
+        this.highFivers.add(highFiver);
+    }
+
+    /**
+     * returns list of users that have given a High Five to a piece of evidence
+     */
+    public List<HighFivers> getHighFivers() {
+        return highFivers;
     }
 }
