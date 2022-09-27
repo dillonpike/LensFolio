@@ -1,6 +1,10 @@
 package nz.ac.canterbury.seng302.portfolio.service;
 
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Optional;
+import java.util.Set;
 import nz.ac.canterbury.seng302.portfolio.model.Evidence;
 import nz.ac.canterbury.seng302.portfolio.model.Tag;
 import nz.ac.canterbury.seng302.portfolio.model.WebLink;
@@ -39,6 +43,42 @@ public class EvidenceService {
         List<Evidence> listEvidences = evidenceRepository.findAllByUserId(userId);
         return listEvidences.stream().sorted((o1, o2)->o2.getDate().
                 compareTo(o1.getDate())).toList();
+    }
+
+    /**
+     * Remove an evidence from the database.
+     * @param id ID of the evidence being removed
+     */
+    public boolean removeEvidence(Integer id) {
+        Optional<Evidence> sOptional = evidenceRepository.findById(id);
+        if (sOptional.isPresent()) {
+            Evidence evidence = sOptional.get();
+
+            Set<Tag> tags = Set.copyOf(evidence.getTags());
+            evidence.setTags(new HashSet<>());
+            Set<WebLink> webLinks = Set.copyOf(evidence.getWebLinks());
+            evidence.setWebLinks(new HashSet<>());
+            evidenceRepository.save(evidence);
+
+            evidenceRepository.deleteById(evidence.getEvidenceId());
+
+            // Check to see if the user was deleted
+            Optional<Evidence> evidenceStillThere = evidenceRepository.findById(id);
+            if (evidenceStillThere.isPresent()) {
+                // Add the users back since deleting the group did not work
+                Evidence emptyEvidence = evidenceStillThere.get();
+                List<Tag> tagList = new ArrayList<>(tags);
+                for (Tag tag : tagList) {
+                    emptyEvidence.addTag(tag);
+                }
+                emptyEvidence.setWebLinks(webLinks);
+                evidenceRepository.save(emptyEvidence);
+                return false;
+            }
+            return true;
+        } else {
+            return false;
+        }
     }
 
     /**

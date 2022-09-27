@@ -3,7 +3,9 @@ package nz.ac.canterbury.seng302.portfolio.controller;
 import nz.ac.canterbury.seng302.portfolio.model.Evidence;
 import nz.ac.canterbury.seng302.portfolio.model.NotificationMessage;
 import nz.ac.canterbury.seng302.portfolio.model.NotificationResponse;
+import nz.ac.canterbury.seng302.portfolio.service.ElementService;
 import nz.ac.canterbury.seng302.portfolio.service.EvidenceService;
+import nz.ac.canterbury.seng302.portfolio.service.PermissionService;
 import nz.ac.canterbury.seng302.portfolio.service.UserAccountClientService;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import org.slf4j.Logger;
@@ -14,7 +16,9 @@ import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
 import javax.servlet.http.HttpServletResponse;
@@ -32,9 +36,19 @@ public class EvidenceController {
     private EvidenceService evidenceService;
 
     @Autowired
+    private PermissionService permissionService;
+
+    @Autowired
+    private ElementService elementService;
+
+    @Autowired
     private UserAccountClientService userAccountClientService;
 
     private static final String ADD_EVIDENCE_MODAL_FRAGMENT = "fragments/evidenceModal::evidenceModalBody";
+
+    private static final String DELETE_EVIDENCE_MODAL_FRAGMENT = "fragments/deleteModalProject";
+
+    public static final String DELETE_EVIDENCE_MODAL_FRAGMENT_TITLE_MESSAGE = "deleteModal";
 
     public static final String ADD_EVIDENCE_MODAL_FRAGMENT_TITLE_MESSAGE = "evidenceTitleAlertMessage";
 
@@ -79,6 +93,36 @@ public class EvidenceController {
             logger.error("Attributes of evidence not formatted correctly. Not adding evidence. ");
             return ADD_EVIDENCE_MODAL_FRAGMENT;
         }
+    }
+
+    /***
+     * Request handler for deleting event, user will redirect to project detail page after
+     * @param id Event Id
+     * @param model Parameters sent to thymeleaf template to be rendered into HTML
+     * @return project detail page
+     */
+    @GetMapping("/delete-evidence/{id}")
+    public String evidenceRemove(@PathVariable("id") Integer id,
+        HttpServletResponse httpServletResponse, @AuthenticationPrincipal AuthState principal,
+        Model model) {
+        Integer userID = userAccountClientService.getUserIDFromAuthState(principal);
+        elementService.addHeaderAttributes(model, userID);
+        if (permissionService.isValidToModify(userID)) {
+            boolean wasRemoved = evidenceService.removeEvidence(id);
+            if (wasRemoved) {
+                // * Add the evidence to the model *
+                // * Maybe add something to the model to make sure the evidence tab is shown? *
+                httpServletResponse.setStatus(HttpServletResponse.SC_OK);
+                return "redirect:/account?userId=" + userID;
+            } else {
+                String errorMessage = "Evidence Not Deleted. Saving Error Occurred.";
+                model.addAttribute(DELETE_EVIDENCE_MODAL_FRAGMENT_TITLE_MESSAGE, errorMessage);
+                httpServletResponse.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                return DELETE_EVIDENCE_MODAL_FRAGMENT;
+            }
+        }
+        /* Return the name of the Thymeleaf template */
+        return "redirect:/account";
     }
 
     /**
