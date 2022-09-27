@@ -255,7 +255,9 @@
 <script th:inline="javascript">
 
   deleteModalSetup();
-
+  /*<![CDATA[*/
+  const roles = /*[[${rolesList}]]*/ [];
+  /*]]>*/
 
   /*<![CDATA[*/
   let projectEndDate = /*[[${project.getEndDate()}]]*/ "Error";
