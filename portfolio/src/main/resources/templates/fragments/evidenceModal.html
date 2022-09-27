@@ -81,7 +81,7 @@
                                 <label for="evidenceSkillTag" class="col-form-label">Skill Tags:</label>
                                 <div class="input-group mb-3">
                                     <input id="evidenceSkillTag" onkeyup="{updateCharsLeft('evidenceSkillTag', 'evidenceSkillTagLength', 50);isEvidenceInputFieldFilled()}"
-                                           maxlength="250" type="url" class="form-control" placeholder="Verbal Communication" aria-label="Add Skill Tag"
+                                           maxlength="50" type="text" class="form-control" placeholder="Verbal Communication" aria-label="Add Skill Tag"
                                            aria-describedby="button-addon3" name="evidenceSkillTag">
                                     <button class="btn btn-outline-secondary" type="button" id="button-addon3" onclick="addSkillTags()">Add</button>
                                 </div>
@@ -107,7 +107,7 @@
     <script src="js/evidence.js"></script>
     <script type="text/javascript">
         const MAX_NUM_WEBLINKS = 10;
-        const MAX_NUM_SKILLTAGS = 30;
+        const MAX_NUM_SKILLTAGS = 10;
 
         let tooltip = null;
         /**
@@ -215,43 +215,45 @@
         configureWebLinkInput();
 
         let skillTagsList = [];
-        let skillTagId = 1;
+        let tagId = 1;
 
         /**
          * Adds a skill tag to the list of skill tags.
          */
         function addSkillTags() {
-
-            const urlString = document.getElementById("evidenceSkillTag").value;
+            const skillString = document.getElementById("evidenceSkillTag").value;
             //validate
-
+            if (!isValidSkillTag(skillString)) {
+                $("#evidenceSkillTagsAlertMessage").text("Please enter a valid skill tag.");
+                document.getElementById("evidenceSkillTagsAlertBanner").removeAttribute("hidden");
+            } else {
                 if (skillTagsList.length < MAX_NUM_SKILLTAGS) {
-                    let displayUrlString = "";
-                    displayUrlString = urlString.replaceAll(" ", "_");
-                    if (displayUrlString.length > 30) {
-                        displayUrlString = displayUrlString.substring(0, 29) + "...";
+                    let displaySkillString = "";
+                    displaySkillString = skillString.trim().replaceAll(" ", "_");
+                    if (displaySkillString.length > 30) {
+                        displaySkillString = displaySkillString.substring(0, 29) + "...";
                     }
 
-
-                    $("#skillTagList").append(`<div class="chip" id='skillTag${skillTagId}' style="display: inline-block;padding: 0 12px 0 15px;height: fit-content;font-size: 16px;line-height: 30px;border-radius: 25px;background-color: #f1f1f1f1;margin: 0 10px 10px 0;" data-toggle="tooltip" data-bs-placement="right" title="${urlString}">
+                    $("#skillTagList").append(`<div class="chip" id='skillTag${tagId}' style="display: inline-block;padding: 0 12px 0 15px;height: fit-content;font-size: 16px;line-height: 30px;border-radius: 25px;background-color: #f1f1f1f1;margin: 0 10px 10px 0;" data-toggle="tooltip" data-bs-placement="right" title="${skillString}">
                                 <div class="d-flex justify-content-between flex-row align-items-center">
-                                    <span style="margin-right: 10px">${displayUrlString}</span>
-                                    <button onclick="removeSkillTag('skillTag${skillTagId}')" type="button" class="btn-close" aria-label="Close"></button>
+                                    <span style="margin-right: 10px">${displaySkillString}</span>
+                                    <button onclick="removeSkillTag('skillTag${tagId}')" type="button" class="btn-close" aria-label="Close"></button>
                                 </div>
                             </div>`);
-                    skillTagId += 1;
+                    tagId += 1;
 
                     $('[data-toggle="tooltip"]').tooltip();
 
                     $("#evidenceSkillTag").val("");
                     updateCharsLeft('evidenceSkillTag', 'evidenceSkillTagLength', 250);
                     //add to list
-                    skillTagsList.push(urlString);
+                    skillTagsList.push(displaySkillString);
                     document.getElementById("evidenceSkillTagsAlertBanner").setAttribute("hidden", "true");
                 } else {
                     $("#evidenceSkillTagsAlertMessage").text("You can only add up to " + MAX_NUM_SKILLTAGS + " skill tags.");
                     document.getElementById("evidenceSkillTagsAlertBanner").removeAttribute("hidden");
                 }
+            }
         }
 
         /**
@@ -259,16 +261,25 @@
          * @param id the id of the skill tag to remove
          */
         function removeSkillTag(id) {
-            let tagHTML = $("#" + id);
-            let tagString = tagHTML.attr("data-bs-original-title");
+            let skillHTML = $("#" + id);
+            let skillString = skillHTML.attr("data-bs-original-title");
             for (let i = 0; i < skillTagsList.length; i++) {
-                if (skillTagsList[i] === tagString) {
+                if (skillTagsList[i] === skillString) {
                     skillTagsList.splice(i, 1);
                     break;
                 }
             }
-            tagHTML.tooltip('dispose');
-            tagHTML.remove();
+            skillHTML.tooltip('dispose');
+            skillHTML.remove();
+        }
+
+        /**
+         * Method to validate a skill tag String
+         * @param skillString the skill tag string to validate
+         * @returns {boolean} true if valid, false otherwise
+         */
+        function isValidSkillTag(skillString) {
+            return skillString.trim().length > 0 && skillString.trim().length <= 50;
         }
 
 
@@ -291,6 +302,7 @@
         disallowEmojiCharacters('evidenceTitle');
         disallowEmojiCharacters('evidenceDescription');
         disallowInvalidCharacters('evidenceWeblink');
+        disallowEmojiCharacters('evidenceSkillTag');
 
         document.getElementById("evidenceModal").addEventListener("hidden.bs.modal", function () {
             document.getElementById("evidenceModalButton").classList.add("disabled");
@@ -300,9 +312,13 @@
             document.getElementById("evidenceWebLinksAlertBanner").hidden = true;
             webLinksList = [];
             $("#webLinkList").empty();
+            document.getElementById("evidenceSkillTagsAlertBanner").hidden = true;
+            skillTagsList = [];
+            $("#skillTagList").empty();
             updateCharsLeft('evidenceTitle', 'evidenceTitleLength', 250);
             updateCharsLeft('evidenceDescription', 'evidenceDescriptionLength', 250);
             updateCharsLeft('evidenceWeblink', 'evidenceWebLinkLength', 250);
+            updateCharsLeft('evidenceSkillTag', 'evidenceSkillTagLength', 250);
         });
 
     </script>
