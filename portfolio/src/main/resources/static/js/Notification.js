@@ -170,13 +170,8 @@ class Notification {
         }
 
 
-        if (this.toastBodyTextVar.constructor.name === "HTMLDivElement") {
-            this.toastBodyTextVar.innerHTML = this.bodyText;
-            this.toastTitleTextVar.innerHTML = this.titleName;
-        } else {
-            this.toastBodyTextVar.text(this.bodyText);
-            this.toastTitleTextVar.text(this.titleName);
-        }
+        this.toastBodyTextVar.text(this.bodyText);
+        this.toastTitleTextVar.text(this.titleName);
         this.toast.show();
     }
 
