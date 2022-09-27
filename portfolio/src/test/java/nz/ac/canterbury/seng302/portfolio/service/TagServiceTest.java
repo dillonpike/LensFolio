@@ -2,7 +2,6 @@ package nz.ac.canterbury.seng302.portfolio.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
@@ -10,7 +9,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 import nz.ac.canterbury.seng302.portfolio.model.Evidence;
 import nz.ac.canterbury.seng302.portfolio.model.Tag;
@@ -50,19 +48,15 @@ class TagServiceTest {
      */
     @BeforeEach
     void setUp() {
-        Tag tag1 = new Tag("Test tag 1");
-        Tag tag2 = new Tag("Test tag 2");
-        Tag tag3 = new Tag("Test tag 3");
-        Tag tag4 = new Tag("Test tag 4");
-        testTags.add(tag1);
-        testTags.add(tag2);
-        testTags.add(tag4);
-        testTags.add(tag3);
+        for (int i = 0; i < 4; i++) {
+            Tag tag = new Tag("Test tag " + (i + 1));
+            testTags.add(tag);
+        }
 
         /* When evidence has sections for tags, add the tags above to the piece of evidence */
         Evidence evidence1 = new Evidence(0, 1, "testEvidence1", "testEvidence1", new Date(100));
         Evidence evidence2 = new Evidence(0, 1, "testEvidence2", "testEvidence2", new Date(100));
-        for (int i=0; i < testTags.size(); i++) {
+        for (int i = 0; i < testTags.size(); i++) {
             if (i % 2 == 0) {
               evidence1.addTag(testTags.get(i));
             } else {

@@ -288,7 +288,6 @@
             return skillString.trim().length > 0 && skillString.trim().length <= 50;
         }
 
-
         /**
          * Configures the skill tag input so that it adds a skill tag rather than submitting the form if the user
          * presses the enter key in the skill tag input field and has something typed in.
@@ -327,6 +326,8 @@
             updateCharsLeft('evidenceSkillTag', 'evidenceSkillTagLength', 250);
         });
 
+        // Creates a list to store the user's current skills in for the autocomplete, and updates this list whenever the
+        // add evidence modal is opened.
         let usersCurrentTags = [];
         document.getElementById("evidenceModal").addEventListener("show.bs.modal", function () {
             let userId = $("#userId").val();
