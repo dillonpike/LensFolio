@@ -465,7 +465,7 @@
       userName: userName
     }
     $.post("/removeHighFiveEvidence?" + new URLSearchParams(data)).done(function (result) {
-      console.log(result);
+      $("#evidence").replaceWith(result);
     });
   }
 

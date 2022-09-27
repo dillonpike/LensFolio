@@ -53,7 +53,6 @@ public class Tag {
      * Returns the evidence pieces with this tag.
      * @return Set of Evidence objects with this tag.
     */
-
     public Set<Evidence> getEvidence() {
         return evidenceWithTag;
     }

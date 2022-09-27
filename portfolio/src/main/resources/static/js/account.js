@@ -43,24 +43,25 @@ function deleteModalSetup() {
             modalButton.innerHTML = `Delete`;
 
             $("#deleteModalButton").on('click', function (ignore) {
-              $.ajax({
-                      url: `delete-evidence/${id}`,
-                      type: 'POST',
-                      success: function() {
-                          $('#deleteModal').modal('toggle')
-                          var url = "account?userId=" + document.getElementById('userId').value
-                              setTimeout(function() {
-                                  $("#evidence").load(url+" #evidence>*","");
-                              }, 10);
-                      },
-                      error: function() {
-                          document.getElementById('deleteModalButton').onclick = buttonFunction;
-                      }
-                  })
-              });
-        }})
-
-
+                $.ajax({
+                    url: `delete-evidence/${id}`,
+                    type: 'POST',
+                    success: function() {
+                        $('#deleteModal').modal('toggle')
+                        showAlertToast("Evidence deleted successfully!");
+                        sendDeleteEvidenceNotification();
+                        let url = "account?userId=" + document.getElementById('userId').value
+                        setTimeout(function() {
+                            $("#evidence").load(url+" #evidence>*","");
+                        }, 10);
+                    },
+                    error: function() {
+                        document.getElementById('deleteModalButton').onclick = buttonFunction;
+                    }
+                })
+            });
+        }
+    })
 }
 
 

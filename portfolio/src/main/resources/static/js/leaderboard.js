@@ -16,15 +16,20 @@ function configureLeaderboardTable() {
  * Loads in an updated table from the controller, keeps the user on the same page, and updates the notification to
  * inform the user when the table has updated.
  * @param notification the notification to update
+ * @param operation The type of operation, such as 'add' or 'delete'.
  */
-function updateLeaderboard(notification) {
+function updateLeaderboard(notification, operation) {
     const leaderboardTable = $('table').DataTable();
     const page = leaderboardTable.page();
     const url = "/leaderboard-table";
     $("#leaderboardTable").load(url + " #leaderboardTable>*", "", function () {
         configureLeaderboardTable();
         $('table').DataTable().page(page).draw('page');
-        notification.action = UPDATELEADERBOARDACTION;
+        if (operation === ADDEVIDENCEACTION) {
+            notification.action = UPDATELEADERBOARDADDACTION;
+        } else {
+            notification.action = UPDATELEADERBOARDDELETEACTION;
+        }
         notification.show();
         notification.hideTimed(SECONDS_TILL_HIDE);
     });

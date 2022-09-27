@@ -36,8 +36,16 @@ function connect() {
             const eventResponse = JSON.parse(eventResponseArg.body)
             if (eventResponse.artefactType === "studentEvidence") {
                 const notification = showLeaderboardUpdateToast("Evidence", eventResponse.artefactName, eventResponse.artefactId,
-                    eventResponse.username, eventResponse.userFirstName, eventResponse.userLastName);
-                updateLeaderboard(notification);
+                    eventResponse.username, eventResponse.userFirstName, eventResponse.userLastName, ADDEVIDENCEACTION);
+                updateLeaderboard(notification, ADDEVIDENCEACTION);
+            }
+        });
+        stompClient.subscribe('/webSocketGet/evidence-deleted', function (eventResponseArg) {
+            const eventResponse = JSON.parse(eventResponseArg.body)
+            if (eventResponse.artefactType === "studentEvidence") {
+                const notification = showLeaderboardUpdateToast("Evidence", eventResponse.artefactName, eventResponse.artefactId,
+                    eventResponse.username, eventResponse.userFirstName, eventResponse.userLastName, DELETEEVIDENCEACTION);
+                updateLeaderboard(notification, DELETEEVIDENCEACTION);
             }
         });
     });
@@ -62,9 +70,10 @@ $(function() {
  * @param username username of user who added evidence
  * @param firstName first name of user who added evidence
  * @param lastName last name of user who added evidence
+ * @param operation operation performed on evidence, such as add or delete
  */
-function showLeaderboardUpdateToast(type, evidenceName, evidenceId, username, firstName, lastName) {
-    let newNotification = new Notification(type, evidenceName, evidenceId, username, firstName, lastName, ADDEVIDENCEACTION);
+function showLeaderboardUpdateToast(type, evidenceName, evidenceId, username, firstName, lastName, operation) {
+    let newNotification = new Notification(type, evidenceName, evidenceId, username, firstName, lastName, operation);
     newNotification = addNotification(newNotification, listOfNotifications, listOfHTMLToasts);
     newNotification.show();
     newNotification.hideTimed(SECONDS_TILL_HIDE);
