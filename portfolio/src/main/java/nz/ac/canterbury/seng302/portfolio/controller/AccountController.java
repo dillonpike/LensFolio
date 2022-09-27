@@ -74,6 +74,7 @@ public class AccountController {
                 model.addAttribute(USER_ID_ATTRIBUTE_NAME, id);
                 return "404NotFound";
             }
+            model.addAttribute("currentUserId", userId);
             elementService.addRoles(model, getUserByIdReply);
             model.addAttribute("firstName", getUserByIdReply.getFirstName());
             model.addAttribute("lastName", getUserByIdReply.getLastName());
