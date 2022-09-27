@@ -11,6 +11,9 @@ import nz.ac.canterbury.seng302.portfolio.repository.TagRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+/**
+ * Contains methods for saving, deleting, and retrieving tag objects to the database.
+ */
 @Service
 public class TagService {
 
@@ -40,7 +43,7 @@ public class TagService {
     * @return List of tags.
     */
     public List<Tag> getAllTags() {
-    return tagRepository.findAll();
+        return tagRepository.findAll();
     }
 
     /**
@@ -58,16 +61,21 @@ public class TagService {
         return tags;
     }
 
+
     /**
-    * Remove a tag from the database.
-    * @param tagId Id of the tag being removed
-    */
-    public void removeTag(int tagId) {
+     * Remove a tag from the database.
+     * @param tagId Id of the tag being removed
+     * @return true if removed, otherwise false
+     */
+    public boolean removeTag(int tagId) {
         Optional<Tag> sOptional = tagRepository.findById(tagId);
 
         if (sOptional.isPresent()) {
             Tag tag = sOptional.get();
             tagRepository.deleteById(tag.getTagId());
+            return true;
+        } else {
+            return false;
         }
     }
 
@@ -95,12 +103,12 @@ public class TagService {
     public void removeTagsWithNoEvidence() {
     List<Tag> tags = tagRepository.findAll();
     for (Tag tag : tags) {
-    int tagId = tag.getTagId();
-    List<Evidence> evidences = evidenceRepository.findAllByTagId(tagId);
-    if (evidences.isEmpty()) {
-    removeTag(tagId);
+      int tagId = tag.getTagId();
+      List<Evidence> evidences = evidenceRepository.findAllByTagId(tagId);
+      if (evidences.isEmpty()) {
+        removeTag(tagId);
+      }
     }
-    }
-    }*/
+  }*/
 
 }

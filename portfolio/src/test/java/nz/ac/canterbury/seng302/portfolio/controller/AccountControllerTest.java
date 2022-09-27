@@ -1,6 +1,8 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
 import com.google.protobuf.Timestamp;
+import nz.ac.canterbury.seng302.portfolio.model.Evidence;
+import nz.ac.canterbury.seng302.portfolio.model.HighFivers;
 import nz.ac.canterbury.seng302.portfolio.model.Project;
 import nz.ac.canterbury.seng302.portfolio.service.*;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
@@ -23,7 +25,9 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
@@ -101,11 +105,6 @@ class AccountControllerTest {
         SecurityContext mockedSecurityContext = Mockito.mock(SecurityContext.class);
         when(mockedSecurityContext.getAuthentication()).thenReturn(new PreAuthenticatedAuthenticationToken(validAuthState, ""));
 
-        SecurityContextHolder.setContext(mockedSecurityContext);
-        when(userAccountClientService.getUserIDFromAuthState(any(AuthState.class))).thenReturn(1);
-        when(registerClientService.getUserData(1)).thenReturn(mockUser);
-        when(projectService.getProjectById(0)).thenReturn(mockProject);
-
         String firstName = mockUser.getFirstName();
         String middleName = mockUser.getMiddleName();
         String lastName = mockUser.getLastName();
@@ -116,6 +115,15 @@ class AccountControllerTest {
         String roles = "STUDENT";
         String fullName = firstName + " " + middleName + " " + lastName;
         String personalPronouns = mockUser.getPersonalPronouns();
+        List<Evidence> evidenceList = new ArrayList<>();
+        evidenceList.add(new Evidence(0,0,"title","desc", new Date()));
+
+        SecurityContextHolder.setContext(mockedSecurityContext);
+        when(userAccountClientService.getUserIDFromAuthState(any(AuthState.class))).thenReturn(1);
+        when(registerClientService.getUserData(1)).thenReturn(mockUser);
+        when(projectService.getProjectById(0)).thenReturn(mockProject);
+        when(evidenceService.getEvidences(any(Integer.class))).thenReturn(evidenceList);
+        when(evidenceService.getHighFivers(evidenceList.get(0))).thenReturn(new ArrayList<>());
 
 
         mockMvc.perform(get("/account").param("userId", "1"))
@@ -130,6 +138,7 @@ class AccountControllerTest {
                 .andExpect(model().attribute("email", email))
                 .andExpect(model().attribute("personalPronouns", personalPronouns))
                 .andExpect(model().attribute("bio", bio))
+                .andExpect(model().attribute("evidences", evidenceList))
                 .andExpect(model().attribute("project", mockProject));
     }
 

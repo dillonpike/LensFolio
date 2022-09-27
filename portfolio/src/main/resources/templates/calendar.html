@@ -16,7 +16,260 @@
     <script src="js/banner.js"></script>
     <script src="webjars/jquery/3.6.0/dist/jquery.min.js"></script>
 
+
+</head>
+
+
+<body>
+<header th:replace="fragments/header"></header>
+
+    <div class="header">
+        <h2 class="title" th:text="${projectName}"/>
+        <span class="badge rounded-pill title-date align-middle" th:text="${projectStartDateString} + ' - ' + ${projectEndDateString}" />
+    </div>
+    <!-- TOAST FOR ERRORS AND WHEN SPRINTS ARE UPDATED -->
+    <div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 2000">
+        <div class="toast hide text-white" role="alert" aria-live="assertive" aria-atomic="true" id="alertToast" data-bs-animation="true" data-bs-autohide="true" data-bs-delay="7000">
+            <div class="toast-body">
+                <span id="alertToastText">Hidden</span>
+                <button id="toastBtn" type="button" class="btn-close btn-close-white me-2 m-auto float-end" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+        </div>
+    </div>
+
+    <div id="calendar_body" th:fragment="calendar_body">
+        <div class='calendar' id='calendar'></div>
+        <script th:inline="javascript">
+
+
+
+            /*<![CDATA[*/
+
+
+            currentRole = /*[[${currentUserRole}]]*/ "";
+            function loadCalendar() {
+
+
+                let calendarEl = document.getElementById('calendar');
+                let selectedId = -1;
+                calendar = new FullCalendar.Calendar(calendarEl, {
+                    themeSystem: 'bootstrap5',
+                    initialView: 'dayGridMonth',
+                    buttonText: {
+                        today: 'Today'
+                    },
+                    fixedWeekCount: false,
+                    validRange: {
+                        start: /*[[${fullStartDate}]]*/ null,
+                        end: /*[[${fullEndDate}]]*/ null
+                    },
+                    events: [
+                        {
+                            start: /*[[${fullStartDate}]]*/ null,
+                            end: /*[[${startDate}]]*/ null,
+                            allDay: true,
+                            display: 'background',
+                            color: '#CCCCCC',
+                            type: "Background"
+                        },
+
+                        {
+                            start: /*[[${endDate}]]*/ null,
+                            end: /*[[${fullEndDate}]]*/ null,
+                            allDay: true,
+                            display: 'background',
+                            color: '#CCCCCC',
+                            type: "Background"
+                        },
+                        {
+                            title: 'Project Start',
+                            start: /*[[${startDate}]]*/ null,
+                            allDay: true,
+                            display: 'background',
+                            color: '#ffffff',
+                            type: "Project-Range"
+                        },
+
+                        {
+                            title: 'Project End',
+                            start: /*[[${trueEndDate}]]*/ null,
+                            allDay: true,
+                            display: 'background',
+                            color: '#ffffff',
+                            type: "Project-Range"
+                        },
+                        /*[(${events})]*/
+                    ],
+                    eventContent: function(arg) {
+                        let arrayOfDomNodes = []
+
+                        // title event
+                        let titleEvent = document.createElement('div')
+                        if (arg.event._def.title) {
+                            titleEvent.innerHTML = arg.event._def.title
+                            titleEvent.classList = "fc-event-title fc-sticky"
+                        }
+
+                        // image event
+                        let imgEventWrap = document.createElement('div')
+                        imgEventWrap.setAttribute("id", "events");
+                        imgEventWrap.setAttribute("desc", arg.event.extendedProps.description);
+                        let type = arg.event.extendedProps.type;
+                        if (type === 'Deadline') {
+                            let imgEvent = '<img src= ' + deadlineImage + ' >'
+                            imgEventWrap.classList.add("fc-deadline-img");
+                            imgEventWrap.innerHTML = imgEvent;
+                        }
+                        if (type === 'Event') {
+                            let imgEvent = '<img src= ' + eventImage + ' >'
+                            imgEventWrap.classList.add("fc-event-img");
+                            imgEventWrap.innerHTML = imgEvent;
+                        }
+                        if (type === 'Milestone') {
+                            let imgEvent = '<img src= ' + milestoneImage + ' >'
+                            imgEventWrap.classList.add("fc-milestone-img");
+                            imgEventWrap.innerHTML = imgEvent;
+                        }
+                        if ((type === 'Sprint') || (type === 'Background') || (type === 'Project-Range')) {
+                            arrayOfDomNodes = [ titleEvent ]
+                        } else {
+                            arrayOfDomNodes = [ imgEventWrap, titleEvent ]
+                        }
+
+                        setEventClasses();
+                        return { domNodes: arrayOfDomNodes }
+                    },
+                    eventDidMount: function(info) {
+                        info.event.setProp("classNames", "event-border");
+                    },
+                    eventMouseEnter: function(info) {
+                        refreshTooltips();
+                    },
+                    eventClick: function(info) {
+                        if (info === "initial-reload") {
+                            return;
+                        }
+                        // change the border color
+                        let newEvent = calendar.getEventById(info.event.id);
+                        if ((newEvent.extendedProps.type === 'Sprint') && (currentRole !== 'student')) {
+                            let selectedEvent = calendar.getEventById(selectedId);
+                            if (selectedId === -1) {
+                                //initial click on any event
+                                newEvent.setProp("classNames", "event-border");
+                                newEvent.setProp("borderColor", "red");
+                                newEvent.setProp("editable", true);
+                                selectedId = info.event.id;
+                            } else {
+                                if (newEvent.id === selectedEvent.id) {
+                                    newEvent.setProp("classNames", "event-border");
+                                    newEvent.setProp("borderColor", newEvent.backgroundColor);
+                                    newEvent.setProp("editable", false);
+                                    selectedId = -1;
+                                } else {
+                                    selectedEvent.setProp("classNames", "event-border");
+                                    selectedEvent.setProp("borderColor", selectedEvent.backgroundColor)
+                                    selectedEvent.setProp("editable", false);
+                                    newEvent.setProp("classNames", "event-border");
+                                    newEvent.setProp("borderColor", "red");
+                                    newEvent.setProp("editable", true);
+                                    selectedId = info.event.id;
+                                }
+                            }
+                        }
+                    },
+                    eventOverlap: function(stillEvent, movingEvent) {
+                        if (stillEvent.extendedProps.type === 'Sprint') {
+                            errorSprints("Error: sprints cannot overlap");
+                            return false;
+                        } else if (stillEvent.extendedProps.type === 'Background') {
+                            errorSprints("Error: sprints cannot be outside project dates")
+                            return false;
+                        }
+                        return true;
+                    },
+                    eventResizableFromStart: function(info) {
+                        return true;
+                    },
+                    eventResize: function(info) {
+                        let sprint = calendar.getEventById(info.event.id);
+                        saveSprint(sprint)
+                    },
+                    eventDrop: function(info) {
+                        let sprint = calendar.getEventById(info.event.id);
+                        saveSprint(sprint);
+                    }
+                });
+                calendar.render();
+                refreshTooltips();
+                setTimeout(() => { // Set a time-out as the calendar seems to not position all elements correctly unless first fully rendered.
+                    setEventClasses();
+                }, 100);
+
+
+                function setEventClasses() {
+                    $("[id='events']" ).each(function (ignore) {
+                        if ($(this).hasClass("fc-milestone-img")) {
+                            $(this).parent().addClass("milestone");
+                        } else if ($(this).hasClass("fc-deadline-img")) {
+                            $(this).parent().addClass("deadline");
+                        } else if ($(this).hasClass("fc-event-img")) {
+                            $(this).parent().addClass("event");
+                        }
+                    });
+                }
+
+                function refreshTooltips() {
+                    $("[id='events']" ).each(function (ignore) {
+                        $(this).parent().get(0).setAttribute("data-bs-original-title", $(this).get(0).getAttribute("desc"))
+                        $(this).parent().get(0).setAttribute("data-bs-html", "true");
+                        $(this).parent().get(0).setAttribute("data-toggle", "tooltip");
+                    });
+
+                    $(function () {
+                        $('[data-toggle="tooltip"]').tooltip()
+                    })
+                }
+
+                $('.fc-prev-button').click(function() {
+                    const date = calendar.getDate();
+                    localStorage.setItem("currentDate", date);
+                    refreshTooltips();
+                    setEventClasses();
+                });
+
+                $('.fc-today-button').click(function() {
+                    const date = calendar.getDate();
+                    localStorage.setItem("currentDate", date);
+                    refreshTooltips();
+                });
+
+                $('.fc-next-button').click(function() {
+                    const date = calendar.getDate();
+                    localStorage.setItem("currentDate", date);
+                    refreshTooltips();
+                    setEventClasses();
+                });
+
+                if (localStorage.getItem("currentDate") !== null) {
+                    calendar.gotoDate(new Date(localStorage.getItem("currentDate")).toISOString());
+                }
+
+            }
+            document.addEventListener('DOMContentLoaded', loadCalendar);
+            /*]]>*/
+        </script>
+    </div>
+
+
+
+
+
     <script th:inline="javascript">
+        let calendar;
+        let currentRole;
+        const eventImage = 'images/event.svg';
+        const deadlineImage = 'images/deadline.svg';
+        const milestoneImage = 'images/milestone.svg';
         let userId = [[${userId}]];
         let userFirstName = [[${userFirstName}]];
         let userLastName = [[${userLastName}]];
@@ -57,248 +310,6 @@
 
     </script>
 
-    <script th:inline="javascript">
-
-
-
-        /*<![CDATA[*/
-        const eventImage = 'images/event.svg';
-        const deadlineImage = 'images/deadline.svg';
-        const milestoneImage = 'images/milestone.svg';
-        let calendar;
-        let currentRole = /*[[${currentUserRole}]]*/ "";
-        document.addEventListener('DOMContentLoaded', function() {
-
-
-            let calendarEl = document.getElementById('calendar');
-            let selectedId = -1;
-            calendar = new FullCalendar.Calendar(calendarEl, {
-                themeSystem: 'bootstrap5',
-                initialView: 'dayGridMonth',
-                buttonText: {
-                    today: 'Today'
-                },
-                fixedWeekCount: false,
-                validRange: {
-                    start: /*[[${fullStartDate}]]*/ null,
-                    end: /*[[${fullEndDate}]]*/ null
-                },
-                events: [
-                    {
-                        start: /*[[${fullStartDate}]]*/ null,
-                        end: /*[[${startDate}]]*/ null,
-                        allDay: true,
-                        display: 'background',
-                        color: '#CCCCCC',
-                        type: "Background"
-                    },
-
-                    {
-                        start: /*[[${endDate}]]*/ null,
-                        end: /*[[${fullEndDate}]]*/ null,
-                        allDay: true,
-                        display: 'background',
-                        color: '#CCCCCC',
-                        type: "Background"
-                    },
-                    {
-                        title: 'Project Start',
-                        start: /*[[${startDate}]]*/ null,
-                        allDay: true,
-                        display: 'background',
-                        color: '#ffffff',
-                        type: "Project-Range"
-                    },
-
-                    {
-                        title: 'Project End',
-                        start: /*[[${trueEndDate}]]*/ null,
-                        allDay: true,
-                        display: 'background',
-                        color: '#ffffff',
-                        type: "Project-Range"
-                    },
-                    /*[(${events})]*/
-                ],
-                eventContent: function(arg) {
-                    let arrayOfDomNodes = []
-
-                    // title event
-                    let titleEvent = document.createElement('div')
-                    if (arg.event._def.title) {
-                        titleEvent.innerHTML = arg.event._def.title
-                        titleEvent.classList = "fc-event-title fc-sticky"
-                    }
-
-                    // image event
-                    let imgEventWrap = document.createElement('div')
-                    imgEventWrap.setAttribute("id", "events");
-                    imgEventWrap.setAttribute("desc", arg.event.extendedProps.description);
-                    let type = arg.event.extendedProps.type;
-                    if (type === 'Deadline') {
-                        let imgEvent = '<img src= ' + deadlineImage + ' >'
-                        imgEventWrap.classList.add("fc-deadline-img");
-                        imgEventWrap.innerHTML = imgEvent;
-                    }
-                    if (type === 'Event') {
-                        let imgEvent = '<img src= ' + eventImage + ' >'
-                        imgEventWrap.classList.add("fc-event-img");
-                        imgEventWrap.innerHTML = imgEvent;
-                    }
-                    if (type === 'Milestone') {
-                        let imgEvent = '<img src= ' + milestoneImage + ' >'
-                        imgEventWrap.classList.add("fc-milestone-img");
-                        imgEventWrap.innerHTML = imgEvent;
-                    }
-                    if ((type === 'Sprint') || (type === 'Background') || (type === 'Project-Range')) {
-                        arrayOfDomNodes = [ titleEvent ]
-                    } else {
-                        arrayOfDomNodes = [ imgEventWrap, titleEvent ]
-                    }
-
-                    setEventClasses();
-                    return { domNodes: arrayOfDomNodes }
-                },
-                eventDidMount: function(info) {
-                    info.event.setProp("classNames", "event-border");
-                },
-                eventMouseEnter: function(info) {
-                    refreshTooltips();
-                },
-                eventClick: function(info) {
-                    if (info === "initial-reload") {
-                        return;
-                    }
-                    // change the border color
-                    let newEvent = calendar.getEventById(info.event.id);
-                    if ((newEvent.extendedProps.type === 'Sprint') && (currentRole !== 'student')) {
-                        let selectedEvent = calendar.getEventById(selectedId);
-                        if (selectedId === -1) {
-                            //initial click on any event
-                            newEvent.setProp("classNames", "event-border");
-                            newEvent.setProp("borderColor", "red");
-                            newEvent.setProp("editable", true);
-                            selectedId = info.event.id;
-                        } else {
-                            if (newEvent.id === selectedEvent.id) {
-                                newEvent.setProp("classNames", "event-border");
-                                newEvent.setProp("borderColor", newEvent.backgroundColor);
-                                newEvent.setProp("editable", false);
-                                selectedId = -1;
-                            } else {
-                                selectedEvent.setProp("classNames", "event-border");
-                                selectedEvent.setProp("borderColor", selectedEvent.backgroundColor)
-                                selectedEvent.setProp("editable", false);
-                                newEvent.setProp("classNames", "event-border");
-                                newEvent.setProp("borderColor", "red");
-                                newEvent.setProp("editable", true);
-                                selectedId = info.event.id;
-                            }
-                        }
-                    }
-                },
-                eventOverlap: function(stillEvent, movingEvent) {
-                    if (stillEvent.extendedProps.type === 'Sprint') {
-                        errorSprints("Error: sprints cannot overlap");
-                        return false;
-                    } else if (stillEvent.extendedProps.type === 'Background') {
-                        errorSprints("Error: sprints cannot be outside project dates")
-                        return false;
-                    }
-                    return true;
-                },
-                eventResizableFromStart: function(info) {
-                    return true;
-                },
-                eventResize: function(info) {
-                    let sprint = calendar.getEventById(info.event.id);
-                    saveSprint(sprint)
-                },
-                eventDrop: function(info) {
-                    let sprint = calendar.getEventById(info.event.id);
-                    saveSprint(sprint);
-                }
-            });
-            calendar.render();
-            refreshTooltips();
-            setTimeout(() => { // Set a time-out as the calendar seems to not position all elements correctly unless first fully rendered.
-                setEventClasses();
-            }, 100);
-
-
-            function setEventClasses() {
-                $("[id='events']" ).each(function (ignore) {
-                    if ($(this).hasClass("fc-milestone-img")) {
-                        $(this).parent().addClass("milestone");
-                    } else if ($(this).hasClass("fc-deadline-img")) {
-                        $(this).parent().addClass("deadline");
-                    } else if ($(this).hasClass("fc-event-img")) {
-                        $(this).parent().addClass("event");
-                    }
-                });
-            }
-
-            function refreshTooltips() {
-                $("[id='events']" ).each(function (ignore) {
-                    $(this).parent().get(0).setAttribute("data-bs-original-title", $(this).get(0).getAttribute("desc"))
-                    $(this).parent().get(0).setAttribute("data-bs-html", "true");
-                    $(this).parent().get(0).setAttribute("data-toggle", "tooltip");
-                });
-
-                $(function () {
-                    $('[data-toggle="tooltip"]').tooltip()
-                })
-            }
-
-            $('.fc-prev-button').click(function() {
-                const date = calendar.getDate();
-                localStorage.setItem("currentDate", date);
-                refreshTooltips();
-                setEventClasses();
-            });
-
-            $('.fc-today-button').click(function() {
-                const date = calendar.getDate();
-                localStorage.setItem("currentDate", date);
-                refreshTooltips();
-            });
-
-            $('.fc-next-button').click(function() {
-                const date = calendar.getDate();
-                localStorage.setItem("currentDate", date);
-                refreshTooltips();
-                setEventClasses();
-            });
-
-            if (localStorage.getItem("currentDate") !== null) {
-                calendar.gotoDate(new Date(localStorage.getItem("currentDate")).toISOString());
-            }
-
-        });
-        /*]]>*/
-    </script>
-</head>
-
-
-<body>
-<header th:replace="fragments/header"></header>
-
-<div class="header">
-    <h2 class="title" th:text="${projectName}"/>
-    <span class="badge rounded-pill title-date align-middle" th:text="${projectStartDateString} + ' - ' + ${projectEndDateString}" />
-</div>
-<!-- TOAST FOR ERRORS AND WHEN SPRINTS ARE UPDATED -->
-<div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 2000">
-    <div class="toast hide text-white" role="alert" aria-live="assertive" aria-atomic="true" id="alertToast" data-bs-animation="true" data-bs-autohide="true" data-bs-delay="7000">
-        <div class="toast-body">
-            <span id="alertToastText">Hidden</span>
-            <button id="toastBtn" type="button" class="btn-close btn-close-white me-2 m-auto float-end" data-bs-dismiss="toast" aria-label="Close"></button>
-        </div>
-    </div>
-</div>
-
-
-<div class='calendar' id='calendar'></div>
 </body>
 
 <script src="webjars/fullcalendar/5.10.2/main.min.js"></script>
@@ -334,11 +345,12 @@
         const date = calendar.getDate();
         localStorage.setItem("currentDate", date);
         setTimeout(() => {
-            document.location.reload();
+            $.get('update-calendar').done((result) => {
+                $(`#calendar_body`).replaceWith(result)
+                loadCalendar()
+            })
         }, 500);
     }
     connect();
 </script>
-
-
 </html>

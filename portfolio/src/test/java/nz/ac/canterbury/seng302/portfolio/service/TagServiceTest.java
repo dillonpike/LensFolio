@@ -3,6 +3,8 @@ package nz.ac.canterbury.seng302.portfolio.service;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -108,5 +110,19 @@ class TagServiceTest {
         List<Tag> actualTags = tagService.getTagsFromUserId(userId);
 
         assertEquals(new ArrayList<>(), actualTags);
+    }
+
+    /**
+     * Tests that the getTag(int tagId) method returns specific tag.
+     */
+    @Test
+    void removeTag() {
+      Tag tag = testTags.get(1);
+      int tagId = tag.getTagId();
+      doReturn(Optional.of(tag)).when(tagRepository).findById(tagId);
+      doNothing().when(tagRepository).deleteById(tagId);
+      boolean success = tagService.removeTag(tagId);
+      assertTrue(success);
+      verify(tagRepository).deleteById(tagId);
     }
 }
