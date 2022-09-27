@@ -10,7 +10,6 @@ async function validateEvidence() {
     if (titleValid && descriptionValid && dateValid) {
         document.getElementById('evidenceForm').onsubmit = () => { return false };
         removeInvalidCharacters('evidenceWeblink');
-        removeInvalidCharacters('evidenceSkillTag');
         addEvidence()
         document.getElementById('evidenceForm').onsubmit = () => {validateEvidence(); return false}
         /* Refresh the container after adding a piece of evidence*/
@@ -39,9 +38,9 @@ function addEvidence() {
         date: dateValue,
         projectId: 0,
         userId: document.getElementById('userId').value,
-        webLinks: webLinksList
+        webLinks: webLinksList,
+        tags: skillTagsList
     }
-
 
     $.post(document.getElementById('evidenceForm').action + "?" + new URLSearchParams(data)).done((result) => {
         replaceEvidenceModalBody(result);
@@ -52,6 +51,7 @@ function addEvidence() {
         clearEvidenceModalFields();
         $("#webLinkList").html(""); // clear web links
         $("#skillTagList").html(""); // clear skill tags
+        sendAddEvidenceNotification();
     }).fail((response) => {
         replaceEvidenceModalBody(response.responseText);
     })
@@ -68,15 +68,16 @@ function replaceEvidenceModalBody(modalBodyResponse) {
     // Uses two duplicate jquery selectors since the element is replaced between each use
     $("#webLinkList").html(webLinks);
     const skillTags = $("#skillTagList").children();
-        $("#evidenceModalBody").replaceWith(modalBodyResponse);
-        // Restore skilltags that were deleted when the modal was replaced
-        // Uses two duplicate jquery selectors since the element is replaced between each use
-        $("#skillTagList").html(skillTags);
+    $("#evidenceModalBody").replaceWith(modalBodyResponse);
+    // Restore skilltags that were deleted when the modal was replaced
+    // Uses two duplicate jquery selectors since the element is replaced between each use
+    $("#skillTagList").html(skillTags);
     updateCharsLeft('evidenceTitle', 'evidenceTitleLength', 30);
     updateCharsLeft('evidenceDescription', 'evidenceDescriptionLength', 250);
     configureEvidenceDatePicker();
     setEvidenceDatePickerValues();
     configureWebLinkInput();
+    configureSkillTagInput();
 }
 
 /**
@@ -131,6 +132,7 @@ function clearEvidenceModalFields() {
     $("#evidenceDescriptionAlertBanner").attr("hidden", "hidden");
     $("#evidenceDateAlertBanner").attr("hidden", "hidden");
     $("#evidenceWebLinksAlertBanner").attr("hidden", "hidden");
+    $("#evidenceSkillTagsAlertBanner").attr("hidden", "hidden");
 }
 
 /**
