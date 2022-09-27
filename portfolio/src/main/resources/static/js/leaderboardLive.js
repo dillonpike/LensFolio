@@ -36,15 +36,15 @@ function connect() {
             const eventResponse = JSON.parse(eventResponseArg.body)
             if (eventResponse.artefactType === "studentEvidence") {
                 const notification = showLeaderboardUpdateToast("Evidence", eventResponse.artefactName, eventResponse.artefactId,
-                    eventResponse.username, eventResponse.userFirstName, eventResponse.userLastName);
-                updateLeaderboard(notification);
+                    eventResponse.username, eventResponse.userFirstName, eventResponse.userLastName, ADDEVIDENCEACTION);
+                updateLeaderboard(notification, ADDEVIDENCEACTION);
             }
         });
         stompClient.subscribe('/webSocketGet/delete-student-role', function (eventResponseArg) {
             const eventResponse = JSON.parse(eventResponseArg.body)
             const notification = showLeaderboardUpdateToast(eventResponse.artefactType, eventResponse.artefactName, eventResponse.artefactId,
-                eventResponse.username, eventResponse.userFirstName, eventResponse.userLastName);
-            updateLeaderboard(notification);
+                eventResponse.username, eventResponse.userFirstName, eventResponse.userLastName, DELETEROLEACTION);
+            updateLeaderboard(notification, DELETEROLEACTION);
         });
     });
 }
@@ -69,8 +69,8 @@ $(function() {
  * @param firstName first name of user who added evidence
  * @param lastName last name of user who added evidence
  */
-function showLeaderboardUpdateToast(type, evidenceName, evidenceId, username, firstName, lastName) {
-    let newNotification = new Notification(type, evidenceName, evidenceId, username, firstName, lastName, ADDEVIDENCEACTION);
+function showLeaderboardUpdateToast(type, evidenceName, evidenceId, username, firstName, lastName, operation) {
+    let newNotification = new Notification(type, evidenceName, evidenceId, username, firstName, lastName, operation);
     newNotification = addNotification(newNotification, listOfNotifications, listOfHTMLToasts);
     newNotification.show();
     newNotification.hideTimed(SECONDS_TILL_HIDE);

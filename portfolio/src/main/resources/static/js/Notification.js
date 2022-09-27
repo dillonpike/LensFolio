@@ -20,6 +20,10 @@ const ADDEVIDENCEACTION = "addEvidence";
 const UPDATELEADERBOARDACTION = "updateLeaderboard";
 const DELETEROLEACTION = "deleteRole";
 const ADDROLEACTION = "addRole";
+const ADDROLEUPDATEACTION = "addRoleUpdate";
+const DELETEROLEUPDATEACTION = "deleteRoleUpdate";
+const UPDATELEADERBOARDADDACTION = "updateLeaderboardAdd";
+const UPDATELEADERBOARDDELETEACTION = "updateLeaderboardDelete";
 
 
 /**
@@ -174,6 +178,12 @@ class Notification {
           case UPDATELEADERBOARDACTION:
               this.bodyText = this.firstName + " " + this.lastName + " (" + this.username + ") has added a piece of evidence. Updated leaderboard!";
               break;
+          case ADDROLEUPDATEACTION:
+                this.bodyText = this.firstName + " " + this.lastName + " (" + this.username + ") has been added student role. Updated leaderboard!";
+                break;
+          case DELETEROLEUPDATEACTION:
+                this.bodyText = this.firstName + " " + this.lastName + " (" + this.username + ") has been removed student role. Updated leaderboard!";
+                break;
           case DELETEROLEACTION:
                 this.bodyText = this.firstName + " " + this.lastName + " (" + this.username + ") has been removed from a student role. Updating leaderboard...";
                 break;

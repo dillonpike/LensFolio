@@ -3,17 +3,13 @@
  */
 let stompClient = null;
 
+
 /**
  * Connects the stomp client to the setup websocket endpoint.
- * Then subscribes methods to the required endpoints.
+ * @param firstName user's first name
+ * @param lastName user's last name
+ * @param username user's username
  */
-function connect() {
-    let socket = new SockJS('mywebsockets');
-    stompClient = Stomp.over(socket);
-    stompClient.debug = null;
-}
-
-
 function sendRemoveStudentRoleNotification(firstName, lastName, username) {
     stompClient.send("/webSocketPost/delete-student-role", {}, JSON.stringify({
         'artefactName': $("#evidenceTitle").val(),
@@ -25,7 +21,3 @@ function sendRemoveStudentRoleNotification(firstName, lastName, username) {
         'artefactType': "Role"
     }));
 }
-
-$(function() {
-    connect();
-})

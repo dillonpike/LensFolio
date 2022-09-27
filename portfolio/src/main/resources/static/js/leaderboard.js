@@ -17,14 +17,22 @@ function configureLeaderboardTable() {
  * inform the user when the table has updated.
  * @param notification the notification to update
  */
-function updateLeaderboard(notification) {
+function updateLeaderboard(notification, operation) {
     const leaderboardTable = $('table').DataTable();
     const page = leaderboardTable.page();
     const url = "/leaderboard-table";
     $("#leaderboardTable").load(url + " #leaderboardTable>*", "", function () {
         configureLeaderboardTable();
         $('table').DataTable().page(page).draw('page');
-        notification.action = UPDATELEADERBOARDACTION;
+        if (operation === ADDEVIDENCEACTION) {
+            notification.action = UPDATELEADERBOARDADDACTION;
+        } if (operation === DELETEROLEACTION) {
+            notification.action = DELETEROLEUPDATEACTION;
+        }
+        else {
+            notification.action = UPDATELEADERBOARDDELETEACTION;
+        }
+
         notification.show();
         notification.hideTimed(SECONDS_TILL_HIDE);
     });

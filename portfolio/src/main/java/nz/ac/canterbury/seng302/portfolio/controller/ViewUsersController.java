@@ -168,8 +168,8 @@ public class ViewUsersController {
 
     /**
      * This method maps @MessageMapping endpoint to the @SendTo endpoint. Called when something is sent to
-     * the MessageMapping endpoint. This is triggered when a user adds a piece of evidence.
-     * @param message Information about the added piece of evidence.
+     * the MessageMapping endpoint. This is triggered when a user has been removed student role
+     * @param message Information about removing student role
      * @return Returns the message given.
      */
     @MessageMapping("/delete-student-role")
