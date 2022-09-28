@@ -22,7 +22,6 @@ import java.util.Date;
 import static nz.ac.canterbury.seng302.portfolio.controller.EvidenceController.*;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.regex.Pattern;
 
 /**
