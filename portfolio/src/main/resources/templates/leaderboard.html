@@ -53,7 +53,7 @@
             </thead>
             <tbody>
             <tr id="rows"  th:each="leaderboardEntry : ${leaderboardEntries}" th:id="${leaderboardEntry.getUserId()}"
-                th:attr="onclick='redirectToEvidence(' + ${leaderboardEntry.getUserId()} + ')'" style="cursor: pointer">
+                th:attr="onclick='redirectToProfile(' + ${leaderboardEntry.getUserId()} + ')'" style="cursor: pointer">
                 <td th:text="${leaderboardEntry.getRank()}"></td>
                 <td th:text="${leaderboardEntry.getFirstName()}"></td>
                 <td th:text="${leaderboardEntry.getLastName()}"></td>

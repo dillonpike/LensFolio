@@ -33,11 +33,6 @@ public class Tag {
         this.tagName = tagName;
     }
 
-    public Tag(String tagName, int tagId) {
-        this.tagName = tagName;
-        this.tagId = tagId;
-    }
-
     public String getTagName() {
         return tagName;
     }
@@ -71,6 +66,10 @@ public class Tag {
         return evidenceWithTag;
     }
 
+    /**
+     * Adds a new piece of evidence to the HashSet.
+     * @param evidence The evidence to add.
+     */
     public void addEvidence(Evidence evidence) {
         this.evidenceWithTag.add(evidence);
     }

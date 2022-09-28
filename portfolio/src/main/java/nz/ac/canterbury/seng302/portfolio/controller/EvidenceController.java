@@ -133,6 +133,16 @@ public class EvidenceController {
         return "evidence";
     }
 
+    /**
+     * Method to handle a partial refresh of the list of evidences to either display all the evidence with a given skill ID
+     * or all evidence with both a given skill ID and user ID attached to it.
+     * @param model Parameters sent to thymeleaf template to be rendered into HTML
+     * @param userId The user currently logged in.
+     * @param viewedUserId The user that should be attached to the evidence.
+     * @param listAll A boolean value on if all or only a certain viewedUsers evidence should be returned.
+     * @param skillId The skill that needs to be attached to the evidence.
+     * @return A fragment of the list of evidences to display.
+     */
     @GetMapping("/switch-evidence-list")
     public String membersWithoutAGroupCard(
             Model model,

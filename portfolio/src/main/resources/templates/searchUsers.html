@@ -44,7 +44,7 @@
     </tr>
     </thead>
     <tbody>
-    <tr th:each="user : ${users}" th:attr="onclick='redirectToEvidence(' + ${user.id} + ')'" style="cursor: pointer">
+    <tr th:each="user : ${users}" th:attr="onclick='redirectToProfile(' + ${user.id} + ')'" style="cursor: pointer">
       <td><span th:text="${user.FirstName}"> First Name </span></td>
       <td><span th:text="${user.LastName}"> Last Name </span></td>
       <td><span th:text="${user.username}"> Username </span></td>

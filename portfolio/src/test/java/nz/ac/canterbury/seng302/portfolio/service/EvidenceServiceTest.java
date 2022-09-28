@@ -143,7 +143,8 @@ class EvidenceServiceTest {
         testEvidence.setEvidenceId(evidenceId);
         testEvidence.setUserId(userId);
 
-        Tag validTag = new Tag("Valid_Tag", tagId);
+        Tag validTag = new Tag("Valid_Tag");
+        validTag.setTagId(tagId);
         validTag.addEvidence(testEvidence);
         when(tagService.getTag(tagId)).thenReturn(validTag);
 
@@ -196,7 +197,8 @@ class EvidenceServiceTest {
         testEvidence.setEvidenceId(evidenceId);
         testEvidence.setUserId(2); // Not the same as the userId being searched for.
 
-        Tag validTag = new Tag("Valid_Tag", tagId);
+        Tag validTag = new Tag("Valid_Tag");
+        validTag.setTagId(tagId);
         validTag.addEvidence(testEvidence);
         when(tagService.getTag(tagId)).thenReturn(validTag);
 
@@ -221,7 +223,8 @@ class EvidenceServiceTest {
         Evidence testEvidence = new Evidence();
         testEvidence.setEvidenceId(evidenceId);
 
-        Tag validTag = new Tag("Valid_Tag", tagId);
+        Tag validTag = new Tag("Valid_Tag");
+        validTag.setTagId(tagId);
         validTag.addEvidence(testEvidence);
         when(tagService.getTag(tagId)).thenReturn(validTag);
 

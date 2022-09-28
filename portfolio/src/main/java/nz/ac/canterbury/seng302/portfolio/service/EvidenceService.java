@@ -165,7 +165,8 @@ public class EvidenceService {
         return highFivers;
     }
     /**
-     * Checks to ensure that if a piece of evidence has a user attached to it.
+     * Checks to ensure that a piece of evidence has the user with a userId,
+     * matching that passed to the method, attached to it.
      * @param evidenceId    The evidence being checked.
      * @param userId        The user that needs to be attached to the evidence.
      * @return  Boolean on is the user is part of the evidence.
