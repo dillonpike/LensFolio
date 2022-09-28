@@ -15,3 +15,12 @@ function redirectToProfile(userId) {
     localStorage.setItem('tab', 'profile-tab');
     window.location.href = "account?userId=" + userId;
 }
+
+/**
+ * redirect to skill page
+ * @param userId current user ID (note: it is not necessarily the user that logged in)
+ * @param skillId the id of a skill
+ */
+function redirectToSkillsPage(userId, skillId) {
+    window.location.href = "evidence-skills?userId="+userId+"&skillId="+skillId;
+}
