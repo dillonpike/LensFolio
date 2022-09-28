@@ -46,7 +46,6 @@ public class EvidenceRestController {
                 boolean wasRemoved = evidenceService.removeEvidence(id);
                 if (wasRemoved) {
                     // * Add the evidence to the model *
-                    // * Maybe add something to the model to make sure the evidence tab is shown? *
                     httpServletResponse.setStatus(HttpServletResponse.SC_OK);
                 } else {
                     httpServletResponse.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
