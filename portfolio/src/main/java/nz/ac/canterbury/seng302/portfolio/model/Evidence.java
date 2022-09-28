@@ -296,8 +296,4 @@ public class Evidence {
     public List<HighFivers> getHighFivers() {
         return highFivers;
     }
-
-    public Set<String> getCategories() {
-        return Set.of("Service", "Qualitative Skills", "Quantitative Skills");
-    }
 }
