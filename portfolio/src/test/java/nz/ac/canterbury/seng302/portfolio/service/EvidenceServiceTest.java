@@ -1,6 +1,7 @@
 package nz.ac.canterbury.seng302.portfolio.service;
 
-import java.util.Optional;
+import java.util.*;
+
 import nz.ac.canterbury.seng302.portfolio.model.Evidence;
 import nz.ac.canterbury.seng302.portfolio.model.HighFivers;
 import nz.ac.canterbury.seng302.portfolio.repository.EvidenceRepository;
@@ -13,11 +14,6 @@ import org.mockito.Mock;
 import org.mockito.exceptions.base.MockitoException;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -91,28 +87,6 @@ class EvidenceServiceTest {
     void testFailAddEvidence() {
         when(evidenceRepository.save(any(Evidence.class))).thenThrow(new MockitoException("Mockito exception"));
         assertFalse(evidenceService.addEvidence(testEvidences.get(0)));
-    }
-
-    /**
-     * Tests that the correct user responses are given when fetching the users who have high fived a piece of evidence.
-     */
-    @Test
-    void testGetHighFiversOfEvidence() {
-        List<HighFivers> expectedUsers = new ArrayList<>();
-        Evidence testEvidence = new Evidence();
-        int numUsers = 3;
-        for (int i = 0; i < numUsers; i++) {
-            String firstName = "First name" + i;
-            String lastName = "Last name" + i;
-            UserResponse userResponse = UserResponse.newBuilder().setId(i).setFirstName(firstName).setLastName(lastName).build();
-            expectedUsers.add(new HighFivers(firstName + " " + lastName, i));
-            testEvidence.addHighFivers(new HighFivers(firstName + " " + lastName, i));
-        }
-        List<HighFivers> actualUsers = testEvidence.getHighFivers().stream().toList();
-        for(int i=0; i < actualUsers.size(); i++){
-            assertEquals(expectedUsers.get(i).getUserId(), actualUsers.get(i).getUserId());
-            assertEquals(expectedUsers.get(i).getName(), actualUsers.get(i).getName());
-        }
     }
 
     /**
