@@ -1,11 +1,13 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
 import io.grpc.StatusRuntimeException;
+
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
-import nz.ac.canterbury.seng302.portfolio.model.Evidence;
-import nz.ac.canterbury.seng302.portfolio.model.NotificationGroup;
-import nz.ac.canterbury.seng302.portfolio.model.NotificationHighFive;
-import nz.ac.canterbury.seng302.portfolio.model.Project;
+import java.util.Set;
+
+import nz.ac.canterbury.seng302.portfolio.model.*;
 import nz.ac.canterbury.seng302.portfolio.service.*;
 import nz.ac.canterbury.seng302.portfolio.utility.DateUtility;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
@@ -41,6 +43,9 @@ public class AccountController {
 
     @Autowired
     private EvidenceService evidenceService;
+
+    @Autowired
+    private TagService tagService;
 
     @Autowired
     private PhotoService photoService;
@@ -107,6 +112,16 @@ public class AccountController {
                 eachEvidence.setHighFivers(evidenceService.getHighFivers(eachEvidence));
             }
             model.addAttribute("evidences", evidenceList);
+
+            Set<Tag> skillsSet = tagService.getTags(userId);
+            List<Tag> skillsList = skillsSet.stream().toList();
+            skillsList.sort(Comparator.comparing(Tag::getTagName));
+            Tag noSkill = new Tag("No_skills");
+            noSkill.setTagId(-1);
+            System.out.println(skillsList.size());
+            skillsList.add(0, noSkill);
+            System.out.println(skillsList.size());
+            model.addAttribute("skills", skillsList);
 
         } catch (StatusRuntimeException e) {
             model.addAttribute("loginMessage", "Error connecting to Identity Provider...");
