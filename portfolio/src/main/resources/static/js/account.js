@@ -55,9 +55,9 @@ function deleteModalSetup() {
                             $("#evidence").load(url+" #evidence>*","");
                         }, 10);
                     },
-                    error: function() {
+                    error: function(error) {
                         $('#deleteModal').modal('toggle');
-                        showAlertErrorToast("You are not allowed to delete this evidence!");
+                        showAlertErrorToast("Something went wrong went deleting evidence!");
 
                     }
                 })
