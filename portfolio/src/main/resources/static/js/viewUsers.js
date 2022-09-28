@@ -26,7 +26,6 @@ function  deleteUserRole(id, role, firstName, lastName, username) {
 function addUserRole(id, role, firstName, lastName, username) {
     const url = "add_role?userId="+id+"&role="+role;
     $.post(url).done((result) => {
-        console.log(1)
         sendAddStudentRoleNotification(firstName, lastName, username);
         window.location.reload();
     });
