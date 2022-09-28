@@ -55,8 +55,10 @@ function deleteModalSetup() {
                             $("#evidence").load(url+" #evidence>*","");
                         }, 10);
                     },
-                    error: function() {
-                        document.getElementById('deleteModalButton').onclick = buttonFunction;
+                    error: function(error) {
+                        $('#deleteModal').modal('toggle');
+                        showAlertErrorToast("Something went wrong went deleting evidence!");
+
                     }
                 })
             });

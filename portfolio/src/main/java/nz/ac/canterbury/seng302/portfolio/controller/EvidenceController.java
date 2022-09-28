@@ -20,7 +20,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.PathVariable;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.NotAcceptableException;
@@ -52,8 +51,6 @@ public class EvidenceController {
     private static final String ADD_EVIDENCE_MODAL_FRAGMENT = "fragments/evidenceModal::evidenceModalBody";
 
     private static final String DELETE_EVIDENCE_MODAL_FRAGMENT = "fragments/deleteModalProject";
-
-    public static final String DELETE_EVIDENCE_MODAL_FRAGMENT_TITLE_MESSAGE = "deleteModal";
 
     public static final String ADD_EVIDENCE_MODAL_FRAGMENT_TITLE_MESSAGE = "evidenceTitleAlertMessage";
 
@@ -99,6 +96,7 @@ public class EvidenceController {
             return ADD_EVIDENCE_MODAL_FRAGMENT;
         }
     }
+
 
     /**
      * Method to display the main page for viewing skill specific pieces of evidence.
@@ -185,36 +183,6 @@ public class EvidenceController {
         List<Tag> skills = tagService.getTagsFromUserId(userId);
         return List.of(skills.stream().map(tag -> String.valueOf(tag.getTagId())).toList(),
                 skills.stream().map(Tag::getTagName).toList());
-    }
-
-    /***
-     * Request handler for deleting event, user will redirect to project detail page after
-     * @param id Event Id
-     * @param model Parameters sent to thymeleaf template to be rendered into HTML
-     * @return project detail page
-     */
-    @PostMapping("/delete-evidence/{id}")
-    public String evidenceRemove(@PathVariable("id") Integer id,
-        HttpServletResponse httpServletResponse, @AuthenticationPrincipal AuthState principal,
-        Model model) {
-        Integer userID = userAccountClientService.getUserIDFromAuthState(principal);
-        elementService.addHeaderAttributes(model, userID);
-        if (permissionService.isValidToModify(userID)) {
-            boolean wasRemoved = evidenceService.removeEvidence(id);
-            if (wasRemoved) {
-                // * Add the evidence to the model *
-                // * Maybe add something to the model to make sure the evidence tab is shown? *
-                httpServletResponse.setStatus(HttpServletResponse.SC_OK);
-                return "redirect:/account?userId=" + userID;
-            } else {
-                String errorMessage = "Evidence Not Deleted. Saving Error Occurred.";
-                model.addAttribute(DELETE_EVIDENCE_MODAL_FRAGMENT_TITLE_MESSAGE, errorMessage);
-                httpServletResponse.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-                return "redirect:/account?userId=" + userID;
-            }
-        }
-        /* Return the name of the Thymeleaf template */
-        return "redirect:/account";
     }
 
     @PostMapping("saveHighFiveEvidence")
