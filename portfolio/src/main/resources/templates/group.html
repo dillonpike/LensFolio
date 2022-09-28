@@ -370,8 +370,8 @@
     deleteModalSetup()
     groupDeleteModalSetup()
     removeUserModalSetup()
-    disallowInvalidCharacters('groupShortNameInput')
-    disallowInvalidCharacters('groupLongNameInput')
+    disallowInvalidCharacters('shortGroupNameInput')
+    disallowInvalidCharacters('longGroupNameInput')
 </script>
 
 <script>
@@ -422,7 +422,9 @@
     $(document).on("click", "#table tr", function() {
         var rows = userTable.rows('.selected').data();
         const options = $('.collapse').collapse()
+
         if (rows.length > 0) {
+            console.log(rows.length)
             options.collapse('show')
         } else {
             options.collapse('hide')
