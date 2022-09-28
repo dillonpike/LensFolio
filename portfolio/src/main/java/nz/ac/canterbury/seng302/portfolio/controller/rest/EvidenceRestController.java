@@ -28,8 +28,6 @@ public class EvidenceRestController {
     @Autowired
     private UserAccountClientService userAccountClientService;
 
-    public static final String DELETE_EVIDENCE_MODAL_FRAGMENT_TITLE_MESSAGE = "deleteModal";
-
     /***
      * Request handler for deleting event, user will redirect to project detail page after
      * @param id Event Id
