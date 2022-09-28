@@ -94,28 +94,6 @@ class EvidenceServiceTest {
     }
 
     /**
-     * Tests that the correct user responses are given when fetching the users who have high fived a piece of evidence.
-     */
-    @Test
-    void testGetHighFiversOfEvidence() {
-        List<HighFivers> expectedUsers = new ArrayList<>();
-        Evidence testEvidence = new Evidence();
-        int numUsers = 3;
-        for (int i = 0; i < numUsers; i++) {
-            String firstName = "First name" + i;
-            String lastName = "Last name" + i;
-            UserResponse userResponse = UserResponse.newBuilder().setId(i).setFirstName(firstName).setLastName(lastName).build();
-            expectedUsers.add(new HighFivers(firstName + " " + lastName, i));
-            testEvidence.addHighFivers(new HighFivers(firstName + " " + lastName, i));
-        }
-        List<HighFivers> actualUsers = testEvidence.getHighFivers().stream().toList();
-        for(int i=0; i < actualUsers.size(); i++){
-            assertEquals(expectedUsers.get(i).getUserId(), actualUsers.get(i).getUserId());
-            assertEquals(expectedUsers.get(i).getName(), actualUsers.get(i).getName());
-        }
-    }
-
-    /**
      * Tests that no user responses are returned when no users have high fived a piece of evidence.
      */
     @Test

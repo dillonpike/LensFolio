@@ -14,6 +14,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletResponse;
 
+/**
+ * Handles REST requests for evidence.
+ */
 @RestController
 public class EvidenceRestController {
     @Autowired
@@ -48,19 +51,13 @@ public class EvidenceRestController {
                     // * Maybe add something to the model to make sure the evidence tab is shown? *
                     httpServletResponse.setStatus(HttpServletResponse.SC_OK);
                 } else {
-                    String errorMessage = "Evidence Not Deleted. Saving Error Occurred.";
-                    model.addAttribute(DELETE_EVIDENCE_MODAL_FRAGMENT_TITLE_MESSAGE, errorMessage);
                     httpServletResponse.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
                 }
             } else {
-                String errorMessage = "You are not allowed to delete this evidence.";
-                model.addAttribute(DELETE_EVIDENCE_MODAL_FRAGMENT_TITLE_MESSAGE, errorMessage);
                 httpServletResponse.setStatus(HttpServletResponse.SC_FORBIDDEN);
             }
         } catch (NullPointerException e) {
             httpServletResponse.setStatus(HttpServletResponse.SC_NOT_FOUND);
-            String errorMessage = "Evidence not found!.";
-            model.addAttribute(DELETE_EVIDENCE_MODAL_FRAGMENT_TITLE_MESSAGE, errorMessage);
         }
 
 
