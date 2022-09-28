@@ -1,10 +1,7 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
-import nz.ac.canterbury.seng302.portfolio.model.Evidence;
-import nz.ac.canterbury.seng302.portfolio.model.Tag;
+import nz.ac.canterbury.seng302.portfolio.model.*;
 import nz.ac.canterbury.seng302.portfolio.service.ElementService;
-import nz.ac.canterbury.seng302.portfolio.model.NotificationMessage;
-import nz.ac.canterbury.seng302.portfolio.model.NotificationResponse;
 import nz.ac.canterbury.seng302.portfolio.service.*;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import org.slf4j.Logger;
@@ -20,7 +17,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.PathVariable;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.NotAcceptableException;
@@ -264,5 +260,27 @@ public class EvidenceController {
     @SendTo("/webSocketGet/evidence-deleted")
     public NotificationResponse evidenceDeleteNotification(NotificationMessage message) {
         return NotificationResponse.fromMessage(message, "delete");
+    }
+
+    /***
+     * Used to handle the interaction between a piece of evidence being highfived
+     * and the notification being shown through the header.
+     *
+     * @return Send a notification to the header to display a highfive notification.
+     */
+    @MessageMapping("/high-fived-evidence")
+    @SendTo("/webSocketGet/notification-of-highfive")
+    public NotificationHighFive highFiveNotification(NotificationHighFive notificationHighFive) {
+        return notificationHighFive;
+    }
+
+    /***
+     * Used to handle the interaction between a piece of evidence being un-highfived
+     * @return Send a message to reload the page if viewing.
+     */
+    @MessageMapping("/remove-high-fived-evidence")
+    @SendTo("/webSocketGet/notification-of-remove-highfive")
+    public NotificationHighFive removeHighFiveNotification(NotificationHighFive notificationHighFive) {
+        return notificationHighFive;
     }
 }

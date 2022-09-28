@@ -196,7 +196,7 @@
                         <div class="d-flex">
                           <div class="button-divider">
                             <button class="btn btn-default" type="button" th:id="'highFiveBtn' + ${evidence.getEvidenceId}" th:attr="onclick=|changeHighFive('${evidence.getEvidenceId}')|" style="outline: none; box-shadow: none;">
-                              <i class="bi bi-star" th:id="'star' + ${evidence.getEvidenceId}" th:attr="onclick=|checkToToggle('${evidence.getEvidenceId}')|"></i>
+                              <i th:class="${#arrays.contains(evidenceHighFivedIds, evidence.getEvidenceId)} ? 'bi bi-star-fill' : 'bi bi-star'" th:id="'star' + ${evidence.getEvidenceId}"></i>
                             </button>
                           </div>
                           <div class="button-divider">
@@ -428,16 +428,51 @@
     return localStorage.getItem('tab')
   }
 
-  let evidenceHighFivedIds = /*[[${evidenceHighFivedIds}]]*/ [];
+  /**
+   * Stores the stomp client to connect to and send to for WebSockets/SockJS.
+   */
+  let stompClient = null;
 
-  function checkToToggle(evidenceId) {
-    console.log(evidenceHighFivedIds);
-    evidenceHighFivedIds.forEach(function (evidenceHighFivedId) {
-      if (evidenceHighFivedId === evidenceId) {
-        console.log("evidenceHighFivedId: " + evidenceHighFivedId);
-        switchIcon(evidenceId);
-      }
-    })
+  /**
+   * Connects the stomp client to the setup websocket endpoint.
+   * Then subscribes methods to the required endpoints.
+   */
+  function connect() {
+    let socket = new SockJS('mywebsockets');
+    stompClient = Stomp.over(socket);
+    stompClient.debug = null;
+    stompClient.connect({}, function () {
+      stompClient.subscribe('/webSocketGet/evidence-added', function (eventResponseArg) {
+        let url = "account?userId=" + document.getElementById('userId').value
+        setTimeout(function() {
+          $("#evidence").load(url+" #evidence>*","");
+        }, 10);
+      });
+      stompClient.subscribe('/webSocketGet/evidence-deleted', function (eventResponseArg) {
+        let url = "account?userId=" + document.getElementById('userId').value
+        setTimeout(function() {
+          $("#evidence").load(url+" #evidence>*","");
+        }, 10);
+      });
+      stompClient.subscribe('/webSocketGet/notification-of-highfive', function (HighFivedResponseArg) {
+        const highFivedResponse = JSON.parse(HighFivedResponseArg.body);
+        if (highFivedResponse.receivingUserId == /*[[${viewedUserId}]]*/ null) {
+          let url = "account?userId=" + /*[[${viewedUserId}]]*/ null;
+          setTimeout(function() {
+            $("#evidence").load(url+" #evidence>*","");
+          }, 10);
+        }
+      });
+      stompClient.subscribe('/webSocketGet/notification-of-remove-highfive', function (HighFivedResponseArg) {
+        const highFivedResponse = JSON.parse(HighFivedResponseArg.body);
+        if (highFivedResponse.receivingUserId == /*[[${viewedUserId}]]*/ null) {
+          let url = "account?userId=" + /*[[${viewedUserId}]]*/ null;
+          setTimeout(function() {
+            $("#evidence").load(url+" #evidence>*","");
+          }, 10);
+        }
+      });
+    });
   }
 
   function changeHighFive(evidenceId) {
@@ -466,39 +501,38 @@
   }
 
   function saveHighFived(evidenceId) {
-    let userId = document.getElementById("userId").value;
-    let userName = $("#firstName").val() + " " + $("#lastNameInput").val();
+    let currentUserId = /*[[${currentUserId}]]*/ null;
+    let viewedUserId = /*[[${viewedUserId}]]*/ null;
+    let userName = /*[[${headerFullName}]]*/ null;
     const data = {
       evidenceId: evidenceId,
-      userId: userId,
+      userId: currentUserId,
       userName: userName
     }
     $.post("/saveHighFiveEvidence?" + new URLSearchParams(data)).done(function (result) {
-      let url = "account?userId=" + userId;
+      let url = "account?userId=" + viewedUserId;
       setTimeout(function() {
         $("#evidence").load(url+" #evidence>*","");
       }, 10);
-      sendHighFivedNotfication(evidenceId); // Send notification that post was liked.
-    }).always(function (ignore) {
-      switchIcon(evidenceId);
+      sendHighFivedNotfication(evidenceId); // Send notification that post was highfived.
     });
   }
 
   function removeHighFived(evidenceId) {
-    let userId = document.getElementById("userId").value;
-    let userName = $("#firstName").val() + " " + $("#lastNameInput").val();
+    let currentUserId = /*[[${currentUserId}]]*/ null;
+    let viewedUserId = /*[[${viewedUserId}]]*/ null;
+    let userName = /*[[${headerFullName}]]*/ null;
     const data = {
       evidenceId: evidenceId,
-      userId: userId,
+      userId: currentUserId,
       userName: userName
     }
     $.post("/removeHighFiveEvidence?" + new URLSearchParams(data)).done(function (result) {
-      let url = "account?userId=" + document.getElementById('userId').value
+      let url = "account?userId=" + viewedUserId
       setTimeout(function() {
         $("#evidence").load(url+" #evidence>*","");
       }, 10);
-    }).always(function (ignore) {
-      switchIcon(evidenceId);
+      sendRemoveHighFivedNotfication(evidenceId); // Send notification that post un-highfived.
     });
   }
 
@@ -525,7 +559,7 @@
   function sendHighFivedNotfication(id) {
     const title = $("#evidence-title-" + id).text();
     stompClient.send("/webSocketPost/high-fived-evidence", {}, JSON.stringify({
-      'sendingUserId': /*[[${userId}]]*/ null,
+      'sendingUserId': /*[[${currentUserId}]]*/ null,
       'sendingUserFullName': /*[[${headerFullName}]]*/ null,
       'sendingEvidenceTitle': title,
       'sendingEvidenceId': id,
@@ -533,11 +567,20 @@
     }));
   }
 
-
-  let allEvidence = /*[[${evidence}]]*/ [];
-
-
-
+  /**
+   * Used to send a notification that a piece of evidence was highfived to the controller.
+   * @param id    The ID of the evidnce that was highfived.
+   */
+  function sendRemoveHighFivedNotfication(id) {
+    const title = $("#evidence-title-" + id).text();
+    stompClient.send("/webSocketPost/remove-high-fived-evidence", {}, JSON.stringify({
+      'sendingUserId': /*[[${currentUserId}]]*/ null,
+      'sendingUserFullName': /*[[${headerFullName}]]*/ null,
+      'sendingEvidenceTitle': title,
+      'sendingEvidenceId': id,
+      'receivingUserId': /*[[${viewedUserId}]]*/ null
+    }));
+  }
 
   /*]]>*/
 
