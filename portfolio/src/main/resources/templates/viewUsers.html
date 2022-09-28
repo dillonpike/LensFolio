@@ -134,8 +134,9 @@
 
         /*<![CDATA[*/
         let username = /*[[${currentUsername}]]*/ "Error";
-        /*]]>*/        stompClient = Stomp.over(socket);
-        // stompClient.debug = null;
+        /*]]>*/
+        stompClient = Stomp.over(socket);
+        stompClient.debug = null;
         stompClient.connect({}, function (frame) {
 
             stompClient.subscribe('/webSocketGet/add-roles', function (response) {
@@ -148,7 +149,6 @@
     }
 
     function sentReload(username) {
-
         reload(username)
     }
 

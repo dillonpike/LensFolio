@@ -182,10 +182,10 @@ class Notification {
                 this.bodyText = this.firstName + " " + this.lastName + " (" + this.username + ") has been added student role. Updated leaderboard!";
                 break;
           case DELETEROLEUPDATEACTION:
-                this.bodyText = this.firstName + " " + this.lastName + " (" + this.username + ") has been removed student role. Updated leaderboard!";
+                this.bodyText = this.firstName + " " + this.lastName + " (" + this.username + ") has had removed student role. Updated leaderboard!";
                 break;
           case DELETEROLEACTION:
-                this.bodyText = this.firstName + " " + this.lastName + " (" + this.username + ") has been removed student role. Updating leaderboard...";
+                this.bodyText = this.firstName + " " + this.lastName + " (" + this.username + ") has had removed student role. Updating leaderboard...";
                 break;
           case ADDROLEACTION:
                 this.bodyText = this.firstName + " " + this.lastName + " (" + this.username + ") has been added to a student role. Updating leaderboard...";
