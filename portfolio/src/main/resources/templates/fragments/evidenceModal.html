@@ -77,7 +77,7 @@
                                 <span id="evidenceSkillTagsAlertMessage" data-test-id="alertMessage" th:text="${evidenceSkillTagsAlertMessage}"></span>
                                 <button type="button" class="btn-close" onclick="document.getElementById('evidenceSkillTagsAlertBanner').hidden = true" aria-label="Close"></button>
                             </div>
-                            <div class="mb-3">
+                            <div class="mb-3 ui-widget">
                                 <label for="evidenceSkillTag" class="col-form-label">Skill Tags:</label>
                                 <div class="input-group mb-3">
                                     <input id="evidenceSkillTag" onkeyup="{updateCharsLeft('evidenceSkillTag', 'evidenceSkillTagLength', 50);isEvidenceInputFieldFilled()}"
@@ -105,6 +105,8 @@
     <script src="js/datepicker.js"></script>
     <script src="js/textValidation.js"></script>
     <script src="js/evidence.js"></script>
+    <script src="js/helper.js"></script>
+    <script src="js/tags.js"></script>
     <script type="text/javascript">
         const MAX_NUM_WEBLINKS = 10;
         const MAX_NUM_SKILLTAGS = 10;
@@ -233,6 +235,8 @@
                     if (displaySkillString.length > 30) {
                         displaySkillString = displaySkillString.substring(0, 29) + "...";
                     }
+                    displaySkillString = conformTagCasing(displaySkillString, usersCurrentTags);
+
 
                     $("#skillTagList").append(`<div class="chip" id='skillTag${tagId}' style="display: inline-block;padding: 0 12px 0 15px;height: fit-content;font-size: 16px;line-height: 30px;border-radius: 25px;background-color: #f1f1f1f1;margin: 0 10px 10px 0;" data-toggle="tooltip" data-bs-placement="right" title="${skillString}">
                                 <div class="d-flex justify-content-between flex-row align-items-center">
@@ -242,13 +246,15 @@
                             </div>`);
                     tagId += 1;
 
-                    $('[data-toggle="tooltip"]').tooltip();
+                $('[data-toggle="tooltip"]').tooltip();
 
-                    $("#evidenceSkillTag").val("");
                     updateCharsLeft('evidenceSkillTag', 'evidenceSkillTagLength', 250);
                     //add to list
                     skillTagsList.push(displaySkillString);
                     document.getElementById("evidenceSkillTagsAlertBanner").setAttribute("hidden", "true");
+                    setTimeout(function () {
+                        $("#evidenceSkillTag").val("");
+                    }, 0);
                 } else {
                     $("#evidenceSkillTagsAlertMessage").text("You can only add up to " + MAX_NUM_SKILLTAGS + " skill tags.");
                     document.getElementById("evidenceSkillTagsAlertBanner").removeAttribute("hidden");
@@ -282,7 +288,6 @@
             return skillString.trim().length > 0 && skillString.trim().length <= 50;
         }
 
-
         /**
          * Configures the skill tag input so that it adds a skill tag rather than submitting the form if the user
          * presses the enter key in the skill tag input field and has something typed in.
@@ -290,7 +295,7 @@
         function configureSkillTagInput() {
             const skillTagInput = document.getElementById("evidenceSkillTag");
             skillTagInput.addEventListener("keydown", function (e) {
-                if (e.code === "Enter" && skillTagInput.value.trim() !== "") {
+                if ((e.code === "Enter" && skillTagInput.value.trim() !== "") || (e.code === "Space" && skillTagInput.value.trim() !== "")) {
                     e.preventDefault();
                     addSkillTags();
                 }
@@ -319,6 +324,19 @@
             updateCharsLeft('evidenceDescription', 'evidenceDescriptionLength', 250);
             updateCharsLeft('evidenceWeblink', 'evidenceWebLinkLength', 250);
             updateCharsLeft('evidenceSkillTag', 'evidenceSkillTagLength', 250);
+        });
+
+        // Creates a list to store the user's current skills in for the autocomplete, and updates this list whenever the
+        // add evidence modal is opened.
+        let usersCurrentTags = [];
+        document.getElementById("evidenceModal").addEventListener("show.bs.modal", function () {
+            let userId = $("#userId").val();
+            $.get("get-skills?" + new URLSearchParams({userId: userId})).done((result) => {
+                usersCurrentTags = zip(result).map((tag) => {return {id: tag[0], name: tag[1]}})
+                $( "#evidenceSkillTag" ).autocomplete({
+                    source: result[1]
+                });
+            });
         });
 
     </script>
