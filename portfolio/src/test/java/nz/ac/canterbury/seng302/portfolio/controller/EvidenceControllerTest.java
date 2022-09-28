@@ -110,8 +110,9 @@ class EvidenceControllerTest {
         when(evidenceService.addEvidence(any(Evidence.class))).thenReturn(true);
         doCallRealMethod().when(evidenceService).validateEvidence(eq(testEvidence), any(Model.class));
 
-        mockMvc.perform(post("/add-evidence").flashAttr("evidence", testEvidence)).andExpect(status().isOk());
-        // TODO Add extra andExpect statements when the returned fragment is finalised
+        mockMvc.perform(post("/add-evidence").flashAttr("evidence", testEvidence))
+                .andExpect(status().isOk())
+                .andExpect(view().name("fragments/evidenceModal::evidenceModalBody"));
 
         verify(evidenceService, times(1)).addEvidence(any(Evidence.class));
     }
@@ -131,8 +132,9 @@ class EvidenceControllerTest {
             evidence.addWebLink(validWebLink);
             doCallRealMethod().when(evidenceService).validateEvidence(eq(evidence), any(Model.class));
 
-            mockMvc.perform(post("/add-evidence").flashAttr("evidence", evidence)).andExpect(status().isOk());
-            // TODO Add extra andExpect statements when the returned fragment is finalised
+            mockMvc.perform(post("/add-evidence").flashAttr("evidence", evidence))
+                    .andExpect(status().isOk())
+                    .andExpect(view().name("fragments/evidenceModal::evidenceModalBody"));
         }
         verify(evidenceService, times(validWebLinks.size())).addEvidence(any(Evidence.class));
     }
