@@ -45,15 +45,15 @@
             <thead class="table-dark" id="headTable">
             <tr>
                 <th id="rankColumn" class="column-header">Rank</th>
-                <th id="firstNameColumn"class="column-header">First Name</th>
-                <th id="lastNameColumn"class="column-header">Last Name</th>
-                <th id="usernameColumn"class="column-header">Username</th>
+                <th id="firstNameColumn" class="column-header">First Name</th>
+                <th id="lastNameColumn" class="column-header">Last Name</th>
+                <th id="usernameColumn" class="column-header">Username</th>
                 <th id="scoreColumn" class="column-header score-header">Score</th>
             </tr>
             </thead>
             <tbody>
             <tr id="rows"  th:each="leaderboardEntry : ${leaderboardEntries}" th:id="${leaderboardEntry.getUserId()}"
-                th:attr="onclick='redirectToEvidence(' + ${leaderboardEntry.getUserId()} + ')'" style="cursor: pointer">
+                th:attr="onclick='redirectToProfile(' + ${leaderboardEntry.getUserId()} + ')'" style="cursor: pointer">
                 <td th:text="${leaderboardEntry.getRank()}" class="rank-column column"></td>
                 <td th:text="${leaderboardEntry.getFirstName()}" class="column"></td>
                 <td th:text="${leaderboardEntry.getLastName()}" class="column"></td>

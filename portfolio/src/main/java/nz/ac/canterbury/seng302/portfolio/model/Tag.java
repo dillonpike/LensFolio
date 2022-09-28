@@ -51,6 +51,14 @@ public class Tag {
     }
 
     /**
+     * Returns the tag name with spaces instead of the default "_".
+     * @return The name of the tag with spaces.
+     */
+    public String getSpacedTagName() {
+        return tagName.replace("_", " ");
+    }
+
+    /**
      * Returns the evidence pieces with this tag.
      * @return Set of Evidence objects with this tag.
     */
@@ -87,4 +95,12 @@ public class Tag {
         Tag tag = (Tag) o;
         return this.tagName.equals(tag.tagName);
     }
+    /**
+     * Adds a new piece of evidence to the HashSet.
+     * @param evidence The evidence to add.
+     */
+    public void addEvidence(Evidence evidence) {
+        this.evidenceWithTag.add(evidence);
+    }
+
 }
