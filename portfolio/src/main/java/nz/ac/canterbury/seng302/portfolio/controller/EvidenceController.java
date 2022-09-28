@@ -52,7 +52,7 @@ public class EvidenceController {
     public static final String ADD_EVIDENCE_MODAL_FRAGMENT_SKILL_TAGS_MESSAGE = "evidenceSkillTagsAlertMessage";
 
     /**
-     * Method tries to add and sqve the new evidence piece to the database.
+     * Method tries to add and save the new evidence piece to the database.
      * @param model Parameters sent to thymeleaf template to be rendered into HTML
      * @param httpServletResponse for adding status codes to
      * @return redirect user to evidence tab, or keep up modal if there are errors
