@@ -4,7 +4,6 @@ import nz.ac.canterbury.seng302.portfolio.model.Evidence;
 import nz.ac.canterbury.seng302.portfolio.model.HighFivers;
 import nz.ac.canterbury.seng302.portfolio.model.Tag;
 import nz.ac.canterbury.seng302.portfolio.repository.EvidenceRepository;
-import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -14,10 +13,7 @@ import org.mockito.exceptions.base.MockitoException;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -97,38 +93,25 @@ class EvidenceServiceTest {
     }
 
     /**
-     * Tests that the correct user responses are given when fetching the users who have high fived a piece of evidence.
-     */
-    @Test
-    void testGetHighFiversOfEvidence() {
-        List<HighFivers> expectedUsers = new ArrayList<>();
-        Evidence testEvidence = new Evidence();
-        int numUsers = 3;
-        for (int i = 0; i < numUsers; i++) {
-            String firstName = "First name" + i;
-            String lastName = "Last name" + i;
-            UserResponse userResponse = UserResponse.newBuilder().setId(i).setFirstName(firstName).setLastName(lastName).build();
-            expectedUsers.add(new HighFivers(firstName + " " + lastName, i));
-            when(registerClientService.getUserData(i)).thenReturn(userResponse);
-            testEvidence.addHighFiverId(i);
-        }
-        List<HighFivers> actualUsers = evidenceService.getHighFivers(testEvidence);
-        for(int i=0; i < actualUsers.size(); i++){
-            assertEquals(expectedUsers.get(i).getUserId(), actualUsers.get(i).getUserId());
-            assertEquals(expectedUsers.get(i).getName(), actualUsers.get(i).getName());
-        }
-    }
-
-    /**
      * Tests that no user responses are returned when no users have high fived a piece of evidence.
      */
     @Test
     void testGetHighFiversOfEvidenceWhenNoHighFivers() {
         Evidence testEvidence = new Evidence();
-        List<HighFivers> actualUsers = evidenceService.getHighFivers(testEvidence);
+        Set<HighFivers> actualUsers = testEvidence.getHighFivers();
         assertEquals(0, actualUsers.size());
     }
 
+    /**
+     * Tests that the removeEvidence(int evidenceId) method removes specific evidence.
+     */
+    @Test
+    void testRemoveEvidence() {
+        Evidence evidence = testEvidences.get(0);
+        when(evidenceRepository.findById(any(Integer.class))).thenReturn(Optional.of(evidence)).thenReturn(Optional.empty());
+        boolean success = evidenceService.removeEvidence(evidence.getEvidenceId());
+        assertTrue(success);
+    }
     /**
      * Tests that when the method is passed both a valid skill with a valid user attached to the evidence within tag class that
      * the evidence is returned.
