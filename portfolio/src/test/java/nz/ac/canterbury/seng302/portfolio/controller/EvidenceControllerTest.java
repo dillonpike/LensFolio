@@ -4,10 +4,7 @@ import com.google.protobuf.Timestamp;
 import nz.ac.canterbury.seng302.portfolio.model.Evidence;
 import nz.ac.canterbury.seng302.portfolio.model.Tag;
 import nz.ac.canterbury.seng302.portfolio.model.WebLink;
-import nz.ac.canterbury.seng302.portfolio.service.EvidenceService;
-import nz.ac.canterbury.seng302.portfolio.service.RegisterClientService;
-import nz.ac.canterbury.seng302.portfolio.service.TagService;
-import nz.ac.canterbury.seng302.portfolio.service.UserAccountClientService;
+import nz.ac.canterbury.seng302.portfolio.service.*;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import nz.ac.canterbury.seng302.shared.identityprovider.ClaimDTO;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
@@ -54,6 +51,12 @@ class EvidenceControllerTest {
 
     @MockBean
     private TagService tagService;
+
+    @MockBean
+    private PermissionService permissionService; // needed to load application context
+
+    @MockBean
+    private ElementService elementService; // needed to load application context
 
     @MockBean
     private UserAccountClientService userAccountClientService; // needed to load application context
@@ -108,6 +111,12 @@ class EvidenceControllerTest {
      */
     @Test
     void testAddEvidence200() throws Exception {
+        SecurityContext mockedSecurityContext = Mockito.mock(SecurityContext.class);
+        when(mockedSecurityContext.getAuthentication()).thenReturn(new PreAuthenticatedAuthenticationToken(validAuthState, ""));
+        SecurityContextHolder.setContext(mockedSecurityContext);
+        when(userAccountClientService.getUserIDFromAuthState(any(AuthState.class))).thenReturn(1);
+        when(registerClientService.getUserData(1)).thenReturn(mockUser);
+
         when(evidenceService.addEvidence(any(Evidence.class))).thenReturn(true);
         doCallRealMethod().when(evidenceService).validateEvidence(eq(testEvidence), any(Model.class));
 
