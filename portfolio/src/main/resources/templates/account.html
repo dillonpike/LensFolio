@@ -218,7 +218,7 @@
                               <!--Delete button for evidence-->
                               <ul class="dropdown-menu" aria-labelledby="evidenceDropdownButton" style="z-index: 3000">
                                 <li>
-                                  <a id="deleteEvidenceDisplayButton" class="button-link" data-bs-toggle="modal" data-bs-target="#deleteModal" th:data-bs-name="${evidence.getTitle}" data-bs-type="evidence">
+                                  <a id="deleteEvidenceDisplayButton" class="button-link" data-bs-toggle="modal" data-bs-target="#deleteModal" th:data-bs-name="${evidence.getTitle}" th:data-bs-id="${evidence.getEvidenceId}" data-bs-type="evidence">
                                     <button class="dropdown-item delete-artefact-button" type="button">
                                       <span class='bi bi-trash' style='color: red'></span> <i style='color: red'>Delete</i>
                                     </button>
@@ -442,7 +442,6 @@
       sendHighFivedNotfication(id); // Send notification that post was liked.
     } else {
       icon.addClass("bi-star").removeClass("bi-star-fill");
-      saveUnHighFived(id);
     }
   }
 
@@ -468,7 +467,7 @@
       userName: userName
     }
     $.post("/removeHighFiveEvidence?" + new URLSearchParams(data)).done(function (result) {
-      console.log(result);
+      $("#evidence").replaceWith(result);
     });
   }
 

@@ -1,25 +1,27 @@
 package nz.ac.canterbury.seng302.portfolio.service;
 
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Optional;
+import java.util.Set;
 import nz.ac.canterbury.seng302.portfolio.model.Evidence;
 import nz.ac.canterbury.seng302.portfolio.model.Tag;
 import nz.ac.canterbury.seng302.portfolio.model.HighFivers;
 import nz.ac.canterbury.seng302.portfolio.model.WebLink;
 import nz.ac.canterbury.seng302.portfolio.repository.EvidenceRepository;
 import nz.ac.canterbury.seng302.portfolio.repository.HighFiversRepository;
-import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
+import nz.ac.canterbury.seng302.portfolio.repository.TagRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 
 import javax.ws.rs.NotAcceptableException;
-import java.util.ArrayList;
 import java.util.Date;
 
 import static nz.ac.canterbury.seng302.portfolio.controller.EvidenceController.*;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.regex.Pattern;
 
 /**
@@ -35,6 +37,9 @@ public class EvidenceService {
     private TagService tagService;
 
     @Autowired
+    private TagRepository tagRepository;
+
+    @Autowired
     private HighFiversRepository highFiversRepository;
 
     /**
@@ -46,6 +51,61 @@ public class EvidenceService {
         List<Evidence> listEvidences = evidenceRepository.findAllByUserId(userId);
         return listEvidences.stream().sorted((o1, o2)->o2.getDate().
                 compareTo(o1.getDate())).toList();
+    }
+
+    /**
+     * Remove an evidence from the database.
+     * @param id ID of the evidence being removed
+     */
+    public boolean removeEvidence(Integer id) {
+        Optional<Evidence> sOptional = evidenceRepository.findById(id);
+        if (sOptional.isPresent()) {
+            Evidence evidence = sOptional.get();
+            Set<Tag> tags = null;
+            Set<WebLink> webLinks = null;
+            Set<HighFivers> highFivers = null;
+
+            if (!evidence.getTags().isEmpty()) {
+                tags = Set.copyOf(evidence.getTags());
+                for (Tag tag : tags) {
+                    evidence.removeTag(tag);
+                    tag.getEvidence().remove(evidence);
+                    tagRepository.save(tag);
+                }
+            }
+
+            if (!evidence.getWebLinks().isEmpty()) {
+                webLinks = Set.copyOf(evidence.getWebLinks());
+                evidence.setWebLinks(new HashSet<>());
+            }
+
+            if (!evidence.getHighFivers().isEmpty()) {
+                highFivers = Set.copyOf(evidence.getHighFivers());
+                evidence.setHighFivers(new HashSet<>());
+            }
+
+            evidenceRepository.delete(evidenceRepository.save(evidence));
+
+            // Check to see if the evidence was deleted
+            Optional<Evidence> evidenceStillThere = evidenceRepository.findById(id);
+            if (evidenceStillThere.isPresent()) {
+                // Add the users back since deleting the group did not work
+                Evidence emptyEvidence = evidenceStillThere.get();
+                if (tags != null) {
+                    List<Tag> tagList = new ArrayList<>(tags);
+                    for (Tag tag : tagList) {
+                        emptyEvidence.addTag(tag);
+                    }
+                }
+                emptyEvidence.setWebLinks(webLinks);
+                emptyEvidence.setHighFivers(highFivers);
+                evidenceRepository.save(emptyEvidence);
+                return false;
+            }
+            return true;
+        } else {
+            return false;
+        }
     }
 
     /**
@@ -160,7 +220,7 @@ public class EvidenceService {
             }
             HighFivers newHighFiver = highFiversRepository.save(new HighFivers(userName, userId));
             evidence.addHighFivers(newHighFiver);
-            Evidence evidence1 = evidenceRepository.save(evidence);
+            evidenceRepository.save(evidence);
             return true;
         } else {
             return false;
