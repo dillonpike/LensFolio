@@ -599,3 +599,7 @@ body{
     overflow-y: auto;
     overflow-x: hidden;
 }
+
+.bootstrap-select {
+    width: 100% !important;
+}
