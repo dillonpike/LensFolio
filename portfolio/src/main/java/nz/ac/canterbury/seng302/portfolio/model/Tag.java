@@ -2,6 +2,7 @@ package nz.ac.canterbury.seng302.portfolio.model;
 
 import javax.persistence.*;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -61,4 +62,29 @@ public class Tag {
         this.evidenceWithTag = evidence;
     }
 
+    public String toString() {
+        return tagName;
+    }
+
+    /**
+     * Overridden to consider tags with the same name to have the same hash, for removing duplicate tags.
+     * @return hash code of tag
+     */
+    @Override
+    public int hashCode() {
+        return Objects.hash(tagName);
+    }
+
+    /**
+     * Overridden to consider tags with the same name to be equal, for removing duplicate tags.
+     * @param o object to compare to
+     * @return true if objects are equal, otherwise false
+     */
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Tag tag = (Tag) o;
+        return this.tagName.equals(tag.tagName);
+    }
 }
