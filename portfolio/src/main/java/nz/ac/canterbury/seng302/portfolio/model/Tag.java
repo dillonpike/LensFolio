@@ -2,6 +2,7 @@ package nz.ac.canterbury.seng302.portfolio.model;
 
 import javax.persistence.*;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -50,12 +51,52 @@ public class Tag {
     }
 
     /**
+     * Returns the tag name with spaces instead of the default "_".
+     * @return The name of the tag with spaces.
+     */
+    public String getSpacedTagName() {
+        return tagName.replace("_", " ");
+    }
+
+    /**
      * Returns the evidence pieces with this tag.
      * @return Set of Evidence objects with this tag.
     */
-
     public Set<Evidence> getEvidence() {
         return evidenceWithTag;
+    }
+
+    public String toString() {
+        return tagName;
+    }
+
+    /**
+     * Overridden to consider tags with the same name to have the same hash, for removing duplicate tags.
+     * @return hash code of tag
+     */
+    @Override
+    public int hashCode() {
+        return Objects.hash(tagName);
+    }
+
+    /**
+     * Overridden to consider tags with the same name to be equal, for removing duplicate tags.
+     * @param o object to compare to
+     * @return true if objects are equal, otherwise false
+     */
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Tag tag = (Tag) o;
+        return this.tagName.equals(tag.tagName);
+    }
+    /**
+     * Adds a new piece of evidence to the HashSet.
+     * @param evidence The evidence to add.
+     */
+    public void addEvidence(Evidence evidence) {
+        this.evidenceWithTag.add(evidence);
     }
 
 }

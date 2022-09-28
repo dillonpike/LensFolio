@@ -1,9 +1,56 @@
 .gold{
     background-color:#FFD700 !important;
+    font-size: x-large !important;
+    text-align: center !important;
+    border-left-width: 0 !important;
+    border-right-width: 0 !important;
 }
 .silver{
-    background-color:#C0C0C0 !important;
+    background-color:#CECECE !important;
+    font-size: larger !important;
+    text-align: center !important;
+    border-left-width: 0 !important;
+    border-right-width: 0 !important;
 }
 .bronze{
     background-color:#CD7F32 !important;
+    font-size: large !important;
+    text-align: center !important;
+    border-left-width: 0 !important;
+    border-right-width: 0 !important;
+}
+
+.rank-column{
+    text-align: center !important;
+
+}
+
+.score-column{
+    text-align: center !important;
+}
+
+.column-header{
+    text-align: center !important;
+    font-weight: 300 !important;
+}
+
+.column{
+    font-size: inherit !important;
+    text-align: center !important;
+    border-left-width: 0 !important;
+    border-right-width: 0 !important;
+}
+
+.table-dark{
+    --bs-table-bg: #fff9ed !important;
+    color: black !important;
+    border-color: white !important;
+    border-bottom-color: black !important;
+    border-right-color: black !important;
+    text-decoration-color: black !important;
+    text-align: center !important;
+}
+
+.score-header{
+    border-right-color: white !important;
 }
