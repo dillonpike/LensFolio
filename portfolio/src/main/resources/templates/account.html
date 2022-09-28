@@ -475,6 +475,9 @@
     });
   }
 
+  /**
+  * Change a piece of evidence to be high-fived or unhigh-fived.
+  */
   function changeHighFive(evidenceId) {
     const imgID = "#star" + evidenceId;
     const icon =  $(imgID);
@@ -500,6 +503,9 @@
     }
   }
 
+  /**
+  * Add the high-five to a piece of evidence.
+  */
   function saveHighFived(evidenceId) {
     let currentUserId = /*[[${currentUserId}]]*/ null;
     let viewedUserId = /*[[${viewedUserId}]]*/ null;
@@ -518,6 +524,9 @@
     });
   }
 
+  /**
+  * Remove the high-five from a piece of evidence.
+  */
   function removeHighFived(evidenceId) {
     let currentUserId = /*[[${currentUserId}]]*/ null;
     let viewedUserId = /*[[${viewedUserId}]]*/ null;

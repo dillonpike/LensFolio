@@ -59,6 +59,9 @@ public class EvidenceController {
 
     public static final String ADD_EVIDENCE_MODAL_FRAGMENT_SKILL_TAGS_MESSAGE = "evidenceSkillTagsAlertMessage";
 
+    public static final String ACCOUNT_EVIDENCE = "account::evidence";
+
+
     /**
      * Method tries to add and save the new evidence piece to the database.
      * @param model Parameters sent to thymeleaf template to be rendered into HTML
@@ -181,7 +184,13 @@ public class EvidenceController {
                 skills.stream().map(Tag::getTagName).toList());
     }
 
-
+    /**
+     * Saves a piece of evidence after being high-fived.
+     * @param evidenceId evidence id of the piece of evidence being high-fived
+     * @param userId user id of the owner of the piece of evidence
+     * @param userName userName of the owner of the piece of evidence
+     * @return a redirect to load the page
+     */
     @PostMapping("saveHighFiveEvidence")
     public String saveHighFiveEvidence(
             @RequestParam("evidenceId") int evidenceId,
@@ -210,6 +219,13 @@ public class EvidenceController {
         }
     }
 
+    /**
+     * Saves a piece of evidence after being un-high-fived.
+     * @param evidenceId evidence id of the piece of evidence being un-high-fived
+     * @param userId user id of the owner of the piece of evidence
+     * @param userName userName of the owner of the piece of evidence
+     * @return a redirect to load the page
+     */
     @PostMapping("removeHighFiveEvidence")
     public String removeHighFiveEvidence(
             @RequestParam("evidenceId") int evidenceId,
