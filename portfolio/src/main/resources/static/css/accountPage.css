@@ -1,0 +1,31 @@
+html {
+    height: 100%;
+}
+
+body {
+    height: inherit;
+}
+
+.container {
+    height: fit-content !important;
+}
+
+.row {
+    height: fit-content !important;
+}
+
+.tab-pane-Evidence {
+    height: inherit;
+    overflow-y: hidden;
+}
+#listEvidence {
+    max-height: 750px;
+    overflow-y: scroll;
+}
+#leftPane {
+    height: fit-content;
+}
+
+#rightPane {
+    height: fit-content;
+}
