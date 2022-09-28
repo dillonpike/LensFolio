@@ -26,7 +26,7 @@
     <div class="d-flex d-flex justify-content-between">
         <h2 class="mb-0 fs-1" th:text="${skillTag.getSpacedTagName()} + ':'"></h2>
         <div>
-            <button type="button" class="btn-block btn btn-sm btn-primary" onclick="redirectToEvidence()">To Profile</button>
+            <button type="button" class="btn-block btn btn-sm btn-primary" th:onclick="|redirectToEvidence('${viewedUserId}')|">Back To Profile</button>
             <div class="form-check form-switch">
                 <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault" onclick="updateEvidenceList()" checked>
                 <label class="form-check-label" for="flexSwitchCheckDefault">All Users</label>
@@ -115,14 +115,6 @@
         $.get('switch-evidence-list?' + new URLSearchParams(data)).done((result) => {
             $("#evidenceList").replaceWith(result);
         }).fail()
-    }
-
-    /**
-     * Redirects to the evidence page of the user currently being viewed on the page.
-     */
-    function redirectToEvidence() {
-        localStorage.setItem('tab', 'evidence-tab');
-        window.location.href = "account?userId=" + /*[[${viewedUserId}]]*/ -1;
     }
     /*]]>*/
 </script>

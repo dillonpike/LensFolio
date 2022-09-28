@@ -10,6 +10,20 @@ const NUM_OF_TOASTS = 3;
 let stompClient = null;
 
 /**
+ * Holds a list of Notification objects that are, or have been active. Can only be as long as listOfHTMLToasts.
+ * @type {[Notification]}
+ */
+let listOfNotifications = [];
+
+/**
+ * List of html toast object pairs that hold a Bootstrap toast object, a body text variable and a title text variable.
+ * These can be assigned to Notification objects to display them.
+ * @type {[{'toast', 'text', 'title'}]}
+ */
+let listOfHTMLToasts = [];
+
+
+/**
  * Connects the stomp client to the setup websocket endpoint.
  * Then subscribes methods to the required endpoints.
  */
@@ -20,9 +34,11 @@ function connect() {
     stompClient.connect({}, function () {
         stompClient.subscribe('/webSocketGet/evidence-added', function (eventResponseArg) {
             const eventResponse = JSON.parse(eventResponseArg.body)
-            const notification = showLeaderboardUpdateToast(eventResponse.artefactType, eventResponse.artefactName, eventResponse.artefactId,
-                eventResponse.username, eventResponse.userFirstName, eventResponse.userLastName);
-            updateLeaderboard(notification);
+            if (eventResponse.artefactType === "studentEvidence") {
+                const notification = showLeaderboardUpdateToast("Evidence", eventResponse.artefactName, eventResponse.artefactId,
+                    eventResponse.username, eventResponse.userFirstName, eventResponse.userLastName);
+                updateLeaderboard(notification);
+            }
         });
     });
 }
@@ -49,7 +65,7 @@ $(function() {
  */
 function showLeaderboardUpdateToast(type, evidenceName, evidenceId, username, firstName, lastName) {
     let newNotification = new Notification(type, evidenceName, evidenceId, username, firstName, lastName, ADDEVIDENCEACTION);
-    newNotification = addNotification(newNotification);
+    newNotification = addNotification(newNotification, listOfNotifications, listOfHTMLToasts);
     newNotification.show();
     newNotification.hideTimed(SECONDS_TILL_HIDE);
     return newNotification;

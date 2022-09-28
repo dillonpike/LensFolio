@@ -63,7 +63,7 @@ public class DetailsController {
      * Holds the number of toasts to be generated in the HTML. Must be the same as or greater than NUM_OF_TOASTS in DetailsLive.js and
      * GroupsLive.js.
      */
-    private static final int NUM_OF_TOASTS = 3;
+    public static final int NUM_OF_TOASTS = 3;
 
 
     /***
@@ -120,8 +120,6 @@ public class DetailsController {
         List<List<Milestone>> milestonesForSprints = getAllMilestonesForAllSprints(sprintList);
         model.addAttribute("milestonesForSprints", milestonesForSprints);
 
-        ToastUtility.addToastsToModel(model, eventsToDisplay, NUM_OF_TOASTS);
-
         List<Milestone> milestoneList = milestoneService.getAllEventsOrderedWithColour(sprintList);
         model.addAttribute("milestones", milestoneList);
 
@@ -130,6 +128,9 @@ public class DetailsController {
         UserResponse getUserByIdReply;
         Integer id = userAccountClientService.getUserIDFromAuthState(principal);
         elementService.addHeaderAttributes(model, id);
+
+        ToastUtility.addToastsToModel(model, eventsToDisplay, NUM_OF_TOASTS);
+
         getUserByIdReply = registerClientService.getUserData(id);
         String role = elementService.getUserHighestRole(getUserByIdReply);
         model.addAttribute("currentUserRole", role);
