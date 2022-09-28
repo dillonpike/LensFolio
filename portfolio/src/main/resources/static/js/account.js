@@ -56,7 +56,9 @@ function deleteModalSetup() {
                         }, 10);
                     },
                     error: function() {
-                        document.getElementById('deleteModalButton').onclick = buttonFunction;
+                        $('#deleteModal').modal('toggle');
+                        showAlertErrorToast("You are not allowed to delete this evidence!");
+
                     }
                 })
             });
