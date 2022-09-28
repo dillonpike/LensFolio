@@ -1,10 +1,7 @@
 package nz.ac.canterbury.seng302.portfolio.service;
 
 
-import nz.ac.canterbury.seng302.portfolio.model.Evidence;
-import nz.ac.canterbury.seng302.portfolio.model.Tag;
-import nz.ac.canterbury.seng302.portfolio.model.HighFivers;
-import nz.ac.canterbury.seng302.portfolio.model.WebLink;
+import nz.ac.canterbury.seng302.portfolio.model.*;
 import nz.ac.canterbury.seng302.portfolio.repository.EvidenceRepository;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +29,9 @@ public class EvidenceService {
 
     @Autowired
     private TagService tagService;
+
+    @Autowired
+    private CategoryService categoryService;
 
     @Autowired
     private RegisterClientService registerClientService;
@@ -207,6 +207,31 @@ public class EvidenceService {
 
         Tag tag = tagService.getTag(skillId);
         return tag.getEvidence().stream().filter(evidence -> isUserAttached(evidence.getEvidenceId(), userId)).sorted((o1, o2)->o2.getDate().
+                compareTo(o1.getDate())).toList();
+    }
+
+    /**
+     * Gets all pieces of evidences that have a certain category and also orders them in reveres chronological order.
+     * @param categoryId   The category that needs to be attached to the evidence.
+     * @return          List of evidence with a given category.
+     */
+    public List<Evidence> getEvidencesWithCategory(int categoryId) throws NullPointerException{
+        Category category = categoryService.getCategory(categoryId);
+        return category.getEvidence().stream().sorted((o1, o2)->o2.getDate().
+                compareTo(o1.getDate())).toList();
+    }
+
+    /**
+     * Gets all pieces of evidences that have a certain category and user attached to it
+     * and also orders them in reveres chronological order.
+     * @param userId    The user that needs to be attached to the evidence.
+     * @param categoryId   The category that needs to be attached to the evidence.
+     * @return          List of evidence with a given category and user attached.
+     */
+    public List<Evidence> getEvidencesWithCategoryAndUser(int userId, int categoryId) throws NullPointerException{
+
+        Category category = categoryService.getCategory(categoryId);
+        return category.getEvidence().stream().filter(evidence -> isUserAttached(evidence.getEvidenceId(), userId)).sorted((o1, o2)->o2.getDate().
                 compareTo(o1.getDate())).toList();
     }
 

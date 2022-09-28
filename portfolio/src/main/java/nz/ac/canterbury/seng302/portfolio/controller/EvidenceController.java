@@ -1,13 +1,7 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
-import nz.ac.canterbury.seng302.portfolio.model.Evidence;
-import nz.ac.canterbury.seng302.portfolio.model.Tag;
-import nz.ac.canterbury.seng302.portfolio.service.ElementService;
-import nz.ac.canterbury.seng302.portfolio.model.NotificationMessage;
-import nz.ac.canterbury.seng302.portfolio.model.NotificationResponse;
-import nz.ac.canterbury.seng302.portfolio.service.EvidenceService;
-import nz.ac.canterbury.seng302.portfolio.service.TagService;
-import nz.ac.canterbury.seng302.portfolio.service.UserAccountClientService;
+import nz.ac.canterbury.seng302.portfolio.model.*;
+import nz.ac.canterbury.seng302.portfolio.service.*;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.NotAcceptableException;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Controller for evidence endpoints.
@@ -43,6 +38,9 @@ public class EvidenceController {
 
     @Autowired
     private ElementService elementService;
+
+    @Autowired
+    private CategoryService categoryService;
 
     @Autowired
     private UserAccountClientService userAccountClientService;
@@ -95,53 +93,70 @@ public class EvidenceController {
     }
 
     /**
-     * Method to display the main page for viewing skill specific pieces of evidence.
+     * Method to display the main page for viewing skill or category specific pieces of evidence.
      * @param model         Parameters sent to thymeleaf template to be rendered into HTML.
      * @param principal     Used for authentication of a user.
      * @param userId        The id of the current user.
-     * @param skillId       The id of the current skill being searched for.
+     * @param tagId         The id of the current tag being searched for.
+     * @param tagType       The type of tag (category or skill) being searched for.
      * @return              redirect user to evidence tab, or keep up modal if there are errors.
      */
-    @GetMapping("/evidence-skills")
+    @GetMapping("/evidence-tags")
     public String evidenceSkillPage(
             Model model,
             @AuthenticationPrincipal AuthState principal,
             @RequestParam(value = "userId") int userId,
-            @RequestParam(value = "skillId") int skillId
+            @RequestParam(value = "tagId") int tagId,
+            @RequestParam(value = "tagType") String tagType
     ) {
         Integer id = userAccountClientService.getUserIDFromAuthState(principal);
         elementService.addHeaderAttributes(model, id);
 
         List<Evidence> evidenceList;
-        Tag skillTag;
+        String tagName;
 
         try {
-            evidenceList = evidenceService.getEvidencesWithSkill(skillId);
-            skillTag = tagService.getTag(skillId);
-            if (skillTag == null) {
-                throw new NullPointerException("Invalid Tag Id");
+            if (Objects.equals(tagType, "Skills")) {
+                evidenceList = evidenceService.getEvidencesWithSkill(tagId);
+                Tag skillTag = tagService.getTag(tagId);
+                if (skillTag == null) {
+                    throw new NullPointerException("Invalid Skill Id");
+                }
+                tagName = skillTag.getSpacedTagName();
+
+            } else if (Objects.equals(tagType, "Categories")) {
+                evidenceList = evidenceService.getEvidencesWithCategory(tagId);
+                Category category = categoryService.getCategory(tagId);
+                if (category == null) {
+                    throw new NullPointerException("Invalid Category Id");
+                }
+                tagName = category.getCategoryName();
+            } else { // Invalid parameter given.
+                return "redirect:account?userId=" + id;
             }
         } catch (NullPointerException e) {
             return "redirect:account?userId=" + id;
         }
 
+        model.addAttribute("tagType", tagType);
         model.addAttribute("evidencesExists", ((evidenceList != null) && (!evidenceList.isEmpty())));
         model.addAttribute("evidences", evidenceList);
-        model.addAttribute("skillTag", skillTag);
-
+        model.addAttribute("tagName", tagName);
         model.addAttribute("viewedUserId", userId);
-        model.addAttribute("skillId", skillId);
+        model.addAttribute("tagId", tagId);
+
         return "evidence";
     }
 
     /**
-     * Method to handle a partial refresh of the list of evidences to either display all the evidence with a given skill ID
-     * or all evidence with both a given skill ID and user ID attached to it.
+     * Method to handle a partial refresh of the list of evidences to either display all the evidence with a given skill or Category ID
+     * or all evidence with both a given skill or Category ID and user ID attached to it.
      * @param model Parameters sent to thymeleaf template to be rendered into HTML
      * @param userId The user currently logged in.
      * @param viewedUserId The user that should be attached to the evidence.
      * @param listAll A boolean value on if all or only a certain viewedUsers evidence should be returned.
-     * @param skillId The skill that needs to be attached to the evidence.
+     * @param tagId The tag (skill or category) that needs to be attached to the evidence.
+     * @param tagType the type of tag either skill or category
      * @return A fragment of the list of evidences to display.
      */
     @GetMapping("/switch-evidence-list")
@@ -150,20 +165,34 @@ public class EvidenceController {
             @RequestParam(value = "userId") int userId,
             @RequestParam(value = "viewedUserId") int viewedUserId,
             @RequestParam(value = "listAll") boolean listAll,
-            @RequestParam(value = "skillId") int skillId
+            @RequestParam(value = "tagId") int tagId,
+            @RequestParam(value = "tagType") String tagType
     ) {
         List<Evidence> evidenceList;
+
         try {
-            if (listAll) {
-                evidenceList = evidenceService.getEvidencesWithSkill(skillId);
-            } else {
-                evidenceList = evidenceService.getEvidencesWithSkillAndUser(viewedUserId, skillId);
+            if (Objects.equals(tagType, "Skills")) {
+                if (listAll) {
+                    evidenceList = evidenceService.getEvidencesWithSkill(tagId);
+                } else {
+                    evidenceList = evidenceService.getEvidencesWithSkillAndUser(viewedUserId, tagId);
+                }
+            } else if (Objects.equals(tagType, "Categories")) {
+                if (listAll) {
+                    evidenceList = evidenceService.getEvidencesWithCategory(tagId);
+                } else {
+                    evidenceList = evidenceService.getEvidencesWithCategoryAndUser(viewedUserId, tagId);
+                }
+            } else { // Invalid parameter given.
+                return "redirect:account?userId=" + userId;
             }
         } catch (NullPointerException e) {
             return "redirect:account?userId=" + userId;
         }
+
         model.addAttribute("evidencesExists", ((evidenceList != null) && (!evidenceList.isEmpty())));
         model.addAttribute("evidences", evidenceList);
+        model.addAttribute("viewedUserId", viewedUserId);
 
         return "fragments/evidenceList";
     }

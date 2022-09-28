@@ -24,7 +24,7 @@
 
 <div class="container">
     <div class="d-flex d-flex justify-content-between">
-        <h2 class="mb-0 fs-1" th:text="${skillTag.getSpacedTagName()} + ':'"></h2>
+        <h2 class="mb-0 fs-1" th:text="${tagName} + ':'"></h2>
         <div>
             <button type="button" class="btn-block btn btn-sm btn-primary" th:onclick="|redirectToEvidence('${viewedUserId}')|">Back To Profile</button>
             <div class="form-check form-switch">
@@ -53,7 +53,9 @@
             userId: /*[[${userId}]]*/ -1, // This value is stored in the header.
             viewedUserId: /*[[${viewedUserId}]]*/ -1,
             listAll: checked,
-            skillId: /*[[${skillId}]]*/ -1,
+            tagId: /*[[${tagId}]]*/ -1,
+            tagType: /*[[${tagType}]]*/ null,
+
         }
 
         $.get('switch-evidence-list?' + new URLSearchParams(data)).done((result) => {
