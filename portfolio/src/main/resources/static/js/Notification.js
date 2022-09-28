@@ -185,7 +185,7 @@ class Notification {
                 this.bodyText = this.firstName + " " + this.lastName + " (" + this.username + ") has been removed student role. Updated leaderboard!";
                 break;
           case DELETEROLEACTION:
-                this.bodyText = this.firstName + " " + this.lastName + " (" + this.username + ") has been removed from a student role. Updating leaderboard...";
+                this.bodyText = this.firstName + " " + this.lastName + " (" + this.username + ") has been removed student role. Updating leaderboard...";
                 break;
           case ADDROLEACTION:
                 this.bodyText = this.firstName + " " + this.lastName + " (" + this.username + ") has been added to a student role. Updating leaderboard...";
@@ -205,20 +205,20 @@ class Notification {
         this.toast.show();
     }
 
+    /**
+     * Hides the notification, including the toast. Resets variables if needed.
+     */
     hide() {
         this.isHidden = true;
         this.isWaitingToBeHidden = false;
         this.toast.hide();
+        if (this.type === HIGHFIVETYPE) {
+            this.highfivers = [];
+            this.username = "";
+            this.action = HIGHFIVEACTION;
+        }
     }
 
-    /**
-     * Resets the notification so it doesn't contain any old data.
-     */
-    resetToast() {
-        this.highfivers = [];
-        this.username = "";
-        this.action = HIGHFIVEACTION;
-    }
 
     /**
      * Hides the notification after a timer.
@@ -233,7 +233,6 @@ class Notification {
         setTimeout((function (notification) {
             let currentTime = (new Date(Date.now())).valueOf();
             if (currentTime >= notification.selectedDate + ((timeInSeconds * 1000) - 500) && notification.isWaitingToBeHidden) {
-                notification.resetToast();
                 notification.hide();
             }
         }), timeInSeconds * 1000, this);
@@ -274,9 +273,13 @@ class Notification {
                 this.username = newNotification.username
                 this.highfivers.push(newNotification.username);
             }
+        } else {
+            this.name = newNotification.name;
+            this.action = newNotification.action;
         }
         return this;
     }
+
 }
 
 
