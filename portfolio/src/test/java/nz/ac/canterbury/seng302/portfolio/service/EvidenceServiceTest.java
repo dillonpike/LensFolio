@@ -1,5 +1,6 @@
 package nz.ac.canterbury.seng302.portfolio.service;
 
+import nz.ac.canterbury.seng302.portfolio.model.Category;
 import nz.ac.canterbury.seng302.portfolio.model.Evidence;
 import nz.ac.canterbury.seng302.portfolio.model.HighFivers;
 import nz.ac.canterbury.seng302.portfolio.model.Tag;
@@ -34,6 +35,9 @@ class EvidenceServiceTest {
 
     @Mock
     private TagService tagService;
+
+    @Mock
+    private  CategoryService categoryService;
 
     @Mock
     private RegisterClientService registerClientService;
@@ -249,6 +253,137 @@ class EvidenceServiceTest {
 
         try {
             evidenceService.getEvidencesWithSkill(tagId);
+            fail(); // It is expected to throw a NullPointerException.
+        } catch (Exception e) {
+            if (!(e instanceof NullPointerException)) {
+                fail();
+            }
+        }
+    }
+
+    ///////////////////////////
+
+
+    /**
+     * Tests that when the method is passed both a valid Category with a valid user attached to the evidence within tag class that
+     * the evidence is returned.
+     */
+    @Test
+    void testGetEvidenceWithCategoryAndUserWithValidUserAndCategory() {
+        int tagId = 1;
+        int evidenceId = 1;
+        int userId = 1;
+
+        Evidence testEvidence = new Evidence();
+        testEvidence.setEvidenceId(evidenceId);
+        testEvidence.setUserId(userId);
+
+        Category validTag = new Category("Valid_Tag");
+        validTag.setCategoryId(tagId);
+        validTag.addEvidence(testEvidence);
+        when(categoryService.getCategory(tagId)).thenReturn(validTag);
+
+        Optional<Evidence> optionalEvidence = Optional.of(testEvidence);
+        when(evidenceRepository.findById(evidenceId)).thenReturn(optionalEvidence);
+
+        try {
+            List<Evidence> actualEvidences = evidenceService.getEvidencesWithCategoryAndUser(tagId, userId);
+            ArrayList<Evidence> expectedEvidences = new ArrayList<>();
+            expectedEvidences.add(testEvidence);
+            assertEquals(expectedEvidences, actualEvidences);
+        } catch (NullPointerException e) {
+            fail();
+        }
+    }
+
+    /**
+     * Tests that when the method is passed both an invalid Category with a valid/invalid user attached to the evidence within tag class that
+     * the evidence is not returned. It should also throw a NullPointerException.
+     * When the user is valid as it is attached evidence which is stored in the tag it will still produce a NullPointerException.
+     */
+    @Test
+    void testGetEvidenceWithCategoryAndUserWithInvalidUserAndCategory() {
+        int tagId = 1;
+        int userId = 1;
+
+        when(categoryService.getCategory(tagId)).thenReturn(null); // Invalid Tag
+
+        try {
+            evidenceService.getEvidencesWithCategoryAndUser(tagId, userId);
+            fail(); // It is expected to throw a NullPointerException.
+        } catch (Exception e) {
+            if (!(e instanceof NullPointerException)) {
+                fail();
+            }
+        }
+    }
+
+    /**
+     * Tests that when the method is passed both a valid Category but the user attached to the evidences
+     * are not the same as the ones being searched for that an empty list is returned.
+     */
+    @Test
+    void testGetEvidenceWithCategoryAndUserWithInvalidUserAndValidCategory() {
+        int tagId = 1;
+        int evidenceId = 1;
+        int userId = 1;
+
+        Evidence testEvidence = new Evidence();
+        testEvidence.setEvidenceId(evidenceId);
+        testEvidence.setUserId(2); // Not the same as the userId being searched for.
+
+        Category validTag = new Category("Valid_Tag");
+        validTag.setCategoryId(tagId);
+        validTag.addEvidence(testEvidence);
+        when(categoryService.getCategory(tagId)).thenReturn(validTag);
+
+        try {
+            evidenceService.getEvidencesWithCategoryAndUser(evidenceId, userId);
+            List<Evidence> actualEvidences = evidenceService.getEvidencesWithCategoryAndUser(tagId, userId);
+            ArrayList<Evidence> expectedEvidences = new ArrayList<>();
+            assertEquals(expectedEvidences, actualEvidences);
+        } catch (NullPointerException e) {
+            fail();
+        }
+    }
+
+    /**
+     * Tests that when searching just for evidences with a certain Category tag that if the tag is valid all evidences attached are returned.
+     */
+    @Test
+    void testGetEvidenceWithCategoryWithValidCategory() {
+        int tagId = 1;
+        int evidenceId = 1;
+
+        Evidence testEvidence = new Evidence();
+        testEvidence.setEvidenceId(evidenceId);
+
+        Category validTag = new Category("Valid_Tag");
+        validTag.setCategoryId(tagId);
+        validTag.addEvidence(testEvidence);
+        when(categoryService.getCategory(tagId)).thenReturn(validTag);
+
+        try {
+            List<Evidence> actualEvidences = evidenceService.getEvidencesWithCategory(tagId);
+            ArrayList<Evidence> expectedEvidences = new ArrayList<>();
+            expectedEvidences.add(testEvidence);
+            assertEquals(expectedEvidences, actualEvidences);
+        } catch (NullPointerException e) {
+            fail();
+        }
+    }
+
+    /**
+     * Tests that when searching just for evidences with a certain tag that if the Category tag does not exist that a NullPointerException is thrown.
+     */
+    @Test
+    void testGetEvidenceWithCategoryWithInvalidCategory() {
+        int tagId = 1;
+
+        when(categoryService.getCategory(tagId)).thenReturn(null);
+
+        try {
+            evidenceService.getEvidencesWithCategory(tagId);
             fail(); // It is expected to throw a NullPointerException.
         } catch (Exception e) {
             if (!(e instanceof NullPointerException)) {
