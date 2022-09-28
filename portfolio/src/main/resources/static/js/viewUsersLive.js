@@ -23,7 +23,7 @@ function sendRemoveStudentRoleNotification(firstName, lastName, username) {
 }
 
 /**
- * Connects the stomp client to the setup websocket endpoint.
+ * Adds a new notification to the list of notifications.
  * @param firstName user's first name
  * @param lastName user's last name
  * @param username user's username
