@@ -3,7 +3,6 @@ package nz.ac.canterbury.seng302.portfolio.controller;
 import io.grpc.StatusRuntimeException;
 import java.util.List;
 import nz.ac.canterbury.seng302.portfolio.model.Evidence;
-import nz.ac.canterbury.seng302.portfolio.model.NotificationGroup;
 import nz.ac.canterbury.seng302.portfolio.model.NotificationHighFive;
 import nz.ac.canterbury.seng302.portfolio.model.Project;
 import nz.ac.canterbury.seng302.portfolio.service.*;
@@ -78,6 +77,7 @@ public class AccountController {
                 model.addAttribute(USER_ID_ATTRIBUTE_NAME, id);
                 return "404NotFound";
             }
+            model.addAttribute("currentUserId", userId);
             elementService.addRoles(model, getUserByIdReply);
             model.addAttribute("viewedUserId", userId);
             model.addAttribute("firstName", getUserByIdReply.getFirstName());

@@ -14,9 +14,11 @@
   <script src="https://cdn.jsdelivr.net/gh/Eonasdan/tempus-dominus@master/dist/js/tempus-dominus.js"></script>
   <link href="https://cdn.jsdelivr.net/gh/Eonasdan/tempus-dominus@master/dist/css/tempus-dominus.css" rel="stylesheet"/>
   <script src="webjars/jquery/3.6.0/dist/jquery.min.js"></script>
+  <script src="https://code.jquery.com/ui/1.13.1/jquery-ui.js" integrity="sha256-6XMVI0zB8cRzfZjqKcD01PBsAy3FlDASrlC8SxCpInY=" crossorigin="anonymous"></script>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css">
 
   <link href="css/fineCrop.css" rel="stylesheet">
+  <link rel="stylesheet" href="//code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
 </head>
 
 <body>
@@ -173,7 +175,7 @@
 
                             <div class="evidence-skillTag-title" th:if="${!evidence.getTags().isEmpty()}">Skill Tags:</div>
                             <div th:each="skillTag, meta: ${evidence.getTags()}">
-                              <div th:if="${skillTag.getTagName()} != 'InvalidTag'" class="chip" th:id="'skillTagDisplay' + ${meta}" style="display: inline-block;padding: 0 12px 0 15px;height: fit-content;font-size: 16px;line-height: 30px;border-radius: 25px;background-color: #f1f1f1f1;margin: 0 10px 10px 0;" data-toggle="tooltip" data-bs-placement="right" th:title="${skillTag.getTagName()}">
+                              <div th:if="${skillTag.getTagName()} != 'InvalidTag'" th:attr="onclick='redirectToSkillsPage(' + ${currentUserId} + ','+ ${skillTag.getTagId()} +')'" class="chip tagBadges" th:id="'skillTagDisplay' + ${meta}" style="display: inline-block;padding: 0 12px 0 15px;height: fit-content;font-size: 16px;line-height: 30px;border-radius: 25px;background-color: #f1f1f1f1;margin: 0 10px 10px 0;" data-toggle="tooltip" data-bs-placement="right" th:title="${skillTag.getTagName()}">
                                 <div class="d-flex justify-content-between flex-row align-items-center">
                                   <span style="margin-right: 10px; margin-left: 10px" th:text="${skillTag.getTagName()}"></span>
                                 </div>
@@ -246,12 +248,12 @@
   <div id="deleteModal" th:replace="fragments/deleteModalProject :: deleteModal"></div>
 
 </body>
-<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha384-xBuQ/xzmlsLoJpyjoggmTEz8OWUFM0/RC5BsqQBDX2v5cMvDHcMakNTNrHIW2I5f" crossorigin="anonymous"></script>
 <script src="js/fineCrop.js"></script>
 <script src="js/banner.js"></script>
 <script src="js/evidence.js"></script>
 <script src="js/evidenceLive.js"></script>
 <script src="js/account.js"></script>
+<script src="js/redirect.js"></script>
 <script th:inline="javascript">
 
   deleteModalSetup();
@@ -476,6 +478,8 @@
   function redirectToAnotherUserPage(id) {
     document.location.href = "account?userId=" + id;
   }
+
+
 
   // Set the current tab selected to what is in session storage, if it is not null.
   let tabToSet = getTab();
