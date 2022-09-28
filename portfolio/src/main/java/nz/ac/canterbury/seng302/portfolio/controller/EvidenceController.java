@@ -2,6 +2,7 @@ package nz.ac.canterbury.seng302.portfolio.controller;
 
 import nz.ac.canterbury.seng302.portfolio.model.Evidence;
 import nz.ac.canterbury.seng302.portfolio.model.Tag;
+import nz.ac.canterbury.seng302.portfolio.model.Tag;
 import nz.ac.canterbury.seng302.portfolio.service.ElementService;
 import nz.ac.canterbury.seng302.portfolio.model.NotificationMessage;
 import nz.ac.canterbury.seng302.portfolio.model.NotificationResponse;
@@ -17,6 +18,7 @@ import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -59,10 +61,10 @@ public class EvidenceController {
     public static final String ADD_EVIDENCE_MODAL_FRAGMENT_SKILL_TAGS_MESSAGE = "evidenceSkillTagsAlertMessage";
 
     /**
-     * Method tries to add and sve the new evidence piece to the database
+     * Method tries to add and sqve the new evidence piece to the database.
      * @param model Parameters sent to thymeleaf template to be rendered into HTML
      * @param httpServletResponse for adding status codes to
-     * @return redirect user to evidence tab, or keep up modal if there are errors.
+     * @return redirect user to evidence tab, or keep up modal if there are errors
      */
     @PostMapping("/add-evidence")
     public String addEvidence(
@@ -165,6 +167,19 @@ public class EvidenceController {
         model.addAttribute("evidences", evidenceList);
 
         return "evidence::evidenceList";
+    }
+
+    /**
+     * Returns a list of the ids and names of skills used by the user.
+     * @param userId user id of the user
+     * @return set of tag names
+     */
+    @GetMapping("/get-skills")
+    @ResponseBody
+    public List<List<String>> getSkills(@RequestParam("userId") int userId) {
+        List<Tag> skills = tagService.getTagsFromUserId(userId);
+        return List.of(skills.stream().map(tag -> String.valueOf(tag.getTagId())).toList(),
+                skills.stream().map(Tag::getTagName).toList());
     }
 
     /**

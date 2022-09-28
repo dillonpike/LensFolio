@@ -6,6 +6,14 @@ import nz.ac.canterbury.seng302.portfolio.model.Tag;
 import nz.ac.canterbury.seng302.portfolio.model.WebLink;
 import nz.ac.canterbury.seng302.portfolio.service.*;
 import nz.ac.canterbury.seng302.shared.identityprovider.*;
+import nz.ac.canterbury.seng302.portfolio.service.EvidenceService;
+import nz.ac.canterbury.seng302.portfolio.service.RegisterClientService;
+import nz.ac.canterbury.seng302.portfolio.service.TagService;
+import nz.ac.canterbury.seng302.portfolio.service.UserAccountClientService;
+import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
+import nz.ac.canterbury.seng302.shared.identityprovider.ClaimDTO;
+import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
+import nz.ac.canterbury.seng302.shared.identityprovider.UserRole;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -471,5 +479,21 @@ class EvidenceControllerTest {
                 .andExpect(redirectedUrl("account?userId=" + userId));
 
         verify(evidenceService, times(1)).getEvidencesWithSkill(any(Integer.class));
+    }
+
+    /**
+     * Tests that the get skills endpoint returns a list of skill ids and names.
+     * @throws Exception If mocking the MVC fails.
+     */
+    @Test
+    void testGetSkills() throws Exception {
+        List<Tag> skills = List.of(new Tag("test skill 1"), new Tag("test skill 2"));
+        int userId = 5;
+        when(tagService.getTagsFromUserId(userId)).thenReturn(skills);
+
+        mockMvc.perform(get("/get-skills").param("userId", String.valueOf(userId)))
+                .andExpect(status().isOk())
+                .andExpect(content().string(String.format("[[\"%s\",\"%s\"],[\"%s\",\"%s\"]]",
+                        skills.get(0).getTagId(), skills.get(1).getTagId(), skills.get(0).getTagName(), skills.get(1).getTagName())));
     }
 }
