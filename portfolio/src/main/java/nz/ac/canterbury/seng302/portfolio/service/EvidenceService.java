@@ -280,7 +280,6 @@ public class EvidenceService {
      * @return          List of evidence with a given skill and user attached.
      */
     public List<Evidence> getEvidencesWithSkillAndUser(int userId, int skillId) throws NullPointerException{
-
         Tag tag = tagService.getTag(skillId);
         return tag.getEvidence().stream().filter(evidence -> isUserAttached(evidence.getEvidenceId(), userId)).sorted((o1, o2)->o2.getDate().
                 compareTo(o1.getDate())).toList();

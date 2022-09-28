@@ -14,8 +14,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.*;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 /**
@@ -130,10 +129,10 @@ class CategoryServiceTest {
     }
 
     /**
-     * Tests that the getCategory(int categoryId) method returns specific category.
+     * Tests that the removeCategory method return true when the category does exist
      */
     @Test
-    void removeCategory() {
+    void testRemoveCategoryWhenCategoryIsExisting() {
         Category category = testCategories.get(1);
         int categoryId = category.getCategoryId();
         doReturn(Optional.of(category)).when(categoryRepository).findById(categoryId);
@@ -141,5 +140,17 @@ class CategoryServiceTest {
         boolean success = categoryService.removeCategory(categoryId);
         assertTrue(success);
         verify(categoryRepository).deleteById(categoryId);
+    }
+
+    /**
+     * Tests that the removeCategory(int categoryId) method returns false when the category does not exist.
+     */
+    @Test
+    void testRemoveCategoryWhenCategoryIsNotExisting() {
+        int categoryId = 1;
+        doReturn(Optional.empty()).when(categoryRepository).findById(categoryId);
+        boolean output = categoryService.removeCategory(categoryId);
+        assertFalse(output);
+        verify(categoryRepository, never()).deleteById(categoryId);
     }
 }
