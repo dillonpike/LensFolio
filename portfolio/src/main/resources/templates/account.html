@@ -195,8 +195,8 @@
                         <!--Buttons for deleting-->
                         <div class="d-flex">
                           <div class="button-divider">
-                            <button class="btn btn-default" type="button" th:id="'highFiveBtn' + ${evidence.getEvidenceId}" th:attr="onclick=|switchIcon('${evidence.getEvidenceId}')|" style="outline: none; box-shadow: none;">
-                              <i class="bi bi-star" th:id="'star' + ${evidence.getEvidenceId}"></i>
+                            <button class="btn btn-default" type="button" th:id="'highFiveBtn' + ${evidence.getEvidenceId}" th:attr="onclick=|changeHighFive('${evidence.getEvidenceId}')|" style="outline: none; box-shadow: none;">
+                              <i class="bi bi-star" th:id="'star' + ${evidence.getEvidenceId}" th:attr="onclick=|checkToToggle('${evidence.getEvidenceId}')|"></i>
                             </button>
                           </div>
                           <div class="button-divider">
@@ -428,6 +428,28 @@
     return localStorage.getItem('tab')
   }
 
+  let evidenceHighFivedIds = /*[[${evidenceHighFivedIds}]]*/ [];
+
+  function checkToToggle(evidenceId) {
+    console.log(evidenceHighFivedIds);
+    evidenceHighFivedIds.forEach(function (evidenceHighFivedId) {
+      if (evidenceHighFivedId === evidenceId) {
+        console.log("evidenceHighFivedId: " + evidenceHighFivedId);
+        switchIcon(evidenceId);
+      }
+    })
+  }
+
+  function changeHighFive(evidenceId) {
+    const imgID = "#star" + evidenceId;
+    const icon =  $(imgID);
+    if (icon.hasClass("bi-star")) {
+      saveHighFived(evidenceId);
+    } else {
+      removeHighFived(evidenceId);
+    }
+  }
+
   /**
    * This function will check the current icon being used for the like button and toggle it to the alternative.
    * LOGIC STILL NEEDS TO BE CONNECT TO THIS FUNCTION!
@@ -438,8 +460,6 @@
     const icon =  $(imgID);
     if (icon.hasClass("bi-star")) {
       icon.addClass("bi-star-fill").removeClass("bi-star");
-      saveHighFived(id);
-      sendHighFivedNotfication(id); // Send notification that post was liked.
     } else {
       icon.addClass("bi-star").removeClass("bi-star-fill");
     }
@@ -454,11 +474,17 @@
       userName: userName
     }
     $.post("/saveHighFiveEvidence?" + new URLSearchParams(data)).done(function (result) {
-      $("#evidence").replaceWith(result);
+      let url = "account?userId=" + userId;
+      setTimeout(function() {
+        $("#evidence").load(url+" #evidence>*","");
+      }, 10);
+      sendHighFivedNotfication(evidenceId); // Send notification that post was liked.
+    }).always(function (ignore) {
+      switchIcon(evidenceId);
     });
   }
 
-  function saveUnHighFived(evidenceId) {
+  function removeHighFived(evidenceId) {
     let userId = document.getElementById("userId").value;
     let userName = $("#firstName").val() + " " + $("#lastNameInput").val();
     const data = {
@@ -467,7 +493,12 @@
       userName: userName
     }
     $.post("/removeHighFiveEvidence?" + new URLSearchParams(data)).done(function (result) {
-      $("#evidence").replaceWith(result);
+      let url = "account?userId=" + document.getElementById('userId').value
+      setTimeout(function() {
+        $("#evidence").load(url+" #evidence>*","");
+      }, 10);
+    }).always(function (ignore) {
+      switchIcon(evidenceId);
     });
   }
 
@@ -501,7 +532,16 @@
       'receivingUserId': /*[[${viewedUserId}]]*/ null
     }));
   }
+
+
+  let allEvidence = /*[[${evidence}]]*/ [];
+
+
+
+
   /*]]>*/
+
+
 
 </script>
 </html>

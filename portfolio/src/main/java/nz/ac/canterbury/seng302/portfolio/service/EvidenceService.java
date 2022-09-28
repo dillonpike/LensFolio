@@ -240,6 +240,29 @@ public class EvidenceService {
             return false;
         }
     }
+
+    public boolean removeHighFiveEvidence(int evidenceId, int userId, String userName) {
+        Optional<Evidence> evidenceOptional = evidenceRepository.findById(evidenceId);
+        if (evidenceOptional.isPresent()) {
+            Evidence evidence = evidenceOptional.get();
+            if (!evidence.getHighFiverIds().contains(userId)) {
+                return false;
+            }
+            Set<HighFivers> highFivers = Set.copyOf(evidence.getHighFivers());
+            for (HighFivers highFiver : highFivers) {
+                if (highFiver.getUserId() == userId) {
+                    evidence.removeHighFivers(highFiver);
+                    highFiversRepository.delete(highFiver);
+                    break;
+                }
+            }
+            evidenceRepository.save(evidence);
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     /**
      * Checks to ensure that a piece of evidence has the user with a userId,
      * matching that passed to the method, attached to it.
