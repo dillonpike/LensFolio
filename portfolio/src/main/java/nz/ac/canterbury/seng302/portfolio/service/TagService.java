@@ -33,7 +33,6 @@ public class TagService {
         Tag tag = null;
         if (sOptional.isPresent()) {
             tag = sOptional.get();
-            tagRepository.deleteById(tag.getTagId());
         }
             return tag;
     }

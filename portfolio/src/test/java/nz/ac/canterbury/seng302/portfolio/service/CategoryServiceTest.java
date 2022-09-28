@@ -23,7 +23,7 @@ import static org.mockito.Mockito.*;
  */
 @ExtendWith(SpringExtension.class)
 @ExtendWith(MockitoExtension.class)
-public class CategoryServiceTest {
+class CategoryServiceTest {
     @Mock
     private CategoryRepository categoryRepository;
 
@@ -61,6 +61,33 @@ public class CategoryServiceTest {
         }
         testEvidences.add(evidence1);
         testEvidences.add(evidence2);
+    }
+
+    /**
+     * Tests that the getCategories method returns all Categories.
+     */
+    @Test
+    void testGetCategories() {
+        Evidence evidence = testEvidences.get(1);
+        int evidenceId = evidence.getEvidenceId();
+        Set<Category> actualCategories = evidence.getCategories();
+
+        doReturn(Optional.of(evidence)).when(evidenceRepository).findById(evidenceId);
+
+        Set<Category> returned = categoryService.getCategories(evidenceId);
+        assertEquals(actualCategories.size(), returned.size());
+    }
+
+    /**
+     * Tests that the getCategory method returns a category.
+     */
+    @Test
+    void testGetCategory() {
+        Category category = testCategories.get(1);
+        int categoryId = category.getCategoryId();
+        doReturn(Optional.of(category)).when(categoryRepository).findById(categoryId);
+        Category returned = categoryService.getCategory(categoryId);
+        assertEquals(category, returned);
     }
 
     /**
