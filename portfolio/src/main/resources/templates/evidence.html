@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Account Page</title>
+    <link th:href="@{styles/main.css}" rel="stylesheet" />
+    <link th:href="@{css/artefactListing.css}" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.5/dist/umd/popper.min.js" integrity="sha384-Xe+8cL9oJa6tN/veChSP7q+mnSPaj5Bcu9mPX5F5xIGE0DVittaqT5lorf0EI7Vk" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js" integrity="sha512-iKDtgDyTHjAitUDdLljGhenhPwrbBfqTKWO1mkhSFH3A7blITC9MhYon6SjnMhp4o0rADGw9yAC6EW4t5a4K3g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdn.jsdelivr.net/gh/Eonasdan/tempus-dominus@master/dist/js/tempus-dominus.js"></script>
+    <link href="https://cdn.jsdelivr.net/gh/Eonasdan/tempus-dominus@master/dist/css/tempus-dominus.css" rel="stylesheet"/>
+    <script src="webjars/jquery/3.6.0/dist/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css">
+</head>
+
+<body>
+<header th:replace="fragments/header"></header>
+<script src="js/collapse.js"></script>
+<script src="js/redirect.js"></script>
+
+<div class="container">
+    <div class="d-flex d-flex justify-content-between">
+        <h2 class="mb-0 fs-1" th:text="${skillTag.getSpacedTagName()} + ':'"></h2>
+        <div>
+            <button type="button" class="btn-block btn btn-sm btn-primary" th:onclick="|redirectToEvidence('${viewedUserId}')|">Back To Profile</button>
+            <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault" onclick="updateEvidenceList()" checked>
+                <label class="form-check-label" for="flexSwitchCheckDefault">All Users</label>
+            </div>
+        </div>
+    </div>
+    <div id="evidenceList" th:fragment="evidenceList">
+        <div th:each="evidence, meta: ${evidences}">
+            <div class="evidence-block">
+                <div class="detail-block">
+                    <div class="evidence-info-block" th:if="${evidence}">
+                        <button th:id="evidenceDropdown + (${meta.index} + 1)" class="btn" type="button" data-bs-toggle="collapse" th:attr="data-bs-target='#collapseEvidence' + ${evidence.getEvidenceId()}, aria-controls='collapseEvidence' + ${evidence.getEvidenceId()}, onClick='changeIcon(evidenceArrow' + (${meta.index} + 1) + ')'" aria-expanded="false" style="outline: none; box-shadow: none;">
+                            <span class="evidence-title" th:text="${evidence.getTitle}"></span>
+                            <svg th:id="evidenceArrow + (${meta.index} + 1)" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-caret-left-fill" viewBox="0 0 16 16">
+                                <path d="m3.86 8.753 5.482 4.796c.646.566 1.658.106 1.658-.753V3.204a1 1 0 0 0-1.659-.753l-5.48 4.796a1 1 0 0 0 0 1.506z"/>
+                            </svg>
+                        </button>
+                        <div class="evidence-date ps-3" th:text="${evidence.getDateString}"></div>
+                        <div class="collapse ps-3 pb-3" th:id="collapseEvidence + ${evidence.getEvidenceId()}">
+                            <b>Description:</b>
+                            <div class="evidence-description" th:text="${evidence.getDescription}"></div>
+                            <div class="evidence-weblink-title" th:if="${!evidence.getWebLinks().isEmpty()}">Weblinks:</div>
+                            <div th:each="webLink, meta: ${evidence.getWebLinks()}">
+                                <div th:if="${webLink.getFormattedUrl()} != 'InvalidURL'" class="chip" th:id="'weblinkurlDisplay' + ${meta}" style="display: inline-block;padding: 0 12px 0 15px;height: fit-content;font-size: 16px;line-height: 30px;border-radius: 25px;background-color: #f1f1f1f1;margin: 0 10px 10px 0;" data-toggle="tooltip" data-bs-placement="right" th:title="${webLink.getUrl()}">
+                                    <div class="d-flex justify-content-between flex-row align-items-center">
+                                        <i th:class="${webLink.isSecure()} ? 'bi bi-lock' : 'bi bi-unlock'"></i>
+                                        <span style="margin-right: 10px; margin-left: 10px" th:text="${webLink.getFormattedUrl()}"></span>
+                                        <a th:href="${webLink.getUrl()}" target="_blank">
+                                            <i class="bi bi-box-arrow-up-right"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="evidence-skillTag-title" th:if="${!evidence.getTags().isEmpty()}">Skill Tags:</div>
+                            <div th:each="skillTag, meta: ${evidence.getTags()}">
+                                <div th:if="${skillTag.getTagName()} != 'InvalidTag'" class="chip" th:id="'skillTagDisplay' + ${meta}" style="display: inline-block;padding: 0 12px 0 15px;height: fit-content;font-size: 16px;line-height: 30px;border-radius: 25px;background-color: #f1f1f1f1;margin: 0 10px 10px 0;" data-toggle="tooltip" data-bs-placement="right" th:title="${skillTag.getTagName()}">
+                                    <div class="d-flex justify-content-between flex-row align-items-center">
+                                        <span style="margin-right: 10px; margin-left: 10px" th:text="${skillTag.getTagName()}"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <script th:inline="javascript">
+                            buttonId = /*[['evidenceDropdown' + (${meta.index} + 1)]]*/ null;
+                            arrowId = /*[['evidenceArrow' + (${meta.index} + 1)]]*/ null;
+                            collapseId = /*[['collapseEvidence' + ${evidence.getEvidenceId()}]]*/ null;
+                            setToggle(buttonId, arrowId, collapseId);
+                        </script>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- THIS BLOCK IS USED TO DISPLAY A NOTE THAT NO EVIDENCE HAS BEEN FOUND -->
+        <div class="evidence-block" th:if="!${evidencesExists}">
+            <div class="detail-block">
+                <div class="evidence-info-block">
+                    <blockquote class="blockquote text-center">
+                        <h2>No Evidence Found!</h2>
+                    </blockquote>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha384-xBuQ/xzmlsLoJpyjoggmTEz8OWUFM0/RC5BsqQBDX2v5cMvDHcMakNTNrHIW2I5f" crossorigin="anonymous"></script>
+<script src="js/fineCrop.js"></script>
+<script src="js/banner.js"></script>
+<script src="js/evidence.js"></script>
+<script th:inline="javascript">
+    /*<![CDATA[*/
+
+    /**
+     * Refreshes the table to instead display either all evidences or just a certain users.
+     */
+    function updateEvidenceList() {
+        const checked = ($('#flexSwitchCheckDefault').is(":checked"));
+        const data = {
+            userId: /*[[${userId}]]*/ -1, // This value is stored in the header.
+            viewedUserId: /*[[${viewedUserId}]]*/ -1,
+            listAll: checked,
+            skillId: /*[[${skillId}]]*/ -1,
+        }
+
+        $.get('switch-evidence-list?' + new URLSearchParams(data)).done((result) => {
+            $("#evidenceList").replaceWith(result);
+        }).fail()
+    }
+    /*]]>*/
+</script>
+</html>

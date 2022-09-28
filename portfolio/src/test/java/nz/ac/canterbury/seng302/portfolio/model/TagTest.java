@@ -17,4 +17,14 @@ class TagTest {
         Tag testTag = new Tag("testTag");
         assertEquals("testTag", testTag.getTagName());
     }
+
+    /**
+     * Tests to ensure that the model correctly replaces the "_" and converts them to spaces when getting the name through this method.
+     */
+    @Test
+    void nameSpacedTest() {
+        Tag testTag = new Tag("test_tag_name");
+        String expectedName = "test tag name";
+        assertEquals(expectedName, testTag.getSpacedTagName());
+    }
 }
