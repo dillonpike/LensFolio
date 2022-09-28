@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
+
 import nz.ac.canterbury.seng302.portfolio.model.Evidence;
 import nz.ac.canterbury.seng302.portfolio.model.HighFivers;
 import nz.ac.canterbury.seng302.portfolio.model.Tag;
@@ -48,6 +49,19 @@ public class EvidenceService {
         List<Evidence> listEvidences = evidenceRepository.findAllByUserId(userId);
         return listEvidences.stream().sorted((o1, o2)->o2.getDate().
                 compareTo(o1.getDate())).toList();
+    }
+
+    /**
+     * This function get an evidence based on evidence Id.
+     * @param evidenceId the ID of an evidence in interest
+     * @return List of evidences.
+     */
+    public Evidence getEvidence(int evidenceId) {
+        try{
+            return evidenceRepository.findByEvidenceId(evidenceId);
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     /**
