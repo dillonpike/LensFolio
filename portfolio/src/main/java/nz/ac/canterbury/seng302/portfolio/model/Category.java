@@ -4,6 +4,9 @@ import javax.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
 
+/**
+ * Category is associated with an evidence and contains a name and id.
+ */
 @Entity
 public class Category {
     @Id
