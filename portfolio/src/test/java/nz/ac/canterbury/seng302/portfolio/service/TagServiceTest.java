@@ -122,6 +122,9 @@ class TagServiceTest {
         verify(tagRepository).deleteById(tagId);
     }
 
+    /**
+     * Tests the getTag method returns the tag from the findById JPA method.
+     */
     @Test
     void testGetTag() {
         Tag tag = testTags.get(1);
@@ -132,6 +135,9 @@ class TagServiceTest {
         verify(tagRepository).findById(tagId);
     }
 
+    /**
+     * Tests the getTagByNameIgnoreCase method returns the tag from the findByTagNameIgnoreCase JPA method.
+     */
     @Test
     void testGetTagByNameIgnoreCase() {
         Tag tag = testTags.get(1);
