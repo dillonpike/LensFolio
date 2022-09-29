@@ -158,9 +158,7 @@ class TagServiceTest {
         int userId = 5;
         when(evidenceRepository.findAllByUserId(userId)).thenReturn(new ArrayList<>(testEvidences));
 
-        System.out.println(testTags);
         List<Tag> actualTags = tagService.getTagsByUserSortedList(userId);
-        System.out.println(testTags);
 
         List<Tag> expectedTags = new ArrayList<>(testTags);
         expectedTags.sort(Comparator.comparing(Tag::getTagName));
