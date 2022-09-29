@@ -3,7 +3,6 @@ package nz.ac.canterbury.seng302.portfolio.controller;
 import io.grpc.StatusRuntimeException;
 import java.util.List;
 import nz.ac.canterbury.seng302.portfolio.model.Evidence;
-import nz.ac.canterbury.seng302.portfolio.model.NotificationGroup;
 import nz.ac.canterbury.seng302.portfolio.model.NotificationHighFive;
 import nz.ac.canterbury.seng302.portfolio.model.Project;
 import nz.ac.canterbury.seng302.portfolio.service.*;
@@ -104,7 +103,7 @@ public class AccountController {
 
             List<Evidence> evidenceList = evidenceService.getEvidences(userId);
             for (Evidence eachEvidence:evidenceList) {
-                eachEvidence.setHighFivers(evidenceService.getHighFivers(eachEvidence));
+                eachEvidence.setHighFivers(eachEvidence.getHighFivers());
             }
             model.addAttribute("evidences", evidenceList);
 

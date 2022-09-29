@@ -183,6 +183,7 @@ public class UserAccountServerService extends UserAccountServiceGrpc.UserAccount
             user.setDateAdded(currentUser.getDateAdded());
             user.setRoles(currentUser.getRoles());
             user.setPhotoDirectory(currentUser.getPhotoDirectory());
+            user.setGroups(currentUser.getGroups());
             wasSaved = userModelService.saveEditedUser(user);
             if (wasSaved) {
                 reply.setIsSuccess(true).setMessage("User Account is successfully updated!");

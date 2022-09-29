@@ -60,7 +60,10 @@ class EvidenceControllerTest {
     private TagService tagService;
 
     @MockBean
-    private ElementService elementService;
+    private PermissionService permissionService; // needed to load application context
+
+    @MockBean
+    private ElementService elementService; // needed to load application context
 
     @MockBean
     private CategoryService categoryService;

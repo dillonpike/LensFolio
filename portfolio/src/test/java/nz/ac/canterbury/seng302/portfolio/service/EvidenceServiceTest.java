@@ -5,7 +5,7 @@ import nz.ac.canterbury.seng302.portfolio.model.Evidence;
 import nz.ac.canterbury.seng302.portfolio.model.HighFivers;
 import nz.ac.canterbury.seng302.portfolio.model.Tag;
 import nz.ac.canterbury.seng302.portfolio.repository.EvidenceRepository;
-import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
+import nz.ac.canterbury.seng302.portfolio.repository.TagRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -15,10 +15,7 @@ import org.mockito.exceptions.base.MockitoException;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -34,6 +31,9 @@ class EvidenceServiceTest {
     private EvidenceRepository evidenceRepository;
 
     @Mock
+    private TagRepository tagRepository;
+
+    @Mock
     private TagService tagService;
 
     @Mock
@@ -46,16 +46,28 @@ class EvidenceServiceTest {
     private EvidenceService evidenceService;
 
     private static final List<Evidence> testEvidences = new ArrayList<>();
+    private static final List<Tag> testTags = new ArrayList<>();
 
     /**
      * setUp list of Evidences for testing which will returned when mocking the repository's method which return list of Evidences.
      */
     @BeforeEach
     void setUp() {
+        for (int i = 0; i < 4; i++) {
+            Tag tag = new Tag("Test tag " + (i + 1));
+            testTags.add(tag);
+        }
         Evidence evidence1 = new Evidence(0, 1, "testEvidence1", "testEvidence1", new Date(100));
         Evidence evidence2 = new Evidence(0, 1, "testEvidence2", "testEvidence2", new Date(500));
         Evidence evidence3 = new Evidence(0, 1, "testEvidence3", "testEvidence3", new Date(300));
         Evidence evidence4 = new Evidence(0, 1, "testEvidence4", "testEvidence4", new Date(200));
+        for (int i = 0; i < testTags.size(); i++) {
+            if (i % 2 == 0) {
+                evidence1.addTag(testTags.get(i));
+            } else {
+                evidence2.addTag(testTags.get(i));
+            }
+        }
         testEvidences.add(evidence1);
         testEvidences.add(evidence2);
         testEvidences.add(evidence3);
@@ -101,38 +113,25 @@ class EvidenceServiceTest {
     }
 
     /**
-     * Tests that the correct user responses are given when fetching the users who have high fived a piece of evidence.
-     */
-    @Test
-    void testGetHighFiversOfEvidence() {
-        List<HighFivers> expectedUsers = new ArrayList<>();
-        Evidence testEvidence = new Evidence();
-        int numUsers = 3;
-        for (int i = 0; i < numUsers; i++) {
-            String firstName = "First name" + i;
-            String lastName = "Last name" + i;
-            UserResponse userResponse = UserResponse.newBuilder().setId(i).setFirstName(firstName).setLastName(lastName).build();
-            expectedUsers.add(new HighFivers(firstName + " " + lastName, i));
-            when(registerClientService.getUserData(i)).thenReturn(userResponse);
-            testEvidence.addHighFiverId(i);
-        }
-        List<HighFivers> actualUsers = evidenceService.getHighFivers(testEvidence);
-        for(int i=0; i < actualUsers.size(); i++){
-            assertEquals(expectedUsers.get(i).getUserId(), actualUsers.get(i).getUserId());
-            assertEquals(expectedUsers.get(i).getName(), actualUsers.get(i).getName());
-        }
-    }
-
-    /**
      * Tests that no user responses are returned when no users have high fived a piece of evidence.
      */
     @Test
     void testGetHighFiversOfEvidenceWhenNoHighFivers() {
         Evidence testEvidence = new Evidence();
-        List<HighFivers> actualUsers = evidenceService.getHighFivers(testEvidence);
+        Set<HighFivers> actualUsers = testEvidence.getHighFivers();
         assertEquals(0, actualUsers.size());
     }
 
+    /**
+     * Tests that the removeEvidence(int evidenceId) method removes specific evidence.
+     */
+    @Test
+    void testRemoveEvidence() {
+        Evidence evidence = testEvidences.get(0);
+        when(evidenceRepository.findById(any(Integer.class))).thenReturn(Optional.of(evidence)).thenReturn(Optional.empty());
+        boolean success = evidenceService.removeEvidence(evidence.getEvidenceId());
+        assertTrue(success);
+    }
     /**
      * Tests that when the method is passed both a valid skill with a valid user attached to the evidence within tag class that
      * the evidence is returned.
@@ -260,9 +259,6 @@ class EvidenceServiceTest {
             }
         }
     }
-
-    ///////////////////////////
-
 
     /**
      * Tests that when the method is passed both a valid Category with a valid user attached to the evidence within tag class that
@@ -432,4 +428,19 @@ class EvidenceServiceTest {
 
 
 
+    /**
+     * Tests that when all evidences with a certain tag are deleted,
+     * that the tags no longer exist.
+     */
+    @Test
+    void testRemoveTagsWithNoEvidence() {
+        List<Tag> tags = tagRepository.findAll();
+        Evidence evidence1 = testEvidences.get(0);
+        Evidence evidence2 = testEvidences.get(1);
+        evidenceRepository.deleteById(evidence1.getEvidenceId());
+        evidenceRepository.deleteById(evidence2.getEvidenceId());
+        evidenceService.removeTagsWithNoEvidence();
+        List<Tag> tags2 = tagRepository.findAll();
+        assertEquals(0, tags2.size());
+    }
 }

@@ -3,6 +3,7 @@ package nz.ac.canterbury.seng302.portfolio.model;
 import javax.persistence.*;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -68,15 +69,19 @@ public class Evidence {
     private Set<WebLink> webLinks = new HashSet<>();
 
     /**
-     * The user ids of users that have high fived this piece of evidence.
+     * The users that have high fived this piece of evidence.
      */
-    @ElementCollection
-    @CollectionTable(name="users_high_fived_evidence", joinColumns=@JoinColumn(name="evidence_id"))
-    @Column(name="user_id")
-    private Set<Integer> highFiverIds = new HashSet<>();
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
+    @JoinTable(name = "evidence_to_highfivers",
+            joinColumns =
+            @JoinColumn(name = "evidence_id"),
+            inverseJoinColumns =
+            @JoinColumn(name = "high_fivers_id")
+    )
+    private Set<HighFivers> highFivers = new HashSet<>();
 
     @Transient
-    private List<HighFivers> highFivers = new ArrayList<>();
+    private Set<Integer> highFiverIds = new HashSet<>();
 
 
     /**
@@ -255,30 +260,15 @@ public class Evidence {
      * @return Set of user ids.
      */
     public Set<Integer> getHighFiverIds() {
+        highFiverIds.addAll(highFivers.stream().map(HighFivers::getUserId).collect(Collectors.toSet()));
         return highFiverIds;
-    }
-
-    /**
-     * Adds a user id to the set of user ids of users that have high fived this piece of evidence.
-     * @param userId User id to add.
-     */
-    public void addHighFiverId(int userId) {
-        highFiverIds.add(userId);
-    }
-
-    /**
-     * Removes a user id from the set of user ids of users that have high fived this piece of evidence.
-     * @param userId User id to remove.
-     */
-    public void removeHighFiverId(int userId) {
-        highFiverIds.remove(userId);
     }
 
     /**
      * Set list of HighFivers Object to piece of evidence
      * @param highFivers the list of HighFivers object that relates to piece of evidence
      */
-    public void setHighFivers(List<HighFivers> highFivers) {
+    public void setHighFivers(Set<HighFivers> highFivers) {
         this.highFivers = highFivers;
     }
 
@@ -291,9 +281,30 @@ public class Evidence {
     }
 
     /**
+     * Remove an HighFivers Object from piece of evidence
+     * @param highFiver an HighFivers object to remove
+     */
+    public void removeHighFivers(HighFivers highFiver) {
+        this.highFivers.remove(highFiver);
+    }
+
+    /**
+     * Remove an HighFivers Object from piece of evidence by user id
+     * @param highFiverId a user id to remove
+     */
+    public void removeHighFiversById(int highFiverId) {
+        for (HighFivers highFiver : highFivers) {
+            if (highFiver.getUserId() == highFiverId) {
+                this.highFivers.remove(highFiver);
+                break;
+            }
+        }
+    }
+
+    /**
      * returns list of users that have given a High Five to a piece of evidence
      */
-    public List<HighFivers> getHighFivers() {
+    public Set<HighFivers> getHighFivers() {
         return highFivers;
     }
 }
