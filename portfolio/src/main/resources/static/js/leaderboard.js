@@ -27,6 +27,7 @@ function configureLeaderboardTable() {
 function updateLeaderboard(notification, operation) {
     const leaderboardTable = $('table').DataTable();
     // const page = leaderboardTable.page();
+    leaderboardTable.destory();
     const url = "/leaderboard-table";
     $("#leaderboardTable").load(url + " #leaderboardTable>*", "", function () {
         configureLeaderboardTable();
