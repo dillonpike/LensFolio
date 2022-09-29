@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.NotAcceptableException;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 
 /**
@@ -97,28 +98,6 @@ public class EvidenceController {
     }
 
     /**
-     * Sets the model to have a valid user so that the HTML page is using variables that will link to a valid user.
-     * This is important for when returning to the page of a user as if the user is invalid the page will return a 404.
-     *
-     * @param principal         Used for authentication of a user.
-     * @param unknownUserId     The id of the user that needs to be checked if they are valid of not.
-     * @param model             Parameters sent to thymeleaf template to be rendered into HTML.
-     * @return  This method returns the id that should be used.
-     *          Either the user id provide if they are valid or the user currently logged in if not.
-     */
-    public int setViewedUserModel(AuthState principal, int unknownUserId, Model model) {
-        Integer id = userAccountClientService.getUserIDFromAuthState(principal);
-        elementService.addHeaderAttributes(model, id);
-
-        UserResponse userAccount = registerClientService.getUserData(unknownUserId);
-        // This is done as the UserResponse has a default of 0 for ID when the user doesn't exist. Note the database needs to not have an ID of 0.
-        int returnId = ((userAccount.getId() == 0) ?  id : userAccount.getId());
-        model.addAttribute("viewableUser", returnId);
-        model.addAttribute("validViewedUser", (userAccount.getId() != 0));
-        return returnId;
-    }
-
-    /**
      * Method to display the main page for viewing skill or category specific pieces of evidence.
      * @param model         Parameters sent to thymeleaf template to be rendered into HTML.
      * @param principal     Used for authentication of a user.
@@ -135,11 +114,16 @@ public class EvidenceController {
             @RequestParam(value = "tagId") int tagId,
             @RequestParam(value = "tagType") String tagType
     ) {
-        int returnId = setViewedUserModel(principal, viewedUserId, model);
+        // This code is duplicated in the update evidence list section as this method needs both the userAccount and
+        // the returned ID while the other method needs only the returned ID.
+        Integer id = userAccountClientService.getUserIDFromAuthState(principal);
+        elementService.addHeaderAttributes(model, id);
+        UserResponse userAccount = registerClientService.getUserData(viewedUserId);
+        // This is done as the UserResponse has a default of 0 for ID when the user doesn't exist. Note the database needs to not have an ID of 0.
+        int returnId = ((userAccount.getId() == 0) ?  id : userAccount.getId());
 
         List<Evidence> evidenceList;
         String tagName;
-
         try {
             if (Objects.equals(tagType, "Skills")) {
                 evidenceList = evidenceService.getEvidencesWithSkill(tagId);
@@ -163,11 +147,15 @@ public class EvidenceController {
             return "redirect:account?userId=" + returnId;
         }
 
+        String userName = registerClientService.getUserData(returnId).getUsername();
+        model.addAttribute("userName", ((userName.toLowerCase(Locale.ROOT).endsWith("s")) ? userName + "'" : userName + "'s"));
         model.addAttribute("tagType", tagType);
         model.addAttribute("evidencesExists", ((evidenceList != null) && (!evidenceList.isEmpty())));
         model.addAttribute("evidences", evidenceList);
         model.addAttribute("tagName", tagName);
         model.addAttribute("tagId", tagId);
+        model.addAttribute("viewableUser", returnId);
+        model.addAttribute("validViewedUser", (userAccount.getId() != 0));
 
         return "evidence";
     }
@@ -193,10 +181,15 @@ public class EvidenceController {
             @RequestParam(value = "tagId") int tagId,
             @RequestParam(value = "tagType") String tagType
     ) {
-        int returnId = setViewedUserModel(principal, viewedUserId, model);
+        // This code is duplicated in the update evidence list section as this method needs both the userAccount and
+        // the returned ID while the other method needs only the returned ID.
+        Integer id = userAccountClientService.getUserIDFromAuthState(principal);
+        elementService.addHeaderAttributes(model, id);
+        UserResponse userAccount = registerClientService.getUserData(viewedUserId);
+        // This is done as the UserResponse has a default of 0 for ID when the user doesn't exist. Note the database needs to not have an ID of 0.
+        int returnId = ((userAccount.getId() == 0) ?  id : userAccount.getId());
 
         List<Evidence> evidenceList;
-
         try {
             if (Objects.equals(tagType, "Skills")) {
                 if (listAll) {
