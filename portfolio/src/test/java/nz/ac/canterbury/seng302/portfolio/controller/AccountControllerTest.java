@@ -4,6 +4,7 @@ import com.google.protobuf.Timestamp;
 import nz.ac.canterbury.seng302.portfolio.model.Evidence;
 import nz.ac.canterbury.seng302.portfolio.model.HighFivers;
 import nz.ac.canterbury.seng302.portfolio.model.Project;
+import nz.ac.canterbury.seng302.portfolio.model.Tag;
 import nz.ac.canterbury.seng302.portfolio.service.*;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import nz.ac.canterbury.seng302.shared.identityprovider.ClaimDTO;
@@ -96,6 +97,9 @@ class AccountControllerTest {
     @MockBean
     private EvidenceService evidenceService;
 
+    @MockBean
+    private TagService tagService;
+
     /**
      * unit testing to test the get method when calling "/account"
      * Expect to return 200 status code and account page with some user's information in the model
@@ -117,12 +121,15 @@ class AccountControllerTest {
         String personalPronouns = mockUser.getPersonalPronouns();
         List<Evidence> evidenceList = new ArrayList<>();
         evidenceList.add(new Evidence(0,0,"title","desc", new Date()));
+        List<Tag> tagList = new ArrayList<>();
+        tagList.add(new Tag("tag"));
 
         SecurityContextHolder.setContext(mockedSecurityContext);
         when(userAccountClientService.getUserIDFromAuthState(any(AuthState.class))).thenReturn(1);
         when(registerClientService.getUserData(1)).thenReturn(mockUser);
         when(projectService.getProjectById(0)).thenReturn(mockProject);
         when(evidenceService.getEvidences(any(Integer.class))).thenReturn(evidenceList);
+        when(tagService.getTagsByUserSortedList(any(Integer.class))).thenReturn(tagList);
 
 
         mockMvc.perform(get("/account").param("userId", "1"))
@@ -138,6 +145,7 @@ class AccountControllerTest {
                 .andExpect(model().attribute("personalPronouns", personalPronouns))
                 .andExpect(model().attribute("bio", bio))
                 .andExpect(model().attribute("evidences", evidenceList))
+                .andExpect(model().attribute("allSkills", tagList))
                 .andExpect(model().attribute("project", mockProject));
     }
 
