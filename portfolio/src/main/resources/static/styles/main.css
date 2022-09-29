@@ -182,12 +182,7 @@ a {
     padding-bottom: 10px;
 }
 
-.evidence-weblink-title {
-    font-weight: bold;
-    padding-top: 10px;
-}
-
-.evidence-skillTag-title {
+.evidence-block-heading {
     font-weight: bold;
     padding-top: 10px;
 }

@@ -169,7 +169,7 @@ public class EvidenceController {
         model.addAttribute("evidencesExists", ((evidenceList != null) && (!evidenceList.isEmpty())));
         model.addAttribute("evidences", evidenceList);
 
-        return "evidence::evidenceList";
+        return "fragments/evidenceList";
     }
 
     /**
