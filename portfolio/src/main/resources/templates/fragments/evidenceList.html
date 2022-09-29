@@ -59,8 +59,8 @@
         <!--Buttons for deleting-->
         <div class="d-flex">
           <div class="button-divider">
-            <button class="btn btn-default" type="button" th:id="'highFiveBtn' + ${evidence.getEvidenceId}" th:attr="onclick=|switchIcon('${evidence.getEvidenceId}')|" style="outline: none; box-shadow: none;">
-              <i class="bi bi-star" th:id="'star' + ${evidence.getEvidenceId}"></i>
+            <button class="btn btn-default" type="button" th:id="'highFiveBtn' + ${evidence.getEvidenceId}" th:attr="onclick=|changeHighFive('${evidence.getEvidenceId}')|" style="outline: none; box-shadow: none;">
+              <i th:class="${#arrays.contains(evidenceHighFivedIds, evidence.getEvidenceId)} ? 'bi bi-star-fill' : 'bi bi-star'" th:id="'star' + ${evidence.getEvidenceId}"></i>
             </button>
           </div>
           <div class="button-divider">
