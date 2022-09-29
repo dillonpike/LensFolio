@@ -610,6 +610,18 @@ body{
     margin: 0 10px 10px 0 !important;
 }
 
+.category-chip {
+    background-color: #2ac098 !important;
+    color: white !important;
+}
+
+.category-chip:hover {
+    background-color: #0047b0 !important;
+    color: #ffffff !important;
+    transition: 0.5s !important;
+    cursor: pointer;
+}
+
 .tag-across {
     width: 100% !important;
 }

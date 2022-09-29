@@ -44,6 +44,9 @@ public class EvidenceController {
     private TagService tagService;
 
     @Autowired
+    private CategoryService categoryService;
+
+    @Autowired
     private UserAccountClientService userAccountClientService;
 
     private static final String ADD_EVIDENCE_MODAL_FRAGMENT = "fragments/evidenceModal::evidenceModalBody";
@@ -114,11 +117,13 @@ public class EvidenceController {
         List<Evidence> evidenceList;
         Tag skillTag;
         List<Tag> skillsList;
+        List<Category> categoriesList;
 
         try {
             evidenceList = evidenceService.getEvidencesWithSkill(skillId);
             skillTag = tagService.getTag(skillId);
             skillsList = tagService.getTagsSortedList();
+            categoriesList = categoryService.getAllCategories();
             if (skillTag == null) {
                 throw new NullPointerException("Invalid Tag Id");
             }
@@ -137,6 +142,7 @@ public class EvidenceController {
         model.addAttribute("evidences", evidenceList);
         model.addAttribute("skillTag", skillTag);
         model.addAttribute("allSkills", skillsList);
+        model.addAttribute("allCategories", categoriesList);
         model.addAttribute("evidenceHighFivedIds", evidenceHighFivedIds);
 
         model.addAttribute("viewedUserId", userId);
@@ -168,6 +174,7 @@ public class EvidenceController {
         List<Evidence> evidenceList;
         List<Integer> evidenceHighFivedIds = new ArrayList<>();
         List<Tag> skillsList;
+        List<Category> categoriesList;
         try {
             if (listAll) {
                 evidenceList = evidenceService.getEvidencesWithSkill(skillId);
@@ -176,6 +183,7 @@ public class EvidenceController {
                 evidenceList = evidenceService.getEvidencesWithSkillAndUser(viewedUserId, skillId);
                 skillsList = tagService.getTagsByUserSortedList(userId);
             }
+            categoriesList = categoryService.getAllCategories();
         } catch (NullPointerException e) {
             return "redirect:account?userId=" + userId;
         }
@@ -192,8 +200,9 @@ public class EvidenceController {
         model.addAttribute("viewedUserId", userId);
         model.addAttribute("currentUserId", id);
         model.addAttribute("allSkills", skillsList);
+        model.addAttribute("allCategories", categoriesList);
 
-        return "fragments/evidenceList::evidenceList";
+        return ACCOUNT_EVIDENCE;
     }
 
     /**

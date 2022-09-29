@@ -48,6 +48,9 @@ public class AccountController {
     private TagService tagService;
 
     @Autowired
+    private CategoryService categoryService;
+
+    @Autowired
     private PhotoService photoService;
 
     @Autowired
@@ -119,6 +122,9 @@ public class AccountController {
 
             List<Tag> skillsList = tagService.getTagsByUserSortedList(userId);
             model.addAttribute("allSkills", skillsList);
+
+            List<Category> categoriesList = categoryService.getAllCategories();
+            model.addAttribute("allCategories", categoriesList);
 
         } catch (StatusRuntimeException e) {
             model.addAttribute("loginMessage", "Error connecting to Identity Provider...");
