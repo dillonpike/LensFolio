@@ -392,10 +392,15 @@ class EvidenceControllerTest {
     @Test
     void testViewEvidenceSkillsPage200() throws Exception {
         int userId = 1;
+        String userName = "testUser";
         ArrayList<Evidence> evidences = new ArrayList<>();
         evidences.add(new Evidence(0, userId, "test", "test-desc", Date.from(Instant.now())));
         Tag tag = new Tag("Test");
+        tag.setTagId(1);
+        UserResponse testUser = UserResponse.newBuilder().setId(userId).setUsername(userName).build();
+
         when(evidenceService.getEvidencesWithSkill(any(Integer.class))).thenReturn(evidences);
+        when(registerClientService.getUserData(any(Integer.class))).thenReturn(testUser);
         when(tagService.getTag(any(Integer.class))).thenReturn(tag);
 
         mockMvc.perform(get("/evidence-tags?userId=" + userId + "&tagId=1&tagType=Skills"))
@@ -403,15 +408,51 @@ class EvidenceControllerTest {
                 .andExpect(model().attribute("evidencesExists", true))
                 .andExpect(model().attribute("evidences", evidences))
                 .andExpect(model().attribute("tagName", tag.getTagName()))
-                .andExpect(model().attribute("viewedUserId", userId))
-                .andExpect(model().attribute("tagType", "Skills"));
+                .andExpect(model().attribute("viewableUser", testUser.getId()))
+                .andExpect(model().attribute("tagType", "Skills"))
+                .andExpect(model().attribute("tagId", tag.getTagId()))
+                .andExpect(model().attribute("validViewedUser", true));
 
         verify(evidenceService, times(1)).getEvidencesWithSkill(any(Integer.class));
         verify(tagService, times(1)).getTag(any(Integer.class));
+        verify(registerClientService, times(2)).getUserData(any(Integer.class));
     }
 
     /**
-     * Tests that the evidence skills page will redirect a user to their account page when an invalid tag is given.
+     * Tests that the evidence skills page is able to be reached when a valid tag but invalid user is given.
+     * @throws Exception If mocking the MVC fails.
+     */
+    @Test
+    void testViewEvidenceSkillsWithInvalidUserPage200() throws Exception {
+        int userId = 0;
+        String userName = "testUser";
+        ArrayList<Evidence> evidences = new ArrayList<>();
+        evidences.add(new Evidence(0, userId, "test", "test-desc", Date.from(Instant.now())));
+        Tag tag = new Tag("Test");
+        tag.setTagId(1);
+        UserResponse testUser = UserResponse.newBuilder().setId(userId).setUsername(userName).build();
+
+        when(evidenceService.getEvidencesWithSkill(any(Integer.class))).thenReturn(evidences);
+        when(registerClientService.getUserData(any(Integer.class))).thenReturn(testUser);
+        when(tagService.getTag(any(Integer.class))).thenReturn(tag);
+
+        mockMvc.perform(get("/evidence-tags?userId=" + userId + "&tagId=1&tagType=Skills"))
+                .andExpect(status().isOk())
+                .andExpect(model().attribute("evidencesExists", true))
+                .andExpect(model().attribute("evidences", evidences))
+                .andExpect(model().attribute("tagName", tag.getTagName()))
+                .andExpect(model().attribute("viewableUser", 1)) // Logged-in user given by AuthState.
+                .andExpect(model().attribute("tagType", "Skills"))
+                .andExpect(model().attribute("tagId", tag.getTagId()))
+                .andExpect(model().attribute("validViewedUser", false));
+
+        verify(evidenceService, times(1)).getEvidencesWithSkill(any(Integer.class));
+        verify(tagService, times(1)).getTag(any(Integer.class));
+        verify(registerClientService, times(2)).getUserData(any(Integer.class));
+    }
+
+    /**
+     * Tests that the evidence skills page will redirect a user to the account page provided when an invalid tag is given.
      * @throws Exception If mocking the MVC fails.
      */
     @Test
@@ -419,6 +460,9 @@ class EvidenceControllerTest {
         int userId = 1; // Same as the userAccountClientService.getUserIDFromAuthState id.
         ArrayList<Evidence> evidences = new ArrayList<>();
         evidences.add(new Evidence(0, userId, "test", "test-desc", Date.from(Instant.now())));
+        UserResponse testUser = UserResponse.newBuilder().setId(userId).build();
+
+        when(registerClientService.getUserData(any(Integer.class))).thenReturn(testUser);
         when(evidenceService.getEvidencesWithSkill(any(Integer.class))).thenReturn(evidences);
         when(tagService.getTag(any(Integer.class))).thenReturn(null);
 
@@ -428,6 +472,32 @@ class EvidenceControllerTest {
 
         verify(evidenceService, times(1)).getEvidencesWithSkill(any(Integer.class));
         verify(tagService, times(1)).getTag(any(Integer.class));
+        verify(registerClientService, times(1)).getUserData(any(Integer.class));
+    }
+
+    /**
+     * Tests that the evidence skills page will redirect a user to their account page when an invalid tag and user ID is given.
+     * @throws Exception If mocking the MVC fails.
+     */
+    @Test
+    void testViewEvidenceSkillsPageRedirectToAccountWhenSkillAndUserInvalid300() throws Exception {
+        int providedUserId = 0; // 0 is used as an invalid user as it is the default set by the UserResponse Object.
+        int realUserId = 1; // Same as the userAccountClientService.getUserIDFromAuthState id.
+        ArrayList<Evidence> evidences = new ArrayList<>();
+        evidences.add(new Evidence(0, realUserId, "test", "test-desc", Date.from(Instant.now())));
+        UserResponse testUser = UserResponse.newBuilder().setId(providedUserId).build();
+
+        when(registerClientService.getUserData(any(Integer.class))).thenReturn(testUser);
+        when(evidenceService.getEvidencesWithSkill(any(Integer.class))).thenReturn(evidences);
+        when(tagService.getTag(any(Integer.class))).thenReturn(null);
+
+        mockMvc.perform(get("/evidence-tags?userId=" + providedUserId + "&tagId=1&tagType=Skills"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("account?userId=" + realUserId));
+
+        verify(evidenceService, times(1)).getEvidencesWithSkill(any(Integer.class));
+        verify(tagService, times(1)).getTag(any(Integer.class));
+        verify(registerClientService, times(1)).getUserData(any(Integer.class));
     }
 
     /**
@@ -440,13 +510,18 @@ class EvidenceControllerTest {
         int userId = 1;
         ArrayList<Evidence> evidences = new ArrayList<>();
         evidences.add(new Evidence(0, userId, "test", "test-desc", Date.from(Instant.now())));
+        UserResponse testUser = UserResponse.newBuilder().setId(userId).build();
+
+        when(registerClientService.getUserData(any(Integer.class))).thenReturn(testUser);
         when(evidenceService.getEvidencesWithSkill(any(Integer.class))).thenReturn(evidences);
 
         mockMvc.perform(get("/switch-evidence-list?userId=1&viewedUserId=" + userId + "&listAll=true&tagId=1&tagType=Skills"))
                 .andExpect(status().isOk())
                 .andExpect(model().attribute("evidencesExists", true))
                 .andExpect(model().attribute("evidences", evidences));
+
         verify(evidenceService, times(1)).getEvidencesWithSkill(any(Integer.class));
+        verify(registerClientService, times(1)).getUserData(any(Integer.class));
     }
 
     /**
@@ -459,6 +534,9 @@ class EvidenceControllerTest {
         int userId = 1;
         ArrayList<Evidence> evidences = new ArrayList<>();
         evidences.add( new Evidence(0, userId, "test", "test-desc", Date.from(Instant.now())));
+        UserResponse testUser = UserResponse.newBuilder().setId(userId).build();
+
+        when(registerClientService.getUserData(any(Integer.class))).thenReturn(testUser);
         when(evidenceService.getEvidencesWithSkillAndUser(any(Integer.class), any(Integer.class))).thenReturn(evidences);
 
         mockMvc.perform(get("/switch-evidence-list?userId=1&viewedUserId=" + userId + "&listAll=false&tagId=1&tagType=Skills"))
@@ -467,22 +545,49 @@ class EvidenceControllerTest {
                 .andExpect(model().attribute("evidences", evidences));
 
         verify(evidenceService, times(1)).getEvidencesWithSkillAndUser(any(Integer.class), any(Integer.class));
+        verify(registerClientService, times(1)).getUserData(any(Integer.class));
     }
 
     /**
-     * Tests that the evidence skills partial refresh will redirect a user to their account page when an invalid tag is given.
+     * Tests that the evidence skills partial refresh will redirect a user to a provided account page when an invalid tag is given.
      * @throws Exception If mocking the MVC fails.
      */
     @Test
     void testViewEvidenceSkillsUpdateRedirectToAccountWhenSkillInvalid300() throws Exception {
         int userId = 1;
+        int providedUserId = 2;
+        UserResponse testUser = UserResponse.newBuilder().setId(providedUserId).build();
+
+        when(registerClientService.getUserData(any(Integer.class))).thenReturn(testUser);
         when(evidenceService.getEvidencesWithSkill(any(Integer.class))).thenThrow(new NullPointerException("Invalid skill tag."));
 
-        mockMvc.perform(get("/switch-evidence-list?userId=" + userId + "&viewedUserId=" + userId + "&listAll=true&tagId=1&tagType=Skills"))
+        mockMvc.perform(get("/switch-evidence-list?userId=" + userId + "&viewedUserId=" + providedUserId + "&listAll=true&tagId=1&tagType=Skills"))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("account?userId=" + userId));
+                .andExpect(redirectedUrl("account?userId=" + providedUserId));
 
         verify(evidenceService, times(1)).getEvidencesWithSkill(any(Integer.class));
+        verify(registerClientService, times(1)).getUserData(any(Integer.class));
+    }
+
+    /**
+     * Tests that the evidence skills partial refresh will redirect a user to their account page when an invalid tag and user ID is given.
+     * @throws Exception If mocking the MVC fails.
+     */
+    @Test
+    void testViewEvidenceSkillsUpdateRedirectToAccountWhenSkillAndUserInvalid300() throws Exception {
+        int providedUserId = 0; // 0 is used as an invalid user as it is the default set by the UserResponse Object.
+        int realUserId = 1; // Same as the userAccountClientService.getUserIDFromAuthState id.
+        UserResponse testUser = UserResponse.newBuilder().setId(providedUserId).build();
+
+        when(registerClientService.getUserData(any(Integer.class))).thenReturn(testUser);
+        when(evidenceService.getEvidencesWithSkill(any(Integer.class))).thenThrow(new NullPointerException("Invalid skill tag."));
+
+        mockMvc.perform(get("/switch-evidence-list?userId=" + realUserId + "&viewedUserId=" + providedUserId + "&listAll=true&tagId=1&tagType=Skills"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("account?userId=" + realUserId));
+
+        verify(evidenceService, times(1)).getEvidencesWithSkill(any(Integer.class));
+        verify(registerClientService, times(1)).getUserData(any(Integer.class));
     }
 
     /**
@@ -508,9 +613,14 @@ class EvidenceControllerTest {
     @Test
     void testViewEvidenceCategoriesPage200() throws Exception {
         int userId = 1;
+        String userName = "testUser";
         ArrayList<Evidence> evidences = new ArrayList<>();
         evidences.add(new Evidence(0, userId, "test", "test-desc", Date.from(Instant.now())));
         Category category = new Category("Test");
+        category.setCategoryId(1);
+        UserResponse testUser = UserResponse.newBuilder().setId(userId).setUsername(userName).build();
+
+        when(registerClientService.getUserData(any(Integer.class))).thenReturn(testUser);
         when(evidenceService.getEvidencesWithCategory(any(Integer.class))).thenReturn(evidences);
         when(categoryService.getCategory(any(Integer.class))).thenReturn(category);
 
@@ -519,15 +629,51 @@ class EvidenceControllerTest {
                 .andExpect(model().attribute("evidencesExists", true))
                 .andExpect(model().attribute("evidences", evidences))
                 .andExpect(model().attribute("tagName", category.getCategoryName()))
-                .andExpect(model().attribute("viewedUserId", userId))
-                .andExpect(model().attribute("tagType", "Categories"));
+                .andExpect(model().attribute("viewableUser", testUser.getId()))
+                .andExpect(model().attribute("tagType", "Categories"))
+                .andExpect(model().attribute("tagId", category.getCategoryId()))
+                .andExpect(model().attribute("validViewedUser", true));
 
         verify(evidenceService, times(1)).getEvidencesWithCategory(any(Integer.class));
         verify(categoryService, times(1)).getCategory(any(Integer.class));
+        verify(registerClientService, times(2)).getUserData(any(Integer.class));
     }
 
     /**
-     * Tests that the evidence Categories page will redirect a user to their account page when an invalid tag is given.
+     * Tests that the evidence categories page is able to be reached when a valid tag ID but invalid user ID is given.
+     * @throws Exception If mocking the MVC fails.
+     */
+    @Test
+    void testViewEvidenceCategoriesWithInvalidUserPage200() throws Exception {
+        int userId = 0;
+        String userName = "testUser";
+        ArrayList<Evidence> evidences = new ArrayList<>();
+        evidences.add(new Evidence(0, userId, "test", "test-desc", Date.from(Instant.now())));
+        Category category = new Category("Test");
+        category.setCategoryId(1);
+        UserResponse testUser = UserResponse.newBuilder().setId(userId).setUsername(userName).build();
+
+        when(registerClientService.getUserData(any(Integer.class))).thenReturn(testUser);
+        when(evidenceService.getEvidencesWithCategory(any(Integer.class))).thenReturn(evidences);
+        when(categoryService.getCategory(any(Integer.class))).thenReturn(category);
+
+        mockMvc.perform(get("/evidence-tags?userId=" + userId + "&tagId=1&tagType=Categories"))
+                .andExpect(status().isOk())
+                .andExpect(model().attribute("evidencesExists", true))
+                .andExpect(model().attribute("evidences", evidences))
+                .andExpect(model().attribute("tagName", category.getCategoryName()))
+                .andExpect(model().attribute("viewableUser", 1)) // Logged-in user given by AuthState.
+                .andExpect(model().attribute("tagType", "Categories"))
+                .andExpect(model().attribute("tagId", category.getCategoryId()))
+                .andExpect(model().attribute("validViewedUser", false));
+
+        verify(evidenceService, times(1)).getEvidencesWithCategory(any(Integer.class));
+        verify(categoryService, times(1)).getCategory(any(Integer.class));
+        verify(registerClientService, times(2)).getUserData(any(Integer.class));
+    }
+
+    /**
+     * Tests that the evidence Categories page will redirect a user to provided account page when an invalid tag is given.
      * @throws Exception If mocking the MVC fails.
      */
     @Test
@@ -535,6 +681,9 @@ class EvidenceControllerTest {
         int userId = 1; // Same as the userAccountClientService.getUserIDFromAuthState id.
         ArrayList<Evidence> evidences = new ArrayList<>();
         evidences.add(new Evidence(0, userId, "test", "test-desc", Date.from(Instant.now())));
+        UserResponse testUser = UserResponse.newBuilder().setId(userId).build();
+
+        when(registerClientService.getUserData(any(Integer.class))).thenReturn(testUser);
         when(evidenceService.getEvidencesWithCategory(any(Integer.class))).thenReturn(evidences);
         when(categoryService.getCategory(any(Integer.class))).thenReturn(null);
 
@@ -544,7 +693,34 @@ class EvidenceControllerTest {
 
         verify(evidenceService, times(1)).getEvidencesWithCategory(any(Integer.class));
         verify(categoryService, times(1)).getCategory(any(Integer.class));
+        verify(registerClientService, times(1)).getUserData(any(Integer.class));
     }
+
+    /**
+     * Tests that the evidence Categories page will redirect a user to their account page when an invalid tag and user ID is given.
+     * @throws Exception If mocking the MVC fails.
+     */
+    @Test
+    void testViewEvidenceCategoriesPageRedirectToAccountWhenCategoryAndUserInvalid300() throws Exception {
+        int providedUserId = 0; // 0 is used as an invalid user as it is the default set by the UserResponse Object.
+        int realUserId = 1; // Same as the userAccountClientService.getUserIDFromAuthState id.
+        ArrayList<Evidence> evidences = new ArrayList<>();
+        evidences.add(new Evidence(0, providedUserId, "test", "test-desc", Date.from(Instant.now())));
+        UserResponse testUser = UserResponse.newBuilder().setId(providedUserId).build();
+
+        when(registerClientService.getUserData(any(Integer.class))).thenReturn(testUser);
+        when(evidenceService.getEvidencesWithCategory(any(Integer.class))).thenReturn(evidences);
+        when(categoryService.getCategory(any(Integer.class))).thenReturn(null);
+
+        mockMvc.perform(get("/evidence-tags?userId=" + providedUserId + "&tagId=1&tagType=Categories"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("account?userId=" + realUserId));
+
+        verify(evidenceService, times(1)).getEvidencesWithCategory(any(Integer.class));
+        verify(categoryService, times(1)).getCategory(any(Integer.class));
+        verify(registerClientService, times(1)).getUserData(any(Integer.class));
+    }
+
 
     /**
      * Tests that the evidence Categories partial refresh is able to be reached when a valid data is given (Blue Sky Scenario).
@@ -556,6 +732,9 @@ class EvidenceControllerTest {
         int userId = 1;
         ArrayList<Evidence> evidences = new ArrayList<>();
         evidences.add(new Evidence(0, userId, "test", "test-desc", Date.from(Instant.now())));
+        UserResponse testUser = UserResponse.newBuilder().setId(userId).build();
+
+        when(registerClientService.getUserData(any(Integer.class))).thenReturn(testUser);
         when(evidenceService.getEvidencesWithCategory(any(Integer.class))).thenReturn(evidences);
 
         mockMvc.perform(get("/switch-evidence-list?userId=1&viewedUserId=" + userId + "&listAll=true&tagId=1&tagType=Categories"))
@@ -563,7 +742,9 @@ class EvidenceControllerTest {
                 .andExpect(model().attribute("evidencesExists", true))
                 .andExpect(model().attribute("evidences", evidences));
         verify(evidenceService, times(1)).getEvidencesWithCategory(any(Integer.class));
+        verify(registerClientService, times(1)).getUserData(any(Integer.class));
     }
+
 
     /**
      * Tests that the evidence Categories partial refresh is able to be reached when a valid data is given (Blue Sky Scenario).
@@ -575,6 +756,9 @@ class EvidenceControllerTest {
         int userId = 1;
         ArrayList<Evidence> evidences = new ArrayList<>();
         evidences.add( new Evidence(0, userId, "test", "test-desc", Date.from(Instant.now())));
+        UserResponse testUser = UserResponse.newBuilder().setId(userId).build();
+
+        when(registerClientService.getUserData(any(Integer.class))).thenReturn(testUser);
         when(evidenceService.getEvidencesWithCategoryAndUser(any(Integer.class), any(Integer.class))).thenReturn(evidences);
 
         mockMvc.perform(get("/switch-evidence-list?userId=1&viewedUserId=" + userId + "&listAll=false&tagId=1&tagType=Categories"))
@@ -583,22 +767,49 @@ class EvidenceControllerTest {
                 .andExpect(model().attribute("evidences", evidences));
 
         verify(evidenceService, times(1)).getEvidencesWithCategoryAndUser(any(Integer.class), any(Integer.class));
+        verify(registerClientService, times(1)).getUserData(any(Integer.class));
     }
 
     /**
-     * Tests that the evidence Categories partial refresh will redirect a user to their account page when an invalid tag is given.
+     * Tests that the evidence Categories partial refresh will redirect a user to the provided account page when an invalid tag is given.
      * @throws Exception If mocking the MVC fails.
      */
     @Test
     void testViewEvidenceCategoriesUpdateRedirectToAccountWhenCategoryInvalid300() throws Exception {
         int userId = 1;
+        int providedUserId = 2;
+        UserResponse testUser = UserResponse.newBuilder().setId(providedUserId).build();
+
+        when(registerClientService.getUserData(any(Integer.class))).thenReturn(testUser);
         when(evidenceService.getEvidencesWithCategory(any(Integer.class))).thenThrow(new NullPointerException("Invalid category tag."));
 
-        mockMvc.perform(get("/switch-evidence-list?userId=" + userId + "&viewedUserId=" + userId + "&listAll=true&tagId=1&tagType=Categories"))
+        mockMvc.perform(get("/switch-evidence-list?userId=" + userId + "&viewedUserId=" + providedUserId + "&listAll=true&tagId=1&tagType=Categories"))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("account?userId=" + userId));
+                .andExpect(redirectedUrl("account?userId=" + providedUserId));
 
         verify(evidenceService, times(1)).getEvidencesWithCategory(any(Integer.class));
+        verify(registerClientService, times(1)).getUserData(any(Integer.class));
+    }
+
+    /**
+     * Tests that the evidence Categories partial refresh will redirect a user to their account page when an invalid tag and user ID is given.
+     * @throws Exception If mocking the MVC fails.
+     */
+    @Test
+    void testViewEvidenceCategoriesUpdateRedirectToAccountWhenCategoryAndUserInvalid300() throws Exception {
+        int providedUserId = 0; // 0 is used as an invalid user as it is the default set by the UserResponse Object.
+        int realUserId = 1; // Same as the userAccountClientService.getUserIDFromAuthState id.
+        UserResponse testUser = UserResponse.newBuilder().setId(providedUserId).build();
+
+        when(registerClientService.getUserData(any(Integer.class))).thenReturn(testUser);
+        when(evidenceService.getEvidencesWithCategory(any(Integer.class))).thenThrow(new NullPointerException("Invalid category tag."));
+
+        mockMvc.perform(get("/switch-evidence-list?userId=" + realUserId + "&viewedUserId=" + providedUserId + "&listAll=true&tagId=1&tagType=Categories"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("account?userId=" + realUserId));
+
+        verify(evidenceService, times(1)).getEvidencesWithCategory(any(Integer.class));
+        verify(registerClientService, times(1)).getUserData(any(Integer.class));
     }
 
 }
