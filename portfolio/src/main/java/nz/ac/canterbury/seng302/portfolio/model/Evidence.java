@@ -45,6 +45,18 @@ public class Evidence {
     private Set<Tag> tags = new HashSet<>();
 
     /**
+     * The categories associated with this evidence.
+     */
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
+    @JoinTable(name = "evidence_to_category",
+            joinColumns =
+            @JoinColumn(name = "evidence_id"),
+            inverseJoinColumns =
+            @JoinColumn(name = "category_id")
+    )
+    private Set<Category> categories = new HashSet<>();
+
+    /**
      * The Weblinks associated with this evidence.
      */
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
@@ -175,6 +187,39 @@ public class Evidence {
      */
     public void removeTag(Tag tag) {
         this.tags.remove(tag);
+    }
+
+    /**
+     * FOR JAVASCRIPT USE ONLY. Please use addCategories() and removeCategories() instead.
+     * Sets the categories associated with this evidence.
+     * @param categories new set of categories.
+     */
+    public void setCategories(Set<Category> categories) {
+        this.categories = categories;
+    }
+
+    /**
+     * Gets a set of tags corresponding to the evidence.
+     * @return Set of categories.
+     */
+    public Set<Category> getCategories() {
+        return categories;
+    }
+
+    /**
+     * Adds a category to the evidence.
+     * @param category Category to add.
+     */
+    public void addCategory(Category category) {
+        this.categories.add(category);
+    }
+
+    /**
+     * Remove a category from the evidence.
+     * @param category Category to remove.
+     */
+    public void removeCategory(Category category) {
+        this.categories.remove(category);
     }
 
     /**

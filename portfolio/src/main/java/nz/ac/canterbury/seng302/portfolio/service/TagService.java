@@ -33,7 +33,6 @@ public class TagService {
         Tag tag = null;
         if (sOptional.isPresent()) {
             tag = sOptional.get();
-            tagRepository.deleteById(tag.getTagId());
         }
             return tag;
     }
@@ -69,7 +68,6 @@ public class TagService {
      */
     public boolean removeTag(int tagId) {
         Optional<Tag> sOptional = tagRepository.findById(tagId);
-
         if (sOptional.isPresent()) {
             Tag tag = sOptional.get();
             tagRepository.deleteById(tag.getTagId());
@@ -94,5 +92,5 @@ public class TagService {
         }
         return allTags.stream().toList();
     }
-
 }
+

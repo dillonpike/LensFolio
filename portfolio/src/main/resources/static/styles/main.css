@@ -182,12 +182,7 @@ a {
     padding-bottom: 10px;
 }
 
-.evidence-weblink-title {
-    font-weight: bold;
-    padding-top: 10px;
-}
-
-.evidence-skillTag-title {
+.evidence-block-heading {
     font-weight: bold;
     padding-top: 10px;
 }
@@ -598,4 +593,8 @@ body{
     max-height: 150px;
     overflow-y: auto;
     overflow-x: hidden;
+}
+
+.bootstrap-select {
+    width: 100% !important;
 }

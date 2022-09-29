@@ -7,6 +7,7 @@ const MILESTONETYPE = "Milestone";
 const GROUPTYPE = "Group";
 const HIGHFIVETYPE = "HighFive"
 const EVIDENCETYPE = "Evidence";
+const ROLETYPE = "Role";
 
 
 const ADDACTION = "add";
@@ -19,6 +20,11 @@ const ADDEVIDENCEACTION = "addEvidence";
 const DELETEEVIDENCEACTION = "deleteEvidence";
 const UPDATELEADERBOARDADDACTION = "updateLeaderboardAdd";
 const UPDATELEADERBOARDDELETEACTION = "updateLeaderboardDelete";
+const UPDATELEADERBOARDACTION = "updateLeaderboard";
+const DELETEROLEACTION = "deleteRole";
+const ADDROLEACTION = "addRole";
+const ADDROLEUPDATEACTION = "addRoleUpdate";
+const DELETEROLEUPDATEACTION = "deleteRoleUpdate";
 
 
 /**
@@ -80,7 +86,10 @@ class Notification {
             this.titleName = "High Five Activity";
         } else if (type === EVIDENCETYPE) {
             this.titleName = "Evidence Activity";
-        } else {
+        } else if (type === ROLETYPE) {
+            this.titleName = "Role Activity";
+        }
+        else {
             this.titleName = "Activity";
         }
 
@@ -152,32 +161,44 @@ class Notification {
         this.isWaitingToBeHidden = false;
         this.selectedDate = (new Date(Date.now())).valueOf();
         switch(this.action){
-            case SAVEACTION:
-                this.bodyText = "'" + this.name + "' has been updated by " + this.firstName + " " + this.lastName + " (" + this.username + ").";
-                break;
-            case EDITACTION:
-                this.bodyText = "'" + this.name + "' is being edited by " + this.firstName + " " + this.lastName + " (" + this.username + ").";
-                break;
-            case ADDACTION:
-                this.bodyText = this.firstName + " " + this.lastName + " (" + this.username + ") has added a new " + this.type.toLowerCase() + "."
-                break;
-            case DELETEACTION:
-                this.bodyText = "'" + this.name + "' has been deleted by " + this.firstName + " " + this.lastName + " (" + this.username + ").";
-                break;
-            case HIGHFIVEACTION:
-                this.bodyText = "'" + this.name + "' has been high fived by " + this.username + ".";
-                break;
-            case HIGHFIVEUPDATEACTION:
-                this.bodyText = "'" + this.name + "' has been high fived by " + this.username + " and " + (this.highfivers.length - 2) + " other user(s).";
-                break;
-            case ADDEVIDENCEACTION:
-                this.bodyText = this.firstName + " " + this.lastName + " (" + this.username + ") has added a piece of evidence. Updating leaderboard...";
-                break;
+          case SAVEACTION:
+              this.bodyText = "'" + this.name + "' has been updated by " + this.firstName + " " + this.lastName + " (" + this.username + ").";
+              break;
+          case EDITACTION:
+              this.bodyText = "'" + this.name + "' is being edited by " + this.firstName + " " + this.lastName + " (" + this.username + ").";
+              break;
+          case ADDACTION:
+              this.bodyText = this.firstName + " " + this.lastName + " (" + this.username + ") has added a new " + this.type.toLowerCase() + "."
+              break;
+          case DELETEACTION:
+              this.bodyText = "'" + this.name + "' has been deleted by " + this.firstName + " " + this.lastName + " (" + this.username + ").";
+              break;
+          case ADDEVIDENCEACTION:
+              this.bodyText = this.firstName + " " + this.lastName + " (" + this.username + ") has added a piece of evidence. Updating leaderboard...";
+              break;
             case DELETEEVIDENCEACTION:
                 this.bodyText = this.firstName + " " + this.lastName + " (" + this.username + ") has deleted a piece of evidence. Updating leaderboard...";
                 break;
-            case UPDATELEADERBOARDADDACTION:
-                this.bodyText = this.firstName + " " + this.lastName + " (" + this.username + ") has added a piece of evidence. Updated leaderboard!";
+          case UPDATELEADERBOARDACTION:
+              this.bodyText = this.firstName + " " + this.lastName + " (" + this.username + ") has added a piece of evidence. Updated leaderboard!";
+              break;
+          case ADDROLEUPDATEACTION:
+                this.bodyText = this.firstName + " " + this.lastName + " (" + this.username + ") has been added student role. Updated leaderboard!";
+                break;
+          case DELETEROLEUPDATEACTION:
+                this.bodyText = this.firstName + " " + this.lastName + " (" + this.username + ") has had removed student role. Updated leaderboard!";
+                break;
+          case DELETEROLEACTION:
+                this.bodyText = this.firstName + " " + this.lastName + " (" + this.username + ") has had removed student role. Updating leaderboard...";
+                break;
+          case ADDROLEACTION:
+                this.bodyText = this.firstName + " " + this.lastName + " (" + this.username + ") has been added to a student role. Updating leaderboard...";
+                break;
+          case HIGHFIVEACTION:
+                this.bodyText = "'" + this.name + "' has been high fived by " + this.username + ".";
+                break;
+          case HIGHFIVEUPDATEACTION:
+                this.bodyText = "'" + this.name + "' has been high fived by " + this.username + " and " + (this.highfivers.length - 2) + " other user(s).";
                 break;
             case UPDATELEADERBOARDDELETEACTION:
                 this.bodyText = this.firstName + " " + this.lastName + " (" + this.username + ") has deleted a piece of evidence. Updated leaderboard!";
@@ -206,6 +227,7 @@ class Notification {
             this.action = HIGHFIVEACTION;
         }
     }
+
 
     /**
      * Hides the notification after a timer.

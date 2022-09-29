@@ -116,6 +116,7 @@ public class EvidenceService {
                 evidenceRepository.save(emptyEvidence);
                 return false;
             }
+            removeTagsWithNoEvidence();
             return true;
         } else {
             return false;
@@ -319,10 +320,23 @@ public class EvidenceService {
      * @return          List of evidence with a given skill and user attached.
      */
     public List<Evidence> getEvidencesWithSkillAndUser(int userId, int skillId) throws NullPointerException{
-
         Tag tag = tagService.getTag(skillId);
         return tag.getEvidence().stream().filter(evidence -> isUserAttached(evidence.getEvidenceId(), userId)).sorted((o1, o2)->o2.getDate().
                 compareTo(o1.getDate())).toList();
+    }
+
+    /**
+     * Remove tags from the database that aren't connected to any pieces of evidence.
+     */
+    public void removeTagsWithNoEvidence() {
+        List<Tag> tags = tagRepository.findAll();
+        for (Tag tag : tags) {
+            int tagId = tag.getTagId();
+            List<Evidence> evidences = getEvidencesWithSkill(tagId);
+            if (evidences.isEmpty()) {
+                tagService.removeTag(tagId);
+            }
+        }
     }
 
 }

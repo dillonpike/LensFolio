@@ -4,6 +4,7 @@ import nz.ac.canterbury.seng302.portfolio.model.Evidence;
 import nz.ac.canterbury.seng302.portfolio.model.HighFivers;
 import nz.ac.canterbury.seng302.portfolio.model.Tag;
 import nz.ac.canterbury.seng302.portfolio.repository.EvidenceRepository;
+import nz.ac.canterbury.seng302.portfolio.repository.TagRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -29,6 +30,9 @@ class EvidenceServiceTest {
     private EvidenceRepository evidenceRepository;
 
     @Mock
+    private TagRepository tagRepository;
+
+    @Mock
     private TagService tagService;
 
     @Mock
@@ -38,16 +42,28 @@ class EvidenceServiceTest {
     private EvidenceService evidenceService;
 
     private static final List<Evidence> testEvidences = new ArrayList<>();
+    private static final List<Tag> testTags = new ArrayList<>();
 
     /**
      * setUp list of Evidences for testing which will returned when mocking the repository's method which return list of Evidences.
      */
     @BeforeEach
     void setUp() {
+        for (int i = 0; i < 4; i++) {
+            Tag tag = new Tag("Test tag " + (i + 1));
+            testTags.add(tag);
+        }
         Evidence evidence1 = new Evidence(0, 1, "testEvidence1", "testEvidence1", new Date(100));
         Evidence evidence2 = new Evidence(0, 1, "testEvidence2", "testEvidence2", new Date(500));
         Evidence evidence3 = new Evidence(0, 1, "testEvidence3", "testEvidence3", new Date(300));
         Evidence evidence4 = new Evidence(0, 1, "testEvidence4", "testEvidence4", new Date(200));
+        for (int i = 0; i < testTags.size(); i++) {
+            if (i % 2 == 0) {
+                evidence1.addTag(testTags.get(i));
+            } else {
+                evidence2.addTag(testTags.get(i));
+            }
+        }
         testEvidences.add(evidence1);
         testEvidences.add(evidence2);
         testEvidences.add(evidence3);
@@ -240,4 +256,19 @@ class EvidenceServiceTest {
         }
     }
 
+    /**
+     * Tests that when all evidences with a certain tag are deleted,
+     * that the tags no longer exist.
+     */
+    @Test
+    void testRemoveTagsWithNoEvidence() {
+        List<Tag> tags = tagRepository.findAll();
+        Evidence evidence1 = testEvidences.get(0);
+        Evidence evidence2 = testEvidences.get(1);
+        evidenceRepository.deleteById(evidence1.getEvidenceId());
+        evidenceRepository.deleteById(evidence2.getEvidenceId());
+        evidenceService.removeTagsWithNoEvidence();
+        List<Tag> tags2 = tagRepository.findAll();
+        assertEquals(0, tags2.size());
+    }
 }
