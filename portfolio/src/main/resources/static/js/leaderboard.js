@@ -9,23 +9,41 @@ function configureLeaderboardTable() {
                 $(row).addClass(rankToColour[data[0]])
             }
         },
+
         dom: '<"top"i>rt<"bottom"pl>'
     });
+    const leaderboardTable = $('table').DataTable();
+    const page = leaderboardTable.page();
+    $('table').DataTable().page(page).draw('page');
+
 }
 
 /**
  * Loads in an updated table from the controller, keeps the user on the same page, and updates the notification to
  * inform the user when the table has updated.
  * @param notification the notification to update
+ * @param operation The type of operation, such as 'add' or 'delete'.
  */
-function updateLeaderboard(notification) {
+function updateLeaderboard(notification, operation) {
     const leaderboardTable = $('table').DataTable();
-    const page = leaderboardTable.page();
+    // const page = leaderboardTable.page();
     const url = "/leaderboard-table";
     $("#leaderboardTable").load(url + " #leaderboardTable>*", "", function () {
         configureLeaderboardTable();
-        $('table').DataTable().page(page).draw('page');
-        notification.action = UPDATELEADERBOARDACTION;
+        // $('table').DataTable().page(page).draw('page');
+        if (operation === ADDEVIDENCEACTION) {
+            notification.action = UPDATELEADERBOARDACTION;
+        } else if (operation === DELETEROLEACTION) {
+            notification.action = DELETEROLEUPDATEACTION;
+        } else if (operation === ADDROLEACTION) {
+            notification.action = ADDROLEUPDATEACTION;
+        } else if (operation === DELETEACTION) {
+            notification.action = DELETEEVIDENCEACTION
+        }
+        else {
+            notification.action = UPDATELEADERBOARDDELETEACTION;
+        }
+
         notification.show();
         notification.hideTimed(SECONDS_TILL_HIDE);
     });

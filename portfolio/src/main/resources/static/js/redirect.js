@@ -17,10 +17,20 @@ function redirectToProfile(userId) {
 }
 
 /**
- * redirect to skill page
+ * Redirect to skill page
  * @param userId current user ID (note: it is not necessarily the user that logged in)
  * @param skillId the id of a skill
  */
 function redirectToSkillsPage(userId, skillId) {
     window.location.href = "evidence-skills?userId="+userId+"&skillId="+skillId;
+}
+
+/**
+ * Redirect to category page
+ * @param userId current user ID (note: it is not necessarily the user that logged in)
+ * @param categoryId the id of a category
+ */
+function redirectToCategoriesPage(userId, categoryId) {
+    console.log(userId, categoryId)
+    window.location.href = "evidence-categories?userId="+userId+"&categoryId="+categoryId;
 }

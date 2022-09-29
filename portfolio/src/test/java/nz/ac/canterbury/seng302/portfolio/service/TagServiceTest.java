@@ -32,7 +32,8 @@ class TagServiceTest {
     @Mock
     private TagRepository tagRepository;
 
-    @Mock EvidenceRepository evidenceRepository;
+    @Mock
+    EvidenceRepository evidenceRepository;
 
     @InjectMocks
     private TagService tagService;
@@ -106,17 +107,18 @@ class TagServiceTest {
         assertEquals(new ArrayList<>(), actualTags);
     }
 
+
     /**
-     * Tests that the getTag(int tagId) method returns specific tag.
+     * Tests that the removeTag(int tagId) method removes a specific tag.
      */
     @Test
-    void removeTag() {
-      Tag tag = testTags.get(1);
-      int tagId = tag.getTagId();
-      doReturn(Optional.of(tag)).when(tagRepository).findById(tagId);
-      doNothing().when(tagRepository).deleteById(tagId);
-      boolean success = tagService.removeTag(tagId);
-      assertTrue(success);
-      verify(tagRepository).deleteById(tagId);
+    void testRemoveTag() {
+        Tag tag = testTags.get(1);
+        int tagId = tag.getTagId();
+        doReturn(Optional.of(tag)).when(tagRepository).findById(tagId);
+        doNothing().when(tagRepository).deleteById(tagId);
+        boolean success = tagService.removeTag(tagId);
+        assertTrue(success);
+        verify(tagRepository).deleteById(tagId);
     }
 }
