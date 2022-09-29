@@ -15,7 +15,7 @@
                         <div class="mb-3">
                             <label for="evidenceTitle" class="col-form-label">Title(*):</label>
                             <input onkeyup="{updateCharsLeft('evidenceTitle', 'evidenceTitleLength', 30);isEvidenceInputFieldFilled()}" maxlength="30" type="text"
-                                   class="form-control" onkeydown="isEvidenceInputFieldFilled()" id="evidenceTitle" name="title" th:value="${evidence?.title}">
+                                   class="form-control" onchange="isEvidenceInputFieldFilled()" id="evidenceTitle" name="title" th:value="${evidence?.title}">
                             <div class="name-length-message">
                                 <span id="evidenceTitleLength"></span>
                             </div>
@@ -27,7 +27,7 @@
                         </div>
                         <div class="mb-3">
                             <label for="evidenceDescription" class="col-form-label">Description(*):</label>
-                            <input onkeyup="{updateCharsLeft('evidenceDescription', 'evidenceDescriptionLength', 250);isEvidenceInputFieldFilled()}" maxlength="250" type="text"
+                            <input onkeyup="{updateCharsLeft('evidenceDescription', 'evidenceDescriptionLength', 250);isEvidenceInputFieldFilled()}" maxlength="250" type="text" onchange="isEvidenceInputFieldFilled()"
                                    class="form-control" id="evidenceDescription" name="description" th:value="${evidence?.description}">
                             <div class="name-length-message">
                                 <span id="evidenceDescriptionLength"></span>
