@@ -195,19 +195,12 @@ public class EvidenceController {
             HttpServletResponse httpServletResponse,
             @AuthenticationPrincipal AuthState principal
     ) {
-        try {
-            boolean wasHighFived = evidenceService.saveHighFiveEvidence(evidenceId, userId, userName);
-            if (wasHighFived) {
-                httpServletResponse.setStatus(HttpServletResponse.SC_OK);
-            } else {
-                httpServletResponse.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            }
-
-        } catch (Exception e) {
-            httpServletResponse.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            logger.error("Attributes of evidence not formatted correctly. Not high-fiving evidence. ");
+        boolean wasHighFived = evidenceService.saveHighFiveEvidence(evidenceId, userId, userName);
+        if (wasHighFived) {
+            httpServletResponse.setStatus(HttpServletResponse.SC_OK);
+        } else {
+            httpServletResponse.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
-
         return ACCOUNT_EVIDENCE;
     }
 
@@ -227,17 +220,11 @@ public class EvidenceController {
             HttpServletResponse httpServletResponse,
             @AuthenticationPrincipal AuthState principal
     ) {
-        try {
-            boolean wasRemoved = evidenceService.removeHighFiveEvidence(evidenceId, userId, userName);
-            if (wasRemoved) {
-                httpServletResponse.setStatus(HttpServletResponse.SC_OK);
-            } else {
-                httpServletResponse.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            }
-
-        } catch (Exception e) {
-            httpServletResponse.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            logger.error("Attributes of evidence not formatted correctly. Not high-fiving evidence. ");
+        boolean wasRemoved = evidenceService.removeHighFiveEvidence(evidenceId, userId, userName);
+        if (wasRemoved) {
+            httpServletResponse.setStatus(HttpServletResponse.SC_OK);
+        } else {
+            httpServletResponse.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
         return ACCOUNT_EVIDENCE;
     }
