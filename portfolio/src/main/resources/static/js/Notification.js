@@ -25,8 +25,6 @@ const DELETEROLEACTION = "deleteRole";
 const ADDROLEACTION = "addRole";
 const ADDROLEUPDATEACTION = "addRoleUpdate";
 const DELETEROLEUPDATEACTION = "deleteRoleUpdate";
-const UPDATELEADERBOARDADDACTION = "updateLeaderboardAdd";
-const UPDATELEADERBOARDDELETEACTION = "updateLeaderboardDelete";
 
 
 /**

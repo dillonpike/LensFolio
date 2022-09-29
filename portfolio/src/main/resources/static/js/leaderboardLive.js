@@ -38,8 +38,6 @@ function connect() {
                 const notification = showLeaderboardUpdateToast("Evidence", eventResponse.artefactName, eventResponse.artefactId,
                     eventResponse.username, eventResponse.userFirstName, eventResponse.userLastName, ADDEVIDENCEACTION);
                 updateLeaderboard(notification, ADDEVIDENCEACTION);
-                    eventResponse.username, eventResponse.userFirstName, eventResponse.userLastName, ADDEVIDENCEACTION);
-                updateLeaderboard(notification, ADDEVIDENCEACTION);
             }
         });
         stompClient.subscribe('/webSocketGet/evidence-deleted', function (eventResponseArg) {
