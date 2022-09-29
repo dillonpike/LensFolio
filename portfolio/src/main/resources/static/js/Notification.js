@@ -176,6 +176,9 @@ class Notification {
           case ADDEVIDENCEACTION:
               this.bodyText = this.firstName + " " + this.lastName + " (" + this.username + ") has added a piece of evidence. Updating leaderboard...";
               break;
+            case DELETEEVIDENCEACTION:
+                this.bodyText = this.firstName + " " + this.lastName + " (" + this.username + ") has deleted a piece of evidence. Updating leaderboard...";
+                break;
           case UPDATELEADERBOARDACTION:
               this.bodyText = this.firstName + " " + this.lastName + " (" + this.username + ") has added a piece of evidence. Updated leaderboard!";
               break;

@@ -27,11 +27,13 @@ function updateLeaderboard(notification, operation) {
         configureLeaderboardTable();
         $('table').DataTable().page(page).draw('page');
         if (operation === ADDEVIDENCEACTION) {
-            notification.action = UPDATELEADERBOARDADDACTION;
+            notification.action = UPDATELEADERBOARDACTION;
         } else if (operation === DELETEROLEACTION) {
             notification.action = DELETEROLEUPDATEACTION;
         } else if (operation === ADDROLEACTION) {
             notification.action = ADDROLEUPDATEACTION;
+        } else if (operation === DELETEACTION) {
+            notification.action = DELETEEVIDENCEACTION
         }
         else {
             notification.action = UPDATELEADERBOARDDELETEACTION;
