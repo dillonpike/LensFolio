@@ -327,7 +327,6 @@ class EvidenceControllerTest {
                 new WebLink("something.ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"),
                 new WebLink("mke.ccc"));
         for (WebLink invalidWebLink: invalidWebLinks) {
-            System.err.println(invalidWebLink.getUrl());
             Evidence invalidEvidence = new Evidence(0, 0, "test evidence", "test description", new Date());
             invalidEvidence.addWebLink(invalidWebLink);
             doCallRealMethod().when(evidenceService).validateEvidence(eq(invalidEvidence), any(Model.class));

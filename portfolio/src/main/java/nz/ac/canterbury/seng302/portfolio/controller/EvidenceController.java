@@ -77,22 +77,19 @@ public class EvidenceController {
             evidenceService.validateEvidence(evidence, model);
             boolean wasAdded = evidenceService.addEvidence(evidence);
             if (wasAdded) {
-                // * Add the evidence to the model *
-                // * Maybe add something to the model to make sure the evidence tab is shown? *
                 httpServletResponse.setStatus(HttpServletResponse.SC_OK);
-                return ADD_EVIDENCE_MODAL_FRAGMENT; // * return some sort of evidence fragment? *
             } else {
                 String errorMessage = "Evidence Not Added. Saving Error Occurred.";
                 model.addAttribute(ADD_EVIDENCE_MODAL_FRAGMENT_TITLE_MESSAGE, errorMessage);
                 httpServletResponse.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-                return ADD_EVIDENCE_MODAL_FRAGMENT;
             }
 
         } catch (NotAcceptableException e) {
             httpServletResponse.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             logger.error("Attributes of evidence not formatted correctly. Not adding evidence. ");
-            return ADD_EVIDENCE_MODAL_FRAGMENT;
         }
+
+        return ADD_EVIDENCE_MODAL_FRAGMENT;
     }
 
     /**
@@ -201,20 +198,17 @@ public class EvidenceController {
         try {
             boolean wasHighFived = evidenceService.saveHighFiveEvidence(evidenceId, userId, userName);
             if (wasHighFived) {
-                // * Add the evidence to the model *
-                // * Maybe add something to the model to make sure the evidence tab is shown? *
                 httpServletResponse.setStatus(HttpServletResponse.SC_OK);
-                return ACCOUNT_EVIDENCE; // * return some sort of evidence fragment? *
             } else {
                 httpServletResponse.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-                return ACCOUNT_EVIDENCE;
             }
 
-        } catch (NotAcceptableException e) {
+        } catch (Exception e) {
             httpServletResponse.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             logger.error("Attributes of evidence not formatted correctly. Not high-fiving evidence. ");
-            return ACCOUNT_EVIDENCE;
         }
+
+        return ACCOUNT_EVIDENCE;
     }
 
     /**
@@ -236,20 +230,16 @@ public class EvidenceController {
         try {
             boolean wasRemoved = evidenceService.removeHighFiveEvidence(evidenceId, userId, userName);
             if (wasRemoved) {
-                // * Add the evidence to the model *
-                // * Maybe add something to the model to make sure the evidence tab is shown? *
                 httpServletResponse.setStatus(HttpServletResponse.SC_OK);
-                return ACCOUNT_EVIDENCE; // * return some sort of evidence fragment? *
             } else {
                 httpServletResponse.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-                return ACCOUNT_EVIDENCE;
             }
 
-        } catch (NotAcceptableException e) {
+        } catch (Exception e) {
             httpServletResponse.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             logger.error("Attributes of evidence not formatted correctly. Not high-fiving evidence. ");
-            return ACCOUNT_EVIDENCE;
         }
+        return ACCOUNT_EVIDENCE;
     }
 
     /**
