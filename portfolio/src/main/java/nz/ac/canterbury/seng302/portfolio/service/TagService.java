@@ -108,7 +108,6 @@ public class TagService {
      */
     public boolean removeTag(int tagId) {
         Optional<Tag> sOptional = tagRepository.findById(tagId);
-
         if (sOptional.isPresent()) {
             Tag tag = sOptional.get();
             tagRepository.deleteById(tag.getTagId());
@@ -133,20 +132,5 @@ public class TagService {
         }
         return allTags.stream().toList();
     }
-
-    //TODO: Discuss if we want this!
-    /**
-    * Remove tags from the database that aren't connected to any pieces of evidence.
-    *//*
-    public void removeTagsWithNoEvidence() {
-    List<Tag> tags = tagRepository.findAll();
-    for (Tag tag : tags) {
-      int tagId = tag.getTagId();
-      List<Evidence> evidences = evidenceRepository.findAllByTagId(tagId);
-      if (evidences.isEmpty()) {
-        removeTag(tagId);
-      }
-    }
-  }*/
-
 }
+

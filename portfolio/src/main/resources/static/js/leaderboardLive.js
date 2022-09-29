@@ -48,6 +48,18 @@ function connect() {
                 updateLeaderboard(notification, DELETEEVIDENCEACTION);
             }
         });
+        stompClient.subscribe('/webSocketGet/delete-student-role', function (eventResponseArg) {
+            const eventResponse = JSON.parse(eventResponseArg.body)
+            const notification = showLeaderboardUpdateToast(eventResponse.artefactType, eventResponse.artefactName, eventResponse.artefactId,
+                eventResponse.username, eventResponse.userFirstName, eventResponse.userLastName, DELETEROLEACTION);
+            updateLeaderboard(notification, DELETEROLEACTION);
+        });
+        stompClient.subscribe('/webSocketGet/add-student-role', function (eventResponseArg) {
+            const eventResponse = JSON.parse(eventResponseArg.body)
+            const notification = showLeaderboardUpdateToast(eventResponse.artefactType, eventResponse.artefactName, eventResponse.artefactId,
+                eventResponse.username, eventResponse.userFirstName, eventResponse.userLastName, ADDROLEACTION);
+            updateLeaderboard(notification, ADDROLEACTION);
+        });
     });
 }
 

@@ -5,6 +5,11 @@ import nz.ac.canterbury.seng302.portfolio.model.Evidence;
 import nz.ac.canterbury.seng302.portfolio.model.Tag;
 import nz.ac.canterbury.seng302.portfolio.model.WebLink;
 import nz.ac.canterbury.seng302.portfolio.service.*;
+import nz.ac.canterbury.seng302.portfolio.service.EvidenceService;
+import nz.ac.canterbury.seng302.portfolio.service.RegisterClientService;
+import nz.ac.canterbury.seng302.portfolio.service.TagService;
+import nz.ac.canterbury.seng302.portfolio.service.UserAccountClientService;
+import nz.ac.canterbury.seng302.portfolio.service.*;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import nz.ac.canterbury.seng302.shared.identityprovider.ClaimDTO;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
@@ -322,7 +327,6 @@ class EvidenceControllerTest {
                 new WebLink("something.ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"),
                 new WebLink("mke.ccc"));
         for (WebLink invalidWebLink: invalidWebLinks) {
-            System.err.println(invalidWebLink.getUrl());
             Evidence invalidEvidence = new Evidence(0, 0, "test evidence", "test description", new Date());
             invalidEvidence.addWebLink(invalidWebLink);
             doCallRealMethod().when(evidenceService).validateEvidence(eq(invalidEvidence), any(Model.class));
