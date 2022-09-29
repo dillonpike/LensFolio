@@ -61,11 +61,9 @@
                     </button>
                     <div class="dropdown-menu">
                         <a class="dropdown-item" th:if="${!user.rolesList.contains(studentRole)}">
-                            <form th:action="@{add_role}" method="post" >
-                                <input type="hidden" th:value="student" name="role">
-                                <input type ="hidden" th:value="${user.id}" name="userId">
-                                <button type="submit" id='student' class="btn btn-link" style="color:black;text-decoration: none;" th:attr="onclick=|sentReload('${user.username}')|">Student</button>
-                            </form>
+                            <input type="hidden" th:value="student" name="role">
+                            <input type ="hidden" th:value="${user.id}" name="userId">
+                            <button type="submit" id='student' class="btn btn-link" style="color:black;text-decoration: none;" th:attr="onclick=|addUserRole('${user.id}','student', '${user.FirstName}', '${user.LastName}', '${user.username}')|">Student</button>
                         </a>
                         <a class="dropdown-item" th:if="${!user.rolesList.contains(teacherRole)}">
                             <form th:action="@{add_role}" method="post">
@@ -136,7 +134,8 @@
 
         /*<![CDATA[*/
         let username = /*[[${currentUsername}]]*/ "Error";
-        /*]]>*/        stompClient = Stomp.over(socket);
+        /*]]>*/
+        stompClient = Stomp.over(socket);
         stompClient.debug = null;
         stompClient.connect({}, function (frame) {
 
@@ -171,6 +170,7 @@
      * Sends the message that a group is being updated, and sends the events names with it.
      */
     function reload(username) {
+
         stompClient.send("/webSocketPost/add-roles", {}, JSON.stringify({
             'username': username
         }));

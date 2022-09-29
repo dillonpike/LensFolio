@@ -175,6 +175,18 @@ public class ViewUsersController {
     @MessageMapping("/delete-student-role")
     @SendTo("/webSocketGet/delete-student-role")
     public NotificationResponse deleteStudentRoleNotification(NotificationMessage message) {
+        return NotificationResponse.fromMessage(message, "deleteRole");
+    }
+
+    /**
+     * This method maps @MessageMapping endpoint to the @SendTo endpoint. Called when something is sent to
+     * the MessageMapping endpoint. This is triggered when a user has been added student role
+     * @param message Information about adding student role
+     * @return Returns the message given.
+     */
+    @MessageMapping("/add-student-role")
+    @SendTo("/webSocketGet/add-student-role")
+    public NotificationResponse addStudentRoleNotification(NotificationMessage message) {
         return NotificationResponse.fromMessage(message, "addRole");
     }
 
