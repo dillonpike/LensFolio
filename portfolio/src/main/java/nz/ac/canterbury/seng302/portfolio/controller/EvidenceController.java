@@ -118,7 +118,7 @@ public class EvidenceController {
         try {
             evidenceList = evidenceService.getEvidencesWithSkill(skillId);
             skillTag = tagService.getTag(skillId);
-            skillsList = tagService.getTagsByUserSortedList(userId);
+            skillsList = tagService.getTagsSortedList();
             if (skillTag == null) {
                 throw new NullPointerException("Invalid Tag Id");
             }
@@ -171,7 +171,6 @@ public class EvidenceController {
         try {
             if (listAll) {
                 evidenceList = evidenceService.getEvidencesWithSkill(skillId);
-
                 skillsList = tagService.getTagsSortedList();
             } else {
                 evidenceList = evidenceService.getEvidencesWithSkillAndUser(viewedUserId, skillId);
