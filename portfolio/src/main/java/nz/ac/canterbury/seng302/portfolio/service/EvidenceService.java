@@ -312,7 +312,6 @@ public class EvidenceService {
                 exists = true;
             }
         }
-
         return exists;
     }
 
