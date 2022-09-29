@@ -9,8 +9,13 @@ function configureLeaderboardTable() {
                 $(row).addClass(rankToColour[data[0]])
             }
         },
+
         dom: '<"top"i>rt<"bottom"pl>'
     });
+    const leaderboardTable = $('table').DataTable();
+    const page = leaderboardTable.page();
+    $('table').DataTable().page(page).draw('page');
+
 }
 
 /**
