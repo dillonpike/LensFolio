@@ -31,6 +31,5 @@ function redirectToSkillsPage(userId, skillId) {
  * @param categoryId the id of a category
  */
 function redirectToCategoriesPage(userId, categoryId) {
-    console.log(userId, categoryId)
     window.location.href = "evidence-categories?userId="+userId+"&categoryId="+categoryId;
 }

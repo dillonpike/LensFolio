@@ -1,6 +1,7 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
 import com.google.protobuf.Timestamp;
+import nz.ac.canterbury.seng302.portfolio.model.Category;
 import nz.ac.canterbury.seng302.portfolio.model.Evidence;
 import nz.ac.canterbury.seng302.portfolio.model.Tag;
 import nz.ac.canterbury.seng302.portfolio.model.WebLink;
@@ -60,6 +61,9 @@ class EvidenceControllerTest {
     private TagService tagService;
 
     @MockBean
+    private CategoryService categoryService;
+
+    @MockBean
     private PermissionService permissionService; // needed to load application context
 
     @MockBean
@@ -100,6 +104,12 @@ class EvidenceControllerTest {
             .build();
 
     private static final Evidence testEvidence = new Evidence(0 ,0, "test evidence", "test description", new Date());
+
+    private static final List<Category> testCategories = List.of(
+            new Category("test_category1"),
+            new Category("test_category2"),
+            new Category("test_category3")
+    );
 
     @BeforeEach
     public void setup() {
@@ -396,6 +406,7 @@ class EvidenceControllerTest {
         Tag tag = new Tag("Test");
         when(evidenceService.getEvidencesWithSkill(any(Integer.class))).thenReturn(evidences);
         when(tagService.getTag(any(Integer.class))).thenReturn(tag);
+        when(categoryService.getAllCategories()).thenReturn(testCategories);
 
         mockMvc.perform(get("/evidence-skills?userId=" + userId + "&skillId=1"))
                 .andExpect(status().isOk())
@@ -419,6 +430,7 @@ class EvidenceControllerTest {
         evidences.add(new Evidence(0, userId, "test", "test-desc", Date.from(Instant.now())));
         when(evidenceService.getEvidencesWithSkill(any(Integer.class))).thenReturn(evidences);
         when(tagService.getTag(any(Integer.class))).thenReturn(null);
+        when(categoryService.getAllCategories()).thenReturn(testCategories);
 
         mockMvc.perform(get("/evidence-skills?userId=" + userId + "&skillId=1"))
                 .andExpect(status().is3xxRedirection())
@@ -492,6 +504,7 @@ class EvidenceControllerTest {
         List<Tag> skills = List.of(new Tag("test skill 1"), new Tag("test skill 2"));
         int userId = 5;
         when(tagService.getTagsFromUserId(userId)).thenReturn(skills);
+        when(categoryService.getAllCategories()).thenReturn(testCategories);
 
         mockMvc.perform(get("/get-skills").param("userId", String.valueOf(userId)))
                 .andExpect(status().isOk())
