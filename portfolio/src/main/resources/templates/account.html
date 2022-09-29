@@ -350,52 +350,6 @@
     return localStorage.getItem('tab')
   }
 
-  /**
-   * This function will check the current icon being used for the like button and toggle it to the alternative.
-   * LOGIC STILL NEEDS TO BE CONNECT TO THIS FUNCTION!
-   * @param id  ID of the image icon to toggle.
-   */
-  function switchIcon(id) {
-    const imgID = "#star" + id
-    const icon =  $(imgID);
-    if (icon.hasClass("bi-star")) {
-      icon.addClass("bi-star-fill").removeClass("bi-star");
-      saveHighFived(id);
-      sendHighFivedNotfication(id); // Send notification that post was liked.
-    } else {
-      icon.addClass("bi-star").removeClass("bi-star-fill");
-    }
-  }
-
-  /**
-   * This function will be triggered when the user clicks(high five) on a piece of evidence.
-   * @param evidenceId ID of the evidence that was high fived.
-   */
-  function saveHighFived(evidenceId) {
-    let userId = document.getElementById("userId").value;
-    let userName = $("#firstName").val() + " " + $("#lastNameInput").val();
-    const data = {
-      evidenceId: evidenceId,
-      userId: userId,
-      userName: userName
-    }
-    $.post("/saveHighFiveEvidence?" + new URLSearchParams(data)).done(function (result) {
-      $("#evidence").replaceWith(result);
-    });
-  }
-
-  function saveUnHighFived(evidenceId) {
-    let userId = document.getElementById("userId").value;
-    let userName = $("#firstName").val() + " " + $("#lastNameInput").val();
-    const data = {
-      evidenceId: evidenceId,
-      userId: userId,
-      userName: userName
-    }
-    $.post("/removeHighFiveEvidence?" + new URLSearchParams(data)).done(function (result) {
-      $("#evidence").replaceWith(result);
-    });
-  }
 
   /**
    * This function redirects the page to profile page of user with id specified in the parameter
@@ -411,20 +365,10 @@
     document.getElementById(tabToSet).click();
   }
 
-  /**
-   * Used to send a notification that a piece of evidence was highfived to the controller.
-   * @param id    The ID of the evidnce that was highfived.
-   */
-  function sendHighFivedNotfication(id) {
-    const title = $("#evidence-title-" + id).text();
-    stompClient.send("/webSocketPost/high-fived-evidence", {}, JSON.stringify({
-      'sendingUserId': /*[[${userId}]]*/ null,
-      'sendingUserFullName': /*[[${headerFullName}]]*/ null,
-      'sendingEvidenceTitle': title,
-      'sendingEvidenceId': id,
-      'receivingUserId': /*[[${viewedUserId}]]*/ null
-    }));
-  }
+  let socket = new SockJS('mywebsockets');
+  let stompClient = Stomp.over(socket);
+  stompClient.debug = null;
+
   /*]]>*/
 
 </script>

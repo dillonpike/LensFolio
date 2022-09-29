@@ -226,6 +226,14 @@ public class EvidenceService {
         }
     }
 
+    /**
+     * Saves a piece of evidence after being high-fived.
+     * @param evidenceId evidence id of the piece of evidence being high-fived
+     * @param userId user id of the owner of the piece of evidence
+     * @param userName userName of the owner of the piece of evidence
+     * @return boolean whether the piece of evidence was high-fived correctly
+     * @throws Exception if one of the values are not acceptable
+     */
     public boolean saveHighFiveEvidence(int evidenceId, int userId, String userName) {
         Optional<Evidence> evidenceOptional = evidenceRepository.findById(evidenceId);
         if (evidenceOptional.isPresent()) {
@@ -241,6 +249,37 @@ public class EvidenceService {
             return false;
         }
     }
+
+    /**
+     * Saves a piece of evidence after being un-high-fived.
+     * @param evidenceId evidence id of the piece of evidence being un-high-fived
+     * @param userId user id of the owner of the piece of evidence
+     * @param userName userName of the owner of the piece of evidence
+     * @return boolean whether the piece of evidence was un-high-fived correctly
+     * @throws Exception if one of the values are not acceptable
+     */
+    public boolean removeHighFiveEvidence(int evidenceId, int userId, String userName) {
+        Optional<Evidence> evidenceOptional = evidenceRepository.findById(evidenceId);
+        if (evidenceOptional.isPresent()) {
+            Evidence evidence = evidenceOptional.get();
+            if (!evidence.getHighFiverIds().contains(userId)) {
+                return false;
+            }
+            Set<HighFivers> highFivers = Set.copyOf(evidence.getHighFivers());
+            for (HighFivers highFiver : highFivers) {
+                if (highFiver.getUserId() == userId) {
+                    evidence.removeHighFivers(highFiver);
+                    highFiversRepository.delete(highFiver);
+                    break;
+                }
+            }
+            evidenceRepository.save(evidence);
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     /**
      * Checks to ensure that a piece of evidence has the user with a userId,
      * matching that passed to the method, attached to it.

@@ -120,6 +120,9 @@ function isEvidenceInputFieldFilled() {
     }
 }
 
+/**
+ * Clear all of the modal fields.
+ */
 function clearEvidenceModalFields() {
     document.getElementById('evidenceTitle').value = "";
     document.getElementById('evidenceDescription').value = "";

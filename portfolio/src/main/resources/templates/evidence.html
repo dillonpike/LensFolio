@@ -45,6 +45,13 @@
     /*<![CDATA[*/
 
     /**
+     * Stores the stomp client to connect to and send to for WebSockets/SockJS.
+     */
+    let socket = new SockJS('mywebsockets');
+    let stompClient = Stomp.over(socket);
+    stompClient.debug = null;
+
+    /**
      * Refreshes the table to instead display either all evidences or just a certain users.
      */
     function updateEvidenceList() {
@@ -60,6 +67,7 @@
             $("#evidenceList").replaceWith(result);
         }).fail()
     }
+
     /*]]>*/
 </script>
 </html>
