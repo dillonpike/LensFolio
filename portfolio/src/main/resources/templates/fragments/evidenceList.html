@@ -69,7 +69,7 @@
             </button>
             <ul class="dropdown-menu">
               <li><h6 class="dropdown-header">High fived by:</h6></li>
-              <li th:if="${evidence.getHighFivers().isEmpty()}"><a class="dropdown-item">No one high five this evidence yet!</a></li>
+              <li th:if="${evidence.getHighFivers().isEmpty()}"><a class="dropdown-item">No one high has fived this evidence yet!</a></li>
               <li th:each="person:${evidence.getHighFivers()}" style="cursor: pointer"><a class="dropdown-item" th:attr="onclick='redirectToAnotherUserPage(' + ${person.getUserId()} + ')'" th:text="${person.getName()}"></a></li>
             </ul>
           </div>
