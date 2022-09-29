@@ -118,10 +118,12 @@ public class EvidenceController {
 
         List<Evidence> evidenceList;
         Tag skillTag;
+        List<Tag> skillsList;
 
         try {
             evidenceList = evidenceService.getEvidencesWithSkill(skillId);
             skillTag = tagService.getTag(skillId);
+            skillsList = tagService.getTagsByUserSortedList(userId);
             if (skillTag == null) {
                 throw new NullPointerException("Invalid Tag Id");
             }
@@ -132,6 +134,7 @@ public class EvidenceController {
         model.addAttribute("evidencesExists", ((evidenceList != null) && (!evidenceList.isEmpty())));
         model.addAttribute("evidences", evidenceList);
         model.addAttribute("skillTag", skillTag);
+        model.addAttribute("allSkills", skillsList);
 
         model.addAttribute("viewedUserId", userId);
         model.addAttribute("skillId", skillId);
@@ -157,17 +160,21 @@ public class EvidenceController {
             @RequestParam(value = "skillId") int skillId
     ) {
         List<Evidence> evidenceList;
+        List<Tag> skillsList;
         try {
             if (listAll) {
                 evidenceList = evidenceService.getEvidencesWithSkill(skillId);
+                skillsList = tagService.getTagsSortedList();
             } else {
                 evidenceList = evidenceService.getEvidencesWithSkillAndUser(viewedUserId, skillId);
+                skillsList = tagService.getTagsByUserSortedList(userId);
             }
         } catch (NullPointerException e) {
             return "redirect:account?userId=" + userId;
         }
         model.addAttribute("evidencesExists", ((evidenceList != null) && (!evidenceList.isEmpty())));
         model.addAttribute("evidences", evidenceList);
+        model.addAttribute("allSkills", skillsList);
 
         return "evidence::evidenceList";
     }

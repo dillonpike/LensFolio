@@ -2,10 +2,7 @@ package nz.ac.canterbury.seng302.portfolio.controller;
 
 import io.grpc.StatusRuntimeException;
 
-import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
-import java.util.Set;
 
 import nz.ac.canterbury.seng302.portfolio.model.*;
 import nz.ac.canterbury.seng302.portfolio.model.Evidence;
@@ -116,15 +113,8 @@ public class AccountController {
             }
             model.addAttribute("evidences", evidenceList);
 
-            Set<Tag> skillsSet = tagService.getTags(userId);
-            List<Tag> skillsList = skillsSet.stream().toList();
-            skillsList.sort(Comparator.comparing(Tag::getTagName));
-            Tag noSkill = new Tag("No_skills");
-            noSkill.setTagId(-1);
-            System.out.println(skillsList.size());
-            skillsList.add(0, noSkill);
-            System.out.println(skillsList.size());
-            model.addAttribute("skills", skillsList);
+            List<Tag> skillsList = tagService.getTagsByUserSortedList(userId);
+            model.addAttribute("allSkills", skillsList);
 
         } catch (StatusRuntimeException e) {
             model.addAttribute("loginMessage", "Error connecting to Identity Provider...");

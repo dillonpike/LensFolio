@@ -23,69 +23,84 @@
 <script src="js/redirect.js"></script>
 
 <div class="container">
-    <div class="d-flex d-flex justify-content-between">
-        <h2 class="mb-0 fs-1" th:text="${skillTag.getSpacedTagName()} + ':'"></h2>
-        <div>
-            <button type="button" class="btn-block btn btn-sm btn-primary" th:onclick="|redirectToEvidence('${viewedUserId}')|">Back To Profile</button>
-            <div class="form-check form-switch">
-                <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault" onclick="updateEvidenceList()" checked>
-                <label class="form-check-label" for="flexSwitchCheckDefault">All Users</label>
+    <div class="row align-items-start">
+        <div class="col">
+            <div class="d-flex d-flex justify-content-between">
+                <h2 class="mb-0 fs-1" th:text="${skillTag.getSpacedTagName()} + ':'"></h2>
+                <div>
+                    <button type="button" class="btn-block btn btn-sm btn-primary" th:onclick="|redirectToEvidence('${viewedUserId}')|">Back To Profile</button>
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault" onclick="updateEvidenceList()" checked>
+                        <label class="form-check-label" for="flexSwitchCheckDefault">All Users</label>
+                    </div>
+                </div>
             </div>
-        </div>
-    </div>
-    <div id="evidenceList" th:fragment="evidenceList">
-        <div th:each="evidence, meta: ${evidences}">
-            <div class="evidence-block">
-                <div class="detail-block">
-                    <div class="evidence-info-block" th:if="${evidence}">
-                        <button th:id="evidenceDropdown + (${meta.index} + 1)" class="btn" type="button" data-bs-toggle="collapse" th:attr="data-bs-target='#collapseEvidence' + ${evidence.getEvidenceId()}, aria-controls='collapseEvidence' + ${evidence.getEvidenceId()}, onClick='changeIcon(evidenceArrow' + (${meta.index} + 1) + ')'" aria-expanded="false" style="outline: none; box-shadow: none;">
-                            <span class="evidence-title" th:text="${evidence.getTitle}"></span>
-                            <svg th:id="evidenceArrow + (${meta.index} + 1)" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-caret-left-fill" viewBox="0 0 16 16">
-                                <path d="m3.86 8.753 5.482 4.796c.646.566 1.658.106 1.658-.753V3.204a1 1 0 0 0-1.659-.753l-5.48 4.796a1 1 0 0 0 0 1.506z"/>
-                            </svg>
-                        </button>
-                        <div class="evidence-date ps-3" th:text="${evidence.getDateString}"></div>
-                        <div class="collapse ps-3 pb-3" th:id="collapseEvidence + ${evidence.getEvidenceId()}">
-                            <b>Description:</b>
-                            <div class="evidence-description" th:text="${evidence.getDescription}"></div>
-                            <div class="evidence-weblink-title" th:if="${!evidence.getWebLinks().isEmpty()}">Weblinks:</div>
-                            <div th:each="webLink, meta: ${evidence.getWebLinks()}">
-                                <div th:if="${webLink.getFormattedUrl()} != 'InvalidURL'" class="chip" th:id="'weblinkurlDisplay' + ${meta}" style="display: inline-block;padding: 0 12px 0 15px;height: fit-content;font-size: 16px;line-height: 30px;border-radius: 25px;background-color: #f1f1f1f1;margin: 0 10px 10px 0;" data-toggle="tooltip" data-bs-placement="right" th:title="${webLink.getUrl()}">
-                                    <div class="d-flex justify-content-between flex-row align-items-center">
-                                        <i th:class="${webLink.isSecure()} ? 'bi bi-lock' : 'bi bi-unlock'"></i>
-                                        <span style="margin-right: 10px; margin-left: 10px" th:text="${webLink.getFormattedUrl()}"></span>
-                                        <a th:href="${webLink.getUrl()}" target="_blank">
-                                            <i class="bi bi-box-arrow-up-right"></i>
-                                        </a>
+            <div id="evidenceList" th:fragment="evidenceList">
+                <div th:each="evidence, meta: ${evidences}">
+                    <div class="evidence-block">
+                        <div class="detail-block">
+                            <div class="evidence-info-block" th:if="${evidence}">
+                                <button th:id="evidenceDropdown + (${meta.index} + 1)" class="btn" type="button" data-bs-toggle="collapse" th:attr="data-bs-target='#collapseEvidence' + ${evidence.getEvidenceId()}, aria-controls='collapseEvidence' + ${evidence.getEvidenceId()}, onClick='changeIcon(evidenceArrow' + (${meta.index} + 1) + ')'" aria-expanded="false" style="outline: none; box-shadow: none;">
+                                    <span class="evidence-title" th:text="${evidence.getTitle}"></span>
+                                    <svg th:id="evidenceArrow + (${meta.index} + 1)" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-caret-left-fill" viewBox="0 0 16 16">
+                                        <path d="m3.86 8.753 5.482 4.796c.646.566 1.658.106 1.658-.753V3.204a1 1 0 0 0-1.659-.753l-5.48 4.796a1 1 0 0 0 0 1.506z"/>
+                                    </svg>
+                                </button>
+                                <div class="evidence-date ps-3" th:text="${evidence.getDateString}"></div>
+                                <div class="collapse ps-3 pb-3" th:id="collapseEvidence + ${evidence.getEvidenceId()}">
+                                    <b>Description:</b>
+                                    <div class="evidence-description" th:text="${evidence.getDescription}"></div>
+                                    <div class="evidence-weblink-title" th:if="${!evidence.getWebLinks().isEmpty()}">Weblinks:</div>
+                                    <div th:each="webLink, meta: ${evidence.getWebLinks()}">
+                                        <div th:if="${webLink.getFormattedUrl()} != 'InvalidURL'" class="chip" th:id="'weblinkurlDisplay' + ${meta}" style="display: inline-block;padding: 0 12px 0 15px;height: fit-content;font-size: 16px;line-height: 30px;border-radius: 25px;background-color: #f1f1f1f1;margin: 0 10px 10px 0;" data-toggle="tooltip" data-bs-placement="right" th:title="${webLink.getUrl()}">
+                                            <div class="d-flex justify-content-between flex-row align-items-center">
+                                                <i th:class="${webLink.isSecure()} ? 'bi bi-lock' : 'bi bi-unlock'"></i>
+                                                <span style="margin-right: 10px; margin-left: 10px" th:text="${webLink.getFormattedUrl()}"></span>
+                                                <a th:href="${webLink.getUrl()}" target="_blank">
+                                                    <i class="bi bi-box-arrow-up-right"></i>
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="evidence-skillTag-title" th:if="${!evidence.getTags().isEmpty()}">Skill Tags:</div>
+                                    <div th:each="skillTag, meta: ${evidence.getTags()}">
+                                        <div th:if="${skillTag.getTagName()} != 'InvalidTag'" th:attr="onclick='redirectToSkillsPage(' + ${viewedUserId} + ','+ ${skillTag.getTagId()} +')'" class="chip tagBadges" th:id="'skillTagDisplay' + ${meta}" style="display: inline-block;padding: 0 12px 0 15px;height: fit-content;font-size: 16px;line-height: 30px;border-radius: 25px;background-color: #f1f1f1f1;margin: 0 10px 10px 0;" data-toggle="tooltip" data-bs-placement="right" th:title="${skillTag.getTagName()}">
+                                            <div class="d-flex justify-content-between flex-row align-items-center">
+                                                <span style="margin-right: 10px; margin-left: 10px" th:text="${skillTag.getTagName()}"></span>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                            <div class="evidence-skillTag-title" th:if="${!evidence.getTags().isEmpty()}">Skill Tags:</div>
-                            <div th:each="skillTag, meta: ${evidence.getTags()}">
-                                <div th:if="${skillTag.getTagName()} != 'InvalidTag'" th:attr="onclick='redirectToSkillsPage(' + ${viewedUserId} + ','+ ${skillTag.getTagId()} +')'" class="chip tagBadges" th:id="'skillTagDisplay' + ${meta}" style="display: inline-block;padding: 0 12px 0 15px;height: fit-content;font-size: 16px;line-height: 30px;border-radius: 25px;background-color: #f1f1f1f1;margin: 0 10px 10px 0;" data-toggle="tooltip" data-bs-placement="right" th:title="${skillTag.getTagName()}">
-                                    <div class="d-flex justify-content-between flex-row align-items-center">
-                                        <span style="margin-right: 10px; margin-left: 10px" th:text="${skillTag.getTagName()}"></span>
-                                    </div>
-                                </div>
+                                <script th:inline="javascript">
+                                    buttonId = /*[['evidenceDropdown' + (${meta.index} + 1)]]*/ null;
+                                    arrowId = /*[['evidenceArrow' + (${meta.index} + 1)]]*/ null;
+                                    collapseId = /*[['collapseEvidence' + ${evidence.getEvidenceId()}]]*/ null;
+                                    setToggle(buttonId, arrowId, collapseId);
+                                </script>
                             </div>
                         </div>
-                        <script th:inline="javascript">
-                            buttonId = /*[['evidenceDropdown' + (${meta.index} + 1)]]*/ null;
-                            arrowId = /*[['evidenceArrow' + (${meta.index} + 1)]]*/ null;
-                            collapseId = /*[['collapseEvidence' + ${evidence.getEvidenceId()}]]*/ null;
-                            setToggle(buttonId, arrowId, collapseId);
-                        </script>
+                    </div>
+                </div>
+                <!-- THIS BLOCK IS USED TO DISPLAY A NOTE THAT NO EVIDENCE HAS BEEN FOUND -->
+                <div class="evidence-block" th:if="!${evidencesExists}">
+                    <div class="detail-block">
+                        <div class="evidence-info-block">
+                            <blockquote class="blockquote text-center">
+                                <h2>No Evidence Found!</h2>
+                            </blockquote>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-        <!-- THIS BLOCK IS USED TO DISPLAY A NOTE THAT NO EVIDENCE HAS BEEN FOUND -->
-        <div class="evidence-block" th:if="!${evidencesExists}">
-            <div class="detail-block">
-                <div class="evidence-info-block">
-                    <blockquote class="blockquote text-center">
-                        <h2>No Evidence Found!</h2>
-                    </blockquote>
+        <div class="col-2">
+            <div class="mb-1-6 mt-3">
+                <div th:each="skillTag : ${allSkills}">
+                    <div th:if="${skillTag.getTagName()} != 'InvalidTag'" th:attr="onclick='redirectToSkillsPage(' + ${viewedUserId} + ','+ ${skillTag.getTagId()} +')'" class="chip tagBadges tag-across" th:id="'skillTagDisplay' + ${meta}" data-toggle="tooltip" data-bs-placement="right" th:title="${skillTag.getTagName()}">
+                        <div class="d-flex justify-content-between flex-row align-items-center">
+                            <span style="margin-right: 10px; margin-left: 10px" th:text="${skillTag.getTagName()}"></span>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -99,6 +114,10 @@
 <script src="js/evidence.js"></script>
 <script th:inline="javascript">
     /*<![CDATA[*/
+
+    $(function () {
+        $('[data-toggle="tooltip"]').tooltip()
+    })
 
     /**
      * Refreshes the table to instead display either all evidences or just a certain users.

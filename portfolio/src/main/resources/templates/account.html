@@ -234,12 +234,24 @@
                     </div>
                   </div>
                 </div>
+                <div class="mb-1-6 mt-3">
+                  <div th:each="skillTag : ${allSkills}">
+                    <div th:if="${skillTag.getTagName()} != 'InvalidTag'" th:attr="onclick='redirectToSkillsPage(' + ${currentUserId} + ','+ ${skillTag.getTagId()} +')'" class="chip tagBadges tag-across" th:id="'skillTagDisplay' + ${meta}" data-toggle="tooltip" data-bs-placement="right" th:title="${skillTag.getTagName()}">
+                      <div class="d-flex justify-content-between flex-row align-items-center">
+                        <span style="margin-right: 10px; margin-left: 10px" th:text="${skillTag.getTagName()}"></span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
 
                 </div>
               </div>
             </div>
           </div>
         </div>
+      <div class="col-2">
+
+      </div>
       </div>
     </div>
   </div>
@@ -270,6 +282,7 @@
 
   $(function () {
     $('[data-bs-toggle="popover"]').popover()
+    $('[data-toggle="tooltip"]').tooltip()
   })
   /**
    * Sets up datepicker for the start and end dates of the project.
