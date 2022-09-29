@@ -31,7 +31,3 @@ function sendDeleteEvidenceNotification() {
         'artefactType': type
     }));
 }
-
-$(function() {
-    connect();
-})

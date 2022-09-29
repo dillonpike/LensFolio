@@ -346,126 +346,6 @@
     return localStorage.getItem('tab')
   }
 
-  /**
-   * Stores the stomp client to connect to and send to for WebSockets/SockJS.
-   */
-  let stompClient = null;
-
-  /**
-   * Connects the stomp client to the setup websocket endpoint.
-   * Then subscribes methods to the required endpoints.
-   */
-  function connect() {
-    let socket = new SockJS('mywebsockets');
-    stompClient = Stomp.over(socket);
-    stompClient.debug = null;
-    stompClient.connect({}, function () {
-      stompClient.subscribe('/webSocketGet/evidence-added', function (eventResponseArg) {
-        let url = "account?userId=" + document.getElementById('userId').value
-        setTimeout(function() {
-          $("#evidence").load(url+" #evidence>*","");
-        }, 10);
-      });
-      stompClient.subscribe('/webSocketGet/evidence-deleted', function (eventResponseArg) {
-        let url = "account?userId=" + document.getElementById('userId').value
-        setTimeout(function() {
-          $("#evidence").load(url+" #evidence>*","");
-        }, 10);
-      });
-      stompClient.subscribe('/webSocketGet/notification-of-highfive', function (HighFivedResponseArg) {
-        const highFivedResponse = JSON.parse(HighFivedResponseArg.body);
-        if (highFivedResponse.receivingUserId == /*[[${viewedUserId}]]*/ null) {
-          let url = "account?userId=" + /*[[${viewedUserId}]]*/ null;
-          setTimeout(function() {
-            $("#evidence").load(url+" #evidence>*","");
-          }, 10);
-        }
-      });
-      stompClient.subscribe('/webSocketGet/notification-of-remove-highfive', function (HighFivedResponseArg) {
-        const highFivedResponse = JSON.parse(HighFivedResponseArg.body);
-        if (highFivedResponse.receivingUserId == /*[[${viewedUserId}]]*/ null) {
-          let url = "account?userId=" + /*[[${viewedUserId}]]*/ null;
-          setTimeout(function() {
-            $("#evidence").load(url+" #evidence>*","");
-          }, 10);
-        }
-      });
-    });
-  }
-
-  /**
-  * Change a piece of evidence to be high-fived or unhigh-fived.
-  */
-  function changeHighFive(evidenceId) {
-    const imgID = "#star" + evidenceId;
-    const icon =  $(imgID);
-    if (icon.hasClass("bi-star")) {
-      saveHighFived(evidenceId);
-    } else {
-      removeHighFived(evidenceId);
-    }
-  }
-
-  /**
-   * This function will check the current icon being used for the like button and toggle it to the alternative.
-   * LOGIC STILL NEEDS TO BE CONNECT TO THIS FUNCTION!
-   * @param id  ID of the image icon to toggle.
-   */
-  function switchIcon(id) {
-    const imgID = "#star" + id
-    const icon =  $(imgID);
-    if (icon.hasClass("bi-star")) {
-      icon.addClass("bi-star-fill").removeClass("bi-star");
-    } else {
-      icon.addClass("bi-star").removeClass("bi-star-fill");
-    }
-  }
-
-  /**
-   * This function will be triggered when the user clicks(high five) on a piece of evidence.
-   * @param evidenceId ID of the evidence that was high fived.
-   */
-  /**
-  * Add the high-five to a piece of evidence.
-  */
-  function saveHighFived(evidenceId) {
-    let currentUserId = /*[[${currentUserId}]]*/ null;
-    let viewedUserId = /*[[${viewedUserId}]]*/ null;
-    let userName = /*[[${headerFullName}]]*/ null;
-    const data = {
-      evidenceId: evidenceId,
-      userId: currentUserId,
-      userName: userName
-    }
-    $.post("/saveHighFiveEvidence?" + new URLSearchParams(data)).done(function (result) {
-      let url = "account?userId=" + viewedUserId;
-      setTimeout(function() {
-        $("#evidence").load(url+" #evidence>*","");
-      }, 10);
-      sendHighFivedNotfication(evidenceId); // Send notification that post was highfived.
-    });
-  }
-
-  /**
-  * Remove the high-five from a piece of evidence.
-  */
-  function removeHighFived(evidenceId) {
-    let currentUserId = /*[[${currentUserId}]]*/ null;
-    let viewedUserId = /*[[${viewedUserId}]]*/ null;
-    let userName = /*[[${headerFullName}]]*/ null;
-    const data = {
-      evidenceId: evidenceId,
-      userId: currentUserId,
-      userName: userName
-    }
-    $.post("/removeHighFiveEvidence?" + new URLSearchParams(data)).done(function (result) {
-      let url = "account?userId=" + viewedUserId
-      setTimeout(function() {
-        $("#evidence").load(url+" #evidence>*","");
-      }, 10);
-      sendRemoveHighFivedNotfication(evidenceId); // Send notification that post un-highfived.
-    });
-  }
 
   /**
    * This function redirects the page to profile page of user with id specified in the parameter
@@ -481,35 +361,10 @@
     document.getElementById(tabToSet).click();
   }
 
-  /**
-   * Used to send a notification that a piece of evidence was highfived to the controller.
-   * @param id    The ID of the evidnce that was highfived.
-   */
-  function sendHighFivedNotfication(id) {
-    const title = $("#evidence-title-" + id).text();
-    stompClient.send("/webSocketPost/high-fived-evidence", {}, JSON.stringify({
-      'sendingUserId': /*[[${currentUserId}]]*/ null,
-      'sendingUserFullName': /*[[${headerFullName}]]*/ null,
-      'sendingEvidenceTitle': title,
-      'sendingEvidenceId': id,
-      'receivingUserId': /*[[${viewedUserId}]]*/ null
-    }));
-  }
+  let socket = new SockJS('mywebsockets');
+  let stompClient = Stomp.over(socket);
+  stompClient.debug = null;
 
-  /**
-   * Used to send a notification that a piece of evidence was highfived to the controller.
-   * @param id    The ID of the evidnce that was highfived.
-   */
-  function sendRemoveHighFivedNotfication(id) {
-    const title = $("#evidence-title-" + id).text();
-    stompClient.send("/webSocketPost/remove-high-fived-evidence", {}, JSON.stringify({
-      'sendingUserId': /*[[${currentUserId}]]*/ null,
-      'sendingUserFullName': /*[[${headerFullName}]]*/ null,
-      'sendingEvidenceTitle': title,
-      'sendingEvidenceId': id,
-      'receivingUserId': /*[[${viewedUserId}]]*/ null
-    }));
-  }
   /*]]>*/
 
 </script>

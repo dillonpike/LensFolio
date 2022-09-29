@@ -104,7 +104,6 @@ public class AccountController {
             List<Evidence> evidenceList = evidenceService.getEvidences(userId);
             List<Integer> evidenceHighFivedIds = new ArrayList<>();
             for (Evidence eachEvidence:evidenceList) {
-                eachEvidence.setHighFivers(eachEvidence.getHighFivers());
                 if (eachEvidence.getHighFivers().stream().map(HighFivers::getUserId).anyMatch(x -> x.equals(id))) {
                     evidenceHighFivedIds.add(eachEvidence.getEvidenceId());
                 }

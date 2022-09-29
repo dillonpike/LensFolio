@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.NotAcceptableException;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -57,7 +58,7 @@ public class EvidenceController {
 
     public static final String ADD_EVIDENCE_MODAL_FRAGMENT_SKILL_TAGS_MESSAGE = "evidenceSkillTagsAlertMessage";
 
-    public static final String ACCOUNT_EVIDENCE = "account::evidence";
+    public static final String ACCOUNT_EVIDENCE = "fragments/evidenceList::evidenceList";
 
 
     /**
@@ -123,11 +124,20 @@ public class EvidenceController {
             return "redirect:account?userId=" + id;
         }
 
+        List<Integer> evidenceHighFivedIds = new ArrayList<>();
+        for (Evidence eachEvidence:evidenceList) {
+            if (eachEvidence.getHighFivers().stream().map(HighFivers::getUserId).anyMatch(x -> x.equals(id))) {
+                evidenceHighFivedIds.add(eachEvidence.getEvidenceId());
+            }
+        }
+
         model.addAttribute("evidencesExists", ((evidenceList != null) && (!evidenceList.isEmpty())));
         model.addAttribute("evidences", evidenceList);
         model.addAttribute("skillTag", skillTag);
+        model.addAttribute("evidenceHighFivedIds", evidenceHighFivedIds);
 
         model.addAttribute("viewedUserId", userId);
+        model.addAttribute("currentUserId", id);
         model.addAttribute("skillId", skillId);
         return "evidence";
     }
@@ -148,22 +158,36 @@ public class EvidenceController {
             @RequestParam(value = "userId") int userId,
             @RequestParam(value = "viewedUserId") int viewedUserId,
             @RequestParam(value = "listAll") boolean listAll,
-            @RequestParam(value = "skillId") int skillId
+            @RequestParam(value = "skillId") int skillId,
+            @AuthenticationPrincipal AuthState principal
     ) {
+        Integer id = userAccountClientService.getUserIDFromAuthState(principal);
         List<Evidence> evidenceList;
+        List<Integer> evidenceHighFivedIds = new ArrayList<>();
         try {
             if (listAll) {
                 evidenceList = evidenceService.getEvidencesWithSkill(skillId);
+
             } else {
                 evidenceList = evidenceService.getEvidencesWithSkillAndUser(viewedUserId, skillId);
             }
         } catch (NullPointerException e) {
             return "redirect:account?userId=" + userId;
         }
+
+        for (Evidence eachEvidence:evidenceList) {
+            if (eachEvidence.getHighFivers().stream().map(HighFivers::getUserId).anyMatch(x -> x.equals(id))) {
+                evidenceHighFivedIds.add(eachEvidence.getEvidenceId());
+            }
+        }
+
         model.addAttribute("evidencesExists", ((evidenceList != null) && (!evidenceList.isEmpty())));
         model.addAttribute("evidences", evidenceList);
+        model.addAttribute("evidenceHighFivedIds", evidenceHighFivedIds);
+        model.addAttribute("viewedUserId", userId);
+        model.addAttribute("currentUserId", id);
 
-        return "fragments/evidenceList";
+        return "fragments/evidenceList::evidenceList";
     }
 
     /**
