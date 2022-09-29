@@ -8,6 +8,9 @@ import java.util.List;
 import java.util.Set;
 
 import nz.ac.canterbury.seng302.portfolio.model.*;
+import nz.ac.canterbury.seng302.portfolio.model.Evidence;
+import nz.ac.canterbury.seng302.portfolio.model.NotificationHighFive;
+import nz.ac.canterbury.seng302.portfolio.model.Project;
 import nz.ac.canterbury.seng302.portfolio.service.*;
 import nz.ac.canterbury.seng302.portfolio.utility.DateUtility;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
@@ -109,7 +112,7 @@ public class AccountController {
 
             List<Evidence> evidenceList = evidenceService.getEvidences(userId);
             for (Evidence eachEvidence:evidenceList) {
-                eachEvidence.setHighFivers(evidenceService.getHighFivers(eachEvidence));
+                eachEvidence.setHighFivers(eachEvidence.getHighFivers());
             }
             model.addAttribute("evidences", evidenceList);
 

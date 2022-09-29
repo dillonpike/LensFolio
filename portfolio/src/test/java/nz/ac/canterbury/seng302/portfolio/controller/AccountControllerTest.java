@@ -123,7 +123,6 @@ class AccountControllerTest {
         when(registerClientService.getUserData(1)).thenReturn(mockUser);
         when(projectService.getProjectById(0)).thenReturn(mockProject);
         when(evidenceService.getEvidences(any(Integer.class))).thenReturn(evidenceList);
-        when(evidenceService.getHighFivers(evidenceList.get(0))).thenReturn(new ArrayList<>());
 
 
         mockMvc.perform(get("/account").param("userId", "1"))

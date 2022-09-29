@@ -16,7 +16,9 @@ const DELETEACTION = "delete";
 const HIGHFIVEACTION = "highfive"
 const HIGHFIVEUPDATEACTION = "highfiveUpdate"
 const ADDEVIDENCEACTION = "addEvidence";
-const UPDATELEADERBOARDACTION = "updateLeaderboard";
+const DELETEEVIDENCEACTION = "deleteEvidence";
+const UPDATELEADERBOARDADDACTION = "updateLeaderboardAdd";
+const UPDATELEADERBOARDDELETEACTION = "updateLeaderboardDelete";
 
 
 /**
@@ -171,8 +173,14 @@ class Notification {
             case ADDEVIDENCEACTION:
                 this.bodyText = this.firstName + " " + this.lastName + " (" + this.username + ") has added a piece of evidence. Updating leaderboard...";
                 break;
-            case UPDATELEADERBOARDACTION:
+            case DELETEEVIDENCEACTION:
+                this.bodyText = this.firstName + " " + this.lastName + " (" + this.username + ") has deleted a piece of evidence. Updating leaderboard...";
+                break;
+            case UPDATELEADERBOARDADDACTION:
                 this.bodyText = this.firstName + " " + this.lastName + " (" + this.username + ") has added a piece of evidence. Updated leaderboard!";
+                break;
+            case UPDATELEADERBOARDDELETEACTION:
+                this.bodyText = this.firstName + " " + this.lastName + " (" + this.username + ") has deleted a piece of evidence. Updated leaderboard!";
                 break;
             default:
                 this.bodyText = "'" + this.name + "' has been changed by " + this.firstName + " " + this.lastName + " (" + this.username + ").";
@@ -185,19 +193,18 @@ class Notification {
         this.toast.show();
     }
 
+    /**
+     * Hides the notification, including the toast. Resets variables if needed.
+     */
     hide() {
         this.isHidden = true;
         this.isWaitingToBeHidden = false;
         this.toast.hide();
-    }
-
-    /**
-     * Resets the notification so it doesn't contain any old data.
-     */
-    resetToast() {
-        this.highfivers = [];
-        this.username = "";
-        this.action = HIGHFIVEACTION;
+        if (this.type === HIGHFIVETYPE) {
+            this.highfivers = [];
+            this.username = "";
+            this.action = HIGHFIVEACTION;
+        }
     }
 
     /**
@@ -213,7 +220,6 @@ class Notification {
         setTimeout((function (notification) {
             let currentTime = (new Date(Date.now())).valueOf();
             if (currentTime >= notification.selectedDate + ((timeInSeconds * 1000) - 500) && notification.isWaitingToBeHidden) {
-                notification.resetToast();
                 notification.hide();
             }
         }), timeInSeconds * 1000, this);
@@ -254,6 +260,9 @@ class Notification {
                 this.username = newNotification.username
                 this.highfivers.push(newNotification.username);
             }
+        } else {
+            this.name = newNotification.name;
+            this.action = newNotification.action;
         }
         return this;
     }
