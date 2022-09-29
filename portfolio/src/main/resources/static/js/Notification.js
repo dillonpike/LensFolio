@@ -17,6 +17,9 @@ const DELETEACTION = "delete";
 const HIGHFIVEACTION = "highfive"
 const HIGHFIVEUPDATEACTION = "highfiveUpdate"
 const ADDEVIDENCEACTION = "addEvidence";
+const DELETEEVIDENCEACTION = "deleteEvidence";
+const UPDATELEADERBOARDADDACTION = "updateLeaderboardAdd";
+const UPDATELEADERBOARDDELETEACTION = "updateLeaderboardDelete";
 const UPDATELEADERBOARDACTION = "updateLeaderboard";
 const DELETEROLEACTION = "deleteRole";
 const ADDROLEACTION = "addRole";
@@ -196,8 +199,13 @@ class Notification {
           case HIGHFIVEUPDATEACTION:
                 this.bodyText = "'" + this.name + "' has been high fived by " + this.username + " and " + (this.highfivers.length - 2) + " other user(s).";
                 break;
-          default:
-              this.bodyText = "'" + this.name + "' has been changed by " + this.firstName + " " + this.lastName + " (" + this.username + ").";
+            case UPDATELEADERBOARDDELETEACTION:
+                this.bodyText = this.firstName + " " + this.lastName + " (" + this.username + ") has deleted a piece of evidence. Updated leaderboard!";
+                break;
+            default:
+                this.bodyText = "'" + this.name + "' has been changed by " + this.firstName + " " + this.lastName + " (" + this.username + ").";
+
+
         }
 
         this.toastBodyTextVar.text(this.bodyText);
@@ -279,7 +287,6 @@ class Notification {
         }
         return this;
     }
-
 }
 
 

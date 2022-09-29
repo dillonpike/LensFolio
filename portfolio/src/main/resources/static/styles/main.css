@@ -186,6 +186,11 @@ a {
     font-weight: bold;
     padding-top: 10px;
 }
+
+.evidence-skillTag-title {
+    font-weight: bold;
+    padding-top: 10px;
+}
 /* Sprints-Display End */
 
 /* Sprints-Buttons */
@@ -576,4 +581,25 @@ body{
 
 .name-length-message {
     min-height: 24px;
+}
+
+
+.tagBadges:hover {
+    background-color:#0d6efd !important;
+    color: white !important;
+    transition: 0.5s !important;
+    cursor: pointer;
+}
+
+.ui-autocomplete {
+    position: absolute;
+    cursor: default;
+    z-index:1061 !important;
+    max-height: 150px;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.bootstrap-select {
+    width: 100% !important;
 }

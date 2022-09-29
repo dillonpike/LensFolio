@@ -6,9 +6,9 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
     <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js" integrity="sha512-iKDtgDyTHjAitUDdLljGhenhPwrbBfqTKWO1mkhSFH3A7blITC9MhYon6SjnMhp4o0rADGw9yAC6EW4t5a4K3g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <script src="webjars/jquery/3.6.0/dist/jquery.min.js"></script>
     <script src="https://cdn.datatables.net/1.10.15/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/1.12.1/js/dataTables.bootstrap5.min.js"></script>
+    <script src="https://cdn.datatables.net/select/1.4.0/js/dataTables.select.min.js"></script>
 </head>
 <body>
 <div class="toast-container position-fixed bottom-0 end-1 p-3" style="z-index: 2000 ">
@@ -83,14 +83,14 @@
                     <li><a>
                         <div>
                             <input type="hidden" th:value="${userId}" name="userId">
-                            <button id="profileButton" th:onclick="redirectToProfilePage()" class="btn btn-link dropdown-item" style="color:black;text-decoration: none;">Profile</button>
+                            <button id="profileButton" th:onclick="|redirectToProfile('${userId}')|" class="btn btn-link dropdown-item" style="color:black;text-decoration: none;">Profile</button>
                         </div>
                     </a></li>
                     <li><hr class="dropdown-divider"></li>
                     <li><a>
                         <div>
                             <input type="hidden" th:value="${userId}" name="userId">
-                            <button id="profileEvidenceButton" th:onclick="redirectToEvidencePage()" class="btn btn-link dropdown-item" style="color:black;text-decoration: none;">Evidence</button>
+                            <button id="profileEvidenceButton" th:onclick="|redirectToEvidence('${userId}')|" class="btn btn-link dropdown-item" style="color:black;text-decoration: none;">Evidence</button>
                         </div>
                     </a></li>
                     <li><hr class="dropdown-divider"></li>
@@ -101,25 +101,9 @@
     </div>
 </header>
 <script src="js/Notification.js" type="application/javascript"></script>
+<script src="js/redirect.js"></script>
 <script th:inline="javascript">
     let stompClientHeader;
-    /*<![CDATA[*/
-    /**
-     * Redirect user to their profile page.
-     */
-    function redirectToProfilePage() {
-        localStorage.setItem('tab', 'profile-tab');
-        document.location.href = 'account?userId=' + /*[[${userId}]]*/ null;
-    }
-
-    /**
-     * Redirect user to their evidence page.
-     */
-    function redirectToEvidencePage() {
-        localStorage.setItem('tab', 'evidence-tab');
-        document.location.href = 'account?userId=' + /*[[${userId}]]*/ null;
-    }
-    /*]]>*/
 
     /**
      * Holds a list of Notification objects that are, or have been active. Can only be as long as listOfHTMLToasts.

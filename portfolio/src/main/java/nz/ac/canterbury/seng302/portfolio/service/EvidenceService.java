@@ -1,18 +1,23 @@
 package nz.ac.canterbury.seng302.portfolio.service;
 
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Optional;
+import java.util.Set;
+
 import nz.ac.canterbury.seng302.portfolio.model.Evidence;
-import nz.ac.canterbury.seng302.portfolio.model.HighFivers;
 import nz.ac.canterbury.seng302.portfolio.model.Tag;
+import nz.ac.canterbury.seng302.portfolio.model.HighFivers;
 import nz.ac.canterbury.seng302.portfolio.model.WebLink;
 import nz.ac.canterbury.seng302.portfolio.repository.EvidenceRepository;
-import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
+import nz.ac.canterbury.seng302.portfolio.repository.HighFiversRepository;
+import nz.ac.canterbury.seng302.portfolio.repository.TagRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 
 import javax.ws.rs.NotAcceptableException;
-import java.util.ArrayList;
 import java.util.Date;
 
 import static nz.ac.canterbury.seng302.portfolio.controller.EvidenceController.*;
@@ -30,7 +35,13 @@ public class EvidenceService {
     private EvidenceRepository evidenceRepository;
 
     @Autowired
-    private RegisterClientService registerClientService;
+    private TagService tagService;
+
+    @Autowired
+    private TagRepository tagRepository;
+
+    @Autowired
+    private HighFiversRepository highFiversRepository;
 
     /**
      * This function returns all evidences based on the userId.
@@ -41,6 +52,74 @@ public class EvidenceService {
         List<Evidence> listEvidences = evidenceRepository.findAllByUserId(userId);
         return listEvidences.stream().sorted((o1, o2)->o2.getDate().
                 compareTo(o1.getDate())).toList();
+    }
+
+    /**
+     * This function get an evidence based on evidence Id.
+     * @param evidenceId the ID of an evidence in interest
+     * @return List of evidences.
+     */
+    public Evidence getEvidence(int evidenceId) {
+        try{
+            return evidenceRepository.findByEvidenceId(evidenceId);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    /**
+     * Remove an evidence from the database.
+     * @param id ID of the evidence being removed
+     */
+    public boolean removeEvidence(Integer id) {
+        Optional<Evidence> sOptional = evidenceRepository.findById(id);
+        if (sOptional.isPresent()) {
+            Evidence evidence = sOptional.get();
+            Set<Tag> tags = null;
+            Set<WebLink> webLinks = null;
+            Set<HighFivers> highFivers = null;
+
+            if (!evidence.getTags().isEmpty()) {
+                tags = Set.copyOf(evidence.getTags());
+                for (Tag tag : tags) {
+                    evidence.removeTag(tag);
+                    tag.getEvidence().remove(evidence);
+                    tagRepository.save(tag);
+                }
+            }
+
+            if (!evidence.getWebLinks().isEmpty()) {
+                webLinks = Set.copyOf(evidence.getWebLinks());
+                evidence.setWebLinks(new HashSet<>());
+            }
+
+            if (!evidence.getHighFivers().isEmpty()) {
+                highFivers = Set.copyOf(evidence.getHighFivers());
+                evidence.setHighFivers(new HashSet<>());
+            }
+
+            evidenceRepository.delete(evidenceRepository.save(evidence));
+
+            // Check to see if the evidence was deleted
+            Optional<Evidence> evidenceStillThere = evidenceRepository.findById(id);
+            if (evidenceStillThere.isPresent()) {
+                // Add the users back since deleting the group did not work
+                Evidence emptyEvidence = evidenceStillThere.get();
+                if (tags != null) {
+                    List<Tag> tagList = new ArrayList<>(tags);
+                    for (Tag tag : tagList) {
+                        emptyEvidence.addTag(tag);
+                    }
+                }
+                emptyEvidence.setWebLinks(webLinks);
+                emptyEvidence.setHighFivers(highFivers);
+                evidenceRepository.save(emptyEvidence);
+                return false;
+            }
+            return true;
+        } else {
+            return false;
+        }
     }
 
     /**
@@ -146,18 +225,64 @@ public class EvidenceService {
         }
     }
 
-    /**
-     * Returns a list of all users that have high fived the piece of evidence.
-     * @param evidence evidence to get high fivers of
-     * @return list of all users that have high fived the piece of evidence
-     */
-    public List<HighFivers> getHighFivers(Evidence evidence) {
-        List<HighFivers> highFivers = new ArrayList<>();
-        for(Integer userID : evidence.getHighFiverIds()){
-            UserResponse userResponse = registerClientService.getUserData(userID);
-            String name = userResponse.getFirstName() + " " + userResponse.getLastName();
-            highFivers.add(new HighFivers(name, userID));
+    public boolean saveHighFiveEvidence(int evidenceId, int userId, String userName) {
+        Optional<Evidence> evidenceOptional = evidenceRepository.findById(evidenceId);
+        if (evidenceOptional.isPresent()) {
+            Evidence evidence = evidenceOptional.get();
+            if (evidence.getHighFiverIds().contains(userId)) {
+                return false;
+            }
+            HighFivers newHighFiver = highFiversRepository.save(new HighFivers(userName, userId));
+            evidence.addHighFivers(newHighFiver);
+            evidenceRepository.save(evidence);
+            return true;
+        } else {
+            return false;
         }
-        return highFivers;
     }
+    /**
+     * Checks to ensure that a piece of evidence has the user with a userId,
+     * matching that passed to the method, attached to it.
+     * @param evidenceId    The evidence being checked.
+     * @param userId        The user that needs to be attached to the evidence.
+     * @return  Boolean on is the user is part of the evidence.
+     */
+    private boolean isUserAttached(int evidenceId, int userId){
+        Optional<Evidence> sOptional = evidenceRepository.findById(evidenceId);
+        boolean exists = false;
+
+        if (sOptional.isPresent()) {
+            Evidence evidence = sOptional.get();
+            if (evidence.getUserId() == userId) {
+                exists = true;
+            }
+        }
+
+        return exists;
+    }
+
+    /**
+     * Gets all pieces of evidences that have a certain skill and also orders them in reveres chronological order.
+     * @param skillId   The skill that needs to be attached to the evidence.
+     * @return          List of evidence with a given skill.
+     */
+    public List<Evidence> getEvidencesWithSkill(int skillId) throws NullPointerException{
+        Tag tag = tagService.getTag(skillId);
+        return tag.getEvidence().stream().sorted((o1, o2)->o2.getDate().
+                compareTo(o1.getDate())).toList();
+    }
+
+    /**
+     * Gets all pieces of evidences that have a certain skill and user attached to it
+     * and also orders them in reveres chronological order.
+     * @param userId    The user that needs to be attached to the evidence.
+     * @param skillId   The skill that needs to be attached to the evidence.
+     * @return          List of evidence with a given skill and user attached.
+     */
+    public List<Evidence> getEvidencesWithSkillAndUser(int userId, int skillId) throws NullPointerException{
+        Tag tag = tagService.getTag(skillId);
+        return tag.getEvidence().stream().filter(evidence -> isUserAttached(evidence.getEvidenceId(), userId)).sorted((o1, o2)->o2.getDate().
+                compareTo(o1.getDate())).toList();
+    }
+
 }

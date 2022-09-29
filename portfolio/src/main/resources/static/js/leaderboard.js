@@ -8,7 +8,8 @@ function configureLeaderboardTable() {
             if (data[0] in rankToColour) {
                 $(row).addClass(rankToColour[data[0]])
             }
-        }
+        },
+        dom: '<"top"i>rt<"bottom"pl>'
     });
 }
 
@@ -16,6 +17,7 @@ function configureLeaderboardTable() {
  * Loads in an updated table from the controller, keeps the user on the same page, and updates the notification to
  * inform the user when the table has updated.
  * @param notification the notification to update
+ * @param operation The type of operation, such as 'add' or 'delete'.
  */
 function updateLeaderboard(notification, operation) {
     const leaderboardTable = $('table').DataTable();
