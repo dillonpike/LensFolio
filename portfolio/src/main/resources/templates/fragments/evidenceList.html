@@ -9,7 +9,12 @@
               <path d="m3.86 8.753 5.482 4.796c.646.566 1.658.106 1.658-.753V3.204a1 1 0 0 0-1.659-.753l-5.48 4.796a1 1 0 0 0 0 1.506z"/>
             </svg>
           </button>
-          <div class="evidence-date ps-3" th:text="${evidence.getDateString}"></div>
+          <div style="display: flex; flex-wrap: wrap">
+            <div class="evidence-date ps-3" th:text="${evidence.getDateString}"></div>
+            <div class="evidence-date ps-3" th:if="${evidence.getUser()} != null">
+              Created by <a th:href="|account?userId=${evidence.getUserId()}|" th:text="|${evidence.getUser()?.getFirstName()} ${evidence.getUser()?.getLastName()} (${evidence.getUser()?.getUsername()})|"></a>
+            </div>
+          </div>
           <div class="collapse ps-3 pb-3" th:id="collapseEvidence + ${evidence.getEvidenceId()}">
             <b>Description:</b>
             <div class="evidence-description" th:text="${evidence.getDescription}"></div>
@@ -74,7 +79,7 @@
             </ul>
           </div>
           <div class="button-divider">
-            <div class="dropdown" th:if="${isAuthorised} == true">
+            <div class="dropdown" th:if="${currentUserId} == ${evidence.getUserId()}">
               <button class="btn btn-default " type="button" id="evidenceActions" data-bs-toggle="dropdown" aria-expanded="false">
                 <i class='bi bi-gear-fill'></i>
               </button>

@@ -46,6 +46,9 @@ public class EvidenceController {
     @Autowired
     private UserAccountClientService userAccountClientService;
 
+    @Autowired
+    private RegisterClientService registerClientService;
+
     private static final String ADD_EVIDENCE_MODAL_FRAGMENT = "fragments/evidenceModal::evidenceModalBody";
 
     public static final String ADD_EVIDENCE_MODAL_FRAGMENT_TITLE_MESSAGE = "evidenceTitleAlertMessage";
@@ -126,6 +129,7 @@ public class EvidenceController {
 
         List<Integer> evidenceHighFivedIds = new ArrayList<>();
         for (Evidence eachEvidence:evidenceList) {
+            eachEvidence.setUser(registerClientService.getUserData(eachEvidence.getUserId()));
             if (eachEvidence.getHighFivers().stream().map(HighFivers::getUserId).anyMatch(x -> x.equals(id))) {
                 evidenceHighFivedIds.add(eachEvidence.getEvidenceId());
             }
@@ -176,6 +180,7 @@ public class EvidenceController {
         }
 
         for (Evidence eachEvidence:evidenceList) {
+            eachEvidence.setUser(registerClientService.getUserData(eachEvidence.getUserId()));
             if (eachEvidence.getHighFivers().stream().map(HighFivers::getUserId).anyMatch(x -> x.equals(id))) {
                 evidenceHighFivedIds.add(eachEvidence.getEvidenceId());
             }

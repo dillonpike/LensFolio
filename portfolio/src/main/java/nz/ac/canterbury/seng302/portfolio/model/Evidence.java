@@ -5,6 +5,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -82,6 +83,9 @@ public class Evidence {
 
     @Transient
     private Set<Integer> highFiverIds = new HashSet<>();
+
+    @Transient
+    private UserResponse user;
 
 
     /**
@@ -302,9 +306,17 @@ public class Evidence {
     }
 
     /**
-     * returns list of users that have given a High Five to a piece of evidence
+     * Returns list of users that have given a High Five to a piece of evidence
      */
     public Set<HighFivers> getHighFivers() {
         return highFivers;
+    }
+
+    public UserResponse getUser() {
+        return user;
+    }
+
+    public void setUser(UserResponse user) {
+        this.user = user;
     }
 }
