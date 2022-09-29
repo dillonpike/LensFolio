@@ -20,7 +20,7 @@ body {
 }
 #listEvidence {
     max-height: 750px;
-    overflow-y: scroll;
+    overflow-y: auto;
 }
 #leftPane {
     height: fit-content;
