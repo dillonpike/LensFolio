@@ -26,11 +26,11 @@ function configureLeaderboardTable() {
  */
 function updateLeaderboard(notification, operation) {
     const leaderboardTable = $('table').DataTable();
-    const page = leaderboardTable.page();
+    // const page = leaderboardTable.page();
     const url = "/leaderboard-table";
     $("#leaderboardTable").load(url + " #leaderboardTable>*", "", function () {
         configureLeaderboardTable();
-        $('table').DataTable().page(page).draw('page');
+        // $('table').DataTable().page(page).draw('page');
         if (operation === ADDEVIDENCEACTION) {
             notification.action = UPDATELEADERBOARDACTION;
         } else if (operation === DELETEROLEACTION) {
