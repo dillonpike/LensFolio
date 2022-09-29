@@ -47,8 +47,6 @@ public class EvidenceController {
 
     private static final String ADD_EVIDENCE_MODAL_FRAGMENT = "fragments/evidenceModal::evidenceModalBody";
 
-    private static final String DELETE_EVIDENCE_MODAL_FRAGMENT = "fragments/deleteModalProject";
-
     public static final String ADD_EVIDENCE_MODAL_FRAGMENT_TITLE_MESSAGE = "evidenceTitleAlertMessage";
 
     public static final String ADD_EVIDENCE_MODAL_FRAGMENT_DESCRIPTION_MESSAGE = "evidenceDescriptionAlertMessage";
@@ -82,7 +80,7 @@ public class EvidenceController {
                 // * Add the evidence to the model *
                 // * Maybe add something to the model to make sure the evidence tab is shown? *
                 httpServletResponse.setStatus(HttpServletResponse.SC_OK);
-                return "fragments/evidenceModal::evidenceModalBody"; // * return some sort of evidence fragment? *
+                return ADD_EVIDENCE_MODAL_FRAGMENT; // * return some sort of evidence fragment? *
             } else {
                 String errorMessage = "Evidence Not Added. Saving Error Occurred.";
                 model.addAttribute(ADD_EVIDENCE_MODAL_FRAGMENT_TITLE_MESSAGE, errorMessage);
@@ -206,16 +204,16 @@ public class EvidenceController {
                 // * Add the evidence to the model *
                 // * Maybe add something to the model to make sure the evidence tab is shown? *
                 httpServletResponse.setStatus(HttpServletResponse.SC_OK);
-                return "account::evidence"; // * return some sort of evidence fragment? *
+                return ACCOUNT_EVIDENCE; // * return some sort of evidence fragment? *
             } else {
                 httpServletResponse.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-                return "account::evidence";
+                return ACCOUNT_EVIDENCE;
             }
 
         } catch (NotAcceptableException e) {
             httpServletResponse.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             logger.error("Attributes of evidence not formatted correctly. Not high-fiving evidence. ");
-            return "account::evidence";
+            return ACCOUNT_EVIDENCE;
         }
     }
 
@@ -241,16 +239,16 @@ public class EvidenceController {
                 // * Add the evidence to the model *
                 // * Maybe add something to the model to make sure the evidence tab is shown? *
                 httpServletResponse.setStatus(HttpServletResponse.SC_OK);
-                return "account::evidence"; // * return some sort of evidence fragment? *
+                return ACCOUNT_EVIDENCE; // * return some sort of evidence fragment? *
             } else {
                 httpServletResponse.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-                return "account::evidence";
+                return ACCOUNT_EVIDENCE;
             }
 
         } catch (NotAcceptableException e) {
             httpServletResponse.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             logger.error("Attributes of evidence not formatted correctly. Not high-fiving evidence. ");
-            return "account::evidence";
+            return ACCOUNT_EVIDENCE;
         }
     }
 
