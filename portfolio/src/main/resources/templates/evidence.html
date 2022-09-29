@@ -26,9 +26,9 @@
     <div class="d-flex d-flex justify-content-between">
         <h2 class="mb-0 fs-1" th:text="${tagName} + ':'"></h2>
         <div>
-            <button type="button" class="btn-block btn btn-sm btn-primary" th:onclick="|redirectToEvidence('${viewedUserId}')|">Back To Profile</button>
+            <button type="button" class="btn-block btn btn-sm btn-primary" th:onclick="|redirectToEvidence('${viewableUser}')|">Back To Profile</button>
             <div class="form-check form-switch">
-                <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault" onclick="updateEvidenceList()" checked>
+                <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault" onclick="updateEvidenceList()" checked th:disabled="${!validViewedUser}">
                 <label class="form-check-label" for="flexSwitchCheckDefault">All Users</label>
             </div>
         </div>
@@ -51,7 +51,7 @@
         const checked = ($('#flexSwitchCheckDefault').is(":checked"));
         const data = {
             userId: /*[[${userId}]]*/ -1, // This value is stored in the header.
-            viewedUserId: /*[[${viewedUserId}]]*/ -1,
+            viewedUserId: /*[[${viewableUser}]]*/ -1,
             listAll: checked,
             tagId: /*[[${tagId}]]*/ -1,
             tagType: /*[[${tagType}]]*/ null,

@@ -143,7 +143,8 @@ public class UserAccountServerService extends UserAccountServiceGrpc.UserAccount
                         .setBio(user.getBio())
                         .setPersonalPronouns(user.getPersonalPronouns())
                         .setCreated(user.getDateAdded())
-                        .setProfileImagePath(imageDirectory);
+                        .setProfileImagePath(imageDirectory)
+                        .setId(user.getUserId());
                 Set<Roles> roles = user.getRoles();
                 Roles[] rolesArray = roles.toArray(new Roles[roles.size()]);
 

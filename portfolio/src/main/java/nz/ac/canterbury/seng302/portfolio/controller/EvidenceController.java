@@ -3,6 +3,7 @@ package nz.ac.canterbury.seng302.portfolio.controller;
 import nz.ac.canterbury.seng302.portfolio.model.*;
 import nz.ac.canterbury.seng302.portfolio.service.*;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
+import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +36,9 @@ public class EvidenceController {
 
     @Autowired
     private TagService tagService;
+
+    @Autowired
+    private RegisterClientService registerClientService;
 
     @Autowired
     private ElementService elementService;
@@ -93,10 +97,32 @@ public class EvidenceController {
     }
 
     /**
+     * Sets the model to have a valid user so that the HTML page is using variables that will link to a valid user.
+     * This is important for when returning to the page of a user as if the user is invalid the page will return a 404.
+     *
+     * @param principal         Used for authentication of a user.
+     * @param unknownUserId     The id of the user that needs to be checked if they are valid of not.
+     * @param model             Parameters sent to thymeleaf template to be rendered into HTML.
+     * @return  This method returns the id that should be used.
+     *          Either the user id provide if they are valid or the user currently logged in if not.
+     */
+    public int setViewedUserModel(AuthState principal, int unknownUserId, Model model) {
+        Integer id = userAccountClientService.getUserIDFromAuthState(principal);
+        elementService.addHeaderAttributes(model, id);
+
+        UserResponse userAccount = registerClientService.getUserData(unknownUserId);
+        // This is done as the UserResponse has a default of 0 for ID when the user doesn't exist. Note the database needs to not have an ID of 0.
+        int returnId = ((userAccount.getId() == 0) ?  id : userAccount.getId());
+        model.addAttribute("viewableUser", returnId);
+        model.addAttribute("validViewedUser", (userAccount.getId() != 0));
+        return returnId;
+    }
+
+    /**
      * Method to display the main page for viewing skill or category specific pieces of evidence.
      * @param model         Parameters sent to thymeleaf template to be rendered into HTML.
      * @param principal     Used for authentication of a user.
-     * @param userId        The id of the current user.
+     * @param viewedUserId  The id of the current user.
      * @param tagId         The id of the current tag being searched for.
      * @param tagType       The type of tag (category or skill) being searched for.
      * @return              redirect user to evidence tab, or keep up modal if there are errors.
@@ -105,12 +131,11 @@ public class EvidenceController {
     public String evidenceSkillPage(
             Model model,
             @AuthenticationPrincipal AuthState principal,
-            @RequestParam(value = "userId") int userId,
+            @RequestParam(value = "userId") int viewedUserId,
             @RequestParam(value = "tagId") int tagId,
             @RequestParam(value = "tagType") String tagType
     ) {
-        Integer id = userAccountClientService.getUserIDFromAuthState(principal);
-        elementService.addHeaderAttributes(model, id);
+        int returnId = setViewedUserModel(principal, viewedUserId, model);
 
         List<Evidence> evidenceList;
         String tagName;
@@ -132,17 +157,16 @@ public class EvidenceController {
                 }
                 tagName = category.getCategoryName();
             } else { // Invalid parameter given.
-                return "redirect:account?userId=" + id;
+                return "redirect:account?userId=" + returnId;
             }
-        } catch (NullPointerException e) {
-            return "redirect:account?userId=" + id;
+        } catch (NullPointerException ignore) {
+            return "redirect:account?userId=" + returnId;
         }
 
         model.addAttribute("tagType", tagType);
         model.addAttribute("evidencesExists", ((evidenceList != null) && (!evidenceList.isEmpty())));
         model.addAttribute("evidences", evidenceList);
         model.addAttribute("tagName", tagName);
-        model.addAttribute("viewedUserId", userId);
         model.addAttribute("tagId", tagId);
 
         return "evidence";
@@ -162,12 +186,15 @@ public class EvidenceController {
     @GetMapping("/switch-evidence-list")
     public String membersWithoutAGroupCard(
             Model model,
+            @AuthenticationPrincipal AuthState principal,
             @RequestParam(value = "userId") int userId,
             @RequestParam(value = "viewedUserId") int viewedUserId,
             @RequestParam(value = "listAll") boolean listAll,
             @RequestParam(value = "tagId") int tagId,
             @RequestParam(value = "tagType") String tagType
     ) {
+        int returnId = setViewedUserModel(principal, viewedUserId, model);
+
         List<Evidence> evidenceList;
 
         try {
@@ -184,15 +211,14 @@ public class EvidenceController {
                     evidenceList = evidenceService.getEvidencesWithCategoryAndUser(viewedUserId, tagId);
                 }
             } else { // Invalid parameter given.
-                return "redirect:account?userId=" + userId;
+                return "redirect:account?userId=" + returnId;
             }
-        } catch (NullPointerException e) {
-            return "redirect:account?userId=" + userId;
+        } catch (NullPointerException ignore) {
+            return "redirect:account?userId=" + returnId;
         }
 
         model.addAttribute("evidencesExists", ((evidenceList != null) && (!evidenceList.isEmpty())));
         model.addAttribute("evidences", evidenceList);
-        model.addAttribute("viewedUserId", viewedUserId);
 
         return "fragments/evidenceList";
     }
