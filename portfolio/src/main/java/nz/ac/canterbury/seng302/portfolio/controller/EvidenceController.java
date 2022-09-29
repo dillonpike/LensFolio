@@ -99,6 +99,25 @@ public class EvidenceController {
     }
 
     /**
+     * Method for getting all highfivers IDs from a list of evidences.
+     * This method filters so that only evidences with a given userID are used.
+     * @param evidences The list of evidences.
+     * @param id    The id of the user who made the evidence.
+     * @return  A list of all highfivers id found from valid evidences.
+     */
+    private List<Integer> getHighFiveIds(List<Evidence> evidences, int id) {
+        List<Integer> ids = new ArrayList<>();
+        if (evidences != null) {
+            for (Evidence eachEvidence:evidences) {
+                if (eachEvidence.getHighFivers().stream().map(HighFivers::getUserId).anyMatch(x -> x.equals(id))) {
+                    ids.add(eachEvidence.getEvidenceId());
+                }
+            }
+        }
+        return ids;
+    }
+
+    /**
      * Method to display the main page for viewing skill or category specific pieces of evidence.
      * @param model         Parameters sent to thymeleaf template to be rendered into HTML.
      * @param principal     Used for authentication of a user.
@@ -116,7 +135,7 @@ public class EvidenceController {
             @RequestParam(value = "tagType") String tagType
     ) {
         // This code is duplicated in the update evidence list section as this method needs both the userAccount and
-        // the returned ID while the other method needs only the returned ID.
+        // the returned ID while the swap list method needs only the returned ID.
         Integer id = userAccountClientService.getUserIDFromAuthState(principal);
         elementService.addHeaderAttributes(model, id);
         UserResponse userAccount = registerClientService.getUserData(viewedUserId);
@@ -128,13 +147,13 @@ public class EvidenceController {
 
         try {
             if (Objects.equals(tagType, "Skills")) {
-                if (tagId == -1) {
+                if (tagId == -1) { // No Skills
                     evidenceList = evidenceService.getEvidencesWithoutSkills();
                     tagName = "No Skills";
                 } else {
                     evidenceList = evidenceService.getEvidencesWithSkill(tagId);
                     Tag skillTag = tagService.getTag(tagId);
-                    if (skillTag == null) {
+                    if (skillTag == null) {  // Invalid Skill
                         throw new NullPointerException("Invalid Skill Id");
                     }
                     tagName = skillTag.getSpacedTagName();
@@ -142,23 +161,15 @@ public class EvidenceController {
             } else if (Objects.equals(tagType, "Categories")) {
                 evidenceList = evidenceService.getEvidencesWithCategory(tagId);
                 Category category = categoryService.getCategory(tagId);
-                if (category == null) {
+                if (category == null) { // Invalid Category
                     throw new NullPointerException("Invalid Category Id");
                 }
                 tagName = category.getCategoryName();
             } else { // Invalid parameter given.
                 return "redirect:account?userId=" + returnId;
             }
-        } catch (NullPointerException ignore) {
+        } catch (NullPointerException ignore) { // Either exception from getting evidence or an invalid tag id.
             return "redirect:account?userId=" + returnId;
-        }
-
-        //TODO create function
-        List<Integer> evidenceHighFivedIds = new ArrayList<>();
-        for (Evidence eachEvidence:evidenceList) {
-            if (eachEvidence.getHighFivers().stream().map(HighFivers::getUserId).anyMatch(x -> x.equals(id))) {
-                evidenceHighFivedIds.add(eachEvidence.getEvidenceId());
-            }
         }
 
         String userName = registerClientService.getUserData(returnId).getUsername();
@@ -172,7 +183,8 @@ public class EvidenceController {
         model.addAttribute("validViewedUser", (userAccount.getId() != 0));
         model.addAttribute("allSkills", tagService.getTagsSortedList());
         model.addAttribute("allCategories", categoryService.getAllCategories());
-        model.addAttribute("evidenceHighFivedIds", evidenceHighFivedIds);
+        model.addAttribute("evidenceHighFivedIds", getHighFiveIds(evidenceList, id));
+        // This id should be the same as the userId stored in the header but for redundancy and safety this variable is also used.
         model.addAttribute("currentUserId", id);
 
         return "evidence";
@@ -181,12 +193,12 @@ public class EvidenceController {
     /**
      * Method to handle a partial refresh of the list of evidences to either display all the evidence with a given skill or Category ID
      * or all evidence with both a given skill or Category ID and user ID attached to it.
-     * @param model Parameters sent to thymeleaf template to be rendered into HTML
-     * @param userId The user currently logged in.
-     * @param viewedUserId The user that should be attached to the evidence.
-     * @param listAll A boolean value on if all or only a certain viewedUsers evidence should be returned.
-     * @param tagId The tag (skill or category) that needs to be attached to the evidence.
-     * @param tagType the type of tag either skill or category
+     * @param model         Parameters sent to thymeleaf template to be rendered into HTML
+     * @param userId        The user currently logged in.
+     * @param viewedUserId  The user that should be attached to the evidence.
+     * @param listAll       A boolean value on if all or only a certain viewedUsers evidence should be returned.
+     * @param tagId         The tag (skill or category) that needs to be attached to the evidence.
+     * @param tagType       The type of tag either skill or category
      * @return A fragment of the list of evidences to display.
      */
     @GetMapping("/switch-evidence-list")
@@ -199,8 +211,8 @@ public class EvidenceController {
             @RequestParam(value = "tagId") int tagId,
             @RequestParam(value = "tagType") String tagType
     ) {
-        // This code is duplicated in the update evidence list section as this method needs both the userAccount and
-        // the returned ID while the other method needs only the returned ID.
+        // This code is duplicated in the update evidence list section as this method needs only
+        // the returned ID while the main evidence page method need the UserAccount and the returned ID.
         Integer id = userAccountClientService.getUserIDFromAuthState(principal);
         elementService.addHeaderAttributes(model, id);
         UserResponse userAccount = registerClientService.getUserData(viewedUserId);
@@ -208,12 +220,10 @@ public class EvidenceController {
         int returnId = ((userAccount.getId() == 0) ?  id : userAccount.getId());
 
         List<Evidence> evidenceList;
-        List<Integer> evidenceHighFivedIds = new ArrayList<>();
-        List<Tag> skillsList;
 
         try {
             if (Objects.equals(tagType, "Skills")) {
-                if (tagId == -1) {
+                if (tagId == -1) { // No Skills
                     evidenceList = ((listAll) ? evidenceService.getEvidencesWithoutSkills() : evidenceService.getEvidencesWithUserAndWithoutSkills(viewedUserId));
                 } else {
                     evidenceList = ((listAll) ? evidenceService.getEvidencesWithSkill(tagId) : evidenceService.getEvidencesWithSkillAndUser(viewedUserId, tagId));
@@ -223,25 +233,19 @@ public class EvidenceController {
             } else { // Invalid parameter given.
                 return "redirect:account?userId=" + returnId;
             }
-        } catch (NullPointerException ignore) {
+        } catch (NullPointerException ignore) { // Exception thrown when getting evidence.
             return "redirect:account?userId=" + returnId;
         }
 
-        // TODO make into a function.
-        for (Evidence eachEvidence:evidenceList) {
-            if (eachEvidence.getHighFivers().stream().map(HighFivers::getUserId).anyMatch(x -> x.equals(id))) {
-                evidenceHighFivedIds.add(eachEvidence.getEvidenceId());
-            }
-        }
-
-        skillsList = ((listAll) ?  tagService.getTagsSortedList() : tagService.getTagsByUserSortedList(userId));
+        model.addAttribute("allSkills",
+                ((listAll) ?  tagService.getTagsSortedList() : tagService.getTagsByUserSortedList(userId)));
         model.addAttribute("evidencesExists", ((evidenceList != null) && (!evidenceList.isEmpty())));
         model.addAttribute("evidences", evidenceList);
         model.addAttribute("viewableUser", returnId);
-        model.addAttribute("evidenceHighFivedIds", evidenceHighFivedIds);
-        model.addAttribute("currentUserId", id);
-        model.addAttribute("allSkills", skillsList);
+        model.addAttribute("evidenceHighFivedIds", getHighFiveIds(evidenceList, id));
         model.addAttribute("allCategories", categoryService.getAllCategories());
+        // This id should be the same as the userId stored in the header but for redundancy and safety this variable is also used.
+        model.addAttribute("currentUserId", id);
 
         return ACCOUNT_EVIDENCE;
     }
@@ -272,8 +276,7 @@ public class EvidenceController {
             @RequestParam("userId") int userId,
             @RequestParam("userName") String userName,
             Model model,
-            HttpServletResponse httpServletResponse,
-            @AuthenticationPrincipal AuthState principal
+            HttpServletResponse httpServletResponse
     ) {
         boolean wasHighFived = evidenceService.saveHighFiveEvidence(evidenceId, userId, userName);
         if (wasHighFived) {

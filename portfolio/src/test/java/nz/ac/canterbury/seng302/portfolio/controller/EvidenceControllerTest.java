@@ -415,6 +415,7 @@ class EvidenceControllerTest {
         when(evidenceService.getEvidencesWithSkill(any(Integer.class))).thenReturn(evidences);
         when(registerClientService.getUserData(any(Integer.class))).thenReturn(testUser);
         when(tagService.getTag(any(Integer.class))).thenReturn(tag);
+        when(categoryService.getAllCategories()).thenReturn(testCategories);
 
         mockMvc.perform(get("/evidence-tags?userId=" + userId + "&tagId=1&tagType=Skills"))
                 .andExpect(status().isOk())
@@ -445,6 +446,7 @@ class EvidenceControllerTest {
 
         when(evidenceService.getEvidencesWithoutSkills()).thenReturn(evidences);
         when(registerClientService.getUserData(any(Integer.class))).thenReturn(testUser);
+        when(categoryService.getAllCategories()).thenReturn(testCategories);
 
         mockMvc.perform(get("/evidence-tags?userId=" + userId + "&tagId=-1&tagType=Skills"))
                 .andExpect(status().isOk())
@@ -477,6 +479,7 @@ class EvidenceControllerTest {
         when(evidenceService.getEvidencesWithSkill(any(Integer.class))).thenReturn(evidences);
         when(registerClientService.getUserData(any(Integer.class))).thenReturn(testUser);
         when(tagService.getTag(any(Integer.class))).thenReturn(tag);
+        when(categoryService.getAllCategories()).thenReturn(testCategories);
 
         mockMvc.perform(get("/evidence-tags?userId=" + userId + "&tagId=1&tagType=Skills"))
                 .andExpect(status().isOk())
@@ -507,6 +510,7 @@ class EvidenceControllerTest {
         when(registerClientService.getUserData(any(Integer.class))).thenReturn(testUser);
         when(evidenceService.getEvidencesWithSkill(any(Integer.class))).thenReturn(evidences);
         when(tagService.getTag(any(Integer.class))).thenReturn(null);
+        when(categoryService.getAllCategories()).thenReturn(testCategories);
 
         mockMvc.perform(get("/evidence-tags?userId=" + userId + "&tagId=1&tagType=Skills"))
                 .andExpect(status().is3xxRedirection())
@@ -532,6 +536,7 @@ class EvidenceControllerTest {
         when(registerClientService.getUserData(any(Integer.class))).thenReturn(testUser);
         when(evidenceService.getEvidencesWithSkill(any(Integer.class))).thenReturn(evidences);
         when(tagService.getTag(any(Integer.class))).thenReturn(null);
+        when(categoryService.getAllCategories()).thenReturn(testCategories);
 
         mockMvc.perform(get("/evidence-tags?userId=" + providedUserId + "&tagId=1&tagType=Skills"))
                 .andExpect(status().is3xxRedirection())
@@ -556,6 +561,7 @@ class EvidenceControllerTest {
 
         when(registerClientService.getUserData(any(Integer.class))).thenReturn(testUser);
         when(evidenceService.getEvidencesWithSkill(any(Integer.class))).thenReturn(evidences);
+        when(categoryService.getAllCategories()).thenReturn(testCategories);
 
         mockMvc.perform(get("/switch-evidence-list?userId=1&viewedUserId=" + userId + "&listAll=true&tagId=1&tagType=Skills"))
                 .andExpect(status().isOk())
@@ -580,6 +586,7 @@ class EvidenceControllerTest {
 
         when(registerClientService.getUserData(any(Integer.class))).thenReturn(testUser);
         when(evidenceService.getEvidencesWithSkillAndUser(any(Integer.class), any(Integer.class))).thenReturn(evidences);
+        when(categoryService.getAllCategories()).thenReturn(testCategories);
 
         mockMvc.perform(get("/switch-evidence-list?userId=1&viewedUserId=" + userId + "&listAll=false&tagId=1&tagType=Skills"))
                 .andExpect(status().isOk())
@@ -602,6 +609,7 @@ class EvidenceControllerTest {
 
         when(registerClientService.getUserData(any(Integer.class))).thenReturn(testUser);
         when(evidenceService.getEvidencesWithSkill(any(Integer.class))).thenThrow(new NullPointerException("Invalid skill tag."));
+        when(categoryService.getAllCategories()).thenReturn(testCategories);
 
         mockMvc.perform(get("/switch-evidence-list?userId=" + userId + "&viewedUserId=" + providedUserId + "&listAll=true&tagId=1&tagType=Skills"))
                 .andExpect(status().is3xxRedirection())
@@ -623,6 +631,7 @@ class EvidenceControllerTest {
 
         when(registerClientService.getUserData(any(Integer.class))).thenReturn(testUser);
         when(evidenceService.getEvidencesWithSkill(any(Integer.class))).thenThrow(new NullPointerException("Invalid skill tag."));
+        when(categoryService.getAllCategories()).thenReturn(testCategories);
 
         mockMvc.perform(get("/switch-evidence-list?userId=" + realUserId + "&viewedUserId=" + providedUserId + "&listAll=true&tagId=1&tagType=Skills"))
                 .andExpect(status().is3xxRedirection())
@@ -647,6 +656,7 @@ class EvidenceControllerTest {
 
         when(registerClientService.getUserData(any(Integer.class))).thenReturn(testUser);
         when(evidenceService.getEvidencesWithoutSkills()).thenReturn(evidences);
+        when(categoryService.getAllCategories()).thenReturn(testCategories);
 
         mockMvc.perform(get("/switch-evidence-list?userId=1&viewedUserId=" + userId + "&listAll=true&tagId=-1&tagType=Skills"))
                 .andExpect(status().isOk())
@@ -672,6 +682,7 @@ class EvidenceControllerTest {
 
         when(registerClientService.getUserData(any(Integer.class))).thenReturn(testUser);
         when(evidenceService.getEvidencesWithUserAndWithoutSkills(any(Integer.class))).thenReturn(evidences);
+        when(categoryService.getAllCategories()).thenReturn(testCategories);
 
         mockMvc.perform(get("/switch-evidence-list?userId=1&viewedUserId=" + userId + "&listAll=false&tagId=-1&tagType=Skills"))
                 .andExpect(status().isOk())
@@ -690,8 +701,10 @@ class EvidenceControllerTest {
     void testGetSkills() throws Exception {
         List<Tag> skills = List.of(new Tag("test skill 1"), new Tag("test skill 2"));
         int userId = 5;
+
         when(tagService.getTagsFromUserId(userId)).thenReturn(skills);
         when(categoryService.getAllCategories()).thenReturn(testCategories);
+
 
         mockMvc.perform(get("/get-skills").param("userId", String.valueOf(userId)))
                 .andExpect(status().isOk())
@@ -716,6 +729,7 @@ class EvidenceControllerTest {
         when(registerClientService.getUserData(any(Integer.class))).thenReturn(testUser);
         when(evidenceService.getEvidencesWithCategory(any(Integer.class))).thenReturn(evidences);
         when(categoryService.getCategory(any(Integer.class))).thenReturn(category);
+        when(categoryService.getAllCategories()).thenReturn(testCategories);
 
         mockMvc.perform(get("/evidence-tags?userId=" + userId + "&tagId=1&tagType=Categories"))
                 .andExpect(status().isOk())
@@ -749,6 +763,7 @@ class EvidenceControllerTest {
         when(registerClientService.getUserData(any(Integer.class))).thenReturn(testUser);
         when(evidenceService.getEvidencesWithCategory(any(Integer.class))).thenReturn(evidences);
         when(categoryService.getCategory(any(Integer.class))).thenReturn(category);
+        when(categoryService.getAllCategories()).thenReturn(testCategories);
 
         mockMvc.perform(get("/evidence-tags?userId=" + userId + "&tagId=1&tagType=Categories"))
                 .andExpect(status().isOk())
@@ -779,6 +794,7 @@ class EvidenceControllerTest {
         when(registerClientService.getUserData(any(Integer.class))).thenReturn(testUser);
         when(evidenceService.getEvidencesWithCategory(any(Integer.class))).thenReturn(evidences);
         when(categoryService.getCategory(any(Integer.class))).thenReturn(null);
+        when(categoryService.getAllCategories()).thenReturn(testCategories);
 
         mockMvc.perform(get("/evidence-tags?userId=" + userId + "&tagId=1&tagType=Categories"))
                 .andExpect(status().is3xxRedirection())
@@ -804,6 +820,7 @@ class EvidenceControllerTest {
         when(registerClientService.getUserData(any(Integer.class))).thenReturn(testUser);
         when(evidenceService.getEvidencesWithCategory(any(Integer.class))).thenReturn(evidences);
         when(categoryService.getCategory(any(Integer.class))).thenReturn(null);
+        when(categoryService.getAllCategories()).thenReturn(testCategories);
 
         mockMvc.perform(get("/evidence-tags?userId=" + providedUserId + "&tagId=1&tagType=Categories"))
                 .andExpect(status().is3xxRedirection())
@@ -829,6 +846,7 @@ class EvidenceControllerTest {
 
         when(registerClientService.getUserData(any(Integer.class))).thenReturn(testUser);
         when(evidenceService.getEvidencesWithCategory(any(Integer.class))).thenReturn(evidences);
+        when(categoryService.getAllCategories()).thenReturn(testCategories);
 
         mockMvc.perform(get("/switch-evidence-list?userId=1&viewedUserId=" + userId + "&listAll=true&tagId=1&tagType=Categories"))
                 .andExpect(status().isOk())
@@ -853,6 +871,7 @@ class EvidenceControllerTest {
 
         when(registerClientService.getUserData(any(Integer.class))).thenReturn(testUser);
         when(evidenceService.getEvidencesWithCategoryAndUser(any(Integer.class), any(Integer.class))).thenReturn(evidences);
+        when(categoryService.getAllCategories()).thenReturn(testCategories);
 
         mockMvc.perform(get("/switch-evidence-list?userId=1&viewedUserId=" + userId + "&listAll=false&tagId=1&tagType=Categories"))
                 .andExpect(status().isOk())
@@ -875,6 +894,7 @@ class EvidenceControllerTest {
 
         when(registerClientService.getUserData(any(Integer.class))).thenReturn(testUser);
         when(evidenceService.getEvidencesWithCategory(any(Integer.class))).thenThrow(new NullPointerException("Invalid category tag."));
+        when(categoryService.getAllCategories()).thenReturn(testCategories);
 
         mockMvc.perform(get("/switch-evidence-list?userId=" + userId + "&viewedUserId=" + providedUserId + "&listAll=true&tagId=1&tagType=Categories"))
                 .andExpect(status().is3xxRedirection())
@@ -896,6 +916,7 @@ class EvidenceControllerTest {
 
         when(registerClientService.getUserData(any(Integer.class))).thenReturn(testUser);
         when(evidenceService.getEvidencesWithCategory(any(Integer.class))).thenThrow(new NullPointerException("Invalid category tag."));
+        when(categoryService.getAllCategories()).thenReturn(testCategories);
 
         mockMvc.perform(get("/switch-evidence-list?userId=" + realUserId + "&viewedUserId=" + providedUserId + "&listAll=true&tagId=1&tagType=Categories"))
                 .andExpect(status().is3xxRedirection())
