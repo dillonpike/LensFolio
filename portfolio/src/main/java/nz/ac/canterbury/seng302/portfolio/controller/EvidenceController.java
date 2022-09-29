@@ -5,9 +5,7 @@ import nz.ac.canterbury.seng302.portfolio.model.Tag;
 import nz.ac.canterbury.seng302.portfolio.service.ElementService;
 import nz.ac.canterbury.seng302.portfolio.model.NotificationMessage;
 import nz.ac.canterbury.seng302.portfolio.model.NotificationResponse;
-import nz.ac.canterbury.seng302.portfolio.service.EvidenceService;
-import nz.ac.canterbury.seng302.portfolio.service.TagService;
-import nz.ac.canterbury.seng302.portfolio.service.UserAccountClientService;
+import nz.ac.canterbury.seng302.portfolio.service.*;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,15 +37,20 @@ public class EvidenceController {
     private EvidenceService evidenceService;
 
     @Autowired
-    private TagService tagService;
+    private PermissionService permissionService;
 
     @Autowired
     private ElementService elementService;
 
     @Autowired
+    private TagService tagService;
+
+    @Autowired
     private UserAccountClientService userAccountClientService;
 
     private static final String ADD_EVIDENCE_MODAL_FRAGMENT = "fragments/evidenceModal::evidenceModalBody";
+
+    private static final String DELETE_EVIDENCE_MODAL_FRAGMENT = "fragments/deleteModalProject";
 
     public static final String ADD_EVIDENCE_MODAL_FRAGMENT_TITLE_MESSAGE = "evidenceTitleAlertMessage";
 
@@ -93,6 +96,7 @@ public class EvidenceController {
             return ADD_EVIDENCE_MODAL_FRAGMENT;
         }
     }
+
 
     /**
      * Method to display the main page for viewing skill specific pieces of evidence.
@@ -181,6 +185,62 @@ public class EvidenceController {
                 skills.stream().map(Tag::getTagName).toList());
     }
 
+    @PostMapping("saveHighFiveEvidence")
+    public String saveHighFiveEvidence(
+            @RequestParam("evidenceId") int evidenceId,
+            @RequestParam("userId") int userId,
+            @RequestParam("userName") String userName,
+            Model model,
+            HttpServletResponse httpServletResponse,
+            @AuthenticationPrincipal AuthState principal
+    ) {
+        try {
+            boolean wasHighFived = evidenceService.saveHighFiveEvidence(evidenceId, userId, userName);
+            if (wasHighFived) {
+                // * Add the evidence to the model *
+                // * Maybe add something to the model to make sure the evidence tab is shown? *
+                httpServletResponse.setStatus(HttpServletResponse.SC_OK);
+                return "account::evidence"; // * return some sort of evidence fragment? *
+            } else {
+                httpServletResponse.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                return "account::evidence";
+            }
+
+        } catch (NotAcceptableException e) {
+            httpServletResponse.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            logger.error("Attributes of evidence not formatted correctly. Not high-fiving evidence. ");
+            return "account::evidence";
+        }
+    }
+
+    @PostMapping("removeHighFiveEvidence")
+    public String removeHighFiveEvidence(
+            @RequestParam("evidenceId") int evidenceId,
+            @RequestParam("userId") int userId,
+            @RequestParam("userName") String userName,
+            Model model,
+            HttpServletResponse httpServletResponse,
+            @AuthenticationPrincipal AuthState principal
+    ) {
+        try {
+            boolean wasRemoved = evidenceService.saveHighFiveEvidence(evidenceId, userId, userName);
+            if (wasRemoved) {
+                // * Add the evidence to the model *
+                // * Maybe add something to the model to make sure the evidence tab is shown? *
+                httpServletResponse.setStatus(HttpServletResponse.SC_OK);
+                return "account::evidence"; // * return some sort of evidence fragment? *
+            } else {
+                httpServletResponse.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                return "account::evidence";
+            }
+
+        } catch (NotAcceptableException e) {
+            httpServletResponse.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            logger.error("Attributes of evidence not formatted correctly. Not high-fiving evidence. ");
+            return "account::evidence";
+        }
+    }
+
     /**
      * This method maps @MessageMapping endpoint to the @SendTo endpoint. Called when something is sent to
      * the MessageMapping endpoint. This is triggered when a user adds a piece of evidence.
@@ -191,5 +251,17 @@ public class EvidenceController {
     @SendTo("/webSocketGet/evidence-added")
     public NotificationResponse evidenceAddNotification(NotificationMessage message) {
         return NotificationResponse.fromMessage(message, "add");
+    }
+
+    /**
+     * This method maps @MessageMapping endpoint to the @SendTo endpoint. Called when something is sent to
+     * the MessageMapping endpoint. This is triggered when a user deletes a piece of evidence.
+     * @param message Information about the deleted piece of evidence.
+     * @return Returns the message given.
+     */
+    @MessageMapping("/evidence-delete")
+    @SendTo("/webSocketGet/evidence-deleted")
+    public NotificationResponse evidenceDeleteNotification(NotificationMessage message) {
+        return NotificationResponse.fromMessage(message, "delete");
     }
 }
