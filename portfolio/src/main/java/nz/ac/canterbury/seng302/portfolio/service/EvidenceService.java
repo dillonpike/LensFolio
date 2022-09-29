@@ -9,14 +9,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 
 import javax.ws.rs.NotAcceptableException;
-import java.util.ArrayList;
-import java.util.Date;
+import java.util.*;
 
 import static nz.ac.canterbury.seng302.portfolio.controller.EvidenceController.*;
 
-import java.util.List;
-import java.util.Optional;
 import java.util.regex.Pattern;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 /**
  * Contains methods for saving, deleting, updating and retrieving evidence objects to the database.
@@ -233,6 +232,54 @@ public class EvidenceService {
         Category category = categoryService.getCategory(categoryId);
         return category.getEvidence().stream().filter(evidence -> isUserAttached(evidence.getEvidenceId(), userId)).sorted((o1, o2)->o2.getDate().
                 compareTo(o1.getDate())).toList();
+    }
+
+    /**
+     * Gets all evidences that do not have a skill attached to them.
+     * @return  A list of evidences with no skills attached to them.
+     */
+    public List<Evidence> getEvidencesWithoutSkills() {
+        // Used to convert an iterable to a stream.
+        Stream<Evidence> targetStream = StreamSupport.stream(
+                Spliterators.spliteratorUnknownSize(evidenceRepository.findAll().iterator(), Spliterator.ORDERED),
+                false);
+
+        return targetStream.filter(evidence -> hasNoSkills(evidence.getEvidenceId())).sorted((o1, o2)->o2.getDate().
+                compareTo(o1.getDate())).toList();
+    }
+
+    /**
+     * Gets all evidences that do not have a skill attached to them. But do have a user attached.
+     * @return  A list of evidences with no skills attached to them but a given user is attached.
+     */
+    public List<Evidence> getEvidencesWithUserAndWithoutSkills(int userId) {
+        // Used to convert an iterable to a stream.
+        Stream<Evidence> targetStream = StreamSupport.stream(
+                Spliterators.spliteratorUnknownSize(evidenceRepository.findAll().iterator(), Spliterator.ORDERED),
+                false);
+
+        return targetStream.filter(evidence -> hasNoSkills(evidence.getEvidenceId()))
+                .filter(evidence -> isUserAttached(evidence.getEvidenceId(), userId))
+                .sorted((o1, o2)->o2.getDate().compareTo(o1.getDate())).toList();
+    }
+
+    /**
+     * Checks to see if a skill has any skills attached to them.
+     * @param evidenceId    The id of the evidence being checked.
+     * @return Returns true if the evidence has no skills attached to it.
+     */
+    private boolean hasNoSkills(int evidenceId){
+        Optional<Evidence> sOptional = evidenceRepository.findById(evidenceId);
+        boolean valid = false;
+
+        if (sOptional.isPresent()) {
+            Evidence evidence = sOptional.get();
+            if (evidence.getTags().size() == 0) {
+                valid = true;
+            }
+        }
+
+        return valid;
     }
 
 }

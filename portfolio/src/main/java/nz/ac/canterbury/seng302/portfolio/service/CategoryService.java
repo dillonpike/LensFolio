@@ -33,7 +33,6 @@ public class CategoryService {
         Category category = null;
         if (sOptional.isPresent()) {
             category = sOptional.get();
-            categoryRepository.deleteById(category.getCategoryId());
         }
         return category;
     }

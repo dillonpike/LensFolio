@@ -126,13 +126,17 @@ public class EvidenceController {
         String tagName;
         try {
             if (Objects.equals(tagType, "Skills")) {
-                evidenceList = evidenceService.getEvidencesWithSkill(tagId);
-                Tag skillTag = tagService.getTag(tagId);
-                if (skillTag == null) {
-                    throw new NullPointerException("Invalid Skill Id");
+                if (tagId == -1) {
+                    evidenceList = evidenceService.getEvidencesWithoutSkills();
+                    tagName = "No Skills";
+                } else {
+                    evidenceList = evidenceService.getEvidencesWithSkill(tagId);
+                    Tag skillTag = tagService.getTag(tagId);
+                    if (skillTag == null) {
+                        throw new NullPointerException("Invalid Skill Id");
+                    }
+                    tagName = skillTag.getSpacedTagName();
                 }
-                tagName = skillTag.getSpacedTagName();
-
             } else if (Objects.equals(tagType, "Categories")) {
                 evidenceList = evidenceService.getEvidencesWithCategory(tagId);
                 Category category = categoryService.getCategory(tagId);
@@ -192,17 +196,13 @@ public class EvidenceController {
         List<Evidence> evidenceList;
         try {
             if (Objects.equals(tagType, "Skills")) {
-                if (listAll) {
-                    evidenceList = evidenceService.getEvidencesWithSkill(tagId);
+                if (tagId == -1) {
+                    evidenceList = ((listAll) ? evidenceService.getEvidencesWithoutSkills() : evidenceService.getEvidencesWithUserAndWithoutSkills(viewedUserId));
                 } else {
-                    evidenceList = evidenceService.getEvidencesWithSkillAndUser(viewedUserId, tagId);
+                    evidenceList = ((listAll) ? evidenceService.getEvidencesWithSkill(tagId) : evidenceService.getEvidencesWithSkillAndUser(viewedUserId, tagId));
                 }
             } else if (Objects.equals(tagType, "Categories")) {
-                if (listAll) {
-                    evidenceList = evidenceService.getEvidencesWithCategory(tagId);
-                } else {
-                    evidenceList = evidenceService.getEvidencesWithCategoryAndUser(viewedUserId, tagId);
-                }
+                evidenceList = ((listAll) ? evidenceService.getEvidencesWithCategory(tagId) : evidenceService.getEvidencesWithCategoryAndUser(viewedUserId, tagId));
             } else { // Invalid parameter given.
                 return "redirect:account?userId=" + returnId;
             }
@@ -212,6 +212,7 @@ public class EvidenceController {
 
         model.addAttribute("evidencesExists", ((evidenceList != null) && (!evidenceList.isEmpty())));
         model.addAttribute("evidences", evidenceList);
+        model.addAttribute("viewableUser", returnId);
 
         return "fragments/evidenceList";
     }
