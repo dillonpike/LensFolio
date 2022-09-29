@@ -34,6 +34,7 @@
         </div>
     </div>
     <div th:replace="fragments/evidenceList"></div>
+
 </div>
 
 </body>
@@ -43,6 +44,17 @@
 <script src="js/evidence.js"></script>
 <script th:inline="javascript">
     /*<![CDATA[*/
+
+    /**
+     * Stores the stomp client to connect to and send to for WebSockets/SockJS.
+     */
+    let socket = new SockJS('mywebsockets');
+    let stompClient = Stomp.over(socket);
+    stompClient.debug = null;
+
+    $(function () {
+        $('[data-toggle="tooltip"]').tooltip()
+    })
 
     /**
      * Refreshes the table to instead display either all evidences or just a certain users.
@@ -62,6 +74,7 @@
             $("#evidenceList").replaceWith(result);
         }).fail()
     }
+
     /*]]>*/
 </script>
 </html>

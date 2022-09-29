@@ -10,6 +10,11 @@ import nz.ac.canterbury.seng302.portfolio.service.EvidenceService;
 import nz.ac.canterbury.seng302.portfolio.service.RegisterClientService;
 import nz.ac.canterbury.seng302.portfolio.service.TagService;
 import nz.ac.canterbury.seng302.portfolio.service.UserAccountClientService;
+import nz.ac.canterbury.seng302.portfolio.service.*;
+import nz.ac.canterbury.seng302.portfolio.service.EvidenceService;
+import nz.ac.canterbury.seng302.portfolio.service.RegisterClientService;
+import nz.ac.canterbury.seng302.portfolio.service.TagService;
+import nz.ac.canterbury.seng302.portfolio.service.UserAccountClientService;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import nz.ac.canterbury.seng302.shared.identityprovider.ClaimDTO;
 import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
@@ -103,6 +108,12 @@ class EvidenceControllerTest {
             .build();
 
     private static final Evidence testEvidence = new Evidence(0 ,0, "test evidence", "test description", new Date());
+
+    private static final List<Category> testCategories = List.of(
+            new Category("test_category1"),
+            new Category("test_category2"),
+            new Category("test_category3")
+    );
 
     @BeforeEach
     public void setup() {
@@ -330,7 +341,6 @@ class EvidenceControllerTest {
                 new WebLink("something.ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"),
                 new WebLink("mke.ccc"));
         for (WebLink invalidWebLink: invalidWebLinks) {
-            System.err.println(invalidWebLink.getUrl());
             Evidence invalidEvidence = new Evidence(0, 0, "test evidence", "test description", new Date());
             invalidEvidence.addWebLink(invalidWebLink);
             doCallRealMethod().when(evidenceService).validateEvidence(eq(invalidEvidence), any(Model.class));
@@ -681,6 +691,7 @@ class EvidenceControllerTest {
         List<Tag> skills = List.of(new Tag("test skill 1"), new Tag("test skill 2"));
         int userId = 5;
         when(tagService.getTagsFromUserId(userId)).thenReturn(skills);
+        when(categoryService.getAllCategories()).thenReturn(testCategories);
 
         mockMvc.perform(get("/get-skills").param("userId", String.valueOf(userId)))
                 .andExpect(status().isOk())

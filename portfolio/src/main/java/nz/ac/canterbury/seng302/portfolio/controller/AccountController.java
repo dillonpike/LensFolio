@@ -1,9 +1,14 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
 import io.grpc.StatusRuntimeException;
+
+
+import java.util.ArrayList;
 import java.util.List;
+
+import nz.ac.canterbury.seng302.portfolio.model.*;
 import nz.ac.canterbury.seng302.portfolio.model.Evidence;
-import nz.ac.canterbury.seng302.portfolio.model.NotificationHighFive;
+import nz.ac.canterbury.seng302.portfolio.model.HighFivers;
 import nz.ac.canterbury.seng302.portfolio.model.Project;
 import nz.ac.canterbury.seng302.portfolio.service.*;
 import nz.ac.canterbury.seng302.portfolio.utility.DateUtility;
@@ -12,8 +17,6 @@ import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -40,6 +43,12 @@ public class AccountController {
 
     @Autowired
     private EvidenceService evidenceService;
+
+    @Autowired
+    private TagService tagService;
+
+    @Autowired
+    private CategoryService categoryService;
 
     @Autowired
     private PhotoService photoService;
@@ -77,7 +86,7 @@ public class AccountController {
                 model.addAttribute(USER_ID_ATTRIBUTE_NAME, id);
                 return "404NotFound";
             }
-            model.addAttribute("currentUserId", userId);
+            model.addAttribute("currentUserId", id);
             elementService.addRoles(model, getUserByIdReply);
             model.addAttribute("viewableUser", userId);
             model.addAttribute("firstName", getUserByIdReply.getFirstName());
@@ -102,10 +111,20 @@ public class AccountController {
             model.addAttribute("evidence", evidence);
 
             List<Evidence> evidenceList = evidenceService.getEvidences(userId);
+            List<Integer> evidenceHighFivedIds = new ArrayList<>();
             for (Evidence eachEvidence:evidenceList) {
-                eachEvidence.setHighFivers(eachEvidence.getHighFivers());
+                if (eachEvidence.getHighFivers().stream().map(HighFivers::getUserId).anyMatch(x -> x.equals(id))) {
+                    evidenceHighFivedIds.add(eachEvidence.getEvidenceId());
+                }
             }
             model.addAttribute("evidences", evidenceList);
+            model.addAttribute("evidenceHighFivedIds", evidenceHighFivedIds);
+
+            List<Tag> skillsList = tagService.getTagsByUserSortedList(userId);
+            model.addAttribute("allSkills", skillsList);
+
+            List<Category> categoriesList = categoryService.getAllCategories();
+            model.addAttribute("allCategories", categoriesList);
 
         } catch (StatusRuntimeException e) {
             model.addAttribute("loginMessage", "Error connecting to Identity Provider...");
@@ -139,18 +158,6 @@ public class AccountController {
     ) {
         rm.addAttribute(USER_ID_ATTRIBUTE_NAME,userId);
         return "redirect:account";
-    }
-
-    /***
-     * Used to handle the interaction between a piece of evidence being highfived
-     * and the notification being shown through the header.
-     *
-     * @return Send a notification to the header to display a highfive notification.
-     */
-    @MessageMapping("/high-fived-evidence")
-    @SendTo("/webSocketGet/notification-of-highfive")
-    public NotificationHighFive refreshGroupSettingsOutside(NotificationHighFive notificationHighFive) {
-        return notificationHighFive;
     }
 
 }
