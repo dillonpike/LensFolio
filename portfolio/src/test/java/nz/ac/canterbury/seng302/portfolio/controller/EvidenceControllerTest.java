@@ -419,6 +419,35 @@ class EvidenceControllerTest {
     }
 
     /**
+     * Tests that the evidence skills page is able to be reached and display all evidence with no skills.
+     * @throws Exception If mocking the MVC fails.
+     */
+    @Test
+    void testViewEvidenceNoSkillsPage200() throws Exception {
+        int userId = 1;
+        String userName = "testUser";
+        ArrayList<Evidence> evidences = new ArrayList<>();
+        evidences.add(new Evidence(0, userId, "test", "test-desc", Date.from(Instant.now())));
+        UserResponse testUser = UserResponse.newBuilder().setId(userId).setUsername(userName).build();
+
+        when(evidenceService.getEvidencesWithoutSkills()).thenReturn(evidences);
+        when(registerClientService.getUserData(any(Integer.class))).thenReturn(testUser);
+
+        mockMvc.perform(get("/evidence-tags?userId=" + userId + "&tagId=-1&tagType=Skills"))
+                .andExpect(status().isOk())
+                .andExpect(model().attribute("evidencesExists", true))
+                .andExpect(model().attribute("evidences", evidences))
+                .andExpect(model().attribute("tagName", "No Skills"))
+                .andExpect(model().attribute("viewableUser", testUser.getId()))
+                .andExpect(model().attribute("tagType", "Skills"))
+                .andExpect(model().attribute("tagId", -1))  // Tags must be -1 to get the "No Skills" page.
+                .andExpect(model().attribute("validViewedUser", true));
+
+        verify(evidenceService, times(1)).getEvidencesWithoutSkills();
+        verify(registerClientService, times(2)).getUserData(any(Integer.class));
+    }
+
+    /**
      * Tests that the evidence skills page is able to be reached when a valid tag but invalid user is given.
      * @throws Exception If mocking the MVC fails.
      */
@@ -587,6 +616,56 @@ class EvidenceControllerTest {
                 .andExpect(redirectedUrl("account?userId=" + realUserId));
 
         verify(evidenceService, times(1)).getEvidencesWithSkill(any(Integer.class));
+        verify(registerClientService, times(1)).getUserData(any(Integer.class));
+    }
+
+    /**
+     * Tests that the evidence skills partial refresh is able to be reached when a valid data is given
+     * for finding all evidence without a skill attached.
+     * This also tests that when given the correct values all data will be returned to the page.
+     * @throws Exception If mocking the MVC fails.
+     */
+    @Test
+    void testViewEvidenceNoSkillsUpdateToViewAll200() throws Exception {
+        int userId = 1;
+        ArrayList<Evidence> evidences = new ArrayList<>();
+        evidences.add(new Evidence(0, userId, "test", "test-desc", Date.from(Instant.now())));
+        UserResponse testUser = UserResponse.newBuilder().setId(userId).build();
+
+        when(registerClientService.getUserData(any(Integer.class))).thenReturn(testUser);
+        when(evidenceService.getEvidencesWithoutSkills()).thenReturn(evidences);
+
+        mockMvc.perform(get("/switch-evidence-list?userId=1&viewedUserId=" + userId + "&listAll=true&tagId=-1&tagType=Skills"))
+                .andExpect(status().isOk())
+                .andExpect(model().attribute("evidencesExists", true))
+                .andExpect(model().attribute("evidences", evidences));
+
+        verify(evidenceService, times(1)).getEvidencesWithoutSkills();
+        verify(registerClientService, times(1)).getUserData(any(Integer.class));
+    }
+
+    /**
+     * Tests that the evidence skills partial refresh is able to be reached when a valid data is given
+     * for finding all evidence without a skill attached.
+     * This also tests that when given the correct values only data matching to a users ID will be returned to the page.
+     * @throws Exception If mocking the MVC fails.
+     */
+    @Test
+    void testViewEvidenceNoSkillsUpdateToViewSingleUser200() throws Exception {
+        int userId = 1;
+        ArrayList<Evidence> evidences = new ArrayList<>();
+        evidences.add( new Evidence(0, userId, "test", "test-desc", Date.from(Instant.now())));
+        UserResponse testUser = UserResponse.newBuilder().setId(userId).build();
+
+        when(registerClientService.getUserData(any(Integer.class))).thenReturn(testUser);
+        when(evidenceService.getEvidencesWithUserAndWithoutSkills(any(Integer.class))).thenReturn(evidences);
+
+        mockMvc.perform(get("/switch-evidence-list?userId=1&viewedUserId=" + userId + "&listAll=false&tagId=-1&tagType=Skills"))
+                .andExpect(status().isOk())
+                .andExpect(model().attribute("evidencesExists", true))
+                .andExpect(model().attribute("evidences", evidences));
+
+        verify(evidenceService, times(1)).getEvidencesWithUserAndWithoutSkills(any(Integer.class));
         verify(registerClientService, times(1)).getUserData(any(Integer.class));
     }
 

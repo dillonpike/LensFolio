@@ -243,7 +243,6 @@ public class EvidenceService {
         Stream<Evidence> targetStream = StreamSupport.stream(
                 Spliterators.spliteratorUnknownSize(evidenceRepository.findAll().iterator(), Spliterator.ORDERED),
                 false);
-
         return targetStream.filter(evidence -> hasNoSkills(evidence.getEvidenceId())).sorted((o1, o2)->o2.getDate().
                 compareTo(o1.getDate())).toList();
     }

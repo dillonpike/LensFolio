@@ -392,4 +392,44 @@ class EvidenceServiceTest {
         }
     }
 
+    /**
+     * Test that the service class returns all evidence without skill tags attached.
+     */
+    @Test
+    void testGetAllEvidenceWithoutSkills() {
+        // Sets up the evidence iterable.
+        List<Evidence> expectedEvidences = new ArrayList<>();
+        Evidence testEvidence = new Evidence();
+        testEvidence.setEvidenceId(1);
+        expectedEvidences.add(testEvidence);
+
+        when(evidenceRepository.findAll()).thenReturn(expectedEvidences);
+        when(evidenceRepository.findById(testEvidence.getEvidenceId())).thenReturn(Optional.of(testEvidence));
+
+        List<Evidence> actualEvidences = evidenceService.getEvidencesWithoutSkills();
+        assertEquals(expectedEvidences, actualEvidences);
+    }
+
+    /**
+     *  Test that the service class returns all evidence without skill tags attached but with a given user ID attached.
+     */
+    @Test
+    void testGetAllEvidenceWithoutSkillsAndWithUser() {
+        int userId = 1;
+        // Sets up the evidence iterable.
+        List<Evidence> expectedEvidences = new ArrayList<>();
+        Evidence testEvidence = new Evidence();
+        testEvidence.setEvidenceId(1);
+        testEvidence.setUserId(userId);
+        expectedEvidences.add(testEvidence);
+
+        when(evidenceRepository.findAll()).thenReturn(expectedEvidences);
+        when(evidenceRepository.findById(testEvidence.getEvidenceId())).thenReturn(Optional.of(testEvidence));
+
+        List<Evidence> actualEvidences = evidenceService.getEvidencesWithUserAndWithoutSkills(userId);
+        assertEquals(expectedEvidences, actualEvidences);
+    }
+
+
+
 }
