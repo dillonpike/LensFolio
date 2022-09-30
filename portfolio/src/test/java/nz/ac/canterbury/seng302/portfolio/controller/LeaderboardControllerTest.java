@@ -110,7 +110,7 @@ class LeaderboardControllerTest {
      */
     @Test
     void leaderboardTable() throws Exception {
-        mockMvc.perform(get("leaderboard/leaderboard-table"))
+        mockMvc.perform(get("/leaderboard/leaderboard-table"))
                 .andExpect(status().isOk())
                 .andExpect(model().attribute("leaderboardEntries", leaderboardEntries));
     }
