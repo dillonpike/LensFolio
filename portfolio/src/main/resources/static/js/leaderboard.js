@@ -2,7 +2,7 @@
  * Configures the leaderboard table's properties (e.g. pagination, colours for 1st, 2nd, and 3rd place).
  */
 function configureLeaderboardTable() {
-    $('table').DataTable({searching: false, paging: true, info: false, select: false, sort: false,
+    $('table').DataTable({destroy:true, searching: false, paging: true, info: false, select: false, sort: false,
         'rowCallback': function(row, data) {
             const rankToColour = {'1': 'gold', '2': 'silver', '3': 'bronze'}
             if (data[0] in rankToColour) {
@@ -27,7 +27,7 @@ function configureLeaderboardTable() {
 function updateLeaderboard(notification, operation) {
     const leaderboardTable = $('table').DataTable();
     // const page = leaderboardTable.page();
-    leaderboardTable.destroy();
+    // leaderboardTable.destroy();
     const url = "/leaderboard-table";
     $("#leaderboardTable").load(url + " #leaderboardTable>*", "", function () {
         configureLeaderboardTable();
