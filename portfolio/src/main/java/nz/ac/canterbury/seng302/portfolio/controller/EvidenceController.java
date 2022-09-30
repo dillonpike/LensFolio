@@ -285,7 +285,7 @@ public class EvidenceController {
      * @param userName userName of the owner of the piece of evidence
      * @return a redirect to load the page
      */
-    @PostMapping("/saveHighFiveEvidence")
+    @PostMapping("/evidence/saveHighFiveEvidence")
     public String saveHighFiveEvidence(
             @RequestParam("evidenceId") int evidenceId,
             @RequestParam("userId") int userId,
@@ -309,7 +309,7 @@ public class EvidenceController {
      * @param userName userName of the owner of the piece of evidence
      * @return a redirect to load the page
      */
-    @PostMapping("/removeHighFiveEvidence")
+    @PostMapping("/evidence/removeHighFiveEvidence")
     public String removeHighFiveEvidence(
             @RequestParam("evidenceId") int evidenceId,
             @RequestParam("userId") int userId,
