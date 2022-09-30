@@ -221,7 +221,6 @@
 
   /**
    * This function will check the current icon being used for the like button and toggle it to the alternative.
-   * LOGIC STILL NEEDS TO BE CONNECT TO THIS FUNCTION!
    * @param id  ID of the image icon to toggle.
    */
   function switchIcon(id) {
@@ -237,6 +236,7 @@
   /**
    * This function will be triggered when the user clicks(high five) on a piece of evidence.
    * @param evidenceId ID of the evidence that was high fived.
+   * @param evidenceUserId ID of the user who created the evidence.
    */
   function saveHighFived(evidenceId, evidenceUserId) {
     let currentUserId = /*[[${currentUserId}]]*/ null;
@@ -252,11 +252,15 @@
         $("#evidenceList").load(url+" #evidenceList>*","");
       }, 10);
       sendHighFivedNotfication(evidenceId, evidenceUserId); // Send notification that post was highfived.
+    }).always(function () {
+      switchIcon(evidenceId);
     });
   }
 
   /**
    * Remove the high-five from a piece of evidence.
+   * @param evidenceId ID of the evidence that was un-high fived.
+   * @param evidenceUserId ID of the user who created the evidence.
    */
   function removeHighFived(evidenceId, evidenceUserId) {
     let currentUserId = /*[[${currentUserId}]]*/ null;
@@ -272,6 +276,8 @@
         $("#evidenceList").load(url+" #evidenceList>*","");
       }, 10);
       sendRemoveHighFivedNotfication(evidenceId, evidenceUserId); // Send notification that post un-highfived.
+    }).always(function () {
+      switchIcon(evidenceId);
     });
   }
 
