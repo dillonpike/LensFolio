@@ -1,119 +1,150 @@
 <div id="evidenceList" th:fragment="evidenceList">
-  <div th:each="evidence, meta: ${evidences}">
-    <div class="evidence-block">
-      <div class="detail-block">
-        <div class="evidence-info-block" th:if="${evidence}">
-          <button th:id="evidenceDropdown + (${meta.index} + 1)" class="btn" type="button" data-bs-toggle="collapse" th:attr="data-bs-target='#collapseEvidence' + ${evidence.getEvidenceId()}, aria-controls='collapseEvidence' + ${evidence.getEvidenceId()}, onClick='changeIcon(evidenceArrow' + (${meta.index} + 1) + ')'" aria-expanded="false" style="outline: none; box-shadow: none;">
-            <span class="evidence-title" th:text="${evidence.getTitle}" th:id="'evidence-title-' + ${evidence.getEvidenceId}"></span>
-            <svg th:id="evidenceArrow + (${meta.index} + 1)" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-caret-left-fill" viewBox="0 0 16 16">
-              <path d="m3.86 8.753 5.482 4.796c.646.566 1.658.106 1.658-.753V3.204a1 1 0 0 0-1.659-.753l-5.48 4.796a1 1 0 0 0 0 1.506z"/>
-            </svg>
-          </button>
-          <div style="display: flex; flex-wrap: wrap">
-            <div class="evidence-date ps-3" th:text="${evidence.getDateString}"></div>
-            <div class="evidence-date ps-3" th:if="${evidence.getUser()} != null">
-              Created by <a th:href="|account?userId=${evidence.getUserId()}|" th:text="|${evidence.getUser()?.getFirstName()} ${evidence.getUser()?.getLastName()} (${evidence.getUser()?.getUsername()})|"></a>
-            </div>
-          </div>
-          <div class="collapse ps-3 pb-3" th:id="collapseEvidence + ${evidence.getEvidenceId()}">
-            <b>Description:</b>
-            <div class="evidence-description" th:text="${evidence.getDescription}"></div>
-            <div class="evidence-block-heading" th:if="${!evidence.getWebLinks().isEmpty()}">Weblinks:</div>
-            <div th:each="webLink, meta: ${evidence.getWebLinks()}">
-              <div th:if="${webLink.getFormattedUrl()} != 'InvalidURL'" class="chip" th:id="'weblinkurlDisplay' + ${meta}" style="display: inline-block;padding: 0 12px 0 15px;height: fit-content;font-size: 16px;line-height: 30px;border-radius: 25px;background-color: #f1f1f1f1;margin: 0 10px 10px 0;" data-toggle="tooltip" data-bs-placement="right" th:title="${webLink.getUrl()}">
-                <div class="d-flex justify-content-between flex-row align-items-center">
-                  <i th:class="${webLink.isSecure()} ? 'bi bi-lock' : 'bi bi-unlock'"></i>
-                  <span style="margin-right: 10px; margin-left: 10px" th:text="${webLink.getFormattedUrl()}"></span>
-                  <a th:href="${webLink.getUrl()}" target="_blank">
-                    <i class="bi bi-box-arrow-up-right"></i>
-                  </a>
-                </div>
-              </div>
-            </div>
-
-            <div class="evidence-block-heading" th:if="${!evidence.getCategories().isEmpty()}">Categories:</div>
-            <div class="row-1" style="display: flex; flex-wrap: wrap">
-              <div th:each="category, meta: ${evidence.getCategories()}">
-                <div th:if="${category.getCategoryName()} != 'InvalidCategory'" th:attr="onclick='redirectToCategoriesPage(' + ${currentUserId} + ',' + ${category.getCategoryId()} + ')'" class="chip tagBadges" th:id="'categoryDisplay' + ${meta}" style="display: inline-block;padding: 0 12px 0 15px;height: fit-content;font-size: 16px;line-height: 30px;border-radius: 25px;background-color: #f1f1f1f1;margin: 0 10px 10px 0;" data-toggle="tooltip" data-bs-placement="right" th:title="${category.getCategoryName()}">
-                  <div class="d-flex justify-content-between flex-row align-items-center">
-                    <span style="margin-right: 10px; margin-left: 10px" th:text="${category.getCategoryName()}"></span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div class="evidence-block-heading" th:if="${!evidence.getTags().isEmpty()}">Skill Tags:</div>
-            <div class="row-1" style="display: flex; flex-wrap: wrap">
-              <div th:each="skillTag, meta: ${evidence.getTags()}">
-                <div th:if="${skillTag.getTagName()} != 'InvalidTag'" th:attr="onclick='redirectToSkillsPage(' + ${viewedUserId} + ','+ ${skillTag.getTagId()} +')'" class="chip tagBadges" th:id="'skillTagDisplay' + ${meta}" style="display: inline-block;padding: 0 12px 0 15px;height: fit-content;font-size: 16px;line-height: 30px;border-radius: 25px;background-color: #f1f1f1f1;margin: 0 10px 10px 0;" data-toggle="tooltip" data-bs-placement="right" th:title="${skillTag.getTagName()}">
-                  <div class="d-flex justify-content-between flex-row align-items-center">
-                    <span style="margin-right: 10px; margin-left: 10px" th:text="${skillTag.getTagName()}"></span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <script th:inline="javascript">
-            buttonId = /*[['evidenceDropdown' + (${meta.index} + 1)]]*/ null;
-            arrowId = /*[['evidenceArrow' + (${meta.index} + 1)]]*/ null;
-            collapseId = /*[['collapseEvidence' + ${evidence.getEvidenceId()}]]*/ null;
-            setToggle(buttonId, arrowId, collapseId);
-          </script>
-        </div>
-
-        <!--Buttons for deleting-->
-        <div class="d-flex">
-          <div class="button-divider">
-            <button class="btn btn-default" type="button" th:id="'highFiveBtn' + ${evidence.getEvidenceId}" th:attr="onclick=|changeHighFive('${evidence.getEvidenceId}', '${evidence.getUserId}')|" style="outline: none; box-shadow: none;">
-              <i th:class="${#arrays.contains(evidenceHighFivedIds, evidence.getEvidenceId)} ? 'bi bi-star-fill' : 'bi bi-star'" th:id="'star' + ${evidence.getEvidenceId}"></i>
-            </button>
-          </div>
-          <div class="button-divider">
-            <button class="btn btn-default dropdown" type="button" data-bs-toggle="dropdown" th:id="'UserList' + ${evidence.getEvidenceId}">
-              <i class="bi bi-people"></i>
-            </button>
-            <ul class="dropdown-menu">
-              <li><h6 class="dropdown-header">High fived by:</h6></li>
-              <li th:if="${evidence.getHighFivers().isEmpty()}"><a class="dropdown-item">No one high has fived this evidence yet!</a></li>
-              <li th:each="person:${evidence.getHighFivers()}" style="cursor: pointer"><a class="dropdown-item" th:attr="onclick='redirectToAnotherUserPage(' + ${person.getUserId()} + ')'" th:text="${person.getName()}"></a></li>
-            </ul>
-          </div>
-          <div class="button-divider">
-            <div class="dropdown" th:if="${currentUserId} == ${evidence.getUserId()}">
-              <button class="btn btn-default " type="button" id="evidenceActions" data-bs-toggle="dropdown" aria-expanded="false">
-                <i class='bi bi-gear-fill'></i>
+  <div class="row align-items-start">
+    <div class="col-lg-10">
+      <div th:each="evidence, meta: ${evidences}">
+        <div class="evidence-block">
+          <div class="detail-block">
+            <div class="evidence-info-block" th:if="${evidence}">
+              <button th:id="evidenceDropdown + (${meta.index} + 1)" class="btn" type="button" data-bs-toggle="collapse" th:attr="data-bs-target='#collapseEvidence' + ${evidence.getEvidenceId()}, aria-controls='collapseEvidence' + ${evidence.getEvidenceId()}, onClick='changeIcon(evidenceArrow' + (${meta.index} + 1) + ')'" aria-expanded="false" style="outline: none; box-shadow: none;">
+                <span class="evidence-title" th:text="${evidence.getTitle}" th:id="'evidence-title-' + ${evidence.getEvidenceId}"></span>
+                <svg th:id="evidenceArrow + (${meta.index} + 1)" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-caret-left-fill" viewBox="0 0 16 16">
+                  <path d="m3.86 8.753 5.482 4.796c.646.566 1.658.106 1.658-.753V3.204a1 1 0 0 0-1.659-.753l-5.48 4.796a1 1 0 0 0 0 1.506z"/>
+                </svg>
               </button>
+              <div style="display: flex; flex-wrap: wrap">
+                <div class="evidence-date ps-3" th:text="${evidence.getDateString}"></div>
+                <div class="evidence-date ps-3" th:if="${evidence.getUser()} != null">
+                  Created by <a th:href="|account?userId=${evidence.getUserId()}|" th:text="|${evidence.getUser()?.getFirstName()} ${evidence.getUser()?.getLastName()} (${evidence.getUser()?.getUsername()})|"></a>
+                </div>
+              </div>
+              <div class="collapse ps-3 pb-3" th:id="collapseEvidence + ${evidence.getEvidenceId()}">
+                <b>Description:</b>
+                <div class="evidence-description" th:text="${evidence.getDescription}"></div>
+                <div class="evidence-block-heading" th:if="${!evidence.getWebLinks().isEmpty()}">Weblinks:</div>
+                <div th:each="webLink, meta: ${evidence.getWebLinks()}">
+                  <div th:if="${webLink.getFormattedUrl()} != 'InvalidURL'" class="chip" th:id="'weblinkurlDisplay' + ${meta}" style="display: inline-block;padding: 0 12px 0 15px;height: fit-content;font-size: 16px;line-height: 30px;border-radius: 25px;background-color: #f1f1f1f1;margin: 0 10px 10px 0;" data-toggle="tooltip" data-bs-placement="right" th:title="${webLink.getUrl()}">
+                    <div class="d-flex justify-content-between flex-row align-items-center">
+                      <i th:class="${webLink.isSecure()} ? 'bi bi-lock' : 'bi bi-unlock'"></i>
+                      <span style="margin-right: 10px; margin-left: 10px" th:text="${webLink.getFormattedUrl()}"></span>
+                      <a th:href="${webLink.getUrl()}" target="_blank">
+                        <i class="bi bi-box-arrow-up-right"></i>
+                      </a>
+                    </div>
+                  </div>
+                </div>
 
-              <!--Delete button for evidence-->
-              <ul class="dropdown-menu" aria-labelledby="evidenceDropdownButton" style="z-index: 3000">
-                <li>
-                  <a id="deleteEvidenceDisplayButton" class="button-link" data-bs-toggle="modal" data-bs-target="#deleteModal" th:data-bs-name="${evidence.getTitle}" th:data-bs-id="${evidence.getEvidenceId}" data-bs-type="evidence">
-                    <button class="dropdown-item delete-artefact-button" type="button">
-                      <span class='bi bi-trash' style='color: red'></span> <i style='color: red'>Delete</i>
-                    </button>
-                  </a>
-                </li>
-              </ul>
+                <div class="evidence-block-heading" th:if="${!evidence.getCategories().isEmpty()}">Categories:</div>
+                <div class="row-1" style="display: flex; flex-wrap: wrap">
+                  <div th:each="category, meta: ${evidence.getCategories()}">
+                    <div th:if="${category.getCategoryName()} != 'InvalidCategory'" th:attr="onclick='redirectToCategoriesPage(' + ${currentUserId} + ',' + ${category.getCategoryId()} + ')'" class="chip tagBadges" th:id="'categoryDisplay' + ${meta}" style="display: inline-block;padding: 0 12px 0 15px;height: fit-content;font-size: 16px;line-height: 30px;border-radius: 25px;background-color: #f1f1f1f1;margin: 0 10px 10px 0;" data-toggle="tooltip" data-bs-placement="right" th:title="${category.getCategoryName()}">
+                      <div class="d-flex justify-content-between flex-row align-items-center">
+                        <span style="margin-right: 10px; margin-left: 10px" th:text="${category.getCategoryName()}"></span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="evidence-block-heading" th:if="${!evidence.getTags().isEmpty()}">Skill Tags:</div>
+                <div class="row-1" style="display: flex; flex-wrap: wrap">
+                  <div th:each="skillTag, meta: ${evidence.getTags()}">
+                    <div th:if="${skillTag.getTagName()} != 'InvalidTag'" th:attr="onclick='redirectToSkillsPage(' + ${viewedUserId} + ','+ ${skillTag.getTagId()} +')'" class="chip tagBadges" th:id="'skillTagDisplay' + ${meta}" style="display: inline-block;padding: 0 12px 0 15px;height: fit-content;font-size: 16px;line-height: 30px;border-radius: 25px;background-color: #f1f1f1f1;margin: 0 10px 10px 0;" data-toggle="tooltip" data-bs-placement="right" th:title="${skillTag.getTagName()}">
+                      <div class="d-flex justify-content-between flex-row align-items-center">
+                        <span style="margin-right: 10px; margin-left: 10px" th:text="${skillTag.getTagName()}"></span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <script th:inline="javascript">
+                buttonId = /*[['evidenceDropdown' + (${meta.index} + 1)]]*/ null;
+                arrowId = /*[['evidenceArrow' + (${meta.index} + 1)]]*/ null;
+                collapseId = /*[['collapseEvidence' + ${evidence.getEvidenceId()}]]*/ null;
+                setToggle(buttonId, arrowId, collapseId);
+              </script>
             </div>
+
+            <!--Buttons for deleting-->
+            <div class="d-flex">
+              <div class="button-divider">
+                <button class="btn btn-default" type="button" th:id="'highFiveBtn' + ${evidence.getEvidenceId}" th:attr="onclick=|changeHighFive('${evidence.getEvidenceId}', '${evidence.getUserId}')|" style="outline: none; box-shadow: none;">
+                  <i th:class="${#arrays.contains(evidenceHighFivedIds, evidence.getEvidenceId)} ? 'bi bi-star-fill' : 'bi bi-star'" th:id="'star' + ${evidence.getEvidenceId}"></i>
+                </button>
+              </div>
+              <div class="button-divider">
+                <button class="btn btn-default dropdown" type="button" data-bs-toggle="dropdown" th:id="'UserList' + ${evidence.getEvidenceId}">
+                  <i class="bi bi-people"></i>
+                </button>
+                <ul class="dropdown-menu">
+                  <li><h6 class="dropdown-header">High fived by:</h6></li>
+                  <li th:if="${evidence.getHighFivers().isEmpty()}"><a class="dropdown-item">No one high has fived this evidence yet!</a></li>
+                  <li th:each="person:${evidence.getHighFivers()}" style="cursor: pointer"><a class="dropdown-item" th:attr="onclick='redirectToAnotherUserPage(' + ${person.getUserId()} + ')'" th:text="${person.getName()}"></a></li>
+                </ul>
+              </div>
+              <div class="button-divider">
+                <div class="dropdown" th:if="${currentUserId} == ${evidence.getUserId()}">
+                  <button class="btn btn-default " type="button" id="evidenceActions" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class='bi bi-gear-fill'></i>
+                  </button>
+
+                  <!--Delete button for evidence-->
+                  <ul class="dropdown-menu" aria-labelledby="evidenceDropdownButton" style="z-index: 3000">
+                    <li>
+                      <a id="deleteEvidenceDisplayButton" class="button-link" data-bs-toggle="modal" data-bs-target="#deleteModal" th:data-bs-name="${evidence.getTitle}" th:data-bs-id="${evidence.getEvidenceId}" data-bs-type="evidence">
+                        <button class="dropdown-item delete-artefact-button" type="button">
+                          <span class='bi bi-trash' style='color: red'></span> <i style='color: red'>Delete</i>
+                        </button>
+                      </a>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
           </div>
         </div>
-
+      </div>
+      <!-- THIS BLOCK IS USED TO DISPLAY A NOTE THAT NO EVIDENCE HAS BEEN FOUND -->
+      <div class="evidence-block" th:if="${evidences?.isEmpty()}">
+        <div class="detail-block">
+          <div class="evidence-info-block">
+            <blockquote class="blockquote text-center">
+              <h2>No Evidence Found!</h2>
+            </blockquote>
+          </div>
+        </div>
       </div>
     </div>
-  </div>
-  <!-- THIS BLOCK IS USED TO DISPLAY A NOTE THAT NO EVIDENCE HAS BEEN FOUND -->
-  <div class="evidence-block" th:if="${evidences?.isEmpty()}">
-    <div class="detail-block">
-      <div class="evidence-info-block">
-        <blockquote class="blockquote text-center">
-          <h2>No Evidence Found!</h2>
-        </blockquote>
+    <div class="col-lg-2">
+      <div class="mb-1-6 mt-3">
+        <div class="row align-items-start pb-3">
+          <div th:each="categoryTag : ${allCategories}">
+            <div class="chip tagBadges tag-across category-chip" th:if="${categoryTag.getCategoryName()} != 'InvalidCategory'" th:attr="onclick='redirectToSkillsPage(' + ${currentUserId} + ','+ ${categoryTag.getCategoryId()} +')'" th:id="'categoryTagDisplay' + ${meta}" data-toggle="tooltip" data-bs-placement="left" th:title="${categoryTag.getCategoryName()}">
+              <div class="d-flex justify-content-between flex-row align-items-center">
+                <span style="margin-right: 6px; margin-left: 6px" th:text="${middleName!=null} ? ${#strings.abbreviate(categoryTag.getCategoryName(), 19)} : ${#strings.abbreviate(categoryTag.getCategoryName(), 19)}"></span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row align-items-start">
+          <div th:each="skillTag : ${allSkills}">
+            <div class="chip tagBadges tag-across" th:if="${skillTag.getTagName()} != 'InvalidTag'" th:attr="onclick='redirectToSkillsPage(' + ${currentUserId} + ','+ ${skillTag.getTagId()} +')'" th:id="'skillTagDisplay' + ${meta}" data-toggle="tooltip" data-bs-placement="left" th:title="${skillTag.getTagName()}">
+              <div class="d-flex justify-content-between flex-row align-items-center">
+                <span style="margin-right: 6px; margin-left: 6px" th:text="${middleName!=null} ? ${#strings.abbreviate(skillTag.getTagName(), 16)} : ${#strings.abbreviate(skillTag.getTagName(), 19)}"></span>
+              </div>
+            </div>
+          </div>
+        </div>
+
       </div>
     </div>
   </div>
 </div>
 <script th:inline="javascript">
   /*<![CDATA[*/
+
+  $(function () {
+    $('[data-toggle="tooltip"]').tooltip()
+  })
 
   let url = null;
 

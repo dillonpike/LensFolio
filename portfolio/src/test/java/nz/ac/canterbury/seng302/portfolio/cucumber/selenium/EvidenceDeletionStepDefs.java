@@ -49,7 +49,7 @@ public class EvidenceDeletionStepDefs {
      */
     @And("I am on the evidence tab")
     public void iAmOnTheEvidenceTab() {
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("evidence-tab")));
+        wait.until(ExpectedConditions.elementToBeClickable(By.id("evidence-tab")));
         webDriver.findElement(By.id("evidence-tab")).click();
     }
 

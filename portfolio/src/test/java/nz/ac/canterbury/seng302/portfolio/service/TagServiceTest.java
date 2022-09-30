@@ -41,14 +41,16 @@ class TagServiceTest {
     @InjectMocks
     private EvidenceService evidenceService;
 
-    private static final List<Tag> testTags = new ArrayList<>();
-    private static final List<Evidence> testEvidences = new ArrayList<>();
+    private static List<Tag> testTags = new ArrayList<>();
+    private static List<Evidence> testEvidences = new ArrayList<>();
 
     /**
      * setUp list of Tags for testing which will be returned when mocking the repository's method which will return list of Tags.
      */
     @BeforeEach
     void setUp() {
+        testTags = new ArrayList<>();
+        testEvidences = new ArrayList<>();
         for (int i = 0; i < 4; i++) {
             Tag tag = new Tag("Test tag " + (i + 1));
             testTags.add(tag);
@@ -73,7 +75,7 @@ class TagServiceTest {
      */
     @Test
     void testGetAllTags() {
-        when(tagRepository.findAll()).thenReturn(testTags);
+        when(tagRepository.findAll()).thenReturn(new ArrayList<>(testTags));
 
         List<Tag> actualTags = tagService.getAllTags();
 
@@ -120,6 +122,121 @@ class TagServiceTest {
         boolean success = tagService.removeTag(tagId);
         assertTrue(success);
         verify(tagRepository).deleteById(tagId);
+    }
+
+    /**
+     * Tests getting the tags of a user (blue sky scenario).
+     */
+    @Test
+    void testGetTagsOfUser() {
+        int userId = 5;
+        when(evidenceRepository.findAllByUserId(userId)).thenReturn(testEvidences);
+
+        Set<Tag> actualTags = tagService.getTagsOfUser(userId);
+
+        assertEquals(new HashSet<>(testTags), new HashSet<>(actualTags));
+    }
+
+    /**
+     * Tests getting the tags of a user when the user has no evidence.
+     */
+    @Test
+    void testGetTagsOfUserWhenUserHasNoEvidenceOrTags() {
+        int userId = 5;
+        when(evidenceRepository.findAllByUserId(userId)).thenReturn(new ArrayList<>());
+
+        Set<Tag> actualTags = tagService.getTagsOfUser(userId);
+
+        assertEquals(new HashSet<>(), new HashSet<>(actualTags));
+    }
+
+    /**
+     * Tests getting the tags of a user sorted by tag name, with the first tag being "No_skills" (blue sky scenario).
+     */
+    @Test
+    void testGetTagsByUserSortedList() {
+        int userId = 5;
+        when(evidenceRepository.findAllByUserId(userId)).thenReturn(new ArrayList<>(testEvidences));
+
+        List<Tag> actualTags = tagService.getTagsByUserSortedList(userId);
+
+        List<Tag> expectedTags = new ArrayList<>(testTags);
+        expectedTags.sort(Comparator.comparing(Tag::getTagName));
+        Tag noSkill = new Tag("No_skills");
+        noSkill.setTagId(-1);
+        expectedTags.add(0, noSkill);
+
+        assertEquals(expectedTags, actualTags);
+        assertEquals(testTags.size() + 1, actualTags.size());
+        assertEquals("No_skills", actualTags.get(0).getTagName());
+    }
+
+    /**
+     * Tests getting the tags of a user when they have no tags/evidence, with the first tag being "No_skills".
+     */
+    @Test
+    void testGetTagsByUserSortedListWhenUserHasNoEvidenceOrTags() {
+        int userId = 5;
+        when(evidenceRepository.findAllByUserId(userId)).thenReturn(new ArrayList<>());
+
+        List<Tag> actualTags = tagService.getTagsByUserSortedList(userId);
+
+        List<Tag> expectedTags = new ArrayList<>();
+        Tag noSkill = new Tag("No_skills");
+        noSkill.setTagId(-1);
+        expectedTags.add(0, noSkill);
+
+        assertEquals(expectedTags, actualTags);
+        assertEquals(1, actualTags.size());
+        assertEquals("No_skills", actualTags.get(0).getTagName());
+    }
+
+    /**
+     * Tests getting all tags sorted by tag name, with the first tag being "No_skills" (blue sky scenario).
+     */
+    @Test
+    void testGetTagsSortedList() {
+        when(tagRepository.findAll()).thenReturn(new ArrayList<>(testTags));
+
+        List<Tag> actualTags = tagService.getTagsSortedList();
+
+        List<Tag> expectedTags = new ArrayList<>(testTags);
+        expectedTags.sort(Comparator.comparing(Tag::getTagName));
+        Tag noSkill = new Tag("No_skills");
+        expectedTags.add(0, noSkill);
+
+        assertEquals(expectedTags, actualTags);
+        assertEquals(testTags.size() + 1, actualTags.size());
+        assertEquals("No_skills", actualTags.get(0).getTagName());
+    }
+
+    /**
+     * Tests getting all tags sorted by tag name, with the first tag being "No_skills", when no tags exist.
+     */
+    @Test
+    void testGetTagsSortedListWhenNoTagsExist() {
+        when(tagRepository.findAll()).thenReturn(new ArrayList<>());
+
+        List<Tag> actualTags = tagService.getTagsSortedList();
+
+        List<Tag> expectedTags = new ArrayList<>();
+        Tag noSkill = new Tag("No_skills");
+        expectedTags.add(0, noSkill);
+
+        assertEquals(expectedTags, actualTags);
+        assertEquals(1, actualTags.size());
+        assertEquals("No_skills", actualTags.get(0).getTagName());
+    }
+
+    /**
+     * Tests that the getTagsOfEvidence method returns a set of tags when given a valid evidence id.
+     */
+    @Test
+    void testGetTagsOfEvidence() {
+        int evidenceId = 1;
+        when(evidenceRepository.findById(evidenceId)).thenReturn(Optional.of(testEvidences.get(0)));
+        Set<Tag> actualTags = tagService.getTagsOfEvidence(evidenceId);
+        assertEquals(new HashSet<>(testEvidences.get(0).getTags()), new HashSet<>(actualTags));
     }
 
     /**

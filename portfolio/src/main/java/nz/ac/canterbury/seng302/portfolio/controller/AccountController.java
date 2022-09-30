@@ -2,8 +2,11 @@ package nz.ac.canterbury.seng302.portfolio.controller;
 
 import io.grpc.StatusRuntimeException;
 
+
 import java.util.ArrayList;
 import java.util.List;
+
+import nz.ac.canterbury.seng302.portfolio.model.*;
 import nz.ac.canterbury.seng302.portfolio.model.Evidence;
 import nz.ac.canterbury.seng302.portfolio.model.HighFivers;
 import nz.ac.canterbury.seng302.portfolio.model.Project;
@@ -40,6 +43,12 @@ public class AccountController {
 
     @Autowired
     private EvidenceService evidenceService;
+
+    @Autowired
+    private TagService tagService;
+
+    @Autowired
+    private CategoryService categoryService;
 
     @Autowired
     private PhotoService photoService;
@@ -110,6 +119,12 @@ public class AccountController {
             }
             model.addAttribute("evidences", evidenceList);
             model.addAttribute("evidenceHighFivedIds", evidenceHighFivedIds);
+
+            List<Tag> skillsList = tagService.getTagsByUserSortedList(userId);
+            model.addAttribute("allSkills", skillsList);
+
+            List<Category> categoriesList = categoryService.getAllCategories();
+            model.addAttribute("allCategories", categoriesList);
 
         } catch (StatusRuntimeException e) {
             model.addAttribute("loginMessage", "Error connecting to Identity Provider...");

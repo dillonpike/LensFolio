@@ -34,6 +34,7 @@
         </div>
     </div>
     <div th:replace="fragments/evidenceList"></div>
+
 </div>
 
 </body>
@@ -50,6 +51,10 @@
     let socket = new SockJS('mywebsockets');
     let stompClient = Stomp.over(socket);
     stompClient.debug = null;
+
+    $(function () {
+        $('[data-toggle="tooltip"]').tooltip()
+    })
 
     /**
      * Refreshes the table to instead display either all evidences or just a certain users.
