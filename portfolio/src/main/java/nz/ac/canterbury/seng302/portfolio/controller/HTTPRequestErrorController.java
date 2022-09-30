@@ -37,7 +37,7 @@ public class HTTPRequestErrorController implements org.springframework.boot.web.
      * @param model Parameters sent to thymeleaf template to be rendered into HTML
      * @return HTML page to show an error
      */
-    @PostMapping("/error")
+    @RequestMapping("/error")
     public String handleError(HttpServletRequest request,
                               @AuthenticationPrincipal AuthState principal,
                               Model model) {

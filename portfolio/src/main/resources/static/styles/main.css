@@ -578,6 +578,9 @@ body{
     min-height: 24px;
 }
 
+.tagBadges{
+    background-color: #d9d9d9 !important;
+}
 
 .tagBadges:hover {
     background-color:#0d6efd !important;
@@ -606,7 +609,6 @@ body{
     font-size: 16px !important;
     line-height: 30px !important;
     border-radius: 25px !important;
-    background-color: #f1f1f1f1 !important;
     margin: 0 10px 10px 0 !important;
 }
 
