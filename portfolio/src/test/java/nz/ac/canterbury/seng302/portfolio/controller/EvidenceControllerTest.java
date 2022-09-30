@@ -429,7 +429,7 @@ class EvidenceControllerTest {
 
         verify(evidenceService, times(1)).getEvidencesWithSkill(any(Integer.class));
         verify(tagService, times(1)).getTag(any(Integer.class));
-        verify(registerClientService, times(2)).getUserData(any(Integer.class));
+        verify(registerClientService, times(3)).getUserData(any(Integer.class));
     }
 
     /**
@@ -459,7 +459,7 @@ class EvidenceControllerTest {
                 .andExpect(model().attribute("validViewedUser", true));
 
         verify(evidenceService, times(1)).getEvidencesWithoutSkills();
-        verify(registerClientService, times(2)).getUserData(any(Integer.class));
+        verify(registerClientService, times(3)).getUserData(any(Integer.class));
     }
 
     /**
@@ -493,7 +493,7 @@ class EvidenceControllerTest {
 
         verify(evidenceService, times(1)).getEvidencesWithSkill(any(Integer.class));
         verify(tagService, times(1)).getTag(any(Integer.class));
-        verify(registerClientService, times(2)).getUserData(any(Integer.class));
+        verify(registerClientService, times(3)).getUserData(any(Integer.class));
     }
 
     /**
@@ -758,7 +758,7 @@ class EvidenceControllerTest {
 
         verify(evidenceService, times(1)).getEvidencesWithCategory(any(Integer.class));
         verify(categoryService, times(1)).getCategory(any(Integer.class));
-        verify(registerClientService, times(2)).getUserData(any(Integer.class));
+        verify(registerClientService, times(3)).getUserData(any(Integer.class));
     }
 
     /**
@@ -792,7 +792,7 @@ class EvidenceControllerTest {
 
         verify(evidenceService, times(1)).getEvidencesWithCategory(any(Integer.class));
         verify(categoryService, times(1)).getCategory(any(Integer.class));
-        verify(registerClientService, times(2)).getUserData(any(Integer.class));
+        verify(registerClientService, times(3)).getUserData(any(Integer.class));
     }
 
     /**

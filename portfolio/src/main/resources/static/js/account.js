@@ -59,7 +59,12 @@ function deleteEvidenceModalListener(id) {
             showAlertToast("Evidence deleted successfully!");
             sendDeleteEvidenceNotification();
             setTimeout(function() {
-            $("#evidenceList").load(url+" #evidenceList>*","");
+                $("#evidenceList").load(url +" #evidenceList>*","", function (data) {
+
+                    if (data.includes("<title>Account Page</title>") && viewableUser !== "") {
+                        redirectToEvidence(viewableUser);
+                    }
+                });
             }, 10);
         },
         error: function(error) {
