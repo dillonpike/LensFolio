@@ -58,9 +58,8 @@ function deleteEvidenceModalListener(id) {
             $('#deleteModal').modal('toggle')
             showAlertToast("Evidence deleted successfully!");
             sendDeleteEvidenceNotification();
-            let url = "account?userId=" + document.getElementById('userId').value
             setTimeout(function() {
-                $("#evidenceList").load(url+" #evidenceList>*","");
+            $("#evidenceList").load(url+" #evidenceList>*","");
             }, 10);
         },
         error: function(error) {
