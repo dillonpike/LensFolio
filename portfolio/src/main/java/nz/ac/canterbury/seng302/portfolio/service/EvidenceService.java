@@ -50,6 +50,9 @@ public class EvidenceService {
     @Autowired
     private HighFiversRepository highFiversRepository;
 
+    @Autowired
+    private RegisterClientService registerClientService;
+
     /**
      * This function returns all evidences based on the userId.
      * @param userId the ID of a user who we want to get evidences for.
@@ -408,7 +411,7 @@ public class EvidenceService {
 
         if (sOptional.isPresent()) {
             Evidence evidence = sOptional.get();
-            if (evidence.getTags().size() == 0) {
+            if (evidence.getTags().isEmpty()) {
                 valid = true;
             }
         }
@@ -427,6 +430,15 @@ public class EvidenceService {
             if (evidences.isEmpty()) {
                 tagService.removeTag(tagId);
             }
+        }
+    }
+
+    /**
+     * Adds the data of the evidence author to each evidence object so the author can be displayed in the frontend.
+     */
+    public void addUserDataToEvidence(List<Evidence> evidences) {
+        for (Evidence eachEvidence:evidences) {
+            eachEvidence.setUser(registerClientService.getUserData(eachEvidence.getUserId()));
         }
     }
 

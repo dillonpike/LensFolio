@@ -109,7 +109,7 @@ public class EvidenceController {
         List<Integer> ids = new ArrayList<>();
         if (evidences != null) {
             for (Evidence eachEvidence:evidences) {
-               if (eachEvidence.getHighFivers().stream().map(HighFivers::getUserId).anyMatch(x -> x.equals(id))) {
+                if (eachEvidence.getHighFivers().stream().map(HighFivers::getUserId).anyMatch(x -> x.equals(id))) {
                     ids.add(eachEvidence.getEvidenceId());
                 }
             }
@@ -173,6 +173,7 @@ public class EvidenceController {
         }
 
         String userName = registerClientService.getUserData(returnId).getUsername();
+        evidenceService.addUserDataToEvidence(evidenceList);
         model.addAttribute("userName", ((userName.toLowerCase(Locale.ROOT).endsWith("s")) ? userName + "'" : userName + "'s"));
         model.addAttribute("tagType", tagType);
         model.addAttribute("evidencesExists", ((evidenceList != null) && (!evidenceList.isEmpty())));
@@ -237,6 +238,7 @@ public class EvidenceController {
             return "redirect:account?userId=" + returnId;
         }
 
+        evidenceService.addUserDataToEvidence(evidenceList);
         model.addAttribute("allSkills",
                 ((listAll) ?  tagService.getTagsSortedList() : tagService.getTagsByUserSortedList(userId)));
         model.addAttribute("evidencesExists", ((evidenceList != null) && (!evidenceList.isEmpty())));
