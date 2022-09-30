@@ -49,6 +49,9 @@ public class EvidenceController {
     @Autowired
     private UserAccountClientService userAccountClientService;
 
+    @Autowired
+    private RegisterClientService registerClientService;
+
     private static final String ADD_EVIDENCE_MODAL_FRAGMENT = "fragments/evidenceModal::evidenceModalBody";
 
     public static final String ADD_EVIDENCE_MODAL_FRAGMENT_TITLE_MESSAGE = "evidenceTitleAlertMessage";
@@ -133,6 +136,7 @@ public class EvidenceController {
 
         List<Integer> evidenceHighFivedIds = new ArrayList<>();
         for (Evidence eachEvidence:evidenceList) {
+            eachEvidence.setUser(registerClientService.getUserData(eachEvidence.getUserId()));
             if (eachEvidence.getHighFivers().stream().map(HighFivers::getUserId).anyMatch(x -> x.equals(id))) {
                 evidenceHighFivedIds.add(eachEvidence.getEvidenceId());
             }
@@ -189,6 +193,7 @@ public class EvidenceController {
         }
 
         for (Evidence eachEvidence:evidenceList) {
+            eachEvidence.setUser(registerClientService.getUserData(eachEvidence.getUserId()));
             if (eachEvidence.getHighFivers().stream().map(HighFivers::getUserId).anyMatch(x -> x.equals(id))) {
                 evidenceHighFivedIds.add(eachEvidence.getEvidenceId());
             }
@@ -208,7 +213,7 @@ public class EvidenceController {
     /**
      * Returns a list of the ids and names of skills used by the user.
      * @param userId user id of the user
-     * @return set of tag names
+     * @return list of ids and names of skills used by the user
      */
     @GetMapping("/get-skills")
     @ResponseBody
@@ -217,6 +222,19 @@ public class EvidenceController {
         return List.of(skills.stream().map(tag -> String.valueOf(tag.getTagId())).toList(),
                 skills.stream().map(Tag::getTagName).toList());
     }
+
+    /**
+     * Returns a list of the ids and names of skills used by any user.
+     * @return list of ids and names of all skills
+     */
+    @GetMapping("/get-all-skills")
+    @ResponseBody
+    public List<List<String>> getAllSkills() {
+        List<Tag> skills = tagService.getAllTags();
+        return List.of(skills.stream().map(tag -> String.valueOf(tag.getTagId())).toList(),
+                skills.stream().map(Tag::getTagName).toList());
+    }
+
 
     /**
      * Saves a piece of evidence after being high-fived.
