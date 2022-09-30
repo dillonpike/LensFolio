@@ -250,7 +250,11 @@
                         displaySkillString = displaySkillString.substring(0, 29) + "...";
                     }
                     displaySkillString = conformTagCasing(displaySkillString, currentTags);
-
+                    if (skillTagsList.includes(displaySkillString)) {
+                        $("#evidenceSkillTagsAlertMessage").text("You have already added this tag.");
+                        document.getElementById("evidenceSkillTagsAlertBanner").removeAttribute("hidden");
+                        return;
+                    }
 
                     $("#skillTagList").append(`<div class="chip" id='skillTag${tagId}' style="display: inline-block;padding: 0 12px 0 15px;height: fit-content;font-size: 16px;line-height: 30px;border-radius: 25px;background-color: #f1f1f1f1;margin: 0 10px 10px 0;" data-toggle="tooltip" data-bs-placement="right" title="${displaySkillString}">
                                 <div class="d-flex justify-content-between flex-row align-items-center">
@@ -260,7 +264,7 @@
                             </div>`);
                     tagId += 1;
 
-                $('[data-toggle="tooltip"]').tooltip();
+                    $('[data-toggle="tooltip"]').tooltip();
 
                     updateCharsLeft('evidenceSkillTag', 'evidenceSkillTagLength', 250);
                     //add to list
