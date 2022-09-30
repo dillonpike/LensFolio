@@ -174,6 +174,7 @@ public class EvidenceController {
 
         String userName = registerClientService.getUserData(returnId).getUsername();
         evidenceService.addUserDataToEvidence(evidenceList);
+        elementService.addRoles(model, registerClientService.getUserData(id));
         model.addAttribute("userName", ((userName.toLowerCase(Locale.ROOT).endsWith("s")) ? userName + "'" : userName + "'s"));
         model.addAttribute("tagType", tagType);
         model.addAttribute("evidencesExists", ((evidenceList != null) && (!evidenceList.isEmpty())));

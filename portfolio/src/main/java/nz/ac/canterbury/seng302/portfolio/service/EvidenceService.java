@@ -11,6 +11,7 @@ import nz.ac.canterbury.seng302.portfolio.model.Evidence;
 import nz.ac.canterbury.seng302.portfolio.model.Tag;
 import nz.ac.canterbury.seng302.portfolio.model.HighFivers;
 import nz.ac.canterbury.seng302.portfolio.model.WebLink;
+import nz.ac.canterbury.seng302.portfolio.repository.CategoryRepository;
 import nz.ac.canterbury.seng302.portfolio.repository.EvidenceRepository;
 import nz.ac.canterbury.seng302.portfolio.repository.HighFiversRepository;
 import nz.ac.canterbury.seng302.portfolio.repository.TagRepository;
@@ -37,6 +38,9 @@ public class EvidenceService {
 
     @Autowired
     private EvidenceRepository evidenceRepository;
+
+    @Autowired
+    private CategoryRepository categoryRepository;
 
     @Autowired
     private TagService tagService;
@@ -84,6 +88,7 @@ public class EvidenceService {
         if (sOptional.isPresent()) {
             Evidence evidence = sOptional.get();
             Set<Tag> tags = null;
+            Set<Category> categories = null;
             Set<WebLink> webLinks = null;
             Set<HighFivers> highFivers = null;
 
@@ -93,6 +98,15 @@ public class EvidenceService {
                     evidence.removeTag(tag);
                     tag.getEvidence().remove(evidence);
                     tagRepository.save(tag);
+                }
+            }
+
+            if (!evidence.getCategories().isEmpty()) {
+                categories = Set.copyOf(evidence.getCategories());
+                for (Category category : categories) {
+                    evidence.removeCategory(category);
+                    category.getEvidence().remove(evidence);
+                    categoryRepository.save(category);
                 }
             }
 
