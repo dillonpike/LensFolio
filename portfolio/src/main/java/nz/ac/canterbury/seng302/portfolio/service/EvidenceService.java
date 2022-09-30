@@ -56,9 +56,7 @@ public class EvidenceService {
      * @return List of evidences.
      */
     public List<Evidence> getEvidences(int userId) {
-        List<Evidence> listEvidences = evidenceRepository.findAllByUserId(userId);
-        return listEvidences.stream().sorted((o1, o2)->o2.getDate().
-                compareTo(o1.getDate())).toList();
+        return evidenceRepository.findAllByUserIdOrderByDateDescEvidenceIdDesc(userId);
     }
 
     /**
@@ -408,7 +406,7 @@ public class EvidenceService {
 
         if (sOptional.isPresent()) {
             Evidence evidence = sOptional.get();
-            if (evidence.getTags().size() == 0) {
+            if (evidence.getTags().isEmpty()) {
                 valid = true;
             }
         }
