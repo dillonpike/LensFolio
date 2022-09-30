@@ -80,18 +80,10 @@ class EvidenceServiceTest {
      */
     @Test
     void getEvidences() {
-        when(evidenceRepository.findAllByUserId(any(Integer.class))).thenReturn(testEvidences);
-
+        when(evidenceRepository.findAllByUserIdOrderByDateDescEvidenceIdDesc(any(Integer.class))).thenReturn(testEvidences);
         List<Evidence> actualEvidences = evidenceService.getEvidences(1);
-        boolean isCorrectlySorted = true;
-        for(int i = 1; i < actualEvidences.size(); i++ ) {
-            if(actualEvidences.get(i-1).getDate().before(actualEvidences.get(i).getDate())){
-                isCorrectlySorted = false;
-                break;
-            }
-        }
-        assertTrue(isCorrectlySorted);
-        verify(evidenceRepository, times(1)).findAllByUserId(1);
+        assertEquals(testEvidences, actualEvidences);
+        verify(evidenceRepository, times(1)).findAllByUserIdOrderByDateDescEvidenceIdDesc(1);
     }
 
     /**
