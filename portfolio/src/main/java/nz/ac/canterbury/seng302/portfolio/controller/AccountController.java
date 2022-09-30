@@ -88,7 +88,7 @@ public class AccountController {
             }
             model.addAttribute("currentUserId", id);
             elementService.addRoles(model, getUserByIdReply);
-            model.addAttribute("viewedUserId", userId);
+            model.addAttribute("viewableUser", userId);
             model.addAttribute("firstName", getUserByIdReply.getFirstName());
             model.addAttribute("lastName", getUserByIdReply.getLastName());
             model.addAttribute("username", getUserByIdReply.getUsername());

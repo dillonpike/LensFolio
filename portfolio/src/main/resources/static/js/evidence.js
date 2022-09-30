@@ -63,14 +63,11 @@ function addEvidence() {
  */
 function replaceEvidenceModalBody(modalBodyResponse) {
     const webLinks = $("#webLinkList").children();
-    $("#evidenceModalBody").replaceWith(modalBodyResponse);
-    // Restore weblinks that were deleted when the modal was replaced
-    // Uses two duplicate jquery selectors since the element is replaced between each use
-    $("#webLinkList").html(webLinks);
     const skillTags = $("#skillTagList").children();
     $("#evidenceModalBody").replaceWith(modalBodyResponse);
     // Restore skilltags that were deleted when the modal was replaced
     // Uses two duplicate jquery selectors since the element is replaced between each use
+    $("#webLinkList").html(webLinks);
     $("#skillTagList").html(skillTags);
     updateCharsLeft('evidenceTitle', 'evidenceTitleLength', 30);
     updateCharsLeft('evidenceDescription', 'evidenceDescriptionLength', 250);
