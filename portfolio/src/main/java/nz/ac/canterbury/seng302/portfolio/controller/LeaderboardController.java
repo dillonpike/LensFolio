@@ -54,7 +54,7 @@ public class LeaderboardController {
      * @param model Parameters sent to thymeleaf template to be rendered into HTML
      * @return leaderboard table
      */
-    @GetMapping("leaderboard/leaderboard-table")
+    @GetMapping("/leaderboard/leaderboard-table")
     public String leaderboardTable(
             Model model
     ) {
