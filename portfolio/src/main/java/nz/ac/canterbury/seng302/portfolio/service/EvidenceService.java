@@ -137,10 +137,25 @@ public class EvidenceService {
      */
     public boolean addEvidence(Evidence newEvidence) {
         try {
+            processTags(newEvidence);
             evidenceRepository.save(newEvidence);
             return true;
         } catch (Exception e) {
             return false;
+        }
+    }
+
+    /**
+     * Processes the tags on the given evidence and replaces
+     * @param evidence piece of evidence to process tags for
+     */
+    private void processTags(Evidence evidence) {
+        for (Tag tag : evidence.getTags()) {
+            Tag databaseTag = tagService.getTagByNameIgnoreCase(tag.getTagName());
+            if (databaseTag != null) {
+                evidence.removeTag(tag);
+                evidence.addTag(databaseTag);
+            }
         }
     }
 
@@ -304,7 +319,6 @@ public class EvidenceService {
                 exists = true;
             }
         }
-
         return exists;
     }
 

@@ -238,4 +238,30 @@ class TagServiceTest {
         Set<Tag> actualTags = tagService.getTagsOfEvidence(evidenceId);
         assertEquals(new HashSet<>(testEvidences.get(0).getTags()), new HashSet<>(actualTags));
     }
+
+    /**
+     * Tests the getTag method returns the tag from the findById JPA method.
+     */
+    @Test
+    void testGetTag() {
+        Tag tag = testTags.get(1);
+        int tagId = tag.getTagId();
+        doReturn(Optional.of(tag)).when(tagRepository).findById(tagId);
+        Tag actualTag = tagService.getTag(tagId);
+        assertEquals(tag, actualTag);
+        verify(tagRepository).findById(tagId);
+    }
+
+    /**
+     * Tests the getTagByNameIgnoreCase method returns the tag from the findByTagNameIgnoreCase JPA method.
+     */
+    @Test
+    void testGetTagByNameIgnoreCase() {
+        Tag tag = testTags.get(1);
+        String tagName = tag.getTagName();
+        doReturn(List.of(tag)).when(tagRepository).findByTagNameIgnoreCase(tagName);
+        Tag actualTag = tagService.getTagByNameIgnoreCase(tagName);
+        assertEquals(tag, actualTag);
+        verify(tagRepository).findByTagNameIgnoreCase(tagName);
+    }
 }

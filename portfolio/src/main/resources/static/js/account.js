@@ -42,28 +42,30 @@ function deleteModalSetup() {
             modalBodyLabel.textContent = `Are you sure you want to delete the evidence piece '${name}'?`;
             modalButton.innerHTML = `Delete`;
 
-            $("#deleteModalButton").on('click', function (ignore) {
-                $.ajax({
-                    url: `delete-evidence/${id}`,
-                    type: 'POST',
-                    success: function() {
-                        $('#deleteModal').modal('toggle')
-                        showAlertToast("Evidence deleted successfully!");
-                        sendDeleteEvidenceNotification();
-                        let url = "account?userId=" + document.getElementById('userId').value
-                        setTimeout(function() {
-                            $("#evidence").load(url+" #evidence>*","");
-                        }, 10);
-                    },
-                    error: function(error) {
-                        $('#deleteModal').modal('toggle');
-                        showAlertErrorToast("Something went wrong went deleting evidence!");
-
-                    }
-                })
-            });
+            modalLink.removeAttribute('href')
+            modalButton.onclick = () => {deleteEvidenceModalListener(id)}
         }
     })
 }
 
 
+function deleteEvidenceModalListener(id) {
+    document.getElementById('deleteModalButton').onclick = () => {return false}
+    $.ajax({
+        url: `delete-evidence/${id}`,
+        type: 'POST',
+        success: function() {
+            $('#deleteModal').modal('toggle')
+            showAlertToast("Evidence deleted successfully!");
+            sendDeleteEvidenceNotification();
+            let url = "account?userId=" + document.getElementById('userId').value
+            setTimeout(function() {
+                $("#evidenceList").load(url+" #evidenceList>*","");
+            }, 10);
+        },
+        error: function(error) {
+            $('#deleteModal').modal('toggle');
+            showAlertErrorToast("Something went wrong went deleting evidence!");
+        }
+    })
+}

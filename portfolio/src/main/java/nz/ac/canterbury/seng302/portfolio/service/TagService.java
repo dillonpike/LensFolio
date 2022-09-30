@@ -32,7 +32,21 @@ public class TagService {
         if (sOptional.isPresent()) {
             tag = sOptional.get();
         }
-            return tag;
+        return tag;
+    }
+
+    /**
+     * Returns a tag from the database with the given tag name. Ignores case.
+     * @param tagName name of the tag
+     * @return tag with the given name
+     */
+    public Tag getTagByNameIgnoreCase(String tagName) {
+        List<Tag> tags = tagRepository.findByTagNameIgnoreCase(tagName);
+        Tag tag = null;
+        if (!tags.isEmpty()) {
+            tag = tags.get(0);
+        }
+        return tag;
     }
 
     /**

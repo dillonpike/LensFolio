@@ -109,7 +109,7 @@ public class EvidenceController {
         List<Integer> ids = new ArrayList<>();
         if (evidences != null) {
             for (Evidence eachEvidence:evidences) {
-                if (eachEvidence.getHighFivers().stream().map(HighFivers::getUserId).anyMatch(x -> x.equals(id))) {
+               if (eachEvidence.getHighFivers().stream().map(HighFivers::getUserId).anyMatch(x -> x.equals(id))) {
                     ids.add(eachEvidence.getEvidenceId());
                 }
             }
@@ -253,7 +253,7 @@ public class EvidenceController {
     /**
      * Returns a list of the ids and names of skills used by the user.
      * @param userId user id of the user
-     * @return set of tag names
+     * @return list of ids and names of skills used by the user
      */
     @GetMapping("/get-skills")
     @ResponseBody
@@ -262,6 +262,19 @@ public class EvidenceController {
         return List.of(skills.stream().map(tag -> String.valueOf(tag.getTagId())).toList(),
                 skills.stream().map(Tag::getTagName).toList());
     }
+
+    /**
+     * Returns a list of the ids and names of skills used by any user.
+     * @return list of ids and names of all skills
+     */
+    @GetMapping("/get-all-skills")
+    @ResponseBody
+    public List<List<String>> getAllSkills() {
+        List<Tag> skills = tagService.getAllTags();
+        return List.of(skills.stream().map(tag -> String.valueOf(tag.getTagId())).toList(),
+                skills.stream().map(Tag::getTagName).toList());
+    }
+
 
     /**
      * Saves a piece of evidence after being high-fived.

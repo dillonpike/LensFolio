@@ -713,6 +713,21 @@ class EvidenceControllerTest {
     }
 
     /**
+     * Tests that the get skills endpoint returns a list of skill ids and names.
+     * @throws Exception If mocking the MVC fails.
+     */
+    @Test
+    void testGetAllSkills() throws Exception {
+        List<Tag> skills = List.of(new Tag("test skill 1"), new Tag("test skill 2"));
+        when(tagService.getAllTags()).thenReturn(skills);
+
+        mockMvc.perform(get("/get-all-skills"))
+                .andExpect(status().isOk())
+                .andExpect(content().string(String.format("[[\"%s\",\"%s\"],[\"%s\",\"%s\"]]",
+                        skills.get(0).getTagId(), skills.get(1).getTagId(), skills.get(0).getTagName(), skills.get(1).getTagName())));
+    }
+
+    /**
      * Tests that the evidence categories page is able to be reached when a valid data is given (Blue Sky Scenario).
      * @throws Exception If mocking the MVC fails.
      */
