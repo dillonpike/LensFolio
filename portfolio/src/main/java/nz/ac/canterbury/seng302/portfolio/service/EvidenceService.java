@@ -254,7 +254,6 @@ public class EvidenceService {
      * @param userId user id of the owner of the piece of evidence
      * @param userName userName of the owner of the piece of evidence
      * @return boolean whether the piece of evidence was high-fived correctly
-     * @throws Exception if one of the values are not acceptable
      */
     public boolean saveHighFiveEvidence(int evidenceId, int userId, String userName) {
         Optional<Evidence> evidenceOptional = evidenceRepository.findById(evidenceId);
@@ -278,7 +277,6 @@ public class EvidenceService {
      * @param userId user id of the owner of the piece of evidence
      * @param userName userName of the owner of the piece of evidence
      * @return boolean whether the piece of evidence was un-high-fived correctly
-     * @throws Exception if one of the values are not acceptable
      */
     public boolean removeHighFiveEvidence(int evidenceId, int userId, String userName) {
         Optional<Evidence> evidenceOptional = evidenceRepository.findById(evidenceId);
