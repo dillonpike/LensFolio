@@ -224,7 +224,7 @@
                                                 <button class="btn btn-default " type="button" id="sprintActions" data-bs-toggle="dropdown" aria-expanded="false" >
                                                     <i class='bi bi-gear-fill'></i>
                                                 </button>
-                                                <ul class="dropdown-menu" aria-labelledby="sprintDropdownButton" style="z-index: 3000">
+                                                <ul class="dropdown-menu" aria-labelledby="sprintDropdownButton" style="z-index: 750">
                                                     <li>
                                                         <a class="button-link" data-bs-toggle="modal" data-bs-target="#sprintModal" th:data-bs-sprint="${sprint.toJSONString()}" data-bs-type="edit">
                                                         <button id="editSprintButton" class="dropdown-item" type="button">
@@ -251,7 +251,7 @@
             </div>
         </div>
             <div class="col-3">
-                <div class="sticky-md-top">
+                <div class="sticky-md-top" style="z-index: 700">
                     <ul class="nav nav-tabs" id="myTab" role="tablist">
                         <li class="nav-item" role="presentation">
                             <button class="nav-link active" id="event-tab" data-bs-toggle="tab" data-bs-target="#event" type="button" role="tab" aria-controls="event" aria-selected="true" th:attr="onClick='saveTab(\'event-tab\')'">
