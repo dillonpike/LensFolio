@@ -22,6 +22,7 @@ function deleteModalSetup() {
         const modalType = button.getAttribute('data-bs-type');
         const name = button.getAttribute('data-bs-name');
 
+
         if (modalType === 'photo') {
             modalTitle.innerText = `Delete Profile Photo`;
             modalBodyLabel.textContent = `Are you sure you want to delete your profile image?`;
@@ -36,24 +37,35 @@ function deleteModalSetup() {
             });
 
         } else if (modalType === 'evidence') {
+            const id = button.getAttribute('data-bs-id')
             modalTitle.innerText = `Delete Evidence`;
             modalBodyLabel.textContent = `Are you sure you want to delete the evidence piece '${name}'?`;
             modalButton.innerHTML = `Delete`;
-            modalLink.href = `deleteEvidence`;
 
-
-            $("#deleteModalButton").on('click', function (ignore) {
-                // Needs something for deleting evidence (maybe. Or this may not be needed.
-                //                                          Is here because deleting the photo had it.)
-                // prevent default can be removed once implementation is built, it is here to prevent errors for now (while there's no backend).
-                ignore.preventDefault();
-            });
-
+            modalLink.removeAttribute('href')
+            modalButton.onclick = () => {deleteEvidenceModalListener(id)}
         }
-
     })
-
-
 }
 
 
+function deleteEvidenceModalListener(id) {
+    document.getElementById('deleteModalButton').onclick = () => {return false}
+    $.ajax({
+        url: `delete-evidence/${id}`,
+        type: 'POST',
+        success: function() {
+            $('#deleteModal').modal('toggle')
+            showAlertToast("Evidence deleted successfully!");
+            sendDeleteEvidenceNotification();
+            let url = "account?userId=" + document.getElementById('userId').value
+            setTimeout(function() {
+                $("#evidenceList").load(url+" #evidenceList>*","");
+            }, 10);
+        },
+        error: function(error) {
+            $('#deleteModal').modal('toggle');
+            showAlertErrorToast("Something went wrong went deleting evidence!");
+        }
+    })
+}

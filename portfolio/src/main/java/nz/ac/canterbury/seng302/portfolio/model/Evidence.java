@@ -3,7 +3,9 @@ package nz.ac.canterbury.seng302.portfolio.model;
 import javax.persistence.*;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.stream.Collectors;
 
+import nz.ac.canterbury.seng302.shared.identityprovider.UserResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,6 +46,18 @@ public class Evidence {
     private Set<Tag> tags = new HashSet<>();
 
     /**
+     * The categories associated with this evidence.
+     */
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
+    @JoinTable(name = "evidence_to_category",
+            joinColumns =
+            @JoinColumn(name = "evidence_id"),
+            inverseJoinColumns =
+            @JoinColumn(name = "category_id")
+    )
+    private Set<Category> categories = new HashSet<>();
+
+    /**
      * The Weblinks associated with this evidence.
      */
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
@@ -56,15 +70,22 @@ public class Evidence {
     private Set<WebLink> webLinks = new HashSet<>();
 
     /**
-     * The user ids of users that have high fived this piece of evidence.
+     * The users that have high fived this piece of evidence.
      */
-    @ElementCollection
-    @CollectionTable(name="users_high_fived_evidence", joinColumns=@JoinColumn(name="evidence_id"))
-    @Column(name="user_id")
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
+    @JoinTable(name = "evidence_to_highfivers",
+            joinColumns =
+            @JoinColumn(name = "evidence_id"),
+            inverseJoinColumns =
+            @JoinColumn(name = "high_fivers_id")
+    )
+    private Set<HighFivers> highFivers = new HashSet<>();
+
+    @Transient
     private Set<Integer> highFiverIds = new HashSet<>();
 
     @Transient
-    private List<HighFivers> highFivers = new ArrayList<>();
+    private UserResponse user;
 
 
     /**
@@ -173,6 +194,39 @@ public class Evidence {
     }
 
     /**
+     * FOR JAVASCRIPT USE ONLY. Please use addCategories() and removeCategories() instead.
+     * Sets the categories associated with this evidence.
+     * @param categories new set of categories.
+     */
+    public void setCategories(Set<Category> categories) {
+        this.categories = categories;
+    }
+
+    /**
+     * Gets a set of tags corresponding to the evidence.
+     * @return Set of categories.
+     */
+    public Set<Category> getCategories() {
+        return categories;
+    }
+
+    /**
+     * Adds a category to the evidence.
+     * @param category Category to add.
+     */
+    public void addCategory(Category category) {
+        this.categories.add(category);
+    }
+
+    /**
+     * Remove a category from the evidence.
+     * @param category Category to remove.
+     */
+    public void removeCategory(Category category) {
+        this.categories.remove(category);
+    }
+
+    /**
      * FOR JAVASCRIPT USE ONLY. Please use addWebLinks() and removeWebLinks() instead.
      * Sets the weblinks associated with this evidence.
      * @param webLinks new set of weblinks.
@@ -210,30 +264,15 @@ public class Evidence {
      * @return Set of user ids.
      */
     public Set<Integer> getHighFiverIds() {
+        highFiverIds.addAll(highFivers.stream().map(HighFivers::getUserId).collect(Collectors.toSet()));
         return highFiverIds;
-    }
-
-    /**
-     * Adds a user id to the set of user ids of users that have high fived this piece of evidence.
-     * @param userId User id to add.
-     */
-    public void addHighFiverId(int userId) {
-        highFiverIds.add(userId);
-    }
-
-    /**
-     * Removes a user id from the set of user ids of users that have high fived this piece of evidence.
-     * @param userId User id to remove.
-     */
-    public void removeHighFiverId(int userId) {
-        highFiverIds.remove(userId);
     }
 
     /**
      * Set list of HighFivers Object to piece of evidence
      * @param highFivers the list of HighFivers object that relates to piece of evidence
      */
-    public void setHighFivers(List<HighFivers> highFivers) {
+    public void setHighFivers(Set<HighFivers> highFivers) {
         this.highFivers = highFivers;
     }
 
@@ -246,9 +285,38 @@ public class Evidence {
     }
 
     /**
-     * returns list of users that have given a High Five to a piece of evidence
+     * Remove an HighFivers Object from piece of evidence
+     * @param highFiver an HighFivers object to remove
      */
-    public List<HighFivers> getHighFivers() {
+    public void removeHighFivers(HighFivers highFiver) {
+        this.highFivers.remove(highFiver);
+    }
+
+    /**
+     * Remove an HighFivers Object from piece of evidence by user id
+     * @param highFiverId a user id to remove
+     */
+    public void removeHighFiversById(int highFiverId) {
+        for (HighFivers highFiver : highFivers) {
+            if (highFiver.getUserId() == highFiverId) {
+                this.highFivers.remove(highFiver);
+                break;
+            }
+        }
+    }
+
+    /**
+     * Returns list of users that have given a High Five to a piece of evidence
+     */
+    public Set<HighFivers> getHighFivers() {
         return highFivers;
+    }
+
+    public UserResponse getUser() {
+        return user;
+    }
+
+    public void setUser(UserResponse user) {
+        this.user = user;
     }
 }

@@ -10,8 +10,14 @@ public class NotificationHighFive {
      */
     private NotificationHighFive() {}
 
+    /**
+     * The user who is the owner of the piece of evidence being high-fived
+     */
     private int sendingUserId;
 
+    /**
+     * The user who is high-fivig the piece of evidence
+     */
     private int receivingUserId;
 
     private String sendingUserFullName;

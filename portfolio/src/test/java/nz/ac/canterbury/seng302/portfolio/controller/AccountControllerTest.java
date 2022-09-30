@@ -1,9 +1,7 @@
 package nz.ac.canterbury.seng302.portfolio.controller;
 
 import com.google.protobuf.Timestamp;
-import nz.ac.canterbury.seng302.portfolio.model.Evidence;
-import nz.ac.canterbury.seng302.portfolio.model.HighFivers;
-import nz.ac.canterbury.seng302.portfolio.model.Project;
+import nz.ac.canterbury.seng302.portfolio.model.*;
 import nz.ac.canterbury.seng302.portfolio.service.*;
 import nz.ac.canterbury.seng302.shared.identityprovider.AuthState;
 import nz.ac.canterbury.seng302.shared.identityprovider.ClaimDTO;
@@ -74,6 +72,11 @@ class AccountControllerTest {
      */
     private Project mockProject = new Project("test project", "test description", new Date(), new Date());
 
+    private static final List<Category> testCategories = List.of(
+            new Category("test_category1"),
+            new Category("test_category2"),
+            new Category("test_category3")
+    );
 
     @Autowired
     private MockMvc mockMvc = MockMvcBuilders.standaloneSetup(AccountController.class).build();
@@ -96,6 +99,12 @@ class AccountControllerTest {
     @MockBean
     private EvidenceService evidenceService;
 
+    @MockBean
+    private TagService tagService;
+
+    @MockBean
+    private CategoryService categoryService;
+
     /**
      * unit testing to test the get method when calling "/account"
      * Expect to return 200 status code and account page with some user's information in the model
@@ -117,13 +126,16 @@ class AccountControllerTest {
         String personalPronouns = mockUser.getPersonalPronouns();
         List<Evidence> evidenceList = new ArrayList<>();
         evidenceList.add(new Evidence(0,0,"title","desc", new Date()));
+        List<Tag> tagList = new ArrayList<>();
+        tagList.add(new Tag("tag"));
 
         SecurityContextHolder.setContext(mockedSecurityContext);
         when(userAccountClientService.getUserIDFromAuthState(any(AuthState.class))).thenReturn(1);
         when(registerClientService.getUserData(1)).thenReturn(mockUser);
         when(projectService.getProjectById(0)).thenReturn(mockProject);
         when(evidenceService.getEvidences(any(Integer.class))).thenReturn(evidenceList);
-        when(evidenceService.getHighFivers(evidenceList.get(0))).thenReturn(new ArrayList<>());
+        when(tagService.getTagsByUserSortedList(any(Integer.class))).thenReturn(tagList);
+        when(categoryService.getAllCategories()).thenReturn(testCategories);
 
 
         mockMvc.perform(get("/account").param("userId", "1"))
@@ -139,6 +151,8 @@ class AccountControllerTest {
                 .andExpect(model().attribute("personalPronouns", personalPronouns))
                 .andExpect(model().attribute("bio", bio))
                 .andExpect(model().attribute("evidences", evidenceList))
+                .andExpect(model().attribute("allSkills", tagList))
+                .andExpect(model().attribute("allCategories", testCategories))
                 .andExpect(model().attribute("project", mockProject));
     }
 

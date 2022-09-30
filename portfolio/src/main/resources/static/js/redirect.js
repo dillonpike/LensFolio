@@ -17,10 +17,11 @@ function redirectToProfile(userId) {
 }
 
 /**
- * redirect to skill page
+ * Redirect to tag page
  * @param userId current user ID (note: it is not necessarily the user that logged in)
- * @param skillId the id of a skill
+ * @param tagId the id of a tag
+ * @param tagType the type of tag (skill or category) being searched for.
  */
-function redirectToSkillsPage(userId, skillId) {
-    window.location.href = "evidence-skills?userId="+userId+"&skillId="+skillId;
+function redirectToTagPage(userId, tagId, tagType) {
+    window.location.href = "evidence-tags?userId="+userId+"&tagId="+tagId+"&tagType="+tagType;
 }

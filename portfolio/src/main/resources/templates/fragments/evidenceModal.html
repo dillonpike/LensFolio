@@ -15,7 +15,7 @@
                         <div class="mb-3">
                             <label for="evidenceTitle" class="col-form-label">Title(*):</label>
                             <input onkeyup="{updateCharsLeft('evidenceTitle', 'evidenceTitleLength', 30);isEvidenceInputFieldFilled()}" maxlength="30" type="text"
-                                   class="form-control" onkeydown="isEvidenceInputFieldFilled()" id="evidenceTitle" name="title" th:value="${evidence?.title}">
+                                   class="form-control" onchange="isEvidenceInputFieldFilled()" id="evidenceTitle" name="title" th:value="${evidence?.title}">
                             <div class="name-length-message">
                                 <span id="evidenceTitleLength"></span>
                             </div>
@@ -27,7 +27,7 @@
                         </div>
                         <div class="mb-3">
                             <label for="evidenceDescription" class="col-form-label">Description(*):</label>
-                            <input onkeyup="{updateCharsLeft('evidenceDescription', 'evidenceDescriptionLength', 250);isEvidenceInputFieldFilled()}" maxlength="250" type="text"
+                            <input onkeyup="{updateCharsLeft('evidenceDescription', 'evidenceDescriptionLength', 250);isEvidenceInputFieldFilled()}" maxlength="250" type="text" onchange="isEvidenceInputFieldFilled()"
                                    class="form-control" id="evidenceDescription" name="description" th:value="${evidence?.description}">
                             <div class="name-length-message">
                                 <span id="evidenceDescriptionLength"></span>
@@ -94,6 +94,20 @@
 
                             </div>
                         </div>
+
+                        <div class="mb-3">
+                            <label for="categoryPicker" class="col-form-label">Categories:</label>
+                            <select name="categoryPicker" id="categoryPicker" class="selectpicker" multiple>
+                                <option value="3">Service</option>
+                                <option value="1">Quantitative skills</option>
+                                <option value="2">Qualitative skills</option>
+                            </select>
+                        </div>
+                        <script>
+                            $(document).ready(function () {
+                                $('.selectpicker').selectpicker();
+                            });
+                        </script>
                     </div>
                     <div class="modal-footer">
                         <button class="btn btn-primary disabled" id="evidenceModalButton" type="submit">Add Evidence</button>
@@ -235,10 +249,10 @@
                     if (displaySkillString.length > 30) {
                         displaySkillString = displaySkillString.substring(0, 29) + "...";
                     }
-                    displaySkillString = conformTagCasing(displaySkillString, usersCurrentTags);
+                    displaySkillString = conformTagCasing(displaySkillString, currentTags);
 
 
-                    $("#skillTagList").append(`<div class="chip" id='skillTag${tagId}' style="display: inline-block;padding: 0 12px 0 15px;height: fit-content;font-size: 16px;line-height: 30px;border-radius: 25px;background-color: #f1f1f1f1;margin: 0 10px 10px 0;" data-toggle="tooltip" data-bs-placement="right" title="${skillString}">
+                    $("#skillTagList").append(`<div class="chip" id='skillTag${tagId}' style="display: inline-block;padding: 0 12px 0 15px;height: fit-content;font-size: 16px;line-height: 30px;border-radius: 25px;background-color: #f1f1f1f1;margin: 0 10px 10px 0;" data-toggle="tooltip" data-bs-placement="right" title="${displaySkillString}">
                                 <div class="d-flex justify-content-between flex-row align-items-center">
                                     <span style="margin-right: 10px">${displaySkillString}</span>
                                     <button onclick="removeSkillTag('skillTag${tagId}')" type="button" class="btn-close" aria-label="Close"></button>
@@ -320,15 +334,16 @@
             document.getElementById("evidenceSkillTagsAlertBanner").hidden = true;
             skillTagsList = [];
             $("#skillTagList").empty();
-            updateCharsLeft('evidenceTitle', 'evidenceTitleLength', 250);
+            updateCharsLeft('evidenceTitle', 'evidenceTitleLength', 30);
             updateCharsLeft('evidenceDescription', 'evidenceDescriptionLength', 250);
             updateCharsLeft('evidenceWeblink', 'evidenceWebLinkLength', 250);
-            updateCharsLeft('evidenceSkillTag', 'evidenceSkillTagLength', 250);
+            updateCharsLeft('evidenceSkillTag', 'evidenceSkillTagLength', 30);
         });
 
         // Creates a list to store the user's current skills in for the autocomplete, and updates this list whenever the
-        // add evidence modal is opened.
+        // add evidence modal is opened. Also stores all current skills in the application for case conforming.
         let usersCurrentTags = [];
+        let currentTags = [];
         document.getElementById("evidenceModal").addEventListener("show.bs.modal", function () {
             let userId = $("#userId").val();
             $.get("get-skills?" + new URLSearchParams({userId: userId})).done((result) => {
@@ -337,7 +352,9 @@
                     source: result[1]
                 });
             });
+            $.get("get-all-skills").done((result) => {
+                currentTags = zip(result).map((tag) => {return {id: tag[0], name: tag[1]}})
+            });
         });
-
     </script>
 </div>

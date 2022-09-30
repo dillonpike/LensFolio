@@ -7,6 +7,7 @@ const MILESTONETYPE = "Milestone";
 const GROUPTYPE = "Group";
 const HIGHFIVETYPE = "HighFive"
 const EVIDENCETYPE = "Evidence";
+const ROLETYPE = "Role";
 
 
 const ADDACTION = "add";
@@ -16,7 +17,14 @@ const DELETEACTION = "delete";
 const HIGHFIVEACTION = "highfive"
 const HIGHFIVEUPDATEACTION = "highfiveUpdate"
 const ADDEVIDENCEACTION = "addEvidence";
+const DELETEEVIDENCEACTION = "deleteEvidence";
+const UPDATELEADERBOARDADDACTION = "updateLeaderboardAdd";
+const UPDATELEADERBOARDDELETEACTION = "updateLeaderboardDelete";
 const UPDATELEADERBOARDACTION = "updateLeaderboard";
+const DELETEROLEACTION = "deleteRole";
+const ADDROLEACTION = "addRole";
+const ADDROLEUPDATEACTION = "addRoleUpdate";
+const DELETEROLEUPDATEACTION = "deleteRoleUpdate";
 
 
 /**
@@ -78,7 +86,10 @@ class Notification {
             this.titleName = "High Five Activity";
         } else if (type === EVIDENCETYPE) {
             this.titleName = "Evidence Activity";
-        } else {
+        } else if (type === ROLETYPE) {
+            this.titleName = "Role Activity";
+        }
+        else {
             this.titleName = "Activity";
         }
 
@@ -150,29 +161,47 @@ class Notification {
         this.isWaitingToBeHidden = false;
         this.selectedDate = (new Date(Date.now())).valueOf();
         switch(this.action){
-            case SAVEACTION:
-                this.bodyText = "'" + this.name + "' has been updated by " + this.firstName + " " + this.lastName + " (" + this.username + ").";
+          case SAVEACTION:
+              this.bodyText = "'" + this.name + "' has been updated by " + this.firstName + " " + this.lastName + " (" + this.username + ").";
+              break;
+          case EDITACTION:
+              this.bodyText = "'" + this.name + "' is being edited by " + this.firstName + " " + this.lastName + " (" + this.username + ").";
+              break;
+          case ADDACTION:
+              this.bodyText = this.firstName + " " + this.lastName + " (" + this.username + ") has added a new " + this.type.toLowerCase() + "."
+              break;
+          case DELETEACTION:
+              this.bodyText = "'" + this.name + "' has been deleted by " + this.firstName + " " + this.lastName + " (" + this.username + ").";
+              break;
+          case ADDEVIDENCEACTION:
+              this.bodyText = this.firstName + " " + this.lastName + " (" + this.username + ") has added a piece of evidence. Updating leaderboard...";
+              break;
+            case DELETEEVIDENCEACTION:
+                this.bodyText = this.firstName + " " + this.lastName + " (" + this.username + ") has deleted a piece of evidence. Updating leaderboard...";
                 break;
-            case EDITACTION:
-                this.bodyText = "'" + this.name + "' is being edited by " + this.firstName + " " + this.lastName + " (" + this.username + ").";
+          case UPDATELEADERBOARDACTION:
+              this.bodyText = this.firstName + " " + this.lastName + " (" + this.username + ") has added a piece of evidence. Updated leaderboard!";
+              break;
+          case ADDROLEUPDATEACTION:
+                this.bodyText = this.firstName + " " + this.lastName + " (" + this.username + ") has been added student role. Updated leaderboard!";
                 break;
-            case ADDACTION:
-                this.bodyText = this.firstName + " " + this.lastName + " (" + this.username + ") has added a new " + this.type.toLowerCase() + "."
+          case DELETEROLEUPDATEACTION:
+                this.bodyText = this.firstName + " " + this.lastName + " (" + this.username + ") has had removed student role. Updated leaderboard!";
                 break;
-            case DELETEACTION:
-                this.bodyText = "'" + this.name + "' has been deleted by " + this.firstName + " " + this.lastName + " (" + this.username + ").";
+          case DELETEROLEACTION:
+                this.bodyText = this.firstName + " " + this.lastName + " (" + this.username + ") has had removed student role. Updating leaderboard...";
                 break;
-            case HIGHFIVEACTION:
+          case ADDROLEACTION:
+                this.bodyText = this.firstName + " " + this.lastName + " (" + this.username + ") has been added to a student role. Updating leaderboard...";
+                break;
+          case HIGHFIVEACTION:
                 this.bodyText = "'" + this.name + "' has been high fived by " + this.username + ".";
                 break;
-            case HIGHFIVEUPDATEACTION:
+          case HIGHFIVEUPDATEACTION:
                 this.bodyText = "'" + this.name + "' has been high fived by " + this.username + " and " + (this.highfivers.length - 2) + " other user(s).";
                 break;
-            case ADDEVIDENCEACTION:
-                this.bodyText = this.firstName + " " + this.lastName + " (" + this.username + ") has added a piece of evidence. Updating leaderboard...";
-                break;
-            case UPDATELEADERBOARDACTION:
-                this.bodyText = this.firstName + " " + this.lastName + " (" + this.username + ") has added a piece of evidence. Updated leaderboard!";
+            case UPDATELEADERBOARDDELETEACTION:
+                this.bodyText = this.firstName + " " + this.lastName + " (" + this.username + ") has deleted a piece of evidence. Updated leaderboard!";
                 break;
             default:
                 this.bodyText = "'" + this.name + "' has been changed by " + this.firstName + " " + this.lastName + " (" + this.username + ").";
@@ -185,20 +214,20 @@ class Notification {
         this.toast.show();
     }
 
+    /**
+     * Hides the notification, including the toast. Resets variables if needed.
+     */
     hide() {
         this.isHidden = true;
         this.isWaitingToBeHidden = false;
         this.toast.hide();
+        if (this.type === HIGHFIVETYPE) {
+            this.highfivers = [];
+            this.username = "";
+            this.action = HIGHFIVEACTION;
+        }
     }
 
-    /**
-     * Resets the notification so it doesn't contain any old data.
-     */
-    resetToast() {
-        this.highfivers = [];
-        this.username = "";
-        this.action = HIGHFIVEACTION;
-    }
 
     /**
      * Hides the notification after a timer.
@@ -213,7 +242,6 @@ class Notification {
         setTimeout((function (notification) {
             let currentTime = (new Date(Date.now())).valueOf();
             if (currentTime >= notification.selectedDate + ((timeInSeconds * 1000) - 500) && notification.isWaitingToBeHidden) {
-                notification.resetToast();
                 notification.hide();
             }
         }), timeInSeconds * 1000, this);
@@ -254,6 +282,9 @@ class Notification {
                 this.username = newNotification.username
                 this.highfivers.push(newNotification.username);
             }
+        } else {
+            this.name = newNotification.name;
+            this.action = newNotification.action;
         }
         return this;
     }
