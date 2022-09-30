@@ -36,7 +36,7 @@
                 <div class="evidence-block-heading" th:if="${!evidence.getCategories().isEmpty()}">Categories:</div>
                 <div class="row-1" style="display: flex; flex-wrap: wrap">
                   <div th:each="category, meta: ${evidence.getCategories()}">
-                    <div th:if="${category.getCategoryName()} != 'InvalidCategory'" th:attr="onclick='redirectToCategoriesPage(' + ${currentUserId} + ',' + ${category.getCategoryId()} + ')'" class="chip category-chip" th:id="'categoryDisplay' + ${meta}" style="display: inline-block;padding: 0 12px 0 15px;height: fit-content;font-size: 16px;line-height: 30px;border-radius: 25px;background-color: #f1f1f1f1;margin: 0 10px 10px 0;" data-toggle="tooltip" data-bs-placement="right" th:title="${category.getCategoryName()}">
+                    <div th:if="${category.getCategoryName()} != 'InvalidCategory'" th:onclick="|redirectToTagPage('${viewableUser}', '${category.getCategoryId()}', 'Categories')|"  class="chip tagBadges" th:id="'categoryDisplay' + ${meta}" style="display: inline-block;padding: 0 12px 0 15px;height: fit-content;font-size: 16px;line-height: 30px;border-radius: 25px;background-color: #f1f1f1f1;margin: 0 10px 10px 0;" data-toggle="tooltip" data-bs-placement="right" th:title="${category.getCategoryName()}">
                       <div class="d-flex justify-content-between flex-row align-items-center">
                         <span style="margin-right: 10px; margin-left: 10px" th:text="${category.getCategoryName()}"></span>
                       </div>
@@ -47,7 +47,7 @@
                 <div class="evidence-block-heading" th:if="${!evidence.getTags().isEmpty()}">Skill Tags:</div>
                 <div class="row-1" style="display: flex; flex-wrap: wrap">
                   <div th:each="skillTag, meta: ${evidence.getTags()}">
-                    <div th:if="${skillTag.getTagName()} != 'InvalidTag'" th:attr="onclick='redirectToSkillsPage(' + ${viewedUserId} + ','+ ${skillTag.getTagId()} +')'" class="chip tagBadges" th:id="'skillTagDisplay' + ${meta}" style="display: inline-block;padding: 0 12px 0 15px;height: fit-content;font-size: 16px;line-height: 30px;border-radius: 25px;background-color: #f1f1f1f1;margin: 0 10px 10px 0;" data-toggle="tooltip" data-bs-placement="right" th:title="${skillTag.getTagName()}">
+                    <div th:if="${skillTag.getTagName()} != 'InvalidTag'" th:onclick="|redirectToTagPage('${viewableUser}', '${skillTag.getTagId()}', 'Skills')|" class="chip tagBadges" th:id="'skillTagDisplay' + ${meta}" style="display: inline-block;padding: 0 12px 0 15px;height: fit-content;font-size: 16px;line-height: 30px;border-radius: 25px;background-color: #f1f1f1f1;margin: 0 10px 10px 0;" data-toggle="tooltip" data-bs-placement="right" th:title="${skillTag.getTagName()}">
                       <div class="d-flex justify-content-between flex-row align-items-center">
                         <span style="margin-right: 10px; margin-left: 10px" th:text="${skillTag.getTagName()}"></span>
                       </div>
@@ -116,9 +116,12 @@
     </div>
     <div class="col-lg-2">
       <div class="mb-1-6 mt-3">
-        <div class="row align-items-start pb-3">
+        <div class="row align-items-start pb-2">
+          <span class="col-12">
+            <h4 class="text-center">Categories</h4>
+          </span>
           <div th:each="categoryTag : ${allCategories}">
-            <div class="chip tagBadges tag-across category-chip" th:if="${categoryTag.getCategoryName()} != 'InvalidCategory'" th:attr="onclick='redirectToSkillsPage(' + ${currentUserId} + ','+ ${categoryTag.getCategoryId()} +')'" th:id="'categoryTagDisplay' + ${meta}" data-toggle="tooltip" data-bs-placement="left" th:title="${categoryTag.getCategoryName()}">
+            <div class="chip tagBadges tag-across category-chip" th:if="${categoryTag.getCategoryName()} != 'InvalidCategory'" th:onclick="|redirectToTagPage('${viewableUser}', '${categoryTag.getCategoryId()}', 'Categories')|" th:id="'categoryTagDisplay' + ${meta}" data-toggle="tooltip" data-bs-placement="left" th:title="${categoryTag.getCategoryName()}">
               <div class="d-flex justify-content-between flex-row align-items-center">
                 <span style="margin-right: 6px; margin-left: 6px" th:text="${middleName!=null} ? ${#strings.abbreviate(categoryTag.getCategoryName(), 19)} : ${#strings.abbreviate(categoryTag.getCategoryName(), 19)}"></span>
               </div>
@@ -126,8 +129,11 @@
           </div>
         </div>
         <div class="row align-items-start">
+          <span class="col-12">
+            <h4 class="text-center">Skills</h4>
+          </span>
           <div th:each="skillTag : ${allSkills}">
-            <div class="chip tagBadges tag-across" th:if="${skillTag.getTagName()} != 'InvalidTag'" th:attr="onclick='redirectToSkillsPage(' + ${currentUserId} + ','+ ${skillTag.getTagId()} +')'" th:id="'skillTagDisplay' + ${meta}" data-toggle="tooltip" data-bs-placement="left" th:title="${skillTag.getTagName()}">
+            <div class="chip tagBadges tag-across" th:if="${skillTag.getTagName()} != 'InvalidTag'" th:onclick="|redirectToTagPage('${viewableUser}', '${skillTag.getTagId()}', 'Skills')|" th:id="'skillTagDisplay' + ${meta}" data-toggle="tooltip" data-bs-placement="left" th:title="${skillTag.getTagName()}">
               <div class="d-flex justify-content-between flex-row align-items-center">
                 <span style="margin-right: 6px; margin-left: 6px" th:text="${middleName!=null} ? ${#strings.abbreviate(skillTag.getTagName(), 16)} : ${#strings.abbreviate(skillTag.getTagName(), 19)}"></span>
               </div>
@@ -148,12 +154,21 @@
 
   let url = null;
 
-  if (window.location.href.includes("evidence-skills")) {
-    url = "evidence-skills?userId="
-             + /*[[${viewedUserId}]]*/ null
-             + "&skillId=" + /*[[${skillId}]]*/ null;
+  if (window.location.href.includes("evidence-tags")) {
+    // This ensures we are on the evidence tags page, so we can call elements from its HTML page.
+    if (window.location.href.includes("tagType=Skills")) {
+      url = "evidence-tags?userId="
+              + /*[[${viewableUser}]]*/ null
+              + "&tagId=" + /*[[${tagId}]]*/ null
+              + "&tagType=Skills";
+    } else {
+      url = "evidence-tags?userId="
+              + /*[[${viewableUser}]]*/ null
+              + "&tagId=" + /*[[${tagId}]]*/ null
+              + "&tagType=Categories";
+    }
   } else {
-    url = "account?userId=" + /*[[${viewedUserId}]]*/ null;
+      url = "account?userId=" + /*[[${viewableUser}]]*/ null;
   }
 
   /**
@@ -174,7 +189,7 @@
       });
       stompClient.subscribe('/webSocketGet/notification-of-highfive', function (HighFivedResponseArg) {
         const highFivedResponse = JSON.parse(HighFivedResponseArg.body);
-        if (highFivedResponse.receivingUserId == /*[[${viewedUserId}]]*/ null) {
+        if (highFivedResponse.receivingUserId == /*[[${viewableUser}]]*/ null) {
           setTimeout(function() {
             $("#evidenceList").load(url+" #evidenceList>*","");
           }, 10);
@@ -182,7 +197,7 @@
       });
       stompClient.subscribe('/webSocketGet/notification-of-remove-highfive', function (HighFivedResponseArg) {
         const highFivedResponse = JSON.parse(HighFivedResponseArg.body);
-        if (highFivedResponse.receivingUserId == /*[[${viewedUserId}]]*/ null) {
+        if (highFivedResponse.receivingUserId == /*[[${viewableUser}]]*/ null) {
           setTimeout(function() {
             $("#evidenceList").load(url+" #evidenceList>*","");
           }, 10);
