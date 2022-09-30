@@ -247,7 +247,7 @@
       userId: currentUserId,
       userName: userName
     }
-    $.post("/saveHighFiveEvidence?" + new URLSearchParams(data)).done(function (result) {
+    $.post("saveHighFiveEvidence?" + new URLSearchParams(data)).done(function (result) {
       setTimeout(function() {
         $("#evidenceList").load(url+" #evidenceList>*","");
       }, 10);
@@ -271,7 +271,7 @@
       userId: currentUserId,
       userName: userName
     }
-    $.post("/removeHighFiveEvidence?" + new URLSearchParams(data)).done(function (result) {
+    $.post("removeHighFiveEvidence?" + new URLSearchParams(data)).done(function (result) {
       setTimeout(function() {
         $("#evidenceList").load(url+" #evidenceList>*","");
       }, 10);
