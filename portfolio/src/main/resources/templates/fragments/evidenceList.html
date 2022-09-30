@@ -116,7 +116,10 @@
     </div>
     <div class="col-lg-2">
       <div class="mb-1-6 mt-3">
-        <div class="row align-items-start pb-3">
+        <div class="row align-items-start pb-2">
+          <span class="col-12">
+            <h4 class="text-center">Categories</h4>
+          </span>
           <div th:each="categoryTag : ${allCategories}">
             <div class="chip tagBadges tag-across category-chip" th:if="${categoryTag.getCategoryName()} != 'InvalidCategory'" th:attr="onclick='redirectToSkillsPage(' + ${currentUserId} + ','+ ${categoryTag.getCategoryId()} +')'" th:id="'categoryTagDisplay' + ${meta}" data-toggle="tooltip" data-bs-placement="left" th:title="${categoryTag.getCategoryName()}">
               <div class="d-flex justify-content-between flex-row align-items-center">
@@ -126,6 +129,9 @@
           </div>
         </div>
         <div class="row align-items-start">
+          <span class="col-12">
+            <h4 class="text-center">Skills</h4>
+          </span>
           <div th:each="skillTag : ${allSkills}">
             <div class="chip tagBadges tag-across" th:if="${skillTag.getTagName()} != 'InvalidTag'" th:attr="onclick='redirectToSkillsPage(' + ${currentUserId} + ','+ ${skillTag.getTagId()} +')'" th:id="'skillTagDisplay' + ${meta}" data-toggle="tooltip" data-bs-placement="left" th:title="${skillTag.getTagName()}">
               <div class="d-flex justify-content-between flex-row align-items-center">
