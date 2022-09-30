@@ -39,7 +39,8 @@ function addEvidence() {
         projectId: 0,
         userId: document.getElementById('userId').value,
         webLinks: webLinksList,
-        tags: skillTagsList
+        tags: skillTagsList,
+        categories: $('#categoryPicker').val()
     }
 
     $.post(document.getElementById('evidenceForm').action + "?" + new URLSearchParams(data)).done((result) => {
