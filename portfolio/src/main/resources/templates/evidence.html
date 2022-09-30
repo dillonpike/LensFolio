@@ -75,6 +75,40 @@
         }).fail()
     }
 
+    const toggleSwitch = document.getElementById('flexSwitchCheckDefault')
+    toggleSwitch.addEventListener('click', function () {
+        const tagType = /*[[${tagType}]]*/ "";
+        if ($('#flexSwitchCheckDefault').is(":checked")) {
+            if (tagType === "Skills") {
+                url = "evidence-tags?userId="
+                    + /*[[${viewableUser}]]*/ null
+                    + "&tagId=" + /*[[${tagId}]]*/ null
+                    + "&tagType=Skills";
+            } else {
+                url = "evidence-tags?userId="
+                    + /*[[${viewableUser}]]*/ null
+                    + "&tagId=" + /*[[${tagId}]]*/ null
+                    + "&tagType=Categories";
+            }
+        } else {
+            if (tagType === "Skills") {
+                url = "switch-evidence-list?userId="
+                    + /*[[${currentUserId}]]*/ null
+                    + "&viewedUserId=" + /*[[${viewableUser}]]*/ null
+                    + "&listAll=" + false
+                    + "&tagId=" + /*[[${tagId}]]*/ null
+                    + "&tagType=Skills";
+            } else {
+                url = "switch-evidence-list?userId="
+                    + /*[[${currentUserId}]]*/ null
+                    + "&viewedUserId=" + /*[[${viewableUser}]]*/ null
+                    + "&listAll=" + false
+                    + "&tagId=" + /*[[${tagId}]]*/ null
+                    + "&tagType=Categories";
+            }
+        }
+    })
+
     /*]]>*/
 </script>
 </html>
